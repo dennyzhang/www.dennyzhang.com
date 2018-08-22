@@ -1,0 +1,94 @@
+* Demo Jenkins: How I Enforce CI/CD                            :BLOG:General:
+  :PROPERTIES:
+  :type:     DevOps,Jenkins,Startup,Service,Popular
+  :END:
+
+---------------------------------------------------------------------
+Lots of people are talking about CI/CD on the Internet. I wish I could learn the details what they really enforce? Quite disappointed, mostly I only see concepts, principles, and guidelines.
+
+Yes, I know it depends on a lot of things. After supporting several projects, I DO believe there are some useful first-hand experience which are general and not that well-known. Enclosed is a Demo Jenkins.
+
+[[image-blog:Demo Jenkins][https://www.dennyzhang.com/wp-content/uploads/denny/demo_jenkins.png]]
+
+---------------------------------------------------------------------
+I exported my CI/CD experience to below Demo Jenkins. *That's alive*! You can simply login and check around. There are tens of Jenkins jobs. Each job exists for some reasons. Job configuration can be found in [[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6][Github]].[[github:DennyZhang][GitHub]]
+
+Please contact me via email (contact[@]dennyzhang.com), in order to get the credential. Don't worry, it's totally free. I just want to reduce the risk of security issues.
+
+Even better, if you can subscribe my mailing list. You can get the credential from the mails easily.
+
+[mc4wp_form id='3792']
+
+Certainly you can subscribe later, or unsubscribe any time.
+
+Raise questions in below, if some are confuses you. Oh, yes. Definitely share your experience with us.
+http://jenkins.dennyzhang.com
+
+The demo Jenkins can easily setup in your envs via this [[https://github.com/dennyzhang/devops_docker_image/tree/tag_v6/jenkins][Docker Image]].
+
+#+BEGIN_SRC sh
+docker pull denny/jenkins:v3
+
+docker run -t -d -h jenkins \
+   --name devops-jenkins \
+   -p 18080:18080 \
+   -p 18000:80 -p 9000:9000 \
+   denny/jenkins:v3 \
+   /usr/bin/supervisord -n -c \
+   /etc/supervisor/supervisord.conf
+
+curl http://localhost:18080
+
+# Detail admin user: chefadmin/ChangeMe123
+#+END_SRC
+
+[[image-blog:Jenkins CI][https://www.dennyzhang.com/wp-content/uploads/denny/jenkins_ci.png]]
+
+Here are highlight for key Jenkins Jobs.
+
+[[color:#c7254e][Reduce Communication]]:
+- [[https://www.dennyzhang.com/monitor_filechange][MonitorServerFileChanges]]: Be Alerted For Critical Files Changes In Prod Env.
+- [[https://www.dennyzhang.com/avoid_toi_communication][MonitorGitFileChanges]]: Monitor files changed in Git repo
+- [[https://www.dennyzhang.com/slack_activesprint][MonitorNewActiveSprint]]: Get Slack Notifications For New Active Sprint
+
+[[color:#c7254e][Network, Audit And Security]]:
+- [[https://www.dennyzhang.com/nmap_port_scan][NetworkTCPScanAuditReport]]: Use Nmap To Automate Insecure Ports Check
+- [[https://www.dennyzhang.com/list_packages_install][OSPackageActionReport]]: List recent actions of packages installation or removal.
+- [[https://www.dennyzhang.com/compare_envs][CompareMachinesReport]]: Compare Difference Of Two Envs.
+- [[https://www.dennyzhang.com/monitor_outbound_traffic][ListHTTPTraffic]]: Monitor Outbound Traffic In Deployment.
+
+[[color:#c7254e][Intergration Test]]:
+- [[https://www.dennyzhang.com/sandbox_setup][DockerDeploySandbox*]]: Easy and Reliable Sandbox Setup Matters.
+- [[https://www.dennyzhang.com/shellcheck][BashCodeQualityCheck]]: Code Check For Shell Scripts.
+- [[https://www.dennyzhang.com/rubocop_errors][RubyCodeQualityCheck]] Improve your ruby code quality by rubocop.
+
+[[color:#c7254e][Prod Env Operation]]:
+- [[https://www.dennyzhang.com/parallel_run_commands][RunCommandOnServers]]: Enable people to run shell commands from Jenkins.
+- [[https://www.dennyzhang.com/slack_deployment][Get Slack Notifications For System Upgrade]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/posts/demo_jenkins"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

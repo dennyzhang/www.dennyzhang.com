@@ -1,0 +1,1244 @@
+* Case Study For Chef: chef-study in GitHub                    :BLOG:General:
+:PROPERTIES:
+:type:   DevOps,Chef,Study
+:END:
+
+---------------------------------------------------------------------
+Attentions, *Chef Users*. I've exported my Chef experience to GitHub.
+
+No overwhelming info. Less frustration. It starts with real and specific requirements. From easy to difficult, step-by-step.
+
+You need to hire Chef candidates? Apply Chef jobs? Or simply sharpen your Chef skills at work?
+*Take five minutes* and *check it out now*: [[url-external:https://github.com/dennyzhang/chef-study][chef-study]].
+
+Please let me know what you think. Thus I can better help you and your case.
+
+[[image-blog:GitHub Repo chef-study: Case Study For Chef][https://cdn.dennyzhang.com/images/blog/github-chef-study.jpg]]
+
+---------------------------------------------------------------------
+Compared to CM(conf mgmt) tools, docker is more popular now. Yes, I know.
+
+Among CM tools, Ansible is more popular now. Yes, I know.
+
+But, still lots of companies are using Chef.
+
+I took me quite a while to get comfortable with Chef. So why not export my Chef experience in an good way.
+
+[[color:#c7254e][A Good Way]]? What does that mean?
+1. No bullshit. No buzz words. No overwhelming info.
+- Everything is in GitHub. Totally free and open.
+- Real scenarios and real requirements. Try to avoid fake ones.
+- Step-by-step, scenario-by-scenario. Yes, so-called from dummies to pros.
+
+Here is the GitHub repo: [[url-external:https://github.com/dennyzhang/chef-study][chef-study]]. 
+
+Check it out! Hope you can benefit or get inspired form it.
+
+See more similar subject studies in GitHub: [[url-external:https://goo.gl/HWe87S][here]].
+
+[[github:DennyZhang][Github]]
+
+More Reading:
+- [[https://www.dennyzhang.com/github_wiki][Effectively Technical Writing In GitHub]]
+- [[https://www.dennyzhang.com/devops_hiring][15 Open Questions For DevOps Interview]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/posts/github-chef-study"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* TODO misc                                                        :noexport:
+** CANCELED jenkins deployment plugin issue
+  CLOSED: [2017-11-17 Fri 17:46]
+"/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup
+
+[ec2-user@ip-172-31-94-184 ~]$ ls -lth /home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin
+-rw-r--r-- 1 jenkins jenkins 259K Nov 16 21:41 /home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin
+
+#+BEGIN_EXAMPLE
+[ec2-user@ip-172-31-94-184 ~]$ "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup
+
+Installing a plugin from file:/home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin
+
+ERROR: Unexpected exception occurred while performing install-plugin command.
+java.io.FileNotFoundException: /home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin (Permission denied)
+        at java.io.FileInputStream.open0(Native Method)
+        at java.io.FileInputStream.open(FileInputStream.java:195)
+        at java.io.FileInputStream.<init>(FileInputStream.java:138)
+        at java.io.FileInputStream.<init>(FileInputStream.java:93)
+        at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:90)
+        at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:188)
+        at java.net.URL.openStream(URL.java:1045)
+        at hudson.FilePath.copyFrom(FilePath.java:890)
+        at hudson.cli.InstallPluginCommand.run(InstallPluginCommand.java:127)
+        at hudson.cli.CLICommand.main(CLICommand.java:274)
+        at hudson.cli.CliManagerImpl.main(CliManagerImpl.java:95)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at hudson.remoting.RemoteInvocationHandler$RPCRequest.perform(RemoteInvocationHandler.java:896)
+        at hudson.remoting.RemoteInvocationHandler$RPCRequest.call(RemoteInvocationHandler.java:870)
+        at hudson.remoting.RemoteInvocationHandler$RPCRequest.call(RemoteInvocationHandler.java:829)
+        at hudson.remoting.UserRequest.perform(UserRequest.java:208)
+        at hudson.remoting.UserRequest.perform(UserRequest.java:54)
+        at hudson.remoting.Request$2.run(Request.java:360)
+        at hudson.remoting.InterceptingExecutorService$1.call(InterceptingExecutorService.java:68)
+        at hudson.cli.CliManagerImpl$1.call(CliManagerImpl.java:66)
+        at hudson.remoting.CallableDecoratorAdapter.call(CallableDecoratorAdapter.java:18)
+        at hudson.remoting.CallableDecoratorList$1.call(CallableDecoratorList.java:21)
+        at jenkins.util.ContextResettingExecutorService$2.call(ContextResettingExecutorService.java:46)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+        at java.lang.Thread.run(Thread.java:748)
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+    ---- End output of "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plug
+in file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  ----
+    Ran "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home
+/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  returned 1
+
+    Cookbook Trace:
+    ---------------
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/_executor.rb:87:in `execute!'
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/plugin.rb:319:in `install_plugin_from_url'
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/plugin.rb:289:in `install_plugin_from_update_center'
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/plugin.rb:124:in `block (2 levels) in <class:JenkinsPlugin>'
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/plugin.rb:154:in `block in <class:JenkinsPlugin>'
+
+    Resource Declaration:
+    ---------------------
+    # In /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins-demo/recipes/master.rb
+
+     24:   jenkins_plugin plugin[0] do
+     25:     version plugin[1]
+     26:     notifies :execute, 'jenkins_command[safe-restart]', :immediately
+     27:   end
+     28: end
+
+    Compiled Resource:
+    ------------------
+    # Declared in /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins-demo/recipes/master.rb:24:in `block in from_file'
+
+    jenkins_plugin("thinBackup") do
+      action [:install]
+      default_guard_interpreter :default
+      declared_type :jenkins_plugin
+      cookbook_name "jenkins-demo"
+      recipe_name "master"
+      version "1.9"
+    end
+
+    System Info:
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+---- Begin output of "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  ----
+STDOUT: Installing a plugin from file:/home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin
+STDERR: ERROR: Unexpected exception occurred while performing install-plugin command.
+java.io.FileNotFoundException: /home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin (Permission denied)
+        at java.io.FileInputStream.open0(Native Method)
+        at java.io.FileInputStream.open(FileInputStream.java:195)
+        at java.io.FileInputStream.<init>(FileInputStream.java:138)
+        at java.io.FileInputStream.<init>(FileInputStream.java:93)
+        at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:90)
+        at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:188)
+        at java.net.URL.openStream(URL.java:1045)
+        at hudson.FilePath.copyFrom(FilePath.java:890)
+        at hudson.cli.InstallPluginCommand.run(InstallPluginCommand.java:127)
+        at hudson.cli.CLICommand.main(CLICommand.java:274)
+        at hudson.cli.CliManagerImpl.main(CliManagerImpl.java:95)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at hudson.remoting.RemoteInvocationHandler$RPCRequest.perform(RemoteInvocationHandler.java:896)
+        at hudson.remoting.RemoteInvocationHandler$RPCRequest.call(RemoteInvocationHandler.java:870)
+        at hudson.remoting.RemoteInvocationHandler$RPCRequest.call(RemoteInvocationHandler.java:829)
+        at hudson.remoting.UserRequest.perform(UserRequest.java:208)
+        at hudson.remoting.UserRequest.perform(UserRequest.java:54)
+        at hudson.remoting.Request$2.run(Request.java:360)
+        at hudson.remoting.InterceptingExecutorService$1.call(InterceptingExecutorService.java:68)
+        at hudson.cli.CliManagerImpl$1.call(CliManagerImpl.java:66)
+        at hudson.remoting.CallableDecoratorAdapter.call(CallableDecoratorAdapter.java:18)
+        at hudson.remoting.CallableDecoratorList$1.call(CallableDecoratorList.java:21)
+        at jenkins.util.ContextResettingExecutorService$2.call(ContextResettingExecutorService.java:46)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+        at java.lang.Thread.run(Thread.java:748)
+---- End output of "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  ----
+Ran "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  returned 1
+[2017-11-16T21:43:16+00:00] FATAL: Chef::Exceptions::ChildConvergeError: Chef run process exited unsuccessfully (exit code 1)
+[2017-11-16T21:43:16+00:00] FATAL: Chef::Exceptions::ChildConvergeError: Chef run process exited unsuccessfully (exit code 1)
+#+END_EXAMPLE
+** CANCELED jenkins deployment plugin issue
+  CLOSED: [2017-11-17 Fri 17:46]
+"/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup
+
+[ec2-user@ip-172-31-94-184 ~]$ ls -lth /home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin
+-rw-r--r-- 1 jenkins jenkins 259K Nov 16 21:41 /home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin
+
+#+BEGIN_EXAMPLE
+[ec2-user@ip-172-31-94-184 ~]$ "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup
+
+Installing a plugin from file:/home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin
+
+ERROR: Unexpected exception occurred while performing install-plugin command.
+java.io.FileNotFoundException: /home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin (Permission denied)
+        at java.io.FileInputStream.open0(Native Method)
+        at java.io.FileInputStream.open(FileInputStream.java:195)
+        at java.io.FileInputStream.<init>(FileInputStream.java:138)
+        at java.io.FileInputStream.<init>(FileInputStream.java:93)
+        at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:90)
+        at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:188)
+        at java.net.URL.openStream(URL.java:1045)
+        at hudson.FilePath.copyFrom(FilePath.java:890)
+        at hudson.cli.InstallPluginCommand.run(InstallPluginCommand.java:127)
+        at hudson.cli.CLICommand.main(CLICommand.java:274)
+        at hudson.cli.CliManagerImpl.main(CliManagerImpl.java:95)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at hudson.remoting.RemoteInvocationHandler$RPCRequest.perform(RemoteInvocationHandler.java:896)
+        at hudson.remoting.RemoteInvocationHandler$RPCRequest.call(RemoteInvocationHandler.java:870)
+        at hudson.remoting.RemoteInvocationHandler$RPCRequest.call(RemoteInvocationHandler.java:829)
+        at hudson.remoting.UserRequest.perform(UserRequest.java:208)
+        at hudson.remoting.UserRequest.perform(UserRequest.java:54)
+        at hudson.remoting.Request$2.run(Request.java:360)
+        at hudson.remoting.InterceptingExecutorService$1.call(InterceptingExecutorService.java:68)
+        at hudson.cli.CliManagerImpl$1.call(CliManagerImpl.java:66)
+        at hudson.remoting.CallableDecoratorAdapter.call(CallableDecoratorAdapter.java:18)
+        at hudson.remoting.CallableDecoratorList$1.call(CallableDecoratorList.java:21)
+        at jenkins.util.ContextResettingExecutorService$2.call(ContextResettingExecutorService.java:46)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+        at java.lang.Thread.run(Thread.java:748)
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+    ---- End output of "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plug
+in file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  ----
+    Ran "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home
+/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  returned 1
+
+    Cookbook Trace:
+    ---------------
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/_executor.rb:87:in `execute!'
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/plugin.rb:319:in `install_plugin_from_url'
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/plugin.rb:289:in `install_plugin_from_update_center'
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/plugin.rb:124:in `block (2 levels) in <class:JenkinsPlugin>'
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/plugin.rb:154:in `block in <class:JenkinsPlugin>'
+
+    Resource Declaration:
+    ---------------------
+    # In /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins-demo/recipes/master.rb
+
+     24:   jenkins_plugin plugin[0] do
+     25:     version plugin[1]
+     26:     notifies :execute, 'jenkins_command[safe-restart]', :immediately
+     27:   end
+     28: end
+
+    Compiled Resource:
+    ------------------
+    # Declared in /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins-demo/recipes/master.rb:24:in `block in from_file'
+
+    jenkins_plugin("thinBackup") do
+      action [:install]
+      default_guard_interpreter :default
+      declared_type :jenkins_plugin
+      cookbook_name "jenkins-demo"
+      recipe_name "master"
+      version "1.9"
+    end
+
+    System Info:
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+---- Begin output of "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  ----
+STDOUT: Installing a plugin from file:/home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin
+STDERR: ERROR: Unexpected exception occurred while performing install-plugin command.
+java.io.FileNotFoundException: /home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin (Permission denied)
+        at java.io.FileInputStream.open0(Native Method)
+        at java.io.FileInputStream.open(FileInputStream.java:195)
+        at java.io.FileInputStream.<init>(FileInputStream.java:138)
+        at java.io.FileInputStream.<init>(FileInputStream.java:93)
+        at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:90)
+        at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:188)
+        at java.net.URL.openStream(URL.java:1045)
+        at hudson.FilePath.copyFrom(FilePath.java:890)
+        at hudson.cli.InstallPluginCommand.run(InstallPluginCommand.java:127)
+        at hudson.cli.CLICommand.main(CLICommand.java:274)
+        at hudson.cli.CliManagerImpl.main(CliManagerImpl.java:95)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at hudson.remoting.RemoteInvocationHandler$RPCRequest.perform(RemoteInvocationHandler.java:896)
+        at hudson.remoting.RemoteInvocationHandler$RPCRequest.call(RemoteInvocationHandler.java:870)
+        at hudson.remoting.RemoteInvocationHandler$RPCRequest.call(RemoteInvocationHandler.java:829)
+        at hudson.remoting.UserRequest.perform(UserRequest.java:208)
+        at hudson.remoting.UserRequest.perform(UserRequest.java:54)
+        at hudson.remoting.Request$2.run(Request.java:360)
+        at hudson.remoting.InterceptingExecutorService$1.call(InterceptingExecutorService.java:68)
+        at hudson.cli.CliManagerImpl$1.call(CliManagerImpl.java:66)
+        at hudson.remoting.CallableDecoratorAdapter.call(CallableDecoratorAdapter.java:18)
+        at hudson.remoting.CallableDecoratorList$1.call(CallableDecoratorList.java:21)
+        at jenkins.util.ContextResettingExecutorService$2.call(ContextResettingExecutorService.java:46)
+        at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+        at java.lang.Thread.run(Thread.java:748)
+---- End output of "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  ----
+Ran "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  returned 1
+[2017-11-16T21:43:16+00:00] FATAL: Chef::Exceptions::ChildConvergeError: Chef run process exited unsuccessfully (exit code 1)
+[2017-11-16T21:43:16+00:00] FATAL: Chef::Exceptions::ChildConvergeError: Chef run process exited unsuccessfully (exit code 1)
+#+END_EXAMPLE
+** TODO [#A] ec2 node: kitchen converge:  default-centos-ami      :IMPORTANT:
+#+BEGIN_EXAMPLE
+➜  jenkins-demo git:(master) kitchen converge default-centos-ami
+-----> Starting Kitchen (v1.19.1)
+-----> Converging <default-centos-ami>...
+       Preparing files for transfer
+       Preparing dna.json
+       Resolving cookbook dependencies with Berkshelf 6.3.1...
+/Users/mac/.rbenv/versions/2.3.2/lib/ruby/gems/2.3.0/gems/concurrent-ruby-1.0.5/lib/concurrent/utility/processor_counter.rb:105: warning: Insecure world writable dir /usr/local/Cellar in PATH, mode 040777
+       Removing non-cookbook files before transfer
+       Preparing data
+       Preparing validation.pem
+       Preparing client.rb
+-----> Chef Omnibus installation detected (13.6.4)
+       Transferring files to <default-centos-ami>
+>>>>>> ------Exception-------
+>>>>>> Class: Kitchen::ActionFailed
+>>>>>> Message: 1 actions failed.
+>>>>>>     Failed to complete #converge action: [SCP did not finish successfully (): ] on default-centos-ami
+>>>>>> ----------------------
+>>>>>> Please see .kitchen/logs/kitchen.log for more details
+>>>>>> Also try running `kitchen diagnose --all` for configuration
+#+END_EXAMPLE
+** BYPASS Bug: jenkins plugin depoyment: file owner issue
+  CLOSED: [2017-11-18 Sat 23:45]
+https://github.com/chef-cookbooks/jenkins/issues/644
+https://github.com/chef-cookbooks/jenkins/issues/659
+
+"/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup
+
+#+BEGIN_EXAMPLE
+resolving cookbooks for run list: ["jenkins-demo"]
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:38:41+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+Synchronizing Cookbooks:
+  - jenkins-demo (0.0.1)
+  - jenkins (5.0.4)
+  - runit (3.0.6)
+  - dpkg_autostart (0.2.0)
+  - apt (2.6.1)
+  - packagecloud (0.3.0)
+  - yum-epel (2.1.2)
+  - compat_resource (12.19.0)
+  - java (1.50.0)
+  - homebrew (4.2.0)
+  - windows (3.4.0)
+  - ohai (5.2.0)
+Installing Cookbook Gems:
+Compiling Cookbooks...
+/home/ec2-user/chef/local-mode-cache/cache/cookbooks/packagecloud/resources/repo.rb:10: warning: constant ::Fixnum is deprecated
+Converging 20 resources
+Recipe: java::notify
+  * log[jdk-version-changed] action nothing (skipped due to action :nothing)
+Recipe: java::oracle
+  * log[WARNING - Downloading directly from Oracle is unreliable. Change download url.] action write[2017-11-19T05:38:42+00:00] WARN: WARNING - Downloading directly from Oracle is unreliable. Change download url.
+[2017-11-19T05:38:42+00:00] WARN: WARNING - Downloading directly from Oracle is unreliable. Change download url.
+
+  
+Recipe: java::set_java_home
+  * directory[/etc/profile.d] action create (up to date)
+  * template[/etc/profile.d/jdk.sh] action create (up to date)
+  * ruby_block[Set JAVA_HOME in /etc/environment] action run
+    - execute the ruby block Set JAVA_HOME in /etc/environment
+Recipe: java::oracle
+  * yum_package[tar] action install (up to date)
+  * java_ark[jdk] action install
+    * java_alternatives[set-java-alternatives] action set (up to date)
+     (up to date)
+Recipe: jenkins::_master_package
+  * yum_repository[jenkins-ci] action create
+    * template[/etc/yum.repos.d/jenkins-ci.repo] action create (up to date)
+    * execute[yum clean metadata jenkins-ci] action nothing (skipped due to action :nothing)
+    * execute[yum-makecache-jenkins-ci] action nothing (skipped due to action :nothing)
+    * ruby_block[yum-cache-reload-jenkins-ci] action nothing (skipped due to action :nothing)
+     (up to date)
+  * yum_package[jenkins] action install (up to date)
+  * directory[/var/lib/jenkins] action create (up to date)
+  * template[/etc/sysconfig/jenkins] action create (up to date)
+  * service[jenkins] action enable (up to date)
+  * service[jenkins] action start (up to date)
+Recipe: jenkins-demo::master
+  * jenkins_plugin[thinBackup] action install
+  Recipe: <Dynamically Defined Resource>
+    * remote_file[/home/ec2-user/chef/local-mode-cache/cache/update-center.json] action create (up to date)
+    * file[/home/ec2-user/chef/local-mode-cache/cache/extracted-update-center.json] action create (up to date)
+    * remote_file[/home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin] action create
+      - change owner from 'root' to 'jenkins'
+      - change group from 'root' to 'jenkins'
+    * remote_file[/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar] action create (up to date)
+    
+    ================================================================================
+    Error executing action `install` on resource 'jenkins_plugin[thinBackup]'
+    ================================================================================
+    
+    Mixlib::ShellOut::ShellCommandFailed
+    ------------------------------------
+    Expected process to exit with [0], but received '1'
+    ---- Begin output of "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  ----
+    STDOUT: Installing a plugin from file:/home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin
+    STDERR: ERROR: Unexpected exception occurred while performing install-plugin command.
+    java.io.FileNotFoundException: /home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin (Permission denied)
+    	at java.io.FileInputStream.open0(Native Method)
+    	at java.io.FileInputStream.open(FileInputStream.java:195)
+    	at java.io.FileInputStream.<init>(FileInputStream.java:138)
+    	at java.io.FileInputStream.<init>(FileInputStream.java:93)
+    	at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:90)
+    	at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:188)
+    	at java.net.URL.openStream(URL.java:1045)
+    	at hudson.FilePath.copyFrom(FilePath.java:890)
+    	at hudson.cli.InstallPluginCommand.run(InstallPluginCommand.java:127)
+    	at hudson.cli.CLICommand.main(CLICommand.java:274)
+    	at hudson.cli.CliManagerImpl.main(CliManagerImpl.java:95)
+    	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+    	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+    	at java.lang.reflect.Method.invoke(Method.java:498)
+    	at hudson.remoting.RemoteInvocationHandler$RPCRequest.perform(RemoteInvocationHandler.java:896)
+    	at hudson.remoting.RemoteInvocationHandler$RPCRequest.call(RemoteInvocationHandler.java:870)
+    	at hudson.remoting.RemoteInvocationHandler$RPCRequest.call(RemoteInvocationHandler.java:829)
+    	at hudson.remoting.UserRequest.perform(UserRequest.java:208)
+    	at hudson.remoting.UserRequest.perform(UserRequest.java:54)
+    	at hudson.remoting.Request$2.run(Request.java:360)
+    	at hudson.remoting.InterceptingExecutorService$1.call(InterceptingExecutorService.java:68)
+    	at hudson.cli.CliManagerImpl$1.call(CliManagerImpl.java:66)
+    	at hudson.remoting.CallableDecoratorAdapter.call(CallableDecoratorAdapter.java:18)
+    	at hudson.remoting.CallableDecoratorList$1.call(CallableDecoratorList.java:21)
+    	at jenkins.util.ContextResettingExecutorService$2.call(ContextResettingExecutorService.java:46)
+    	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+    	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+    	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+    	at java.lang.Thread.run(Thread.java:748)
+    ---- End output of "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  ----
+    Ran "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  returned 1
+    
+    Cookbook Trace:
+    ---------------
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/_executor.rb:87:in `execute!'
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/plugin.rb:319:in `install_plugin_from_url'
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/plugin.rb:289:in `install_plugin_from_update_center'
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/plugin.rb:124:in `block (2 levels) in <class:JenkinsPlugin>'
+    /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins/libraries/plugin.rb:154:in `block in <class:JenkinsPlugin>'
+    
+    Resource Declaration:
+    ---------------------
+    # In /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins-demo/recipes/master.rb
+    
+     33:   jenkins_plugin plugin[0] do
+     34:     version plugin[1]
+     35:     notifies :execute, 'jenkins_command[safe-restart]', :immediately
+     36:   end
+     37: end
+    
+    Compiled Resource:
+    ------------------
+    # Declared in /home/ec2-user/chef/local-mode-cache/cache/cookbooks/jenkins-demo/recipes/master.rb:33:in `block in from_file'
+    
+    jenkins_plugin("thinBackup") do
+      action [:install]
+      default_guard_interpreter :default
+      declared_type :jenkins_plugin
+      cookbook_name "jenkins-demo"
+      recipe_name "master"
+      version "1.9"
+    end
+    
+    System Info:
+    ------------
+    chef_version=13.4.19
+    platform=amazon
+    platform_version=2016.03
+    ruby=ruby 2.4.2p198 (2017-09-14 revision 59899) [x86_64-linux]
+    program_name=chef-solo worker: ppid=7889;start=05:38:40;
+    executable=/opt/chefdk/bin/chef-solo
+    
+
+Running handlers:
+[2017-11-19T05:38:47+00:00] ERROR: Running exception handlers
+[2017-11-19T05:38:47+00:00] ERROR: Running exception handlers
+Running handlers complete
+[2017-11-19T05:38:47+00:00] ERROR: Exception handlers complete
+[2017-11-19T05:38:47+00:00] ERROR: Exception handlers complete
+Chef Client failed. 3 resources updated in 07 seconds
+[2017-11-19T05:38:47+00:00] FATAL: Stacktrace dumped to /home/ec2-user/chef/local-mode-cache/cache/chef-stacktrace.out
+[2017-11-19T05:38:47+00:00] FATAL: Stacktrace dumped to /home/ec2-user/chef/local-mode-cache/cache/chef-stacktrace.out
+[2017-11-19T05:38:47+00:00] FATAL: Please provide the contents of the stacktrace.out file if you file a bug report
+[2017-11-19T05:38:47+00:00] FATAL: Please provide the contents of the stacktrace.out file if you file a bug report
+[2017-11-19T05:38:47+00:00] ERROR: jenkins_plugin[thinBackup] (jenkins-demo::master line 33) had an error: Mixlib::ShellOut::ShellCommandFailed: Expected process to exit with [0], but received '1'
+---- Begin output of "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  ----
+STDOUT: Installing a plugin from file:/home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin
+STDERR: ERROR: Unexpected exception occurred while performing install-plugin command.
+java.io.FileNotFoundException: /home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin (Permission denied)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(FileInputStream.java:195)
+	at java.io.FileInputStream.<init>(FileInputStream.java:138)
+	at java.io.FileInputStream.<init>(FileInputStream.java:93)
+	at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:90)
+	at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:188)
+	at java.net.URL.openStream(URL.java:1045)
+	at hudson.FilePath.copyFrom(FilePath.java:890)
+	at hudson.cli.InstallPluginCommand.run(InstallPluginCommand.java:127)
+	at hudson.cli.CLICommand.main(CLICommand.java:274)
+	at hudson.cli.CliManagerImpl.main(CliManagerImpl.java:95)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at hudson.remoting.RemoteInvocationHandler$RPCRequest.perform(RemoteInvocationHandler.java:896)
+	at hudson.remoting.RemoteInvocationHandler$RPCRequest.call(RemoteInvocationHandler.java:870)
+	at hudson.remoting.RemoteInvocationHandler$RPCRequest.call(RemoteInvocationHandler.java:829)
+	at hudson.remoting.UserRequest.perform(UserRequest.java:208)
+	at hudson.remoting.UserRequest.perform(UserRequest.java:54)
+	at hudson.remoting.Request$2.run(Request.java:360)
+	at hudson.remoting.InterceptingExecutorService$1.call(InterceptingExecutorService.java:68)
+	at hudson.cli.CliManagerImpl$1.call(CliManagerImpl.java:66)
+	at hudson.remoting.CallableDecoratorAdapter.call(CallableDecoratorAdapter.java:18)
+	at hudson.remoting.CallableDecoratorList$1.call(CallableDecoratorList.java:21)
+	at jenkins.util.ContextResettingExecutorService$2.call(ContextResettingExecutorService.java:46)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:748)
+---- End output of "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  ----
+Ran "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  returned 1
+[2017-11-19T05:38:47+00:00] ERROR: jenkins_plugin[thinBackup] (jenkins-demo::master line 33) had an error: Mixlib::ShellOut::ShellCommandFailed: Expected process to exit with [0], but received '1'
+---- Begin output of "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  ----
+STDOUT: Installing a plugin from file:/home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin
+STDERR: ERROR: Unexpected exception occurred while performing install-plugin command.
+java.io.FileNotFoundException: /home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin (Permission denied)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(FileInputStream.java:195)
+	at java.io.FileInputStream.<init>(FileInputStream.java:138)
+	at java.io.FileInputStream.<init>(FileInputStream.java:93)
+	at sun.net.www.protocol.file.FileURLConnection.connect(FileURLConnection.java:90)
+	at sun.net.www.protocol.file.FileURLConnection.getInputStream(FileURLConnection.java:188)
+	at java.net.URL.openStream(URL.java:1045)
+	at hudson.FilePath.copyFrom(FilePath.java:890)
+	at hudson.cli.InstallPluginCommand.run(InstallPluginCommand.java:127)
+	at hudson.cli.CLICommand.main(CLICommand.java:274)
+	at hudson.cli.CliManagerImpl.main(CliManagerImpl.java:95)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at hudson.remoting.RemoteInvocationHandler$RPCRequest.perform(RemoteInvocationHandler.java:896)
+	at hudson.remoting.RemoteInvocationHandler$RPCRequest.call(RemoteInvocationHandler.java:870)
+	at hudson.remoting.RemoteInvocationHandler$RPCRequest.call(RemoteInvocationHandler.java:829)
+	at hudson.remoting.UserRequest.perform(UserRequest.java:208)
+	at hudson.remoting.UserRequest.perform(UserRequest.java:54)
+	at hudson.remoting.Request$2.run(Request.java:360)
+	at hudson.remoting.InterceptingExecutorService$1.call(InterceptingExecutorService.java:68)
+	at hudson.cli.CliManagerImpl$1.call(CliManagerImpl.java:66)
+	at hudson.remoting.CallableDecoratorAdapter.call(CallableDecoratorAdapter.java:18)
+	at hudson.remoting.CallableDecoratorList$1.call(CallableDecoratorList.java:21)
+	at jenkins.util.ContextResettingExecutorService$2.call(ContextResettingExecutorService.java:46)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:748)
+---- End output of "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  ----
+Ran "/usr/lib/jvm/default-java/bin/java" -jar "/home/ec2-user/chef/local-mode-cache/cache/jenkins-cli.jar" -s http://localhost:8080 -"remoting" install-plugin file:///home/ec2-user/chef/local-mode-cache/cache/thinBackup-1.9.plugin -name thinBackup  returned 1
+[2017-11-19T05:38:47+00:00] FATAL: Chef::Exceptions::ChildConvergeError: Chef run process exited unsuccessfully (exit code 1)
+[2017-11-19T05:38:47+00:00] FATAL: Chef::Exceptions::ChildConvergeError: Chef run process exited unsuccessfully (exit code 1)
+[root@ip-172-31-94-130 chef]# 
+#+END_EXAMPLE
+** DONE slack jenkins plugin fails to load
+  CLOSED: [2017-11-18 Sat 11:31]
+#+BEGIN_EXAMPLE
+There are dependency errors loading some plugins:
+Credentials Plugin v1.25
+icon-shim v2.0.2 is missing. To fix, install v2.0.2 or later.
+Slack Notification Plugin v2.3
+Credentials Plugin v1.25 failed to load. Fix this plugin first.
+Plain Credentials Plugin v1.1
+Credentials Plugin v1.25 failed to load. Fix this plugin first.
+#+END_EXAMPLE
+** DONE kitchen test in EC2
+  CLOSED: [2017-11-18 Sat 16:59]
+#+BEGIN_EXAMPLE
+           * file[/tmp/kitchen/cache/extracted-update-center.json] action create
+             - create new file /tmp/kitchen/cache/extracted-update-center.json
+             - update content in file /tmp/kitchen/cache/extracted-update-center.json from none to a608c2
+             - suppressed sensitive resource
+             - change mode from '' to '0644'
+
+           ================================================================================
+           Error executing action `install` on resource 'jenkins_plugin[thinBackup]'
+           ================================================================================
+
+           Jenkins::Helper::JenkinsNotReady
+           --------------------------------
+           The Jenkins master at `http://localhost:8080' did not become ready within 120
+           seconds. On large Jenkins instances, you may need to increase the timeout to
+           480 seconds. Alternatively, Jenkins may have failed to start.
+           Jenkins can fail to start if:
+
+             - a configuration file is invalid
+             - a plugin is only partially installed
+             - a plugin's dependencies are not installed
+
+           If this problem persists, check your Jenkins log files.
+
+           Cookbook Trace:
+           ---------------
+           /tmp/kitchen/cache/cookbooks/jenkins/libraries/_helper.rb:447:in `rescue in wait_until_ready!'
+           /tmp/kitchen/cache/cookbooks/jenkins/libraries/_helper.rb:426:in `wait_until_ready!'
+           /tmp/kitchen/cache/cookbooks/jenkins/libraries/_helper.rb:511:in `ensure_update_center_present!'
+           /tmp/kitchen/cache/cookbooks/jenkins/libraries/plugin.rb:372:in `plugin_universe'
+           /tmp/kitchen/cache/cookbooks/jenkins/libraries/plugin.rb:263:in `install_plugin_from_update_center'
+           /tmp/kitchen/cache/cookbooks/jenkins/libraries/plugin.rb:124:in `block (2 levels) in <class:JenkinsPlugin>'
+           /tmp/kitchen/cache/cookbooks/jenkins/libraries/plugin.rb:154:in `block in <class:JenkinsPlugin>'
+
+           Resource Declaration:
+           ---------------------
+           # In /tmp/kitchen/cache/cookbooks/jenkins-demo/recipes/master.rb
+
+            24:   jenkins_plugin plugin[0] do
+            25:     version plugin[1]
+            26:     notifies :execute, 'jenkins_command[safe-restart]', :immediately
+            27:   end
+            28: end
+
+           Compiled Resource:
+           ------------------
+           # Declared in /tmp/kitchen/cache/cookbooks/jenkins-demo/recipes/master.rb:24:in `block in from_file'
+
+           jenkins_plugin("thinBackup") do
+             action [:install]
+             default_guard_interpreter :default
+             declared_type :jenkins_plugin
+             cookbook_name "jenkins-demo"
+             recipe_name "master"
+             version "1.9"
+           end
+
+           System Info:
+           ------------
+           chef_version=13.6.4
+           platform=amazon
+           platform_version=2016.03
+           ruby=ruby 2.4.2p198 (2017-09-14 revision 59899) [x86_64-linux]
+           program_name=chef-client worker: ppid=2902;start=21:30:09;
+           executable=/opt/chef/bin/chef-client
+
+
+       Running handlers:
+       [2017-11-18T21:32:38+00:00] ERROR: Running exception handlers
+       [2017-11-18T21:32:38+00:00] ERROR: Running exception handlers
+       Running handlers complete
+       [2017-11-18T21:32:38+00:00] ERROR: Exception handlers complete
+       [2017-11-18T21:32:38+00:00] ERROR: Exception handlers complete
+       Chef Client failed. 17 resources updated in 02 minutes 29 seconds
+       [2017-11-18T21:32:38+00:00] FATAL: Stacktrace dumped to /tmp/kitchen/cache/chef-stacktrace.out
+       [2017-11-18T21:32:38+00:00] FATAL: Stacktrace dumped to /tmp/kitchen/cache/chef-stacktrace.out
+       [2017-11-18T21:32:38+00:00] FATAL: Please provide the contents of the stacktrace.out file if you file a bug report
+       [2017-11-18T21:32:38+00:00] FATAL: Please provide the contents of the stacktrace.out file if you file a bug report
+       [2017-11-18T21:32:38+00:00] ERROR: jenkins_plugin[thinBackup] (jenkins-demo::master line 24) had an error: Jenkins::Helper::JenkinsNotReady: The Jenkins master at `http://localhost:8080' did not become ready within 120
+       seconds. On large Jenkins instances, you may need to increase the timeout to
+       480 seconds. Alternatively, Jenkins may have failed to start.
+       Jenkins can fail to start if:
+
+         - a configuration file is invalid
+         - a plugin is only partially installed
+         - a plugin's dependencies are not installed
+
+       If this problem persists, check your Jenkins log files.
+
+       [2017-11-18T21:32:38+00:00] ERROR: jenkins_plugin[thinBackup] (jenkins-demo::master line 24) had an error: Jenkins::Helper::JenkinsNotReady: The Jenkins master at `http://localhost:8080' did not become ready within 120
+       seconds. On large Jenkins instances, you may need to increase the timeout to
+       480 seconds. Alternatively, Jenkins may have failed to start.
+       Jenkins can fail to start if:
+
+         - a configuration file is invalid
+         - a plugin is only partially installed
+         - a plugin's dependencies are not installed
+
+       If this problem persists, check your Jenkins log files.
+
+       [2017-11-18T21:32:38+00:00] FATAL: Chef::Exceptions::ChildConvergeError: Chef run process exited unsuccessfully (exit code 1)
+       [2017-11-18T21:32:38+00:00] FATAL: Chef::Exceptions::ChildConvergeError: Chef run process exited unsuccessfully (exit code 1)
+>>>>>> ------Exception-------
+>>>>>> Class: Kitchen::ActionFailed
+>>>>>> Message: 1 actions failed.
+>>>>>>     Converge failed on instance <default-ubuntu-1404>.  Please see .kitchen/logs/default-ubuntu-1404.log for more details
+>>>>>> ----------------------
+>>>>>> Please see .kitchen/logs/kitchen.log for more details
+>>>>>> Also try running `kitchen diagnose --all` for configuration
+
+➜  jenkins-demo git:(master) kitchen login
+/Users/mac/.rbenv/versions/2.3.2/lib/ruby/gems/2.3.0/gems/test-kitchen-1.19.1/lib/kitchen/instance.rb:217: warning: Insecure world writable dir /usr/local/Cellar in PATH, mode 040777
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Permissions 0644 for '/Users/mac/.ssh/denny-kitchen-test' are too open.
+It is required that your private key files are NOT accessible by others.
+This private key will be ignored.
+Load key "/Users/mac/.ssh/denny-kitchen-test": bad permissions
+Permission denied (publickey).
+➜  jenkins-demo git:(master) chmod 600 /Users/mac/.ssh/denny-kitchen-test
+➜  jenkins-demo git:(master) kitchen login
+/Users/mac/.rbenv/versions/2.3.2/lib/ruby/gems/2.3.0/gems/test-kitchen-1.19.1/lib/kitchen/instance.rb:217: warning: Insecure world writable dir /usr/local/Cellar in PATH, mode 040777
+Permission denied (publickey).
+➜  jenkins-demo git:(master) kitchen list
+Instance             Driver  Provisioner  Verifier  Transport  Last Action  Last Error
+default-ubuntu-1404  Ec2     ChefZero     Busser    Ssh        Created      Kitchen::ActionFailed
+#+END_EXAMPLE
+** DONE [#A] kitchen test in digitalocean/vagrant: jenkins package install failed, due to dependency issue
+  CLOSED: [2017-11-18 Sat 17:07]
+https://serverfault.com/questions/830636/cannot-install-openjdk-8-jre-headless-on-debian-jessie
+
+apt-get -y install jenkins=2.73.3
+*** Need to install debian apt repository
+http://www.cnblogs.com/xionggeclub/p/7117004.html
+wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add - 
+sudo sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'
+sudo apt-get update -y
+
+ERROR:
+deb      "https://pkg.jenkins.io/debian-stable" binary/
+(jenkins 2.73.3)
+
+OK:
+deb http://pkg.jenkins-ci.org/debian binary/
+(jenkins 2.90)
+
+#+BEGIN_EXAMPLE
+jenkins@jenkins-demo:/etc/apt/sources.list.d$ cat /etc/apt/sources.list.d/jenkins.list
+deb      "https://pkg.jenkins.io/debian-stable" binary/
+jenkins@jenkins-demo:/etc/apt/sources.list.d$
+#+END_EXAMPLE
+*** console shot
+#+BEGIN_EXAMPLE
+  Recipe: jenkins::_master_package
+         * dpkg_autostart[jenkins] action nothing (skipped due to action :nothing)
+         * apt_package[jenkins] action install
+
+           ================================================================================
+           Error executing action `install` on resource 'apt_package[jenkins]'
+           ================================================================================
+
+           Mixlib::ShellOut::ShellCommandFailed
+           ------------------------------------
+           Expected process to exit with [0], but received '100'
+           ---- Begin output of ["apt-get", "-q", "-y", "install", "jenkins=2.73.3"] ----
+           STDOUT: Reading package lists...
+           Building dependency tree...
+           Reading state information...
+           Some packages could not be installed. This may mean that you have
+           requested an impossible situation or if you are using the unstable
+           distribution that some required packages have not yet been created
+           or been moved out of Incoming.
+           The following information may help to resolve the situation:
+
+           The following packages have unmet dependencies:
+            jenkins : Depends: default-jre-headless (>= 2:1.8) but it is not going to be installed or
+                        java8-runtime-headless but it is not installable
+           STDERR: E: Unable to correct problems, you have held broken packages.
+           ---- End output of ["apt-get", "-q", "-y", "install", "jenkins=2.73.3"] ----
+           Ran ["apt-get", "-q", "-y", "install", "jenkins=2.73.3"] returned 100
+
+           Resource Declaration:
+           ---------------------
+           # In /tmp/kitchen/cache/cookbooks/jenkins/recipes/_master_package.rb
+
+            47: package 'jenkins' do
+            48:   version node['jenkins']['master']['version']
+            49: end
+            50:
+
+           Compiled Resource:
+           ------------------
+           # Declared in /tmp/kitchen/cache/cookbooks/jenkins/recipes/_master_package.rb:47:in `from_file'
+
+           apt_package("jenkins") do
+             package_name "jenkins"
+             action [:install]
+             default_guard_interpreter :default
+             declared_type :package
+             cookbook_name "jenkins"
+             recipe_name "_master_package"
+             version nil
+           end
+
+           System Info:
+           ------------
+           chef_version=13.6.4
+           platform=ubuntu
+           platform_version=14.04
+           ruby=ruby 2.4.2p198 (2017-09-14 revision 59899) [x86_64-linux]
+           program_name=chef-client worker: ppid=1506;start=16:16:14;
+           executable=/opt/chef/bin/chef-client
+
+
+       Running handlers:
+       [2017-11-18T16:17:07+00:00] ERROR: Running exception handlers
+       [2017-11-18T16:17:07+00:00] ERROR: Running exception handlers
+       Running handlers complete
+       [2017-11-18T16:17:07+00:00] ERROR: Exception handlers complete
+       [2017-11-18T16:17:07+00:00] ERROR: Exception handlers complete
+       Chef Client failed. 20 resources updated in 53 seconds
+       [2017-11-18T16:17:07+00:00] FATAL: Stacktrace dumped to /tmp/kitchen/cache/chef-stacktrace.out
+       [2017-11-18T16:17:07+00:00] FATAL: Stacktrace dumped to /tmp/kitchen/cache/chef-stacktrace.out
+       [2017-11-18T16:17:07+00:00] FATAL: Please provide the contents of the stacktrace.out file if you file a bug report
+       [2017-11-18T16:17:07+00:00] FATAL: Please provide the contents of the stacktrace.out file if you file a bug report
+       [2017-11-18T16:17:07+00:00] ERROR: apt_package[jenkins] (jenkins::_master_package line 47) had an error: Mixlib::ShellOut::ShellCommandFailed: Expected process to exit with [0], but received '100'
+       ---- Begin output of ["apt-get", "-q", "-y", "install", "jenkins=2.73.3"] ----
+       STDOUT: Reading package lists...
+       Building dependency tree...
+       Reading state information...
+       Some packages could not be installed. This may mean that you have
+       requested an impossible situation or if you are using the unstable
+       distribution that some required packages have not yet been created
+       or been moved out of Incoming.
+       The following information may help to resolve the situation:
+
+       The following packages have unmet dependencies:
+        jenkins : Depends: default-jre-headless (>= 2:1.8) but it is not going to be installed or
+                    java8-runtime-headless but it is not installable
+       STDERR: E: Unable to correct problems, you have held broken packages.
+       ---- End output of ["apt-get", "-q", "-y", "install", "jenkins=2.73.3"] ----
+       Ran ["apt-get", "-q", "-y", "install", "jenkins=2.73.3"] returned 100
+       [2017-11-18T16:17:07+00:00] ERROR: apt_package[jenkins] (jenkins::_master_package line 47) had an error: Mixlib::ShellOut::ShellCommandFailed: Expected process to exit with [0], but received '100'
+       ---- Begin output of ["apt-get", "-q", "-y", "install", "jenkins=2.73.3"] ----
+       STDOUT: Reading package lists...
+       Building dependency tree...
+       Reading state information...
+       Some packages could not be installed. This may mean that you have
+       requested an impossible situation or if you are using the unstable
+       distribution that some required packages have not yet been created
+       or been moved out of Incoming.
+       The following information may help to resolve the situation:
+
+       The following packages have unmet dependencies:
+        jenkins : Depends: default-jre-headless (>= 2:1.8) but it is not going to be installed or
+                    java8-runtime-headless but it is not installable
+       STDERR: E: Unable to correct problems, you have held broken packages.
+       ---- End output of ["apt-get", "-q", "-y", "install", "jenkins=2.73.3"] ----
+       Ran ["apt-get", "-q", "-y", "install", "jenkins=2.73.3"] returned 100
+       [2017-11-18T16:17:07+00:00] FATAL: Chef::Exceptions::ChildConvergeError: Chef run process exited unsuccessfully (exit code 1)
+       [2017-11-18T16:17:07+00:00] FATAL: Chef::Exceptions::ChildConvergeError: Chef run process exited unsuccessfully (exit code 1)
+>>>>>> ------Exception-------
+>>>>>> Class: Kitchen::ActionFailed
+>>>>>> Message: 1 actions failed.
+>>>>>>     Converge failed on instance <default-jenkins-demo>.  Please see .kitchen/logs/default-jenkins-demo.log for more details
+>>>>>> ----------------------
+>>>>>> Please see .kitchen/logs/kitchen.log for more details
+>>>>>> Also try running `kitchen diagnose --all` for configuration
+#+END_EXAMPLE
+** DONE centos-7 jenkins cookbook issue
+  CLOSED: [2017-11-18 Sat 18:43]
+#+BEGIN_EXAMPLE
+           * execute[yum clean metadata jenkins-ci] action run
+             - execute yum clean metadata --disablerepo=* --enablerepo=jenkins-ci
+           * execute[yum-makecache-jenkins-ci] action run
+
+             ================================================================================
+             Error executing action `run` on resource 'execute[yum-makecache-jenkins-ci]'
+             ================================================================================
+
+             Mixlib::ShellOut::ShellCommandFailed
+             ------------------------------------
+             Expected process to exit with [0], but received '1'
+             ---- Begin output of yum -q -y makecache --disablerepo=* --enablerepo=jenkins-ci ----
+             STDOUT:
+             STDERR: One of the configured repositories failed (Unknown),
+       and yum doesn't have enough cached data to continue. At this point the only
+       safe thing yum can do is fail. There are a few ways to work "fix" this:
+
+           1. Contact the upstream for the repository and get them to fix the problem.
+
+           2. Reconfigure the baseurl/etc. for the repository, to point to a working
+              upstream. This is most often useful if you are using a newer
+              distribution release than is supported by the repository (and the
+              packages for the previous distribution release still work).
+
+           3. Run the command with the repository temporarily disabled
+                  yum --disablerepo=<repoid> ...
+
+           4. Disable the repository permanently, so yum won't use it by default. Yum
+              will then just ignore the repository until you permanently enable it
+              again or use --enablerepo for temporary usage:
+
+                  yum-config-manager --disable <repoid>
+              or
+                  subscription-manager repos --disable=<repoid>
+
+           5. Configure the failing repository to be skipped, if it is unavailable.
+              Note that yum will try to contact the repo. when it runs most commands,
+              so will have to try and fail each time (and thus. yum will be be much
+              slower). If it is a very temporary problem though, this is often a nice
+              compromise:
+
+                  yum-config-manager --save --setopt=<repoid>.skip_if_unavailable=true
+
+             Cannot find a valid baseurl for repo: jenkins-ci
+             ---- End output of yum -q -y makecache --disablerepo=* --enablerepo=jenkins-ci ----
+             Ran yum -q -y makecache --disablerepo=* --enablerepo=jenkins-ci returned 1
+
+             Resource Declaration:
+             ---------------------
+             # In /opt/chef/embedded/lib/ruby/gems/2.4.0/gems/chef-13.6.4/lib/chef/provider/yum_repository.rb
+
+       60:         declare_resource(:execute, "yum-makecache-#{new_resource.repositoryid}") do
+       61:           command "yum -q -y makecache --disablerepo=* --enablerepo=#{new_resource.repositoryid}"
+       62:           action :nothing
+       63:           only_if { new_resource.enabled }
+       64:         end
+       65:
+
+             Compiled Resource:
+             ------------------
+             # Declared in /opt/chef/embedded/lib/ruby/gems/2.4.0/gems/chef-13.6.4/lib/chef/provider/yum_repository.rb:60:in `block in <class:YumRepository>'
+
+             execute("yum-makecache-jenkins-ci") do
+        action [:nothing]
+        default_guard_interpreter :execute
+        command "yum -q -y makecache --disablerepo=* --enablerepo=jenkins-ci"
+        backup 5
+        returns 0
+        user nil
+        declared_type :execute
+        cookbook_name "jenkins"
+        domain nil
+        only_if { #code block }
+             end
+
+             System Info:
+             ------------
+             chef_version=13.6.4
+             platform=centos
+             platform_version=7.4.1708
+             ruby=ruby 2.4.2p198 (2017-09-14 revision 59899) [x86_64-linux]
+             program_name=chef-client worker: ppid=173;start=00:08:17;
+             executable=/opt/chef/bin/chef-client
+
+
+           ================================================================================
+           Error executing action `create` on resource 'yum_repository[jenkins-ci]'
+           ================================================================================
+
+           Mixlib::ShellOut::ShellCommandFailed
+           ------------------------------------
+           execute[yum-makecache-jenkins-ci] (/opt/chef/embedded/lib/ruby/gems/2.4.0/gems/chef-13.6.4/lib/chef/provider/yum_repository.rb line 60) had an error: Mixlib::ShellOut::ShellCommandFailed: Expected process to exit with [0], but received '1'
+           ---- Begin output of yum -q -y makecache --disablerepo=* --enablerepo=jenkins-ci ----
+           STDOUT:
+           STDERR: One of the configured repositories failed (Unknown),
+            and yum doesn't have enough cached data to continue. At this point the only
+            safe thing yum can do is fail. There are a few ways to work "fix" this:
+
+         1. Contact the upstream for the repository and get them to fix the problem.
+
+         2. Reconfigure the baseurl/etc. for the repository, to point to a working
+            upstream. This is most often useful if you are using a newer
+            distribution release than is supported by the repository (and the
+            packages for the previous distribution release still work).
+
+         3. Run the command with the repository temporarily disabled
+                yum --disablerepo=<repoid> ...
+
+         4. Disable the repository permanently, so yum won't use it by default. Yum
+            will then just ignore the repository until you permanently enable it
+            again or use --enablerepo for temporary usage:
+
+                yum-config-manager --disable <repoid>
+            or
+                subscription-manager repos --disable=<repoid>
+
+         5. Configure the failing repository to be skipped, if it is unavailable.
+            Note that yum will try to contact the repo. when it runs most commands,
+            so will have to try and fail each time (and thus. yum will be be much
+            slower). If it is a very temporary problem though, this is often a nice
+            compromise:
+
+                yum-config-manager --save --setopt=<repoid>.skip_if_unavailable=true
+
+           Cannot find a valid baseurl for repo: jenkins-ci
+           ---- End output of yum -q -y makecache --disablerepo=* --enablerepo=jenkins-ci ----
+           Ran yum -q -y makecache --disablerepo=* --enablerepo=jenkins-ci returned 1
+
+           Resource Declaration:
+           ---------------------
+           # In /var/chef/cache/cookbooks/jenkins/recipes/_master_package.rb
+
+            41:   yum_repository 'jenkins-ci' do
+            42:     baseurl node['jenkins']['master']['repository']
+            43:     gpgkey  node['jenkins']['master']['repository_key']
+            44:   end
+            45: end
+
+           Compiled Resource:
+           ------------------
+           # Declared in /var/chef/cache/cookbooks/jenkins/recipes/_master_package.rb:41:in `from_file'
+
+           yum_repository("jenkins-ci") do
+             action [:create]
+             updated true
+             updated_by_last_action true
+             default_guard_interpreter :default
+             declared_type :yum_repository
+             cookbook_name "jenkins"
+             recipe_name "_master_package"
+             baseurl nil
+             gpgkey nil
+             repositoryid "jenkins-ci"
+           end
+
+           System Info:
+           ------------
+           chef_version=13.6.4
+           platform=centos
+           platform_version=7.4.1708
+           ruby=ruby 2.4.2p198 (2017-09-14 revision 59899) [x86_64-linux]
+           program_name=chef-client worker: ppid=173;start=00:08:17;
+           executable=/opt/chef/bin/chef-client
+
+
+       Running handlers:
+       [2017-11-19T00:09:22+00:00] ERROR: Running exception handlers
+       [2017-11-19T00:09:22+00:00] ERROR: Running exception handlers
+       Running handlers complete
+       [2017-11-19T00:09:22+00:00] ERROR: Exception handlers complete
+       [2017-11-19T00:09:22+00:00] ERROR: Exception handlers complete
+       Chef Client failed. 8 resources updated in 01 minutes 04 seconds
+       [2017-11-19T00:09:22+00:00] FATAL: Stacktrace dumped to /var/chef/cache/chef-stacktrace.out
+       [2017-11-19T00:09:22+00:00] FATAL: Stacktrace dumped to /var/chef/cache/chef-stacktrace.out
+       [2017-11-19T00:09:22+00:00] FATAL: Please provide the contents of the stacktrace.out file if you file a bug report
+       [2017-11-19T00:09:22+00:00] FATAL: Please provide the contents of the stacktrace.out file if you file a bug report
+       [2017-11-19T00:09:22+00:00] ERROR: yum_repository[jenkins-ci] (jenkins::_master_package line 41) had an error: Mixlib::ShellOut::ShellCommandFailed: execute[yum-makecache-jenkins-ci] (/opt/chef/embedded/lib/ruby/gems/2.4.0/gems/chef-13.6.4/lib/chef/provider/yum_repository.rb line 60) had an error: Mixlib::ShellOut::ShellCommandFailed: Expected process to exit with [0], but received '1'
+       ---- Begin output of yum -q -y makecache --disablerepo=* --enablerepo=jenkins-ci ----
+       STDOUT:
+       STDERR: One of the configured repositories failed (Unknown),
+        and yum doesn't have enough cached data to continue. At this point the only
+        safe thing yum can do is fail. There are a few ways to work "fix" this:
+
+            1. Contact the upstream for the repository and get them to fix the problem.
+
+            2. Reconfigure the baseurl/etc. for the repository, to point to a working
+        upstream. This is most often useful if you are using a newer
+        distribution release than is supported by the repository (and the
+        packages for the previous distribution release still work).
+
+            3. Run the command with the repository temporarily disabled
+            yum --disablerepo=<repoid> ...
+
+            4. Disable the repository permanently, so yum won't use it by default. Yum
+        will then just ignore the repository until you permanently enable it
+        again or use --enablerepo for temporary usage:
+
+            yum-config-manager --disable <repoid>
+        or
+            subscription-manager repos --disable=<repoid>
+
+            5. Configure the failing repository to be skipped, if it is unavailable.
+        Note that yum will try to contact the repo. when it runs most commands,
+        so will have to try and fail each time (and thus. yum will be be much
+        slower). If it is a very temporary problem though, this is often a nice
+        compromise:
+
+            yum-config-manager --save --setopt=<repoid>.skip_if_unavailable=true
+
+       Cannot find a valid baseurl for repo: jenkins-ci
+       ---- End output of yum -q -y makecache --disablerepo=* --enablerepo=jenkins-ci ----
+       Ran yum -q -y makecache --disablerepo=* --enablerepo=jenkins-ci returned 1
+       [2017-11-19T00:09:22+00:00] ERROR: yum_repository[jenkins-ci] (jenkins::_master_package line 41) had an error: Mixlib::ShellOut::ShellCommandFailed: execute[yum-makecache-jenkins-ci] (/opt/chef/embedded/lib/ruby/gems/2.4.0/gems/chef-13.6.4/lib/chef/provider/yum_repository.rb line 60) had an error: Mixlib::ShellOut::ShellCommandFailed: Expected process to exit with [0], but received '1'
+       ---- Begin output of yum -q -y makecache --disablerepo=* --enablerepo=jenkins-ci ----
+       STDOUT:
+       STDERR: One of the configured repositories failed (Unknown),
+        and yum doesn't have enough cached data to continue. At this point the only
+        safe thing yum can do is fail. There are a few ways to work "fix" this:
+
+            1. Contact the upstream for the repository and get them to fix the problem.
+
+            2. Reconfigure the baseurl/etc. for the repository, to point to a working
+        upstream. This is most often useful if you are using a newer
+        distribution release than is supported by the repository (and the
+        packages for the previous distribution release still work).
+
+            3. Run the command with the repository temporarily disabled
+            yum --disablerepo=<repoid> ...
+
+            4. Disable the repository permanently, so yum won't use it by default. Yum
+        will then just ignore the repository until you permanently enable it
+        again or use --enablerepo for temporary usage:
+
+            yum-config-manager --disable <repoid>
+        or
+            subscription-manager repos --disable=<repoid>
+
+            5. Configure the failing repository to be skipped, if it is unavailable.
+        Note that yum will try to contact the repo. when it runs most commands,
+        so will have to try and fail each time (and thus. yum will be be much
+        slower). If it is a very temporary problem though, this is often a nice
+        compromise:
+
+            yum-config-manager --save --setopt=<repoid>.skip_if_unavailable=true
+
+       Cannot find a valid baseurl for repo: jenkins-ci
+       ---- End output of yum -q -y makecache --disablerepo=* --enablerepo=jenkins-ci ----
+       Ran yum -q -y makecache --disablerepo=* --enablerepo=jenkins-ci returned 1
+       [2017-11-19T00:09:22+00:00] FATAL: Chef::Exceptions::ChildConvergeError: Chef run process exited unsuccessfully (exit code 1)
+       [2017-11-19T00:09:22+00:00] FATAL: Chef::Exceptions::ChildConvergeError: Chef run process exited unsuccessfully (exit code 1)
+>>>>>> ------Exception-------
+>>>>>> Class: Kitchen::ActionFailed
+>>>>>> Message: 1 actions failed.
+>>>>>>     Converge failed on instance <default-centos-7>.  Please see .kitchen/logs/default-centos-7.log for more details
+>>>>>> ----------------------
+>>>>>> Please see .kitchen/logs/kitchen.log for more details
+>>>>>> Also try running `kitchen diagnose --all` for configuration
+#+END_EXAMPLE
+** DONE chef-solo error: Cannot load configuration from node.json: need to use full path
+  CLOSED: [2017-11-19 Sun 00:18]
+https://github.com/chef/chef/issues/6427
+https://stackoverflow.com/questions/45079652/fatal-cannot-load-configuration-after-chef-client
+
+#+BEGIN_EXAMPLE
+you should use full path to your json
+
+sudo chef-client --local-mode -j /opt/chef/cookbooks/deploy-backend.json
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+[ec2-user@ip-172-31-91-48 chef]$ sudo chef-solo -L /home/ec2-user/log/run_chef_solo.log -c solo.rb -j node.json
+Starting Chef Client, version 13.4.19
+resolving cookbooks for run list: ["jenkins-demo"]
+[2017-11-19T05:56:52+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:56:52+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:56:52+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:56:52+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:56:52+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:56:52+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:56:52+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:56:52+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:56:52+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:56:52+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:56:52+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+[2017-11-19T05:56:52+00:00] WARN: Child with name 'jenkins-demo' found in multiple directories: /home/ec2-user/chef/aws-jenkins-study/utility/chef/101/jenkins-demo and /tmp/berks_cookbooks/jenkins-demo
+Synchronizing Cookbooks:
+  - jenkins-demo (0.0.1)
+  - homebrew (4.2.0)
+  - apt (2.6.1)
+  - jenkins (5.0.4)
+  - runit (3.0.6)
+  - yum-epel (2.1.2)
+  - windows (3.4.0)
+  - java (1.50.0)
+  - compat_resource (12.19.0)
+  - ohai (5.2.0)
+  - dpkg_autostart (0.2.0)
+  - packagecloud (0.3.0)
+Installing Cookbook Gems:
+Compiling Cookbooks...
+/var/chef/cache/cache/cookbooks/packagecloud/resources/repo.rb:10: warning: constant ::Fixnum is deprecated
+Converging 20 resources
+Recipe: java::notify
+  * log[jdk-version-changed] action nothing (skipped due to action :nothing)
+Recipe: java::oracle
+  * log[WARNING - Downloading directly from Oracle is unreliable. Change download url.] action write[2017-11-19T05:56:53+00:00] WARN: WARNING - Downloading directly from Oracle is unreliable. Change download url.
+
+  
+Recipe: java::set_java_home
+  * directory[/etc/profile.d] action create (up to date)
+  * template[/etc/profile.d/jdk.sh] action create (up to date)
+  * ruby_block[Set JAVA_HOME in /etc/environment] action run
+    - execute the ruby block Set JAVA_HOME in /etc/environment
+Recipe: java::oracle
+  * yum_package[tar] action install (up to date)
+  * java_ark[jdk] action install
+    * java_alternatives[set-java-alternatives] action set (up to date)
+     (up to date)
+Recipe: jenkins::_master_package
+  * yum_repository[jenkins-ci] action create
+    * template[/etc/yum.repos.d/jenkins-ci.repo] action create (up to date)
+    * execute[yum clean metadata jenkins-ci] action nothing (skipped due to action :nothing)
+    * execute[yum-makecache-jenkins-ci] action nothing (skipped due to action :nothing)
+    * ruby_block[yum-cache-reload-jenkins-ci] action nothing (skipped due to action :nothing)
+     (up to date)
+  * yum_package[jenkins] action install (up to date)
+  * directory[/var/lib/jenkins] action create (up to date)
+  * template[/etc/sysconfig/jenkins] action create (up to date)
+  * service[jenkins] action enable (up to date)
+  * service[jenkins] action start (up to date)
+Recipe: jenkins-demo::master
+  * jenkins_plugin[thinBackup] action install (up to date)
+  * jenkins_plugin[bouncycastle-api] action install (up to date)
+  * jenkins_plugin[credentials] action install (up to date)
+  * jenkins_plugin[plain-credentials] action install (up to date)
+  * jenkins_plugin[slack] action install (up to date)
+  * jenkins_plugin[script-security] action install (up to date)
+  * jenkins_command[safe-restart] action nothing (skipped due to action :nothing)
+Recipe: jenkins-demo::default
+  * yum_package[lsof] action install (up to date)
+
+Running handlers:
+Running handlers complete
+Chef Client finished, 2/26 resources updated in 04 seconds
+[2017-11-19T05:56:55+00:00] WARN: *****************************************
+[2017-11-19T05:56:55+00:00] WARN: Did not find config file: /solo.rb, using command line options.
+[2017-11-19T05:56:55+00:00] WARN: *****************************************
+[2017-11-19T05:56:55+00:00] FATAL: Cannot load configuration from node.json
+#+END_EXAMPLE
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

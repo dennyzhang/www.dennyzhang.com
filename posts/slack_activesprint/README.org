@@ -1,0 +1,68 @@
+* Get Slack Notifications For New Active Sprint                :BLOG:Mindset:
+:PROPERTIES:
+:type:     DevOps,Jenkins,Communication
+:END:
+---------------------------------------------------------------------
+Following git workflows, there is a branch called *activesprint*, or develop. It is the *release candidate*. Most of active branches should base on it.
+*Team need to be notified, whenever a new activesprint branch has been created*. To lower the communication effort, we can automate the detection process and get slack notifications.
+
+[[image-blog:Get Slack Notifications When A New Active Sprint Has Been Created][https://www.dennyzhang.com/wp-content/uploads/denny/git_workflow.png]]
+---------------------------------------------------------------------
+** Why We Need Slack Notifications
+1. When a new active sprint is created, *we usually need to merge our private branches* as soon as possible. The earlier we do the branch merge, the fewer merge effort we could expect.
+- Config files might need to be updated accordingly. Especially the *bump version*.
+** Backbone: Jenkins + Slack
+First of all, we need to detect when a new git branch has been created.
+
+Apparently we have 2 ways: push or poll. If we have the admin privilege of git repo, we can define a git hook. The hook subscribes to git branch create event. Or we can define a crontab, which will periodically poll latest branch list, via _git ls-remote --heads origin_.
+*Fortunately activesprint usually has a strong naming convention*. Say sprint-37/sprint-38 or 1.37/1.38. Once we figure out latest branch list, we can easily detect whether a new activesprint branch has been created.
+
+For a bigger adoption, we use the poll mechanism.
+[[image-blog:Get Slack Notifications For New Active Sprint][https://www.dennyzhang.com/wp-content/uploads/denny/slack_notification_activesprint.png]]
+
+Here comes a Jenkins job, [[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/MonitorNewActiveSprint][MonitorNewActiveSprint]] in github. We can also find a live version in our [[https://www.dennyzhang.com/demo_jenkins][public demo jenkins]].
+
+[[github:DennyZhang][GitHub]]
+
+Whenver we detect a new activesprint, we fail the job. Then it send out slack notifications.
+[[image-blog:Get Slack Notifications For New Active Sprint][https://www.dennyzhang.com/wp-content/uploads/denny/jenkins_slack_new_activesprint.png]]
+
+This is how the Jenkins job looks like.
+[[image-github:https://github.com/dennyzhang][https://www.dennyzhang.com/wp-content/uploads/denny/github_monitor_new_active.png]]
+
+Once we have it properly configured, we will get the lovely slack notification like below.
+[[image-blog:Get Slack Notifications For New Active Sprint][https://www.dennyzhang.com/wp-content/uploads/denny/slack_jenkins_new_activesprint.png]]
+
+Any improvements or suggestions? [[color:#c7254e][Share your experience with us!]]
+
+More Reading:
+- [[https://www.dennyzhang.com/slack_deployment][Get Slack Notifications For System Upgrade]]
+- [[https://www.dennyzhang.com/demo_jenkins][Demo Jenkins: How I Enforce CI/CD]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/posts/slack_activesprint"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

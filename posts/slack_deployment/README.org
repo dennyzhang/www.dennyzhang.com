@@ -1,0 +1,75 @@
+* Get Slack Notifications For System Upgrade                   :BLOG:Mindset:
+  :PROPERTIES:
+  :type:     DevOps,Jenkins,Communication
+  :END:
+---------------------------------------------------------------------
+Has the deployment been initiated? Already finished? And how does it look after the deployment? These are typical questions people will frequently ask. Especially managers and key holders.
+
+Thanks to Slack, team can sync up much easier than before. With more and more DevOps adoptions, we're likely to have one-button click deployment.
+*Let's send out slack notifications for system upgrade*. Better sync up, better control.
+
+[[image-blog:Get Slack Notifications For System Upgrade][https://www.dennyzhang.com/wp-content/uploads/denny/slack_deployment.jpg]]
+---------------------------------------------------------------------
+** Why We Need Slack Notifications[1]
+1. Different people may want to check upgrade process.
+- Track upgrade history for further trouble shooting.
+** Backbone: Deployment Automation + Jenkins + Slack
+Let's assume:
+1. We can do one command deployment.
+- Monitoring system is properly configured.
+
+[[image-blog:Get Slack Notifications For System Upgrade][https://www.dennyzhang.com/wp-content/uploads/denny/slack_notification_upgrade.png]]
+
+Thus we can wrap up the deployment automation scripts as a Jenkins job. And enable slack Jenkins plugin[2]. Then configure the job to send slack notifications, whenever the job starts or ends.
+
+[[image-blog:Get Slack Notifications For System Upgrade][https://www.dennyzhang.com/wp-content/uploads/denny/jenkins_slack_job.png]]
+
+Another question people will constantly ask: how healthy my env is? Here we rely on monitoring system. So we can ask monitoring to send out slack notifications for all major issues.
+
+Put it all together, here comes a demo. Now when people want to get more information about prod upgrade, it's much easier. Just subscribe or check slack channels.
+
+[[image-blog:Get Slack Notifications For System Upgrade][https://www.dennyzhang.com/wp-content/uploads/denny/slack_deployment.jpg]]
+
+Any improvements or suggestions? [[color:#c7254e][Share your experience with us!]]
+
+[1] https://slack.com
+[2] https://wiki.jenkins-ci.org/display/JENKINS/Slack+Plugin
+
+More Reading:
+- [[https://www.dennyzhang.com/slack_activesprint][Get Slack Notifications For New Active Sprint]]
+- [[https://www.dennyzhang.com/demo_jenkins][Demo Jenkins: How I Enforce CI/CD]]
+- [[https://www.dennyzhang.com/avoid_toi_communication][Avoid Unnecessary Communication Of TOI]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/posts/slack_deployment"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* misc                                                             :noexport:
+- When it's started
+  who initiate is?
+- When it's finished
+  success or fail? how long it take?
+- Issues after deployment
+  Redirect monitoring major alerts to the same channel
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

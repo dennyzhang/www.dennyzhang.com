@@ -13,7 +13,7 @@
 
 Blog: https://www.dennyzhang.com/
 
-File me [[https://github.com/DennyZhang/challenges-leetcode-interesting/issues][Issues]] or star [[https://github.com/DennyZhang/challenges-leetcode-interesting][this repo]].
+File me [[https://github.com/DennyZhang/www.dennyzhang.com/issues][Issues]] or star [[https://github.com/DennyZhang/www.dennyzhang.com][this repo]]
 
 ** More Resources
  License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_license.txt][MIT License]].

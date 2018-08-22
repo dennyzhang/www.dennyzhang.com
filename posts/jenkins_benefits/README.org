@@ -1,0 +1,191 @@
+* 5 Reasons Why Jenkins Is So Useful And Popular               :BLOG:General:
+  :PROPERTIES:
+  :type:     DevOps,Jenkins
+  :END:
+
+---------------------------------------------------------------------
+I use Jenkins quite a lot. [[color:#c7254e][Almost for everything in my daily work]].
+
+Not to mention CI/CD part. I achieve regular deployment from Jenkins. Daily backup and weekly cleanup from Jenkins. Vulnerability scan from Jenkins. Workflow enforcement from Jenkins. And the list goes on and on.
+
+But just several years ago, Jenkins (Hudson, the old name) wasn't this popular. And now? It is almost everywhere. Jenkins is just so important! So answer me: Why is that?
+
+I think there are 5 reasons drive the changes. Check it out and share your thoughts with me, my friends!
+
+(PS: check the bottom of the post: Top #10 Jenkins Plugins I'm actively using everyday).
+
+[[image-blog:10 Must-Have Jenkins Plugins][https://www.dennyzhang.com/wp-content/uploads/denny/jenkins_benefits.jpg]]
+---------------------------------------------------------------------
+Check More Discussion In [[url-external:https://www.linkedin.com/feed/update/urn:li:activity:6279754016687742976][LinkedIn Discussion]]
+
+[[image-linkedin:10 Must-Have Jenkins Plugins][https://www.dennyzhang.com/wp-content/uploads/denny/linkedin_discussion_jenkins.png]]
+
+---------------------------------------------------------------------
+[[color:#c7254e][1. Lower The Effort Of Converting CLI To GUI.]]
+
+Everybody loves one-button click philosophy. Both users and engineers. The truth is lots of system admins prefer CLI.
+
+So why? Is it because all of the IT professionals are nerds and jerks? Well, maybe, ...
+
+Implementing reliable scripts takes time. But adding decent UI support takes even longer. (Add comments if you have other opinions).
+
+Now with Jenkins, visual Ops is much easier to achieve.
+- To convert a CLI into a GUI button click, just wrap up the script as a Jenkins job.
+- To support customization and obtain users' input? Create parameterized Jenkins jobs.
+
+"Tons of undocumented scripts" VS "Organized Jenkins jobs". It's not a hard decision for you, right?
+
+[[color:#c7254e][2. Pipeline Integrates Individual Jobs For A Bigger Purpose.]]
+
+Imagine each individual jenkins jobs are small tools. They all serve simple and small purposes only.
+
+With Jenkins pipeline plugin[1], we can combine multiple jobs together, then serve a bigger purpose. The combination could be either sequentially or parallelly.
+
+As a linux veteran, you know the value of pipeline, don't you? It makes a huge difference.
+
+- Sequential
+#+BEGIN_EXAMPLE
+stage('Stage1') {
+    build job: 'job1', parameters: [string(name: 'para1', value: 'value1')]
+    build job: 'job2', parameters: [string(name: 'para1', value: 'value2')]
+}
+
+stage('Stage2') {
+    build job: 'job3', parameters: [string(name: 'para1', value: 'value3')]
+    build job: 'job4', parameters: [string(name: 'para1', value: 'value4')]
+}
+#+END_EXAMPLE
+
+- Parallel
+#+BEGIN_EXAMPLE
+stage('stage1') {
+    parallel firstBranch: {
+        // do something
+        build 'job1'
+    }, secondBranch: {
+        // do something else
+        build 'job2'
+    },
+    failFast: false
+}
+#+END_EXAMPLE
+[[color:#c7254e][3. Keep People In Sync, Especially In Slack.]]
+
+Nowadays teams tend to use one centralized platform for communication. Slack is the most popular one.
+
+Let's say all critical activities are implemented and triggered from Jenkins. Adding slack integration to Jenkins[2], people can be notified: what activities have been triggered, on when, by who and the results.
+*The most beautiful part is no extra human effort is required*. Everything is done automatically.
+
+[[image-blog:10 Must-Have Jenkins Plugins][https://www.dennyzhang.com/wp-content/uploads/denny/slack_jenkins_notification.png]]
+
+Related Reading:
+- [[https://www.dennyzhang.com/avoid_toi_communication][Avoid Unnecessary Communication Of TOI]]
+- [[https://www.dennyzhang.com/slack_activesprint][Get Slack Notifications For New Active Sprint]]
+- [[https://www.dennyzhang.com/slack_deployment][Get Slack Notifications For System Upgrade]]
+
+[[color:#c7254e][4. Audit The Previous Run Is Possible And Effortless.]]
+
+When Jenkins run jobs, it will capture console output. For both stdout and stderr.
+
+- For trouble shooting, we know the history crystal clear. No need to human to capture the console output, and spend time organizing them in a user-friendly way. Thinking the time saving for communication, it's huge!
+- For performance tunning, we know how long each run took. Even for each individual job run, we can easily identity the slowest steps with the help of Timestamper plugin[3].
+
+[[image-blog:10 Must-Have Jenkins Plugins][https://www.dennyzhang.com/wp-content/uploads/denny/jenkins_detail.png]]
+
+Related Reading:
+- [[https://www.dennyzhang.com/list_slowest_steps][List The Slowest Steps In Deployment By Jenkins]]
+- [[https://www.dennyzhang.com/compare_envs][Compare Difference Of Two Envs By Jenkins]]
+
+[[color:#c7254e][5. Project Management Now Has More Accurate Data Support.]]
+
+For project management, we know better about the status for each part. And this could be done automatically.
+
+Each activity can be wrapped as a jenkins job. For each jenkins job, we know whether it succeeds or fails. And we also know how long it takes.
+
+And Jenkins support REST API or SDK to poll these metrics. Project management now can have a more solid and accurate data support.
+
+Dashboard View plugin[4] can be your friends for this.
+
+[[image-blog:10 Must-Have Jenkins Plugins][https://www.dennyzhang.com/wp-content/uploads/denny/jenkins_dashboard_view.png]]
+**Here Are Top #10 Jenkins Plugins I Use Everyday**.
+
+Pipeline Plugin[1], Slack Plugin[2], Timestamper[3], Dashboard View[4], thinBackup[5], JobConfigHistory Plugin[6], Naginator Plugin[7], Build-timeout[8], Git Plugin[9], and GitHub pull request builder plugin[10].
+
+[[image-blog:5 Reasons Why Jenkins Is So Useful And Popular][https://www.dennyzhang.com/wp-content/uploads/denny/10_jenkins_plugins.jpg]]
+
+[[color:#c7254e][Are there any drawbacks with Jenkins?]] Yes, I do observe some.
+
+Leave me comments, if you're interested. Or you have something to discuss with me. Thanks!
+
+More Reading:
+- [[https://www.dennyzhang.com/nmap_port_scan][Run TCP port check by Jenkins]]
+- [[https://www.dennyzhang.com/demo_jenkins][Demo Jenkins: How I Enforce CI/CD]]
+- [[https://www.dennyzhang.com/track_change_history][Automatically Track All Change History]]
+- [[https://www.dennyzhang.com/monitor_outbound_traffic][Monitor Outbound Traffic In Deployment]]
+
+[1] wiki.jenkins-ci.org/display/JENKINS/Pipeline+Plugin
+[2] wiki.jenkins.io/display/JENKINS/Slack+Plugin
+[3] wiki.jenkins-ci.org/display/JENKINS/Timestamper
+[4] wiki.jenkins-ci.org/display/JENKINS/Dashboard+View
+[5] wiki.jenkins.io/display/JENKINS/thinBackup
+[6] https://goo.gl/2EZtD8
+[7] wiki.jenkins-ci.org/display/JENKINS/Naginator+Plugin
+[8] wiki.jenkins-ci.org/display/JENKINS/Build-timeout+Plugin
+[9] wiki.jenkins-ci.org/display/JENKINS/Git+Plugin
+[10] https://goo.gl/vsJKfu
+* misc                                                             :noexport:
+#+BEGIN_EXAMPLE
+104.131.129.100:48080/job/BuildMDMRepoCodeActiveSprintPR/
+
+wiki.jenkins-ci.org/display/JENKINS/GitHub+pull+request+builder+plugin
+github.com/TOTVS/mdmdevops/wiki/Configuring-the-GitHub-Pull-Request-Builder-plugin
+github.com/jenkinsci/ghprb-plugin/blob/master/README.md
+
+This Jenkins plugin builds pull requests from GitHub and will report
+the results directly to the pull request via the GitHub Commit Status
+API
+
+When a new pull request is opened in the project and the author of the
+pull request isn't whitelisted, builder will ask Can one of the admins
+verify this patch?. One of the admins can comment ok to test to accept
+this pull request for testing, test this please for one time test run
+and add to whitelist to add the author to the whitelist.
+
+If an author of a pull request is whitelisted, adding a new pull
+request or new commit to an existing pull request will start a new
+build.
+
+A new build can also be started with a comment: retest this please.
+
+Bruno Volpato [8:23 AM]
+I dumped some information about the GitHub Pull Request Builder here: github.com/TOTVS/mdmdevops/wiki/Configuring-the-GitHub-Pull-Request-Builder-plugin but still need to attach some screenshots so people can follow it easily
+
+[8:23]
+but it seems that you can already integrate with a production server @denny.zhang
+
+[8:24]
+I have a working version of it here to demonstrate how it works: http://162.243.157.65:18080/job/BuildMDMRepoPR/
+#+END_EXAMPLE
+** similar pages
+http://www.tothenew.com/blog/7-must-have-jenkins-plugins/
+7 Must-Have Jenkins Plugins | TO THE NEW Blog
+
+https://devops.com/15-must-jenkins-plugins-increase-productivity/
+15 must have Jenkins plugins to increase productivity
+
+https://zeroturnaround.com/rebellabs/top-10-jenkins-featuresplugins/
+Top 10 Jenkins Plugins and Features zeroturnaround.com
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
