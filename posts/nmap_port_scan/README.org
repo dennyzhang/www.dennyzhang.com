@@ -1,0 +1,90 @@
+* Use Nmap To Automate Insecure Ports Check                   :BLOG:Security:
+:PROPERTIES:
+:type:     DevOps,Deployment,Security,Operate,Popular,Network
+:END:
+---------------------------------------------------------------------
+While go cloud is a prevailing trend, security is something we can't afford to ignore. People hate malicious access. Periodically check all widely open TCP Ports is one good practice to secure our system in cloud. Obviously DB ports can't be exposed to the whole internet. Our internal REST API also need to be protected.
+
+We should make sure firewall is properly configured. What's more important, we need to be always on top of these security holes with minimum efforts. *So let's automate the audit process of insecure TCP Ports*.
+
+[[image-blog:Use Nmap To Automate Insecure Ports Check][https://www.dennyzhang.com/wp-content/uploads/denny/hacker_port_scan.jpg]]
+---------------------------------------------------------------------
+** Episode 1: Identity Insecure Ports Exported In My Servers.
+Here are general principles for firewall configuration.
+- Only allow public access to very few ports, like http(80), https(443), etc.
+- For sshd(22), only selective source ip can connect.
+- For DB ports, like mysql(3306), elasticsearch(9200), we don't expose them directly. Key members can connect through ssh protocol by ssh tunnel.
+- For traffic within the cluster, the default policy is always accept. If we can configure them with more limited privilege, that's nice but not always pratical. Developers are usually too busy to list all traffic rules correctly and precisely. Even if they do, the rules will change constantly from time to time.
+
+Our first step is listing all TCP ports which are open to the world. If some are against above principles, we raise an alert. Here we can use [[color:#c7254e][Nmap]], network mapper. It is an open source tool for network exploration and security auditing.
+
+#+BEGIN_SRC sh -n
+# Install Nmap package
+sudo apt-get install nmap
+# Scan all TCP ports for a given host
+sudo nmap -sS -PN 192.168.0.164
+# === Run: sudo nmap -sS -PN 192.168.0.164
+#
+# Starting Nmap 6.40 ( http://nmap.org )
+# Nmap scan report for 192.168.0.164
+# Host is up (0.00051s latency).
+# Not shown: 997 filtered ports
+# PORT    STATE SERVICE
+# 22/tcp  open  ssh
+# 80/tcp  open  http
+# 443/tcp open  https
+#+END_SRC
+
+In this post, we won't introduce the detail usage of Nmap, which is definitely a versatile tool. We want to run the check as fast as possible. Thus we use TCP SYN(-sS) to test. And skip host discovery (-PN), assuming the sever is up.
+
+By default Nmap scans the top 1000 most popular ports, according to the statistics generated from Internet-wide scans and large internal network scans from the summer of 2008. We may have some extra ports to scan. Here is how:
+#+BEGIN_SRC sh
+# Check certain TCP ports
+sudo nmap -p T:9200-9500,8090-8100 \
+    -sS 192.168.0.164
+#+END_SRC
+** Episode 2: Automate Check Process And Get Alerts Automatically.
+Now we can list all open Ports. Mostly there are a bunch of servers to check. And we need to check the output careful to detect potential issues. Definitely we don't want to do that manually. What's more, things will change all the time This means we will have to do it again and again. It's way too much for human. Boring and error-prone!
+
+To automate the process, we need to provide 3 things:
+- Sever list to check. The list might be stable or dynamic which can be retrieved from other systems.
+- Whitelist for open ports. The rule may apply to all servers or only certain servers.
+- Extra ports to scan, other than the default 1000 ports.
+** Put It All Together.
+
+Here comes Jenkins job ([[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/NetworkTCPScanAuditReport][NetworkTCPScanAuditReport]]), which runs daily. If it fails, we will be notified by emails or slacks!
+
+[[color:#c7254e][Notice]]: You can find a live demo [[https://www.dennyzhang.com/demo_jenkins][here]].
+
+[[image-github:https://github.com/dennyzhang/nmap-scan-docker][https://www.dennyzhang.com/wp-content/uploads/denny/github_tcp_scan_report.png]]
+
+Thanks To coyee for [[https://coyee.com/article/11006-automate-insecure-ports-check-by-nmap][Chinese Translation]] of this post.
+
+More Reading: [[https://www.dennyzhang.com/list_slowest_steps][List The Slowest Steps In Deployment]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/nmap_port_scan"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

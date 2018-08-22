@@ -1,0 +1,97 @@
+* Nagios Plugin: Monitor thread count of your service       :BLOG:Monitoring:
+  :PROPERTIES:
+  :type:     DevOps,Monitoring
+  :END:
+
+---------------------------------------------------------------------
+If programs start too many threads, we should raise alarms.
+
+Either something unexpected is happening, or performance improvement is needed.
+
+Enclosed is a nagios plugin to *monitor thread count* of a given process.
+
+[[image-github:https://github.com/dennyzhang/monitoring][https://www.dennyzhang.com/wp-content/uploads/denny/github_nagios_monitor_threadcount.png]]
+
+---------------------------------------------------------------------
+*How to find out thread count?*
+Usually we can easily find the process id. Right?
+
+To dump thread list, we can use [[color:#c7254e][pstree]] easily. If you can't find pstree in your server, simply install with apt-get/yum.
+#+BEGIN_SRC sh
+root@denny:~# pstree -A -a -p $pid
+java,19943 -Xms16384m -Xmx16384m -Djava...
+  |-{java},19945
+  |-{java},19946
+  |-{java},19947
+  |-{java},19948
+  |-{java},19949
+  |-{java},19950
+  |-{java},19951
+  |-{java},19952
+  |-{java},19953
+  ...
+  ...
+  ...
+#+END_SRC
+
+To list thread count, we can also query /proc filesystem.
+#+BEGIN_SRC sh
+root@denny:~# ls /proc/$pid/task | wc -l
+176
+root@denny:~# ls /proc/$pid/task | head
+19923
+19943
+19945
+19946
+19947
+19948
+19949
+19950
+19951
+19952
+#+END_SRC
+*Wrap up as a Nagios plugin*. Check in [[https://github.com/dennyzhang/devops_public/tree/tag_v3/nagios_plugins/check_proc_threadcount][GitHub]].
+
+- The plugin checks /proc filesystem to figure out thread count.
+- Raise warnings or critical alerts properly, if necessary
+- The output format will comply with nagiosgraph, thus we can see the history from GUI.
+
+More Reading:
+- [[https://www.dennyzhang.com/nagois_monitor_process_cpu][Nagios Plugin: Monitor Service CPU]]
+- [[https://www.dennyzhang.com/nagois_monitor_process_fd][Nagios Plugin: Monitor Process FD]]
+- [[https://www.dennyzhang.com/nagois_monitor_process_memory][Nagios Plugin: Monitor Service Memory]]
+- [[https://www.dennyzhang.com/nagois_monitor_process_threadcount][Nagios Plugin: Monitor Process Threadcount]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/nagios_threadcount"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* misc                                                             :noexport:
+- When it's started
+  who initiate is?
+- When it's finished
+  success or fail? how long it take?
+- Issues after deployment
+  Redirect monitoring major alerts to the same channel
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

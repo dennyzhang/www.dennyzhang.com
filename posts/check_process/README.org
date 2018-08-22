@@ -1,0 +1,1110 @@
+* How To Check Linux Process Deeply With Common Sense            :BLOG:Linux:
+:PROPERTIES:
+:type:   DevOps,Linux,Operate,Popular
+:END:
+---------------------------------------------------------------------
+Apparently process checking is critical. Yes, we already have tons of linux tools and tips available. Getting familiar with your weapons is actually the first step, and the easiest part.
+
+More importantly, *what questions you ask, what for*, when approaching your critical process. Fortunately even with *plain common sense*, we can dig out lots of valuable information.
+
+[[image-blog:Check Linux Process With Common Sense][https://www.dennyzhang.com/wp-content/uploads/denny/process_common_sense.jpg]]
+---------------------------------------------------------------------
+** Assumptions Before Deep Dive
+Here we assume you are familiar with:
+- FD (file descriptor): Everything in linux is a file.
+- /proc pseudo filesystem: How Linux kernel exposes in-depth information of process.
+- lsof, top, ps, grep: First time heard of them? Excuse me?
+** Basic Check For Linux Process
+Note: If you're lucky enough to _run service by systemd_, "service XXX status" will give you a lot of useful information.
+
+- *When the process is started and how long it runs*? This helps us to detect whether an unexpected or suspicious service restart has happened. As a supplementary, decent service will always do proper logging, which can confirms our observation.
+#+BEGIN_SRC sh
+# Get start time by pid
+ps -eo pid,comm,etime,user | grep $pid
+
+# Sample output:
+root@s1:~# ps -eo pid,comm,etime,user \
+                  | grep 20513
+20513 dockerd          8-00:58:30 root
+# It means 8 days, 58 min and 30 sec
+#+END_SRC
+- *Where is the log file*? A very common question, especially from Dev or QA. Usually process will do continuous logging. Thus it holds fd of log files. _lsof_ can list all fd opened by the process. So you don't need to ask anyone to find out the answer!
+#+BEGIN_SRC sh
+# Find out log files by pid
+lsof -P -n -p $pid | grep ".*log$"
+
+# Sample output:
+# root@s1/# lsof -p 40 | grep ".*log$"
+# daemon .. /var/log/jenkins/jenkins.log
+# daemon .. /var/log/jenkins/jenkins.log
+
+# Check log files for error/exceptions
+grep -C 3 -iE "exception|error" $logfile
+#+END_SRC
+- *How many CPU and memory the process takes*? We certainly need to be on top of any abnormal resource utilization[1]. Fortunately almost all modern monitoring systems enable us to see the history. A big plus for trouble shooting.
+#+BEGIN_SRC sh
+# Check process resource utilization
+top -p $pid
+#+END_SRC
+- *What's the command line starting the process*? People ask this question, when they're required to manage unfamiliar or uncomfortable services. A more urgent case: the stupid service just mysteriously refuses to start. Wrong java opts? File permission issue? The process command line can give us some insight or hints.
+#+BEGIN_SRC sh
+# Find out process start command line
+cat /proc/$pid/cmdline
+#+END_SRC
+- *What TCP ports are listening by the process*? Nowdays the majority of service are web-based or micro-services. It helps, if we can understand what TCP ports the process is listening.
+#+BEGIN_SRC sh
+# Check what ports are serving
+lsof -P -n -p $pid | grep -i listen
+# Check whether given port is listening
+lsof -i tcp:$tcp_port
+#+END_SRC
+
+- *How many fd the process is opening?* Usually too many fd opening is a bad sign, say over 3000: a bad design makes application is inefficient for handling requests; fd resource leak; too many requests exceeding our expectation.
+#+BEGIN_SRC sh
+# Get total fd count opened by pid
+lsof -p $pid | wc -l
+#+END_SRC
+** Advanced Check For Linux Process
+- *Check how resident memory is used by the process*? This is especially important when the process is taking way too much memory. pmap reports memory map of a process[2].
+#+BEGIN_SRC sh
+# Display detail memory usage
+pmap -x $pid
+#+END_SRC
+
+- *Find out process tree*? For mult-threading process, displaying all threads and their starting commands might be helpful. It gives us very good insight.
+#+BEGIN_SRC sh
+# Get all threads for a given process
+pstree -A -a -p $pid
+
+# keep checking process tree
+watch "pstree -A -a -p $pid"
+#+END_SRC
+
+- *Detect Long TCP connections and how long they have been running*? _Watch out long TCP connections_. Daemon service might not only take requests, but also initiate connections. Developers may keep long tcp connections from applications to DB services. When app nodes and DB nodes are disconnected or db instances are restarted, will your process survive from the chaos and behave functional?
+#+BEGIN_SRC sh
+# List TCP connections it starts
+lsof -p $pid | grep ESTABLISHED
+
+# Check create/update time for given fd
+stat /proc/$pid/fd/$fd_num
+
+# Sample:
+# root@s1:~# date
+# Fri Sep 23 23:22:22 EDT 2016
+#
+#root@s1:# lsof -p 265 |grep ESTABLISHED
+# 134u . 47..33 s1:59427->s2:9300 (EST..
+# 140u . 47..10 s1:38078->s2:9300 (EST..
+# 142u . 47..11 s1:38079->s2:9300 (EST..
+# 143u . 47..81 s1:51033->s2:9300 (EST..
+#
+# root@s1:~# stat /proc/265/fd/134
+#  File: /proc/265/fd/134->socket:[47..
+#  Size: 64       Blocks: 0       ..
+# Device: 3h/3d	Inode: 463..8  Links:..
+# Access: (0700/lrwx------)  Uid: (0/..
+# Access: 2016-09-23 19:50:12... -0400
+# Modify: 2016-09-05 19:48:05... -0400
+# Change: 2016-09-05 19:48:05... -0400
+#+END_SRC
+
+- *How to detect FD leak*? If application keeps opening files or sockets without gracefully closing them, it's a FD leak issue. Its fd count will keep rising, and eventually the process will crash. Usually this happens in problematic error handling logic.
+#+BEGIN_SRC sh
+# Get total fd count by pid
+lsof -p $pid | wc -l
+#+END_SRC
+
+- *What files are being downloading and what is the progress status*? The application might be stucked doing heavy internet request, e.g downloading huge files. To dig out the detail status, we can get the fd, which should be regular file and in write mode. Then keep polling file size to understand where we are.
+#+BEGIN_SRC sh
+# Get REG(regular) fd with write mode
+lsof -p $pid | grep REG | grep "w "
+
+# Check file size
+watch "ls -lth /proc/$pid/fd/$fd_num"
+#+END_SRC
+
+- *Check files are deleted but not gracefully closed*? When files are removed somehow, your process might still hold the stale fd. Or even try to read or write the file. This should be definitely avoided and get developers alerted.
+#+BEGIN_SRC sh
+# List unexpected file deletion
+lsof -p $pid | grep deleted
+#+END_SRC
+
+More Reading: [[https://www.dennyzhang.com/continuous_feedback][9 Key Feedbacks For Prod Envs Maintenance]].
+
+[1] www.tecmint.com/12-top-command-examples-in-linux/
+[2] www.cyberciti.biz/tips/howto-find-memory-used-by-program.html
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/check_process"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+* misc                                                             :noexport:
+** DONE fd check how long each socket is alive: stat /proc/$pid/fd/$num
+  CLOSED: [2016-09-19 Mon 21:35]
+java    649 root  378u  IPv6           40763036       0t0      TCP prod-app-2:44806->159.203.247.196:11210 (ESTABLISHED)
+
+root@prod-app-2:/proc/649/fd# ls -lth  |grep 40763036
+lrwx------ 1 root root 64 Sep  5 19:46 378 -> socket:[40763036]
+
+root@prod-app-2:/proc/649/fd# date
+Mon Sep 19 06:19:27 EDT 2016
+
+root@prod-app-2:/proc/649/fd# stat 378
+  File  '378' -> 'socket:[40763036]'
+  Size: 64        	Blocks: 0          IO Block: 1024   symbolic link
+Device: 3h/3d	Inode: 40764478    Links: 1
+Access: (0700/lrwx------)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2016-09-18 19:50:59.288160999 -0400
+Modify: 2016-09-05 19:46:27.912160999 -0400
+Change: 2016-09-05 19:46:27.912160999 -0400
+ Birth: -
+** DONE FD type
+   CLOSED: [2016-09-19 Mon 21:52]
+https://access.redhat.com/solutions/1210583
+#+BEGIN_EXAMPLE
+       FD         is the File Descriptor number of the file or:
+
+                       cwd  current working directory;
+                       Lnn  library references (AIX);
+                       err  FD information error (see NAME column);
+                       jld  jail directory (FreeBSD);
+                       ltx  shared library text (code and data);
+                       Mxx  hex memory-mapped type number xx.
+                       m86  DOS Merge mapped file;
+                       mem  memory-mapped file;
+                       mmap memory-mapped device;
+                       pd   parent directory;
+                       rtd  root directory;
+                       tr   kernel trace file (OpenBSD);
+                       txt  program text (code and data);
+                       v86  VP/ix mapped file;
+#+END_EXAMPLE
+** DONE lsof fd(file descriptor) flag
+  CLOSED: [2016-09-19 Mon 21:32]
+http://unix.stackexchange.com/questions/60422/how-to-interpret-this-output-of-lsof-command
+FD - File Descriptor
+
+If you are looking for file being written, look for following flag
+
+# - The number in front of flag(s) is the file descriptor number of used by the process to associated with the file
+u - File open with Read and Write permission
+r - File open with Read permission
+w - File open with Write permission
+W - File open with Write permission and with Write Lock on entire file
+mem - Memory mapped file, usually for share library
+** DONE Detect network problem: lsof -i
+  CLOSED: [2015-01-01 Thu 09:09]
+#+BEGIN_EXAMPLE
+root@jenkins-server:/# lsof -i
+COMMAND    PID      USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+sshd       921      root    3u  IPv4  10374      0t0  TCP *:ssh (LISTEN)
+sshd       921      root    4u  IPv6  10376      0t0  TCP *:ssh (LISTEN)
+java      1094      root  154u  IPv6   8984      0t0  TCP *:18086 (LISTEN)
+java      1094      root  156u  IPv6   1870      0t0  TCP *:18087 (LISTEN)
+java      1094      root  182u  IPv6  10679      0t0  TCP localhost:41978->localhost:1305 (ESTABLISHED)
+java      1094      root  232u  IPv6  10696      0t0  TCP localhost:1305 (LISTEN)
+java      1094      root  233u  IPv6   8996      0t0  TCP localhost:1305->localhost:41978 (ESTABLISHED)
+java      1094      root  234u  IPv6   8998      0t0  TCP localhost:11122 (LISTEN)
+java      1094      root  235u  IPv6   8999      0t0  TCP *:36299 (LISTEN)
+java      1116      root  157u  IPv6   9001      0t0  TCP *:18080 (LISTEN)
+java      1116      root  160u  IPv6   9004      0t0  TCP *:18081 (LISTEN)
+epmd      1144 couchbase    3u  IPv4  11747      0t0  TCP *:epmd (LISTEN)
+epmd      1144 couchbase    4u  IPv4   8966      0t0  TCP localhost:epmd->localhost:57200 (ESTABLISHED)
+epmd      1144 couchbase    5u  IPv4  11808      0t0  TCP localhost:epmd->localhost:58293 (ESTABLISHED)
+beam.smp  1182 couchbase    7u  IPv4   8963      0t0  TCP *:21100 (LISTEN)
+beam.smp  1182 couchbase    8u  IPv4   8965      0t0  TCP localhost:57200->localhost:epmd (ESTABLISHED)
+beam.smp  1182 couchbase   11u  IPv4  21629      0t0  TCP localhost:21100->localhost:44360 (ESTABLISHED)
+beam.smp  1210 couchbase   24u  IPv4  17188      0t0  TCP *:8092 (LISTEN)
+beam.smp  1210 couchbase   27u  IPv4  11805      0t0  TCP *:21101 (LISTEN)
+beam.smp  1210 couchbase   28u  IPv4  11807      0t0  TCP localhost:58293->localhost:epmd (ESTABLISHED)
+beam.smp  1210 couchbase   31u  IPv4  17227      0t0  TCP localhost:44360->localhost:21100 (ESTABLISHED)
+beam.smp  1210 couchbase   32u  IPv4  21631      0t0  TCP *:8091 (LISTEN)
+beam.smp  1210 couchbase   34u  IPv4  21633      0t0  TCP localhost:11213 (LISTEN)
+beam.smp  1210 couchbase   36u  IPv4  21644      0t0  TCP localhost:8091->localhost:60742 (ESTABLISHED)
+beam.smp  1210 couchbase   37u  IPv4  21686      0t0  TCP localhost:56757->localhost:11209 (ESTABLISHED)
+beam.smp  1210 couchbase   39u  IPv4  28629      0t0  TCP localhost:11213->localhost:36967 (ESTABLISHED)
+beam.smp  1210 couchbase   44u  IPv4  30842      0t0  TCP localhost:51209->localhost:11209 (ESTABLISHED)
+beam.smp  1210 couchbase   45u  IPv4  30843      0t0  TCP localhost:35194->localhost:11209 (ESTABLISHED)
+beam.smp  1210 couchbase   46u  IPv4  30844      0t0  TCP localhost:38669->localhost:11209 (ESTABLISHED)
+beam.smp  1210 couchbase   47u  IPv4  30845      0t0  TCP localhost:60662->localhost:11209 (ESTABLISHED)
+beam.smp  1210 couchbase   49u  IPv4  61235      0t0  TCP localhost:8091->localhost:36425 (ESTABLISHED)
+ssl_esock 1256 couchbase    4u  IPv4  11781      0t0  TCP localhost:53791 (LISTEN)
+java      1346      root   30u  IPv6  29873      0t0  TCP *:47319 (LISTEN)
+java      1346      root   36u  IPv6  34762      0t0  TCP localhost:2098 (LISTEN)
+java      1346      root   37u  IPv6  34763      0t0  TCP localhost:2099 (LISTEN)
+java      1346      root   46u  IPv6  61210      0t0  TCP localhost:5445 (LISTEN)
+java      1346      root   47u  IPv6  67084      0t0  TCP localhost:5455 (LISTEN)
+java      1346      root   50u  IPv6  83441      0t0  TCP localhost:5445->localhost:58012 (ESTABLISHED)
+java      1346      root   52u  IPv6  83887      0t0  TCP localhost:5445->localhost:58820 (ESTABLISHED)
+java      1346      root   53u  IPv6  98724      0t0  TCP localhost:5445->localhost:58960 (ESTABLISHED)
+java      1346      root   54u  IPv6  98726      0t0  TCP localhost:5445->localhost:58972 (ESTABLISHED)
+java      1346      root   56u  IPv6 109571      0t0  TCP localhost:5445->localhost:59520 (ESTABLISHED)
+java      1346      root   57u  IPv6 109573      0t0  TCP localhost:5445->localhost:59534 (ESTABLISHED)
+java      1346      root   58u  IPv6 109574      0t0  TCP localhost:5445->localhost:59655 (ESTABLISHED)
+java      1346      root   59u  IPv6  99723      0t0  TCP localhost:5445->localhost:59982 (ESTABLISHED)
+java      1346      root   60u  IPv6  99725      0t0  TCP localhost:5445->localhost:60038 (ESTABLISHED)
+java      1346      root   61u  IPv6 109590      0t0  TCP localhost:5445->localhost:60041 (ESTABLISHED)
+java      1346      root   62u  IPv6 109601      0t0  TCP localhost:5445->localhost:60149 (ESTABLISHED)
+java      1346      root   63u  IPv6 109666      0t0  TCP localhost:5445->localhost:32959 (ESTABLISHED)
+moxi      1362 couchbase   43u  IPv4  17256      0t0  TCP *:43831 (LISTEN)
+moxi      1362 couchbase   44u  IPv6  17257      0t0  TCP *:52605 (LISTEN)
+moxi      1362 couchbase   45u  IPv4  17261      0t0  TCP *:11211 (LISTEN)
+moxi      1362 couchbase   46u  IPv6  17262      0t0  TCP *:11211 (LISTEN)
+moxi      1362 couchbase   47u  IPv4  28576      0t0  TCP localhost:60742->localhost:8091 (ESTABLISHED)
+memcached 1363 couchbase   40u  IPv4  28601      0t0  TCP *:11210 (LISTEN)
+memcached 1363 couchbase   41u  IPv4  28602      0t0  TCP *:11209 (LISTEN)
+memcached 1363 couchbase   42u  IPv4  28603      0t0  UDP *:11210
+memcached 1363 couchbase   43u  IPv4  28604      0t0  UDP *:11209
+memcached 1363 couchbase   44u  IPv4  28624      0t0  TCP localhost:11209->localhost:56757 (ESTABLISHED)
+memcached 1363 couchbase   45u  IPv4  17312      0t0  TCP localhost:36967->localhost:11213 (ESTABLISHED)
+memcached 1363 couchbase   46u  IPv4  30248      0t0  TCP localhost:11209->localhost:51209 (ESTABLISHED)
+memcached 1363 couchbase   47u  IPv4  30249      0t0  TCP localhost:11209->localhost:35194 (ESTABLISHED)
+memcached 1363 couchbase   48u  IPv4  30250      0t0  TCP localhost:11209->localhost:38669 (ESTABLISHED)
+memcached 1363 couchbase   49u  IPv4  30251      0t0  TCP localhost:11209->localhost:60662 (ESTABLISHED)
+memcached 1363 couchbase   51u  IPv4  74383      0t0  TCP localhost:11210->localhost:52622 (ESTABLISHED)
+java      1406   jenkins  144u  IPv6  38529      0t0  TCP *:8180 (LISTEN)
+java      1406   jenkins  149u  IPv6  38534      0t0  TCP jenkins-server:8180->50-0-250-67.dedicated.static.sonic.net:46282 (ESTABLISHED)
+java      1406   jenkins  298u  IPv6  98771      0t0  TCP *:34581 (LISTEN)
+java      1406   jenkins  299u  IPv6  98772      0t0  TCP *:33696 (LISTEN)
+java      1406   jenkins  300u  IPv6  98773      0t0  UDP *:33848
+java      1406   jenkins  302u  IPv6  98781      0t0  UDP *:mdns
+nrpe      1438    nagios    4u  IPv4  17300      0t0  TCP *:nrpe (LISTEN)
+ntpd      1565       ntp   16u  IPv4  29912      0t0  UDP *:ntp
+ntpd      1565       ntp   17u  IPv6  29913      0t0  UDP *:ntp
+ntpd      1565       ntp   18u  IPv4  29919      0t0  UDP localhost:ntp
+ntpd      1565       ntp   19u  IPv4  29920      0t0  UDP jenkins-server:ntp
+ntpd      1565       ntp   20u  IPv6  29921      0t0  UDP ip6-localhost:ntp
+ntpd      1565       ntp   21u  IPv6  29922      0t0  UDP [fe80::601:2eff:fe3e:9901]:ntp
+master    1582      root   12u  IPv4  21983      0t0  TCP *:smtp (LISTEN)
+master    1582      root   13u  IPv6  21984      0t0  TCP *:smtp (LISTEN)
+java      1620      root  295u  IPv6  67117      0t0  TCP *:12345 (LISTEN)
+java      1620      root  298u  IPv6  94130      0t0  TCP localhost:12345->localhost:57505 (ESTABLISHED)
+java      1620      root  299u  IPv6  94131      0t0  TCP *:18090 (LISTEN)
+java      1620      root  300u  IPv6  94132      0t0  TCP *:18091 (LISTEN)
+java      1620      root  341u  IPv6 109659      0t0  TCP *:7475 (LISTEN)
+java      1620      root  353u  IPv6 109665      0t0  TCP localhost:32959->localhost:5445 (ESTABLISHED)
+java      1620      root  354u  IPv6  99735      0t0  TCP localhost:11133 (LISTEN)
+java      1620      root  355u  IPv6  99736      0t0  TCP *:38890 (LISTEN)
+java      1620      root  385u  IPv6 719853      0t0  TCP jenkins-server:40796->ec2-54-208-192-71.compute-1.amazonaws.com:http (CLOSE_WAIT)
+java      1660      root  269u  IPv6  85539      0t0  TCP *:18084 (LISTEN)
+java      1660      root  270u  IPv6  83437      0t0  TCP *:18085 (LISTEN)
+java      1660      root  271u  IPv6  67115      0t0  TCP localhost:58012->localhost:5445 (ESTABLISHED)
+java      1660      root  291u  IPv6 109572      0t0  TCP localhost:59534->localhost:5445 (ESTABLISHED)
+apache2   1785      root    3u  IPv4  39946      0t0  TCP *:http (LISTEN)
+apache2   1785      root    4u  IPv4  39949      0t0  TCP *:https (LISTEN)
+apache2   1785      root    5u  IPv4  37358      0t0  TCP *:8282 (LISTEN)
+apache2   1789  www-data    3u  IPv4  39946      0t0  TCP *:http (LISTEN)
+apache2   1789  www-data    4u  IPv4  39949      0t0  TCP *:https (LISTEN)
+apache2   1789  www-data    5u  IPv4  37358      0t0  TCP *:8282 (LISTEN)
+apache2   1790  www-data    3u  IPv4  39946      0t0  TCP *:http (LISTEN)
+apache2   1790  www-data    4u  IPv4  39949      0t0  TCP *:https (LISTEN)
+apache2   1790  www-data    5u  IPv4  37358      0t0  TCP *:8282 (LISTEN)
+apache2   1792  www-data    3u  IPv4  39946      0t0  TCP *:http (LISTEN)
+apache2   1792  www-data    4u  IPv4  39949      0t0  TCP *:https (LISTEN)
+apache2   1792  www-data    5u  IPv4  37358      0t0  TCP *:8282 (LISTEN)
+apache2   1792  www-data   22u  IPv4 109576      0t0  TCP localhost:45716->localhost:8009 (ESTABLISHED)
+apache2   1793  www-data    3u  IPv4  39946      0t0  TCP *:http (LISTEN)
+apache2   1793  www-data    4u  IPv4  39949      0t0  TCP *:https (LISTEN)
+apache2   1793  www-data    5u  IPv4  37358      0t0  TCP *:8282 (LISTEN)
+apache2   1793  www-data   22u  IPv4  86074      0t0  TCP localhost:44328->localhost:8009 (ESTABLISHED)
+apache2   1794  www-data    3u  IPv4  39946      0t0  TCP *:http (LISTEN)
+apache2   1794  www-data    4u  IPv4  39949      0t0  TCP *:https (LISTEN)
+apache2   1794  www-data    5u  IPv4  37358      0t0  TCP *:8282 (LISTEN)
+java      1846   tomcat7   13u  IPv6  41439      0t0  TCP *:39179 (LISTEN)
+java      1846   tomcat7   14u  IPv6  38437      0t0  TCP *:11999 (LISTEN)
+java      1846   tomcat7   15u  IPv6  38438      0t0  TCP *:50369 (LISTEN)
+java      1846   tomcat7   41u  IPv6  41440      0t0  TCP *:http-alt (LISTEN)
+java      1846   tomcat7   42u  IPv6  41441      0t0  TCP *:8009 (LISTEN)
+java      1846   tomcat7   44u  IPv6 163652      0t0  TCP localhost:8009->localhost:44328 (ESTABLISHED)
+java      1846   tomcat7   45u  IPv6 163653      0t0  TCP localhost:8005 (LISTEN)
+java      1846   tomcat7   46u  IPv6 163654      0t0  TCP localhost:8009->localhost:45716 (ESTABLISHED)
+sshd      1895      root    3u  IPv4  41800      0t0  TCP jenkins-server:ssh->50-0-250-67.dedicated.static.sonic.net:13277 (ESTABLISHED)
+java      2153      root  183u  IPv6 109570      0t0  TCP localhost:59520->localhost:5445 (ESTABLISHED)
+java      2153      root  189u  IPv6  98723      0t0  TCP localhost:58960->localhost:5445 (ESTABLISHED)
+java      2153      root  193u  IPv6  67103      0t0  TCP localhost:52622->localhost:11210 (ESTABLISHED)
+java      2153      root  207u  IPv6  61234      0t0  TCP localhost:36425->localhost:8091 (ESTABLISHED)
+java      2153      root  210u  IPv6  61242      0t0  TCP *:11111 (LISTEN)
+java      2153      root  214u  IPv6  98722      0t0  TCP localhost:58820->localhost:5445 (ESTABLISHED)
+java      2153      root  215u  IPv6  83458      0t0  TCP localhost:57505->localhost:12345 (ESTABLISHED)
+java      2153      root  217u  IPv6  98725      0t0  TCP localhost:58972->localhost:5445 (ESTABLISHED)
+java      2153      root  219u  IPv6  98759      0t0  TCP localhost:59655->localhost:5445 (ESTABLISHED)
+java      2153      root  220u  IPv6  99722      0t0  TCP localhost:59982->localhost:5445 (ESTABLISHED)
+java      2153      root  221u  IPv6  99724      0t0  TCP localhost:60038->localhost:5445 (ESTABLISHED)
+java      2153      root  222u  IPv6 109591      0t0  TCP *:52438 (LISTEN)
+java      2153      root  223u  IPv6 109589      0t0  TCP localhost:60041->localhost:5445 (ESTABLISHED)
+java      2153      root  224u  IPv6 109600      0t0  TCP localhost:60149->localhost:5445 (ESTABLISHED)
+apache2   2276  www-data    3u  IPv4  39946      0t0  TCP *:http (LISTEN)
+apache2   2276  www-data    4u  IPv4  39949      0t0  TCP *:https (LISTEN)
+apache2   2276  www-data    5u  IPv4  37358      0t0  TCP *:8282 (LISTEN)
+apache2   2429  www-data    3u  IPv4  39946      0t0  TCP *:http (LISTEN)
+apache2   2429  www-data    4u  IPv4  39949      0t0  TCP *:https (LISTEN)
+apache2   2429  www-data    5u  IPv4  37358      0t0  TCP *:8282 (LISTEN)
+#+END_EXAMPLE
+** Tips For Debugging Linux Process                                 :General:
+Debug tips for linux process. If we have to restart process, highlight what info should be collected.
+
+[[image-blog:linux debug process][https://www.dennyzhang.com/wp-content/uploads/denny/linux_debug_process.jpg]]
+
+Let's see your system has issues and you have narrow down the problem to one specific process. So what's next?
+
+sort process by memory, sort process by cpu
+
+check fd
+
+strace -p
+
+When the service is started? What's the FD limits? What are the fd opened by the process? Which process is listening on a given tcp port?
+
+Service fail to stop.
+** [#A] How to check memory used by a process: pmap -x; valgrind :IMPORTANT:noexport:
+pmap -x
+
+/proc/meminfo
+
+valgrind
+
+vmstat
+http://stackoverflow.com/questions/131303/how-to-measure-actual-memory-usage-of-an-application-or-process
+
+http://www.binarytides.com/linux-command-check-memory-usage/
+*** web page: Linux find the memory used by a program / process using pmap command - nixCraft
+http://www.cyberciti.biz/tips/howto-find-memory-used-by-program.html
+**** webcontent                                                    :noexport:
+#+begin_example
+Location: http://www.cyberciti.biz/tips/howto-find-memory-used-by-program.html
+  * About
+  * Contact us
+  * Forums
+  * Home
+  * Linux How-to & Tutorials
+  * Shell Scripts
+  * RSS/Feed
+
+nixCraft
+
+Linux find the memory used by a program / process using pmap command
+
+by nixCraft on November 20, 2007 · 20 comments· LAST UPDATED November 20, 2007
+
+in CentOS, Debian Linux, FreeBSD
+
+[linux-logo]
+
+You can find the memory used by a program (process) by looking into /proc directory or using
+standard command such as ps or top. However, you must calculate all memory usage by hand i.e. add
+Shared Memory + mapped file + total virtual memory size of the process + Resident Set Size +
+non-swapped physical memory used by process.
+
+So how do you find the memory used by a process or program under Linux? Use a tool called pmap. It
+reports the memory map of a process or processes.
+
+pmap examples
+
+To display process mappings, type
+$ pmap pid
+$ pmap 3724
+Output:
+
+3724:   /usr/sbin/lighttpd -f /etc/lighttpd/lighttpd.conf
+0000000000400000    164K r-x--  /usr/sbin/lighttpd
+0000000000629000     12K rw---  /usr/sbin/lighttpd
+000000000bb6b000   4240K rw---    [ anon ]
+00000035ee600000    104K r-x--  /lib64/ld-2.5.so
+00000035ee819000      4K r----  /lib64/ld-2.5.so
+00000035ee81a000      4K rw---  /lib64/ld-2.5.so
+00000035eea00000   1304K r-x--  /lib64/libc-2.5.so
+00000035eeb46000   2048K -----  /lib64/libc-2.5.so
+00000035eed46000     16K r----  /lib64/libc-2.5.so
+00000035eed4a000      4K rw---  /lib64/libc-2.5.so
+00000035eed4b000     20K rw---    [ anon ]
+00000035eee00000      8K r-x--  /lib64/libdl-2.5.so
+00000035eee02000   2048K -----  /lib64/libdl-2.5.so
+.....
+....
+00002aaaac51e000      4K r----  /lib64/libnss_files-2.5.so
+00002aaaac51f000      4K rw---  /lib64/libnss_files-2.5.so
+00007fff7143b000     84K rw---    [ stack ]
+ffffffffff600000   8192K -----    [ anon ]
+ total            75180K
+
+The -x option can be used to provide information about the memory allocation and mapping types per
+mapping. The amount of resident, non-shared anonymous, and locked memory is shown for each mapping:
+pmap -x 3526
+Output:
+
+3526:   -bash
+Address           Kbytes     RSS    Anon  Locked Mode   Mapping
+0000000000400000     700       -       -       - r-x--  bash
+00000000006ae000      40       -       -       - rw---  bash
+00000000006b8000      20       -       -       - rw---    [ anon ]
+00000000008b7000      32       -       -       - rw---  bash
+00000000098de000     536       -       -       - rw---    [ anon ]
+00000035ee600000     104       -       -       - r-x--  ld-2.5.so
+00000035ee819000       4       -       -       - r----  ld-2.5.so
+00000035ee81a000       4       -       -       - rw---  ld-2.5.so
+00000035eea00000    1304       -       -       - r-x--  libc-2.5.so
+00000035eeb46000    2048       -       -       - -----  libc-2.5.so
+00000035eed46000      16       -       -       - r----  libc-2.5.so
+00000035eed4a000       4       -       -       - rw---  libc-2.5.so
+00000035eed4b000      20       -       -       - rw---    [ anon ]
+00000035eee00000       8       -       -       - r-x--  libdl-2.5.so
+00000035eee02000    2048       -       -       - -----  libdl-2.5.so
+00000035ef002000       4       -       -       - r----  libdl-2.5.so
+00000035ef003000       4       -       -       - rw---  libdl-2.5.so
+00000035ef600000      12       -       -       - r-x--  libtermcap.so.2.0.8
+00000035ef603000    2044       -       -       - -----  libtermcap.so.2.0.8
+00000035ef802000       4       -       -       - rw---  libtermcap.so.2.0.8
+00002aaaaaaab000       4       -       -       - rw---    [ anon ]
+00002aaaaaaba000      12       -       -       - rw---    [ anon ]
+00002aaaaaabd000      40       -       -       - r-x--  libnss_files-2.5.so
+00002aaaaaac7000    2044       -       -       - -----  libnss_files-2.5.so
+00002aaaaacc6000       4       -       -       - r----  libnss_files-2.5.so
+00002aaaaacc7000       4       -       -       - rw---  libnss_files-2.5.so
+00002aaaaacc8000   55112       -       -       - r----  locale-archive
+00002aaaae29a000      28       -       -       - r--s-  gconv-modules.cache
+00002aaaae2a1000       8       -       -       - rw---    [ anon ]
+00007fff9bff4000      92       -       -       - rw---    [ stack ]
+ffffffffff600000    8192       -       -       - -----    [ anon ]
+----------------  ------  ------  ------  ------
+total kB           74496       -       -       -
+
+TwitterFacebookGoogle+PDF versionFound an error/typo on this page? Help us!
+Featured Articles:
+
+  * 30 Cool Open Source Software I Discovered in 2013 [new_post]
+  * 30 Handy Bash Shell Aliases For Linux / Unix / Mac OS X
+  * Top 30 Nmap Command Examples For Sys/Network Admins
+  * 25 PHP Security Best Practices For Sys Admins
+  * 20 Linux System Monitoring Tools Every SysAdmin Should Know
+  * 20 Linux Server Hardening Security Tips
+  * Linux: 20 Iptables Examples For New SysAdmins
+  * Top 20 OpenSSH Server Best Security Practices
+  * Top 20 Nginx WebServer Best Security Practices
+  * 20 Examples: Make Sure Unix / Linux Configuration Files Are Free From Syntax Errors
+  * 15 Greatest Open Source Terminal Applications Of 2012
+  * My 10 UNIX Command Line Mistakes
+  * Top 10 Open Source Web-Based Project Management Software
+  * Top 5 Email Client For Linux, Mac OS X, and Windows Users
+  * The Novice Guide To Buying A Linux Laptop
+
+{ 20 comments... read them below or add one }
+
+1 Manoj November 21, 2007 at 3:25 am
+
+    -x option not found in redhat
+
+    Reply
+
+    2 Anonymous September 9, 2011 at 3:30 pm
+
+        Suse Enterprise Linux 10SP1 also lacks the -x option.
+
+        Reply
+
+3 nixCraft November 21, 2007 at 5:51 am
+
+    Manoj,
+
+    You must be using older version update procps package.
+
+    Reply
+
+4 jj November 24, 2007 at 5:57 pm
+
+    I believe what you are saying is you need to first establish the PID and then use pmap. I found
+    a command ps -C syslogd -o pid=firefox that can be used to find memory usage of firefox and
+    thought I'd pass it along.
+
+    P.S. the pmap -x perameter works in Ubuntu
+
+    Reply
+
+5 BT November 25, 2007 at 6:02 am
+
+    You must be root to use that command.
+    It works on ubuntu if you sudo pmap -x pid.
+
+    Reply
+
+6 Nate November 28, 2007 at 8:58 pm
+
+    Linux version 2.6.9-55.0.9.ELsmp (brewbuilder@hs20-bc1-7.build.redhat.com) (gcc version 3.4.6
+    20060404 (Red Hat 3.4.6-8)) #1 SMP Tue Sep 25 02:17:24 EDT 2007
+
+    Usage: pmap [-x | -d] [-q] pid...
+    -x show details
+    -d show offset and device number
+    -q quiet; less header/footer info
+    -V show the version number
+
+    pmap -v exists in RHEL4
+
+    Reply
+
+7 Nate November 28, 2007 at 8:59 pm
+
+    pmap -x is what I meant.
+
+    Reply
+
+8 spice February 11, 2008 at 8:48 pm
+
+        I found a command ps -C syslogd -o pid=firefox that can be used to find memory usage of
+        firefox and thought I'd pass it along.>
+
+        That command gives the process id of syslogd, not memory usage of anything.
+
+    Reply
+
+9 Helal Uddin March 10, 2008 at 3:52 am
+
+    thanks a lot for helping me.
+
+    Reply
+
+10 siva April 1, 2008 at 10:23 am
+
+    hi!
+    every thing seems good, but how to calculate memory used and how top commnad and free are
+    showing memory used, how they are calculating and showing the information.
+    thanks and regards
+    siva
+
+    Reply
+
+11 Adam July 3, 2008 at 5:47 pm
+
+    I am trying to find out why my Apache is using a massive amount of memory for simple usage.
+    Then it starts using swap space even after only few requests. I am going to try to use this
+    command to find out what Apache is using the memory for. I'm not sure if it is a memory leak
+    and this tool might not help me, but I will find out.
+
+    Reply
+
+12 Raghunatha Reddy March 11, 2009 at 5:04 am
+
+    i am using redhat linux 5.2 with UniVerse database. from last 20 day my server physical memory
+    and CPU usage is 99% and 100% . i tried lot to resolve this problem . but i am not able to fix
+    this problem. can any body help me. i am sending the out put of free -m and ipcs out put .
+    server running in Runlevel 5
+    total used free shared buffers cached
+    Mem: 7741 7691 50 0 120 7244
+    -/+ buffers/cache: 326 7415
+    Swap: 1983 0 1983
+    #ipcs
+    -- Shared Memory Segments --–
+    key shmid owner perms bytes nattch status
+    0xaceca200 32768 root 666 6852808 9
+    0x00000000 229377 gdm 600 393216 2 dest
+    0xaceb000e 64258051 tcsuser 600 10240 1
+    0xaceb000f 64290822 tcsuser 600 10240 1
+    0xaceb000c 64323591 tcsuser 600 10240 1
+    0xaceb0013 64356360 tcsuser 600 10240 1
+    0xacebdf50 73760777 jyg5506 600 10240 1
+    0xaceb0010 64389130 tcsuser 600 10240 1
+    0xaceb0017 64421900 tcsuser 600 10240 1
+    0xaceb0015 64454669 tcsuser 600 10240 1
+
+    -- Semaphore Arrays --–
+    key semid owner perms nsems
+
+    -- Message Queues --–
+    key msqid owner perms used-bytes messages
+    0xacea0207 0 root 666 0 0
+
+    #vmstat 2 5
+    procs ---–memory---- -swap– -–io-- –system– -–cpu-– –
+    r b swpd free buff cache si so bi bo in cs us sy id wa st
+    1 0 656 50988 123184 7418868 0 0 2584 146 4 9 13 4 80 3 0
+    2 0 656 44864 123152 7415656 0 0 400 6 1056 132 86 14 0 1 0
+    1 0 656 53200 123160 7416428 0 0 406 178 1064 150 87 13 0 1 0
+    1 0 656 47832 123184 7417196 0 0 406 46 1053 134 85 14 0 2 0
+    1 0 656 47236 123184 7417960 0 0 366 16 1053 128 86 13 0 1 0
+
+    Reply
+
+13 kiran June 21, 2009 at 6:56 am
+
+    I think u must check on the netstat command also
+
+    Reply
+
+14 Anonymous May 25, 2010 at 7:58 am
+
+    This prints process memory usage:
+    ps -p -o size=
+
+    Reply
+
+    15 Anonymous June 8, 2010 at 12:56 pm
+
+        Can it be possible like shhoting the cpu usage to around 600%, the one we see while giving
+        top command?
+
+        Reply
+
+16 tessa rodriguez November 23, 2011 at 8:55 am
+
+    let me know how to down load any app i wont to own acer500
+
+    Reply
+
+17 阿铭linux February 22, 2012 at 7:08 am
+
+    use pmap -d pid
+    the last line displays the sizes:
+    what's the meaning of share?
+
+    Reply
+
+18 sheetal May 9, 2012 at 1:20 pm
+
+    how to calculate the memory of any progam?
+
+    Reply
+
+19 sheetal May 9, 2012 at 1:21 pm
+
+    plz reply soon.... how to calculate the memory used by any program?
+
+    Reply
+
+20 Pradeep H N July 24, 2012 at 11:56 am
+
+    you can find the memory with the help of TOP command,
+    what is the version of Linux you are using
+
+    Reply
+
+Cancel reply
+
+Leave a Comment
+
+[                    ]Name *
+
+[                    ]E-mail *
+
+[                    ]Website
+
+[                                        ]
+[                                        ]
+[                                        ]
+[                                        ]
+[                                        ]
+[                                        ]
+[                                        ]
+[                                        ]
+
+[ ] Notify me of followup comments via e-mail.
+
+ Submit
+
+Tagged as: find memory used by program, memory allocation, memory usage, physical memory, pmap
+command, procps, shared memory, virtual memory size
+
+Previous post: How to: Setup Asterisk PBX Easily with AsteriskNOW in 30 minutes
+
+Next post: Download of the day: Dolphin File Manager for KDE Linux Desktop
+
+twitter youtube googleplus  facebook rss email
+
+  *
+  *
+  *
+  *
+  * RSS Latest Linux/Unix Q & A
+
+      + How To Patch and Protect OpenSSL Vulnerability # CVE-2015-0291 CVE-2015-0204 [ 19/March/
+        2015 ]
+      + How To Mount Remote Directory With SSHFS on a Linux
+      + FreeBSD Unix Find Out Which Programs Are Listing On a Given Port Number
+      + Linux Change Disk Label Name on EXT2 / EXT3 / EXT4 File Systems
+      + Use ssh-copy-id with an OpenSSH Server Listening On a Different Port
+      + Ubuntu Linux: Edit and Open Files That Require Administrator Privileges
+      + Ubuntu Linux 12.04/14.04 LTS Install Memcached Server For Python and PHP Apps
+      + Howto Configure PFSense Site-to-Site IPSec VPN Tunnel For Remote Access
+      + FreeBSD Unix Show Mounted File Systems
+      + Bash: Reissue And Repeat A Long Command Without Retyping It on a Linux, OS X & Unix
+      + Apple OS X: Install X Window System XQuartz For SSH X11 Forwarding On a Mavericks or
+        Yosemite
+      + FreeBSD Force DHCP Client (dhclient) to Renew IP Address To Get A New Lease
+      + How To Stress Test CPU and Memory (VM) On a Linux and Unix With Stress-ng
+      + Glibc: GHOST Vulnerability Test To See If a Linux Sever Is Secure
+      + How To Patch and Protect Linux Server Against the Glibc GHOST Vulnerability # CVE-2015-0235
+      + How To Add Swap on FreeBSD Unix Systems
+      + How To PFSense Configure Network Interface As A Bridge / Network Switch
+      + How To Change Timezone on a CentOS 6 and 7
+      + How to Run and Execute Command When I Log Out Of Linux Session?
+      + Unix / Linux: Initialize Dot Files Without Restarting The Current Shell Session
+  * Subscribe to nixCraft
+
+    Learn something new about Linux/Unix by email
+    Enter your email address:
+
+    [                    ]
+
+     Subscribe
+
+©2004-2015 nixCraft. All rights reserved. Privacy Policy - Terms of Service - Questions or
+Comments - We are proudly powered by Linux + Nginx + WordPress. The content is copyrighted to
+nixCraft and may not be reproduced on other websites.
+
+#+end_example
+*** web page: 5 commands to check memory usage on Linux
+http://www.binarytides.com/linux-command-check-memory-usage/
+**** webcontent                                                    :noexport:
+#+begin_example
+Location: http://www.binarytides.com/linux-command-check-memory-usage/
+BinaryTides
+
+  * Home
+  * Apps
+  * Coding
+      + Html5
+          o Box2d
+      + Javascript
+      + Database
+      + PHP
+          o Php Snippets
+          o Tutorial
+      + Socket Programming
+          o C
+          o Java
+          o Perl
+          o PHP
+          o Python
+          o Winsock
+  * Distros
+      + CentOS
+      + Debian
+      + Fedora
+      + Linux Mint
+      + openSuse
+      + Ubuntu
+  * General
+      + Freelancing
+      + Networking
+      + Virtualbox
+      + Windows
+      + Windows 8
+  * Linux
+      + Hardware
+      + Linux Commands
+  * Reviews
+  * Security
+      + Burp Suite
+      + Kali Linux
+      + Metasploit
+  * Server
+      + FTP
+      + Http
+      + Monitoring
+      + Smtp
+  * Super Tips
+
+5 commands to check memory usage on Linux
+
+Linux By Silver Moon On Oct 26, 2013 5 Comments
+Tweet
+
+Memory Usage
+
+On linux, there are commands for almost everything, because the gui might not be always available.
+When working on servers only shell access is available and everything has to be done from these
+commands. So today we shall be checking the commands that can be used to check memory usage on a
+linux system. Memory include RAM and swap.
+
+It is often important to check memory usage and memory used per process on servers so that
+resources do not fall short and users are able to access the server. For example a website. If you
+are running a webserver, then the server must have enough memory to serve the visitors to the site.
+If not, the site would become very slow or even go down when there is a traffic spike, simply
+because memory would fall short. Its just like what happens on your desktop PC.
+
+1. free command
+
+The free command is the most simple and easy to use command to check memory usage on linux. Here is
+a quick example
+
+$ free -m
+             total       used       free     shared    buffers     cached
+Mem:          7976       6459       1517          0        865       2248
+-/+ buffers/cache:       3344       4631
+Swap:         1951          0       1951
+
+The m option displays all data in MBs. The total os 7976 MB is the total amount of RAM installed on
+the system, that is 8GB. The used column shows the amount of RAM that has been used by linux, in
+this case around 6.4 GB. The output is pretty self explanatory. The catch over here is the cached
+and buffers column. The second line tells that 4.6 GB is free. This is the free memory in first
+line added with the buffers and cached amount of memory.
+
+Linux has the habit of caching lots of things for faster performance, so that memory can be freed
+and used if needed.
+The last line is the swap memory, which in this case is lying entirely free.
+
+2. /proc/meminfo
+
+The next way to check memory usage is to read the /proc/meminfo file. Know that the /proc file
+system does not contain real files. They are rather virtual files that contain dynamic information
+about the kernel and the system.
+
+$ cat /proc/meminfo
+MemTotal:        8167848 kB
+MemFree:         1409696 kB
+Buffers:          961452 kB
+Cached:          2347236 kB
+SwapCached:            0 kB
+Active:          3124752 kB
+Inactive:        2781308 kB
+Active(anon):    2603376 kB
+Inactive(anon):   309056 kB
+Active(file):     521376 kB
+Inactive(file):  2472252 kB
+Unevictable:        5864 kB
+Mlocked:            5880 kB
+SwapTotal:       1998844 kB
+SwapFree:        1998844 kB
+Dirty:              7180 kB
+Writeback:             0 kB
+AnonPages:       2603272 kB
+Mapped:           788380 kB
+Shmem:            311596 kB
+Slab:             200468 kB
+SReclaimable:     151760 kB
+SUnreclaim:        48708 kB
+KernelStack:        6488 kB
+PageTables:        78592 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     6082768 kB
+Committed_AS:    9397536 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:      420204 kB
+VmallocChunk:   34359311104 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:         0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:       62464 kB
+DirectMap2M:     8316928 kB
+
+Check the values of MemTotal, MemFree, Buffers, Cached, SwapTotal, SwapFree.
+They indicate same values of memory usage as the free command.
+
+3. vmstat
+
+The vmstat command with the s option, lays out the memory usage statistics much like the proc
+command. Here is an example
+
+$ vmstat -s
+      8167848 K total memory
+      7449376 K used memory
+      3423872 K active memory
+      3140312 K inactive memory
+       718472 K free memory
+      1154464 K buffer memory
+      2422876 K swap cache
+      1998844 K total swap
+            0 K used swap
+      1998844 K free swap
+       392650 non-nice user cpu ticks
+         8073 nice user cpu ticks
+        83959 system cpu ticks
+     10448341 idle cpu ticks
+        91904 IO-wait cpu ticks
+            0 IRQ cpu ticks
+         2189 softirq cpu ticks
+            0 stolen cpu ticks
+      2042603 pages paged in
+      2614057 pages paged out
+            0 pages swapped in
+            0 pages swapped out
+     42301605 interrupts
+     94581566 CPU context switches
+   1382755972 boot time
+         8567 forks
+$
+
+The top few lines indicate total memory, free memory etc and so on.
+
+4. top command
+
+The top command is generally used to check memory and cpu usage per process. However it also
+reports total memory usage and can be used to monitor the total RAM usage. The header on output has
+the required information. Here is a sample output
+
+top - 15:20:30 up  6:57,  5 users,  load average: 0.64, 0.44, 0.33
+Tasks: 265 total,   1 running, 263 sleeping,   0 stopped,   1 zombie
+% Cpu(s):  7.8 us,  2.4 sy,  0.0 ni, 88.9 id,  0.9 wa,  0.0 hi,  0.0 si,  0.0 st
+KiB Mem:   8167848 total,  6642360 used,  1525488 free,  1026876 buffers
+KiB Swap:  1998844 total,        0 used,  1998844 free,  2138148 cached
+
+  PID USER      PR  NI  VIRT  RES  SHR S  % CPU % MEM    TIME+  COMMAND
+ 2986 enlighte  20   0  584m  42m  26m S  14.3  0.5   0:44.27 yakuake
+ 1305 root      20   0  448m  68m  39m S   5.0  0.9   3:33.98 Xorg
+ 7701 enlighte  20   0  424m  17m  10m S   4.0  0.2   0:00.12 kio_thumbnail
+
+Check the KiB Mem and KiB Swap lines on the header. They indicate total, used and free amounts of
+the memory. The buffer and cache information is present here too, like the free command.
+
+5. htop
+
+Similar to the top command, the htop command also shows memory usage along with various other
+details.
+
+htop memory ram usagehtop memory ram usage
+
+The header on top shows cpu usage along with RAM and swap usage with the corresponding figures.
+
+RAM Information
+
+To find out hardware information about the installed RAM, use the demidecode command. It reports
+lots of information about the installed RAM memory.
+
+$ sudo dmidecode -t 17
+# dmidecode 2.11
+SMBIOS 2.4 present.
+
+Handle 0x0015, DMI type 17, 27 bytes
+Memory Device
+        Array Handle: 0x0014
+        Error Information Handle: Not Provided
+        Total Width: 64 bits
+        Data Width: 64 bits
+        Size: 2048 MB
+        Form Factor: DIMM
+        Set: None
+        Locator: J1MY
+        Bank Locator: CHAN A DIMM 0
+        Type: DDR2
+        Type Detail: Synchronous
+        Speed: 667 MHz
+        Manufacturer: 0xFF00000000000000
+        Serial Number: 0xFFFFFFFF
+        Asset Tag: Unknown
+        Part Number: 0x524D32474235383443412D36344643FFFFFF
+
+Provided information includes the size (2048MB), type (DDR2), speed(667 Mhz) etc.
+
+Summary
+
+All the above mentioned commands work from the terminal and do not have a gui. When working on a
+desktop with a gui, it is much easier to use a GUI tool with graphical output. The most common
+tools are gnome-system-monitor on gnome and
+ksysguard on KDE. Both provide resource usage information about cpu, ram, swap and network
+bandwidth in a graphical and easy to understand visual output.
+
+Last Updated On : 26th October 2013
+
+linuxlinux commands
+
+Subscribe to get updates delivered to your inbox [                    ]  Subscribe
+
+Related Posts
+
+  * Check disk space usage on linux with Ncdu
+  * 16 commands to check hardware information on Linux
+  * 8 commands to check cpu information on Linux
+  * Check system load in php on linux
+  * Glances gives a quick overview of system usage on Linux
+
+[e23f27] About Silver Moon
+
+Php developer, blogger and Linux enthusiast. He can be reached at admin@binarytides.com. Or find
+him on Google+
+
+  * KeyboardMonkey
+
+    Please correct the typo in "RAM Information" section. The command for viewing hardware info
+    about RAM is "dmidecode" and not "demidecode".
+    And it also requires root privileges.
+
+    Good article though. Thanks!
+
+  * PP
+
+    very helpful
+
+  * Zhifeng
+
+    Very helpful. Thank you.
+
+  * Pitrak
+
+    seriously.... the last command was just awesome.... never seen anything like that.. .
+
+  * Guru`
+
+    Very Helpful, Thanks.
+
+[                                                       ]  Search
+
+                                           [free-linux]
+
+Connect with us
+
+  *
+  *
+  *
+  *
+
+Other interesting stuff
+
+  * 5 Linux commands to shutdown and reboot the system5 Linux commands to shutdown and reboot the
+    system
+  * Linux mail command examples – send mails from command lineLinux mail command examples – send
+    mails from command line
+  * Check disk space usage on linux with NcduCheck disk space usage on linux with Ncdu
+  * Collectl is a powerful tool to monitor system resources on LinuxCollectl is a powerful tool to
+    monitor system resources on Linux
+  * 6 quick tools to monitor system resources on Linux6 quick tools to monitor system resources on
+    Linux
+  * Saidar is a simple system monitoring tool for LinuxSaidar is a simple system monitoring tool
+    for Linux
+
+About us Contact us Faq Advertise Privacy Policy
+Copyright © 2015 BinaryTides
+*
+Quantcast
+
+#+end_example
+** useful link
+http://www.cnblogs.com/peida/archive/2013/02/26/2932972.html
+每天一个linux命令（51）:lsof命令 - peida - 博客园
+
+https://crybit.com/lsof-command-usages/
+10 lsof command usages with example - Unix/Linux
+** TODO top command check process displaying cpu cores
+** TODO [#A] deep understanding for pmap -x to dig out issue
+** TODO losf: can't identify protocol
+#+BEGIN_EXAMPLE
+dockerd 2665 root   37w      REG              253,1        0    3018909 /var/lib/docker/containers/de4386c3fd8d4c656dd1c9b0b51d0d55112631f75793066289fb98d0041dd14d/de4386c3fd8d4c656dd1c9b0b51d0d55112631f75793066289fb98d0041dd14d-json.log
+dockerd 2665 root   39u     sock                0,7      0t0     153111 can't identify protocol
+dockerd 2665 root   40u     sock                0,7      0t0     153110 can't identify protocol
+dockerd 2665 root   41u     sock                0,7      0t0     153112 can't identify protocol
+#+END_EXAMPLE

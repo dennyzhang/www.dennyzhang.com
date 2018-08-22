@@ -1,0 +1,78 @@
+* Nagios3 Cookbook Has ~4,000,000 Downloads                 :BLOG:Monitoring:
+  :PROPERTIES:
+  :type:     DevOps,Monitoring
+  :END:
+---------------------------------------------------------------------
+Two months ago, I released [[https://supermarket.chef.io/cookbooks/nagios3][nagios3 chef cookbook]] to [[https://supermarket.chef.io][Chef Supermarket]]. Really happy to say it has over __4,000,000__ downloads now! Not sure how large portion are machines or for testing purpose, but it's a good sign indeed.
+
+Here I'd like to introduce more about this chef cookbook. And share how to define effective monitoring items.
+
+[[image-github:https://github.com/dennyzhang/chef_community_cookbooks][https://www.dennyzhang.com/wp-content/uploads/denny/github_nagios_supermarket.png]]
+---------------------------------------------------------------------
+In the past several months, I worked as a senior DevOps engineer in [[https://www.linkedin.com/company/2715017?trk=prof-exp-company-name][TOTVS Labs, CA]]. There we built and maintained a solid SaaS product for the field of Single Sign-On. The product is called [[https://www.fluigidentity.com][Fluig Identity]]. It enables enterprise users to access their **web apps and desktop apps** by login a web portal only once. It's a lovely and useful feature. My sharing of the chef cookbook is built on top of my direct experience maintaining Identity product. So many thanks to TOTVS Labs for this meaningful experience.
+
+First, what are Chef and Chef Supermarket? [[https://www.chef.io][Chef]] is an automation tool to configure and maintain servers and systems at any scale. For example, install packages, configure files, routine Ops effort, etc. [[https://supermarket.chef.io][Chef Supermarket]] in Chef community is somewhat like AppStore for iOS app. Developers and individual contributors share their effort to Chef Supermarket in terms of chef cookbooks.
+
+Second, what does [[https://supermarket.chef.io/cookbooks/nagios3][nagios3 chef cookbook]] do? Nagios is one of the most popular monitoring tools. It helps us to monitor issues of our systems, before customers observe and suffer. Once you enable the nagios cookbook, you will get a nagios system running with multiple useful built-in monitoring items. The monitoring items includes **basic OS monitoring**, **process level monitoring**, and **lightweight behavior test**.
+
+https://www.dennyzhang.com/wp-content/uploads/denny/nagios_demo1.png
+
+You can check the **monitoring history** for all items. Thus you can easily find out when and what has happened while doing trouble shooting. This is implemented with the help of [[http://nagiosgraph.sourceforge.net][nagiosgraph]]. Below is an example for the monitoring history of tomcat memory usage.
+https://www.dennyzhang.com/wp-content/uploads/denny/nagios_demo2.png
+**How To Define Effective Monitoring Items**? Besides common checks, here are items we think useful and not widely used.
+- Monitor CPU/MEMORY/FD at process level
+  Normally people can always monitor OS resource easily. However, each process/services are different, and process level monitoring part are usually left to users. To ease the pain, we have contributed 3 nagios plugins to [[http://exchange.nagios.org/directory/Owner/dennyzhang/1][Nagios Exchange]]: [[https://www.dennyzhang.com/nagois_monitor_process_cpu][Nagios monitor process cpu]],[[https://www.dennyzhang.com/nagois_monitor_process_fd][Nagios monitor process fd]], and [[https://www.dennyzhang.com/nagois_monitor_process_memory][Nagios monitor process memory]].
+  Apparently the alerting thresholds of CPU/MEMORY/FD vary in different processes. It may take you a while to observe and tunning for proper parameters. If some checks keep failing, you may need help from related developers of the service to figure out whether it's a problem or a false alarm.
+
+- Monitor logfiles for error messages and watch out very large logfiles
+  Using [[https://wiki.icinga.org/display/howtos/check_logfiles][check_logfiles plugin]], we can watch services' logfiles for message like critical/errors/exceptions. As you can guess, developers usually tend to log as much as possible, just in case we miss something abnormal. Quite often some log messages may have pattern of "error/exception/warn",  but they can be safely ignored. Thus we need to maintain a whitelist for the nagios warning about log messages gradually.
+
+  Another common problem we usually run into is some logfiles grow too fast or too big. Eventually the machines are out of disk. Proper loglevel or log rotate mechanism can resolve these issues. However, the point is to watch out these problems before they actually cause damage to production envs.
+
+- Behavior test, especially GUI simulated login
+  Running lightweight auto acceptance test usually helps us better understand healthy of our envs. For most webapp, we can use [[http://www.seleniumhq.org][selenium]] to perform GUI simulated login. If services has provided RESTful api for health test, it will definitely make sense to integrate this to your monitoring system.
+
+- Monitor any 3rd party provider
+  Some system may use some 3rd party providers such as mail server, web service, etc. Monitoring them effectively helps to detect issues.
+
+- Perform test from outside.
+  Sometimes the monitoring system itself fails or has network issue. When your prod envs have problems, you won't get alerted. Using a secondary monitoring system will help. In identity project, we use [[http://uptimerobot.com][uptimerobot]], which is a free and helpful tool.
+
+- Monitor internet and intranet network connectivity
+  High latency or even network outage for servers is usually troublesome.
+
+It would be even better if your monitoring system can help on capacity planning, metric prediction, etc. That is a different topic.
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/nagios_chef_supermarket"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* misc                                                             :noexport:
+- When it's started
+  who initiate is?
+- When it's finished
+  success or fail? how long it take?
+- Issues after deployment
+  Redirect monitoring major alerts to the same channel
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+

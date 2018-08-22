@@ -1,0 +1,155 @@
+* Nagios Plugin: Monitor Service Memory                     :BLOG:Monitoring:
+  :PROPERTIES:
+  :type:     DevOps,Monitoring
+  :END:
+---------------------------------------------------------------------
+Monitoring memory usage of a given process is critical for trouble shooting and issues escalation. Quite strange that no available public nagios plugin for this can be found. Thus I write one.
+
+[[image-blog:https://github.com/dennyzhang/monitoring][https://www.dennyzhang.com/wp-content/uploads/denny/nagios_monitor_memory.jpg]]
+---------------------------------------------------------------------
+Here comes the plugin in [[https://github.com/dennyzhang/devops_public/tree/tag_v6/nagios_plugins/check_proc_mem][GitHub]].
+
+[[github:DennyZhang][GitHub]]
+
+[[image-github:https://github.com/dennyzhang/monitoring][https://www.dennyzhang.com/wp-content/uploads/denny/github_nagios_memory_plugin.png]]
+- The plugin explores /proc/$pid/status to figure out the virtual memory and resident memory.
+- It will also generate the performance stastic data properly, which works well with nagiosgraph.
+
+More Reading:
+
+- [[https://www.dennyzhang.com/nagois_monitor_process_cpu][Nagios Plugin: Monitor Service CPU]]
+- [[https://www.dennyzhang.com/nagois_monitor_process_fd][Nagios Plugin: Monitor Process FD]]
+- [[https://www.dennyzhang.com/nagois_monitor_process_memory][Nagios Plugin: Monitor Service Memory]]
+- [[https://www.dennyzhang.com/nagois_monitor_process_threadcount][Nagios Plugin: Monitor Process Threadcount]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/nagois_monitor_process_cpu align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+* misc                                                             :noexport:
+- When it's started
+  who initiate is?
+- When it's finished
+  success or fail? how long it take?
+- Issues after deployment
+  Redirect monitoring major alerts to the same channel
+** HALF [#B] blog: nagios check resident memory of a given process :noexport:
+/tmp/check_mem.sh -w 1024 -c 2048 -p `cat /var/run/tomcat7.pid`
+
+/usr/lib/nagios/plugins/check_linux_stats.pl -T -w 9551820 -c 9551890 -p /var/run/tomcat7.pid
+/usr/lib/nagios/plugins/check_linux_stats.pl -M -w 9551820 -c 9551890 -p /var/run/tomcat7.pid
+
+http://exchange.nagios.org/directory/Plugins/System-Metrics/Memory
+https://github.com/justintime/nagios-plugins/blob/master/check_mem/check_mem.pl
+https://github.com/jasonhancock/nagios-memory/blob/master/plugins/check_mem
+
+/Users/mac/Downloads/check_pid
+/Users/mac/Downloads/check_mem.sh
+
+#+begin_example
+/sshx:root@10.165.4.198: #$ cat /proc/5837/status
+Name:	java
+State:	S (sleeping)
+Tgid:	5837
+Pid:	5837
+PPid:	1
+TracerPid:	0
+Uid:	106	106	106	106
+Gid:	114	114	114	114
+FDSize:	256
+Groups:	114
+VmPeak:	 5938404 kB
+VmSize:	 5938404 kB
+VmLck:	       0 kB
+VmPin:	       0 kB
+VmHWM:	  641108 kB
+VmRSS:	  627984 kB
+VmData:	 5879344 kB
+VmStk:	     136 kB
+VmExe:	       4 kB
+VmLib:	   14632 kB
+VmPTE:	    1536 kB
+VmSwap:	       0 kB
+Threads:	43
+SigQ:	0/63758
+SigPnd:	0000000000000000
+ShdPnd:	0000000000000000
+SigBlk:	0000000000000000
+SigIgn:	0000000000000002
+SigCgt:	2000000181005ccd
+CapInh:	0000000000000000
+CapPrm:	0000000000000000
+CapEff:	0000000000000000
+CapBnd:	ffffffffffffffff
+Cpus_allowed:	1
+Cpus_allowed_list:	0
+Mems_allowed:	00000000,00000001
+Mems_allowed_list:	0
+voluntary_ctxt_switches:	1
+nonvoluntary_ctxt_switches:	1
+#+end_example
+
+#+begin_example
+root@sf-fi-qa-jenkins:/cloudpass/backend/build/bin# /usr/lib/nagios/plugins/check_linux_stats.pl --help
+check_linux_stats v1.4.1
+Usage: /usr/lib/nagios/plugins/check_linux_stats.pl -C|-P|-M|-N|-D|-I|-L|-F|-S|-W|-U -p <pattern> -w <warning> -c <critical> [-s <sleep>] [-u <unit>] [-V] [-h]
+	-h, --help
+   		print this help message
+	-C, --cpu=CPU USAGE
+	-P, --procs
+	-M, --memory=MEMORY USAGE
+	-N, --network=NETWORK USAGE
+	-D, --disk=DISK USAGE
+	-I, --io=DISK IO USAGE
+	-L, --load=LOAD AVERAGE
+	-F, --file=FILE STATS
+	-S, --socket=SOCKET STATS
+	-W, --paging=PAGING AND SWAPPING STATS
+	-U, --uptime
+	-p, --pattern
+		eth0,eth1...sda1,sda2.../usr,/tmp
+	-w, --warning
+	-c, --critical
+	-s, --sleep
+	-u, --unit
+               %, KB, MB or GB left on disk usage, default : MB
+	       REQS OR BYTES on disk io statistics, default : REQS
+	-V, --version
+		version number
+
+	ex :
+	Memory usage                    : perl check_linux_stats.pl -M -w 90 -c 95
+	Cpu usage                       : perl check_linux_stats.pl -C -w 90 -c 95 -s 5
+	Disk usage                      : perl check_linux_stats.pl -D -w 95 -c 100 -u % -p /tmp,/usr,/var
+	Load average                    : perl check_linux_stats.pl -L -w 10,8,5 -c 20,18,15
+	Paging statistics		: perl check_linux_stats.pl -W -w 10,1000 -c 20,2000 -s 3
+	Process statistics              : perl check_linux_stats.pl -P -w 100 -c 200
+	I/O statistics on disk device   : perl check_linux_stats.pl -I -w 10 -c 5 -p sda1,sda4,sda5,sda6
+	Network usage                   : perl check_linux_stats.pl -N -w 10000 -c 100000000 -p eth0
+	Processes virtual memory        : perl check_linux_stats.pl -T -w 9551820 -c 9551890 -p /var/run/sendmail.pid
+	Uptime				: perl check_linux_stats.pl -U -w 5
+root@sf-fi-qa-jenkins:/cloudpass/backend/build/bin#
+#+end_example
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

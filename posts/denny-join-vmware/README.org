@@ -1,0 +1,62 @@
+* I'm Joining VMware To Build Enterprise Kubernetes            :BLOG:General:
+:PROPERTIES:
+:type:   Life
+:END:
+---------------------------------------------------------------------
+Guys, [[Color:#c7254e][Two Big News]] to share with you!!
+
+My wife and I have relocated to silicon valley. Finally! I will join VMware as a staff engineer next Monday. Work on enterprise-ready kubernetes product([[url-external:https://pivotal.io/platform/pivotal-container-service][PKS]])
+
+Hope I can make good influence and big contributions to the team and the product very soon.
+[[image-blog:I'm Joining VMware. And Work On Kubernetes Product!][https://cdn.dennyzhang.com/images/blog/roadtrip.jpg]]
+---------------------------------------------------------------------
+Apparently I need to thank my wife and my family. It's a big move. California is expensive and challenging. No kidding!
+
+Also I'd like to thank my current employer - [[url-external:http://www.totvslabs.com/][TOTVSLabs]]. 
+
+[[url-external:https://www.linkedin.com/in/goetten][Vicente Goetten]], [[url-external:https://www.linkedin.com/in/kung-wang-77a7089][Kung Wang]] and the team. Many thanks! 
+
+A lot of trust and freedom for me. I had a lot of fun working here. Global culture with a Brazilian sauce. People are warm and direct. Most of my working experience in US is from TOTVSLabs. I learned a lot from the team. 
+
+If you're interested, check their openings: [[url-external:https://totvslabs.recruiterbox.com/][here]]. (Mostly allow remote)
+
+[[image-blog:I'm Joining VMware. And Work On Kubernetes Product!][https://cdn.dennyzhang.com/images/blog/work/totvslabs.jpg]]
+---------------------------------------------------------------------
+Looking ahead. Why I'm so determined to join VMware?
+
+It fits my next career goal very well. Be a [[color:#c7254e][k8s expert]]; Be a qualified [[color:#c7254e][cloud architect]] in the near future.
+
+Definitely a lot of things to learn. And a lot of mistakes to make, I guess. But I'm ready!
+
+Our office is in Palo Alto. If you're nearby, ping me in [[url-external:https://www.linkedin.com/in/dennyzhang001][LinkedIn]] or [[https://www.dennyzhang.com/slack][Slack]]. Let's grab a coffee! 
+
+If you're not local, it's fine as well. When you have questions related to DevOps, Kurbernets or even VMware [[url-external:https://pivotal.io/platform/pivotal-container-service][PKS]], remember to contact me. I'm just one button away.
+
+[[image-blog:I'm Joining VMware. And Work On Kubernetes Product!][https://cdn.dennyzhang.com/images/blog/work/vmware_pks.png]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/denny-join-vmware"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

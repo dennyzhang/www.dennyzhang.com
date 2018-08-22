@@ -1,0 +1,73 @@
+* GitHub Repo Sharing: kubernetes-scripts                       :BLOG:GitHub:
+:PROPERTIES:
+:type:     GitHub, Kubernetes
+:END:
+---------------------------------------------------------------------
+I have been learning k8s for several months. Some scripts I have been using quite often.
+
+Here comes the *GitHub repo*: [[url-external:https://github.com/dennyzhang/kubernetes-scripts][kubernetes-scripts]].
+
+(Hint: Learn kubernetes by real scenarios? check [[url-external:https://github.com/dennyzhang/challenges-kubernetes][challenges-kubernetes]] repo.)
+
+[[image-github:https://github.com/dennyzhang/kubernetes-scripts][https://cdn.dennyzhang.com/images/blog/github/github_kubernetes_scripts.png]]
+---------------------------------------------------------------------
+Some scripts quoted from [[url-external:https://github.com/dennyzhang/kubernetes-scripts][GitHub]].
+
+- *list_pods_with_node.sh*: List all pods with node name attached.
+
+For debugging purpose, you might want to know which node runs a given pod.
+
+[[image-github:https://github.com/dennyzhang/kubernetes-scripts/blob/master/list_pods_with_node.sh][https://cdn.dennyzhang.com/images/blog/github/list_pods_with_node.png]]
+
+- *find_pod_by_ip.sh*: Find pods by pod ip.
+
+You might run into similar errors like below, Right? Request fails with some tcp endpoint.
+
+#+BEGIN_EXAMPLE
+,-----------
+| root@k8s1:~# curl http://localhost:8001/api/...
+| Error: 'dial tcp 172.17.0.2:8443: getsockopt: no route to host'
+| Trying to reach: 'https://172.17.0.2:8443/'
+`-----------
+#+END_EXAMPLE
+
+It says: *no route to host*. Should be some network issue. But who holds the ip of 172.17.0.2?
+
+Want to identity the pod with one command? Try the script in GitHub.
+
+[[image-github:https://github.com/dennyzhang/kubernetes-scripts/blob/master/find_pod_by_ip.sh][https://cdn.dennyzhang.com/images/blog/github/find_pod_by_ip.png]]
+
+Want to check more? Everything is in [[url-external:https://github.com/dennyzhang/kubernetes-scripts][GitHub]].
+
+If you find the repo useful or interesting, please remember to star or fork it. Cheers!
+
+More Reading:
+- [[https://www.dennyzhang.com/export_mac_laptop][Challenges your kubernetes skills]]
+- [[https://www.dennyzhang.com/tag/kubernetes][kubernetes Posts]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/kubernetes-scripts"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

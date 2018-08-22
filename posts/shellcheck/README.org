@@ -1,0 +1,212 @@
+* ShellCheck: Code Check For Shell Scripts                       :BLOG:Linux:
+:PROPERTIES:
+:type:   DevOps,Shell,Popular,Testing
+:END:
+---------------------------------------------------------------------
+Shell scripting is a must-have skill for DevOps. I used to be very very confident at Shell. But when I first tried ShellCheck, I realized that I'm just too proud and arrogant.
+*ShellCheck is a powerful code analysis tool for shell scripts*. Like Pylint for Python or Rubocop for Ruby. Give it a try! You'll get surprised.
+
+[[image-blog:ShellCheck Code Check For Shell Scripts][https://www.dennyzhang.com/wp-content/uploads/denny/shellcheck.png]]
+
+---------------------------------------------------------------------
+[[https://github.com/koalaman/shellcheck][ShellCheck]] helps to identify a lot of potential issues in your shell scripts. For example, here is one common mistake which ShellCheck reminds me. Mostly original code will work. However if we feed $dir with value like "My Documents", it hurts. Sometime the bad code may incur very severe damage!
+
+#+BEGIN_SRC sh
+# Before:
+rm -rf $dir
+#+END_SRC
+
+#+BEGIN_SRC sh
+# After:
+rm -rf "$dir"
+#+END_SRC
+
+Note: If you're using Ruby heavily, check about this: [[https://www.dennyzhang.com/rubocop_errors][Common Rubocop Errors]].
+
+[[https://github.com/koalaman/shellcheck/blob/master/README.md#user-content-gallery-of-bad-code][More Bad Code Examples]]:
+
+[[image-blog:Shell bad code][https://www.dennyzhang.com/wp-content/uploads/denny/shellcheck_bad_code.png]]
+*ShellCheck is very easy to install and use*. It is built and packaged using Cabal. We can install by apt-get/yum. Or use cabal-install directly like below. In mac OS, try "brew install shellcheck".
+
+#+BEGIN_SRC sh
+# Install ShellCheck
+sudo apt-get install -y cabal-install
+sudo cabal update
+sudo cabal install shellcheck
+ln -s /root/.cabal/bin/shellcheck /usr/sbin/shellcheck
+
+# Example: Run check for Shell scripts
+sudo shellcheck my_script.sh
+#+END_SRC
+
+By default, ShellCheck enforces hundreds of rules. Each rule has a dedicated wiki page, which explains the purpose and improvement suggestion clearly.
+
+For example, wiki for Rule SC1000: [[https://github.com/koalaman/shellcheck/wiki/SC1000][https://github...shellcheck/wiki/SC1000]]. I'm sure you can easily guess the wiki link of other rules.
+
+Skip some ShellCheck rules, which don't fit your projects. For your reference, here are rules I used to skip.
+#+BEGIN_SRC sh
+# Run test excluding certain rules
+EXCLUDE_CODE_LIST="SC1090,SC1091,SC2154,SC2001,SC2002"
+sudo shellcheck -e $EXCLUDE_CODE_LIST $file
+
+# Run test against all scripts under a folder
+EXCLUDE_CODE_LIST="SC1090,SC1091,SC2154,SC2001,SC2002"
+find . -name "*.sh" | xargs sudo \
+    shellcheck -e $EXCLUDE_CODE_LIST $file
+#+END_SRC
+*Enforce Daily Shell Code Check by Jenkins.* Enforce code quality check in your daily CI definitely helps.
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_BashCodeQualityCheck.png]]
+
+More Reading:
+- [[https://www.dennyzhang.com/docker_code_check][Run Code Static Check Via A Temporary Container]]
+- [[https://www.dennyzhang.com/blind_wait][Avoid Blind Wait In DevOps Code]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/shellcheck"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+* [#A] Shellcheck: shell script code quality check tool            :noexport:
+http://www.shellcheck.net
+https://github.com/koalaman/shellcheck
+
+https://github.com/koalaman/shellcheck/wiki/SC2001
+brew install shellcheck
+
+shellcheck ./deploy_all_in_one.sh
+** DONE shellcheck exclude certain files or certain rules
+   CLOSED: [2016-10-27 Thu 17:32]
+** #  --8<-------------------------- separator ------------------------>8--
+** DONE shellcheck: number comparision: -lt
+   CLOSED: [2016-05-23 Mon 14:56]
+2016-05-23 14:32:31 In ./cookbooks/autoscale-cluster/files/default/trigger_scale_up.sh line 101:
+2016-05-23 14:32:31         if [ $seconds_offset -lt $cooldown_period ]; then
+2016-05-23 14:32:31              ^-- SC2086: Double quote to prevent globbing and word splitting.
+2016-05-23 14:32:31                                  ^-- SC2086: Double quote to prevent globbing and word splitting.
+
+#+BEGIN_SRC sh
+if [ $seconds_offset -lt $cooldown_period ]; then
+    echo "yes"
+else
+    echo "no"
+fi
+#+END_SRC
+
+#+BEGIN_SRC sh
+seconds_offset="100"
+cooldown_period="200"
+if [ "$seconds_offset" -lt "$cooldown_period" ]; then
+    echo "yes"
+else
+    echo "no"
+fi
+#+END_SRC
+** DONE shellcheck: SC2003: expr is antiquated. Consider rewriting this using $((..))
+   CLOSED: [2016-05-23 Mon 15:01]
+2016-05-23 14:32:31 In ./cookbooks/autoscale-cluster/files/default/trigger_scale_up.sh line 100:
+2016-05-23 14:32:31         seconds_offset=$(expr $current_time - $modify_time)
+2016-05-23 14:32:31                          ^-- SC2003: expr is antiquated. Consider rewriting this using $((..)), ${} or [[ ]].
+2016-05-23 14:32:31                               ^-- SC2086: Double quote to prevent globbing and word splitting.
+2016-05-23 14:32:31                                               ^-- SC2086: Double quote to prevent globbing and word splitting.
+
+From:
+#+BEGIN_SRC sh
+    if [ $(expr $num_count - $min_count) -lt 0 ]; then
+        echo "no"
+    else
+        echo "yes"
+    fi
+#+END_SRC
+
+To:
+#+BEGIN_SRC sh
+num_count="10"
+min_count="20"
+if [ $((num_count -min_count)) -lt 0 ]; then
+    echo "no"
+else
+    echo "yes"
+fi
+#+END_SRC
+** DONE shellcheck: SC2002: Useless cat. Consider 'cmd < file
+   CLOSED: [2016-05-23 Mon 16:26]
+cat /etc/hosts | grep "127.0.0.1"
+    ^-- SC2002: Useless cat. Consider 'cmd < file | ..' or 'cmd file | ..' instead.
+
+From:
+#+BEGIN_SRC sh
+cat /etc/hosts | grep "127.0.0.1"
+#+END_SRC
+
+To:
+#+BEGIN_SRC sh
+grep "127.0.0.1" < /etc/hosts
+#+END_SRC
+** DONE shellcheck: SC2181: Check exit code directly with e.g
+   CLOSED: [2016-10-27 Thu 17:17]
+- Error Mesage:
+#+BEGIN_EXAMPLE
+
+In ./jenkins_scripts/jenkins/sync_http_repo_server.sh line 81:
+        if [ $? -ne 0 ]; then
+             ^-- SC2181: Check exit code directly with e.g. 'if mycmd;', not indirectly with $?.
+#+END_EXAMPLE
+
+- From:
+#+BEGIN_EXAMPLE
+        remote_checksum=$(grep "$f" "$checksum_file")
+        if [ $? -ne 0 ]; then
+            log "ERROR: Fail to find $f in $checksum_link"
+            exit 1
+#+END_EXAMPLE
+
+- To:
+#+BEGIN_EXAMPLE
+        errcode=$?
+        if [ $errcode -ne 0 ]; then
+            log "ERROR: Fail to find $f in $checksum_link"
+            exit 1
+#+END_EXAMPLE
+** DONE shellcheck: SC2184: Quote arguments to unset so they're not glob expanded.
+   CLOSED: [2016-10-27 Thu 17:43]
+- Error Message:
+#+BEGIN_EXAMPLE
+In ./jenkins_scripts/docker/stop_old_containers.sh line 131:
+    unset white_list[@]
+          ^-- SC2184: Quote arguments to unset so they're not glob expanded.
+#+END_EXAMPLE
+
+- From:
+#+BEGIN_EXAMPLE
+    # Empty current ip:port white list
+    unset white_list[@]
+
+#+END_EXAMPLE
+
+- To:
+#+BEGIN_EXAMPLE
+    # Empty current ip:port white list
+    unset 'white_list[@]'
+#+END_EXAMPLE

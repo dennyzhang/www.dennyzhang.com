@@ -1,0 +1,104 @@
+* Monitor Out-Of-Memory Errors In Your Servers              :BLOG:Monitoring:
+  :PROPERTIES:
+  :type:     DevOps,Monitoring
+  :END:
+
+---------------------------------------------------------------------
+As DevOps/Ops, you maintain DB instances or RAM intensive services. You see *OOM issues* occasionally, don't you? Yes, the scary Out-Of-Memory issues.
+
+Nobody enjoys OOM issues. When it does happen, what should be checked? More importantly, *how to monitor OOM issues*? And get alerts, before it actually happens.
+
+Here are some of my thoughts. Take a look and discuss with me!
+
+[[image-blog:Monitor Out-Of-Memory Errors In Your Servers][https://www.dennyzhang.com/wp-content/uploads/denny/oom_killer.png]]
+
+---------------------------------------------------------------------
+*What is OOM?* It happens when the machines run into very low memory somehow. The OS doesn't want to run into kernel panic. So as a self-protection, the OS will choose one victim. Usually the process using the most RAM. Kill it and release the memory resource.
+*How to confirm an OOM issue?* When it happens, the system log will have entries of "Killed process". Thus, we can use grep it like this: [[color:#c7254e][dmesg -T | grep -C 5 -i 'killed process']].
+
+#+BEGIN_EXAMPLE
+denny@devops:/# dmesg -T | grep -C 5 -i 'killed process'
+...
+[Tue Feb 21 00:16:39 2017] Out of memory: Kill process 12098 (java) score 655 or sacrifice child
+[Tue Feb 21 00:16:39 2017] Killed process 12098 (java) total-vm:223934456kB, anon-rss:17696224kB, file-rss:1153744kB
+...
+#+END_EXAMPLE
+*Which process has been killed or sacrificed?* When the OS kills the process, it will:
+1. List all processes, before killing the victim.
+2. Log the process id. In our example, we know pid(12098) has been killed.
+
+So use "grep $pid" to find out which process gets killed.
+
+#+BEGIN_EXAMPLE
+denny@devops:/# export pid=12098
+denny@devops:/# dmesg -T | grep -C 1 "\[$pid\]"
+[Tue Feb 21 00:16:39 2017] [11740]     0   11740     3763         42      12       3        0             0 rpc.idmapd
+[Tue Feb 21 00:16:39 2017] [12098]   999   12098 55983614    4712492   11091     105        0             0 java
+[Tue Feb 21 00:16:39 2017] [22050]     0   22050     3998        629      14       3        0             0 tmux
+#+END_EXAMPLE
+
+In the above example, we know some "java" program has been killed. Well, I admit, it's not crystal clear. The good thing is that OOM only happens with processes using a huge amount of RAM. So in reality, we will always be able to guess which process gets killed.
+*OOM Exclusion: show mercy to my critical processes*. OS chooses victim by scoring all processes. We can explicitly lower the score of certain processes. So they might survive, while some other less critical processes are sacrificed. This could buy us more time before things get worse.
+
+Create a flagfile for OOM exclusion: */proc/$pid/oom_score_adj*. The higher value you set for oom_score_adj, the more likely the process will be killed first. [1]
+#+BEGIN_SRC sh
+echo -17 > /proc/$pid/oom_score_adj
+#+END_SRC
+*But remember there is no guarantee that your processes will be safe*. The machines may run into very low RAM, and the OS might need to sacrifice more processes, yours included.
+*How to avoid OOM?* Well, you have to make sure processes won't take all the RAM. Usually this means:
+1. [[color:#c7254e][Reasonable capacity planning]]. If your cluster needs 100GB RAM in total, but you physically only have 90GB. It simply won't work.
+- Enforce a RAM quota for given services. Let's say process A can only use 2GB RAM at most, and process B can only use 4GB RAM at most. If you're using java, Xmx and Xms would be your friends.
+
+Honestly speaking, I think you will have little room to avoid OOM, if there is not enough available RAM in your servers.
+*How to detect OOM issues?* Here is what I do:
+1. Monitor OS memory usage. OOM only happens when free memory is very low at the OS level. So monitoring this would help us to better stay on top of potential OOM issues. If you don't have scripts enforcing this, check check_linux_stats.pl[2]
+- Monitor memory usage of critical processes. Usually OOM happens only if certain heavy-weight processes keep taking more and more RAM. See how to monitor process memory usage: [[https://www.dennyzhang.com/nagois_monitor_process_memory][check_proc_mem.sh]].
+- Monitor system log to detect OOM incidence. We can keep polling system logs, and get alerted when OOM does happens. Currently I don't have scripts to check this. If it turns out to be a strong requirement, I'd be happy to implement one and open source it. So leave me comments below. Let me hear your voice!
+
+[1] http://askubuntu.com/questions/60672/how-do-i-use-oom-score-adj/249992#249992
+[2] https://exchange.nagios.org/directory/Plugins/Operating-Systems/Linux/check_linux_stats/details
+
+More Reading:
+- [[https://www.dennyzhang.com/nagois_monitor_process_cpu][Nagios Plugin: Monitor Service CPU]]
+- [[https://www.dennyzhang.com/nagois_monitor_process_fd][Nagios Plugin: Monitor Process FD]]
+- [[https://www.dennyzhang.com/nagois_monitor_process_memory][Nagios Plugin: Monitor Service Memory]]
+- [[https://www.dennyzhang.com/nagois_monitor_process_threadcount][Nagios Plugin: Monitor Process Threadcount]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/monitor_oom"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* misc                                                             :noexport:
+- When it's started
+  who initiate is?
+- When it's finished
+  success or fail? how long it take?
+- Issues after deployment
+  Redirect monitoring major alerts to the same channel
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+* misc                                                             :noexport:
+** useful link
+http://stackoverflow.com/questions/624857/finding-which-process-was-killed-by-linux-oom-killer
+http://www.techpaste.com/2013/08/shell-script-auto-detect-memory-situation-bounce-servers-weblogic/
+http://serverfault.com/questions/415499/ubuntu-how-to-detect-if-oom-killer-have-run

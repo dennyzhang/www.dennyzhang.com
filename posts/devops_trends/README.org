@@ -1,0 +1,121 @@
+* Get Latest DevOps Trend In 30 Minutes                        :BLOG:General:
+:PROPERTIES:
+:type:   DevOps
+:END:
+
+---------------------------------------------------------------------
+DevOps involves tons of softwares, technologies and methodologies. You finally get familiar with Nagios, but more and more people are talking about Sensor now. When you start to try OpenStack, Docker seems to be compelling. Sound familiar? It's *really hard to be on top of it*!
+
+Here are some practical tips to *follow the latest DevOps trend with minimum time*.
+
+[[image-blog:Recommend DevOps Websites And Blogs][https://www.dennyzhang.com/wp-content/uploads/denny/devops_blog.jpg]]
+
+---------------------------------------------------------------------
+DevOps is all about integration. *Choosing the right weapons* is usually the most confusing part to normal people. Definitely it makes no sense to try everything.
+
+[[image-linkedin:DevOps Website][https://www.dennyzhang.com/wp-content/uploads/denny/linkedin_devops_website.png]]
+
+Get a glimpse of latest DevOps trend:
+1. Help us to crack DevOps interview. (See [[https://www.dennyzhang.com/devops_hiring][15 Open Questions For DevOps Interview]]).
+- Give us second thoughts for our current DevOps practice.
+- Latest trend is usually cool and lots of fun. Isn't it?
+
+Well, I have to admit. It's nearly impossible to get the latest DevOps trends in 30 minutes. Even if you're DevOps masters, and you're familiar with all technologies involved. However we can still find some useful tips to better help us.
+
+Cheat Sheet For Impatient Visitors
+| Name           | Summary                        |
+|----------------+--------------------------------|
+| Dzone          | [[https://dzone.com/devops-tutorials-tools-news/list][DevOps Articles]]                |
+| Reddit         | [[https://www.reddit.com/r/devops][DevOps channel]]                 |
+| Twitter        | [[https://twitter.com/search?q=devops&src=typd][Top DevOps Conversation]]        |
+| Linkedin       | [[https://www.linkedin.com/groups/3726537][#DevOps Professionals]], [[https://www.linkedin.com/groups/2825397][#DevOps]] |
+| StackOverflow  | Hottest [[http://stackoverflow.com/search?tab=votes&q=devops][DevOps]] Questions.      |
+| Google         | [[https://www.google.com.hk/search?q=devops+trends&oq=devops+trend][Devops Trend]]                   |
+| Google+        | [[https://plus.google.com/u/0/communities/109254488709825102030][#Linux]]                         |
+| Medium         | [[https://medium.com/tag/devops][DevOps Tag]]                     |
+| InfoQ          | [[https://www.infoq.com/Devops/articles][#DevOps Channel]]                |
+|----------------+--------------------------------|
+| Mailing list   | [[http://www.devopsweekly.com][DEVOPS WEEKLY]], [[http://sreweekly.com][sreweekly]]       |
+| Talk To Expert | We're humans, not machines     |
+
+[[color:#c7254e][Step1: Get Hottest DevOps Key Words]]
+*Google* has done a wonderful job, providing us excellent learning materials. I deeply believe all developers have the rights to use google, even if you're in China. (See: [[https://www.dennyzhang.com/free_vpn][Free And Temporary VPN For China]].)
+
+Choosing the right key words matters. Yes, we can simply google [[https://www.google.com.hk/search?q=devops+trends&oq=devops+trend][Devops Trend]]. hmm, just a bit general and fuzzy, right?
+
+Let's try to answer this question first: where DevOpsers usually talk on the internet?
+
+Here are my observations. (Please advise!)
+1. *Reddit*. Reddit [[https://www.reddit.com/r/devops][DevOps channel]] is my favorite. Whenever I ask a new question, I can always expect lots of deep input or feedbacks.
+- *LinkedIn*. I see daily updates in below LinkedIn Groups: [[https://www.linkedin.com/groups/3726537][#DevOps Professionals]], [[https://www.linkedin.com/groups/2825397][#DevOps]] and [[https://www.linkedin.com/groups/6585254][#Devops (AWS, ...]]. Many updates are business related, marketing news or website promotion. Still we can find useful information from time to time.
+- *Dzone*. I'm a frequent visitor for [[https://dzone.com/devops-tutorials-tools-news/list?sort=popular][DevOps Channel]] in DZone. People tend to talk a lot about DevOps methodologies there. It's my hornor to be recognized as one [[https://www.dennyzhang.com/dzone_mvb][MVP]] (Most Valuable Blogger) By DZone.com.
+- *Google+*. Google plus doesn't have active DevOps groups. But I found below related groups are pretty hot: [[https://plus.google.com/u/0/communities/109254488709825102030][#Linux]].
+- *Quora*. Not very active. Quora has [[https://www.quora.com/topic/DevOps][DevOps channel]]. Most questions are from DevOps beginners.
+- *Twitter*. Personally I follow hundreds of DevOps influencers in Twitter. So far no strong recommendations yet. I maintain a twitter list: [[https://twitter.com/dennyzhang001/lists/devops-advocate][devops-advocate]]. Also I constantly check Twitter tag: [[https://twitter.com/hashtag/devops?src=hash][#devops]].
+- *Medium*. [[https://medium.com/tag/devops][DevOps Tag]] provides materials with deep reading.
+- *StackOverflow*: Hottest [[http://stackoverflow.com/search?tab=votes&q=devops][DevOps]] Questions.
+- *InfoQ*. Check [[https://www.infoq.com/Devops/articles][#DevOps Channel]], if you're DevOps gurus.
+- *Facebook*. Better skip. Very few DevOps discussions there.
+
+Discuss with me in [[https://www.reddit.com/user/dennyzhang][Reddit]], [[https://www.linkedin.com/in/dennyzhang001][Linkedin]], [[https://twitter.com/dennyzhang001][Twitter]] or [[https://plus.google.com/110003543979899851370?rel=author][Google+]].
+
+[[color:#c7254e][Step2: Find Your Favorite DevOps Blogs And Websites]]
+
+There are many DevOps websites on the internet. *Unfortunately* most of them are of low traffic, or only updated occasionally. (DevOps gurus: Please share your preferences.)
+
+If you're in a hurry, you can safely skip this. _any serious content publishers will re-post to above platforms_. You won't miss the pearls and jewels.
+
+Here is the list of qualified and active DevOps websites. (Again, please advise)
+- [[https://blog.serverdensity.com][blog.serverdensity.com]]: Lots of handy tips from their CEO and his excellent team.
+- [[https://www.datadoghq.com/blog][datadoghq.com]]: Many in-depth monitoring tips.
+- [[https://www.flux7.com][flux7.com]]: They have been talking about AWS stuff for years. Very informative.
+- [[https://devops.com][devops.com]]: This one should be famous. Frankly speaking, I usually get lost browsing this website.
+- [[http://devopsreactions.tumblr.com][devopsreactions]]: Cute gif pictures about DevOps in tumblr.
+
+[[color:#c7254e][Step3: Subscribe To Your Favorite Mailing Lists]]
+Mailing list is effortless. Here are my preference: [[http://www.devopsweekly.com][DEVOPS WEEKLY]], [[http://sreweekly.com][sreweekly]].
+
+[[color:#c7254e][Step4: Talk To DevOps Experts You know]]
+
+If you happen to know DevOps experts in person, talk with him/her for half an hour. You will have a much deeper understanding, compared to hours of reading on the internet.
+
+Related Reading:
+- [[https://www.dennyzhang.com/devops_books][Book Review For DevOps Reading]]
+- [[https://www.dennyzhang.com/devops_tools][Favorite Personal DevOps Applications]].
+- [[https://www.dennyzhang.com/demo_jenkins][Demo Jenkins: How I Enforce CI/CD]].
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/devops_trends"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+* misc                                                             :noexport:
+- http://devopscafe.org
+  DevOps Podcast
+- http://searchaws.techtarget.com
+  AWS materious
+- http://www.awsarchitectureblog.com
+  AWS Architecture Blog
+https://medium.com/@eon01/devopslinks-is-awesome-2bff5b7f6152#.h8i53zygw
+https://www.quora.com/What-DevOps-newsletters-do-you-subscribe-to

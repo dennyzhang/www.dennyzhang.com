@@ -1,0 +1,74 @@
+* 15 Open Questions For DevOps Interview                       :BLOG:Mindset:
+:PROPERTIES:
+:type:   DevOps,Popular
+:END:
+---------------------------------------------------------------------
+*Never Turn DevOps Interview Into Quiz*. Find people who are positive and happy, with a focus on self-improvement, who have gratitude, are humble and comfortable with extreme transparency.
+
+Here are some handy *guidelines* and *open questions*!
+
+[[image-blog:DevOps Hiring][https://www.dennyzhang.com/wp-content/uploads/denny/devops_hiring.jpg]]
+
+---------------------------------------------------------------------
+[[http://logz.io/author/noni-peri/][Noni Peri]] has also published a related post about DevOps hiring here[1]. Quite informative and deserve reading.
+---------------------------------------------------------------------
+[[color:#c7254e][You don't hire for skills, you hire for attitude. You can always teach skills]]. -- Simon Sinek
+** DevOps Hiring Principles And Guidelines
+During interview, keep examining below bullet points:
+1. *Describe Status Precisely And Concisely*. Talk right to the point for issues which they're confident and pretty sure. Illustrate observations and judgments separately, thus people from other teams can easily get involved and help without confusion.
+
+- *Always Ask How To Test*. Yes, how to fix is important. But how to test is even more important in the long run. Without that, it would be difficult to triage problems and enforce effective monitoring.
+
+- *Be A Quick Learner*. If they get something wrong, that's fine. Take a minute and explain it to them. Then ask them to apply what you've just said to the problem and see how their answer changes. Keep the discussion going.
+
+- *Excellent Automation Mindset*. Automation is one of the most important capabilities for DevOps. It dramatically helps to make the process lean and keep the whole team effective.
+** Basic Open Questions
+*1. What happens if you can't SSH to a machine?* Structured analysis talks in daily work. People should possess basic experience for sure. Further question: What if ssh is slow?
+*2. You get low disk warning, what to do?* Explain the trouble shooting process and summarize common causes as many as possible. After resolving this issue, people should think how to avoid it happening again or auto detect it in the future. Further question: System load is high, what to do?
+*3. You open your website and the browsers says it's not reachable. What do you do?* This is quite a typical question, not especially for DevOps. People should have a pretty good understanding for the whole process. And how know how to verify each step properly.
+*4. How to write initscripts for daemon service?* For "service XX start", configure lockfile and pidfile properly. For "service XXX status", avoid false positive by light-weight functional test like checking TCP port listening. For "service XX stop", be prepared for service slow shutdown, instead of kill -9 brutally. Further question: Any alternative to init.d in Linux? initscript, upstart VS Systemd? What drives the change?
+*5. Given string of a=1, b=2, c=3, how to extract the value of b?* The goal here is to look for specifics, such as first-hand scripting experience. People should be familiar popular linux toolkits like awk, sed, grep, bash, etc.
+*6. What's the last code you wrote recently?* Ideal candidates should be doing effective programming recently and be proud of their achievements. Culture fit and passion for tech matters. Further question:  Do you have any side projects? What technical blogs or websites do you follow?
+*7. To hire new DevOps candidates, what questions you would ask?* Totally unexpected! People who love their jobs will stand out.
+** Advanced Open Questions
+*1. Diagram the system you currently run. Do you have any criticism of the architecture you just outlined?* If they really had the involvement and the responsibility they should have no problem speaking fluently about their achievements. Also know deeply for the weakness.
+*2. Describe the most challenging situation that you were faced with and how did you fix it?* Describe the size of the environment that you automated (how many servers, small scale or large scale). What interesting issues you have encountered? You may see good candidates are shining in their eyes.
+*3. Ever run into break-in issues or any other security issues?* Security is a big concern. You can't easily fake it, if you have few experience. Easy Question: How do you secure a server?
+*4. What is the main difference between traditional CM tools like Puppet / Chef vs Ansible / SaltStack?* How long have you used it for? Have you used it in production? How deeply you understand your weapons.
+*5. Site goes down nearly every hour on the hour. What do you look at to diagnose this?*
+*6. How you detect manual changes in prod env?*
+*7. Your deployment is good. Now we need to support offline deployment, what you will do?* List all possible issues. And solve them one by one. They should also mention how to verify the solution. Ideally the verification should be fully automated. For example, manually disabling network to simulate offline deployment is not acceptable.
+*8. How does XXX work?* It could be loadbalancer, nagios, chef, haproxy, or whatever. Confirm candidates are familiar with fundamental concepts. _If you can't explain it simply, you don't understand it well enough._
+
+Special thanks to [[https://www.reddit.com/r/devops/comments/526qym/whatre_your_favorite_open_questions_to_interview][this reddit discussion]].
+
+[1] http://logz.io/blog/devops-interview-questions/
+
+More Reading: [[https://www.dennyzhang.com/avoid_toi_communication][Avoid Unnecessary Communication Of TOI]].
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/devops_hiring"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

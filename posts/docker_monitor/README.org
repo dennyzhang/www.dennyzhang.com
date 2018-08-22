@@ -1,0 +1,120 @@
+* Get Alerts, When Containers Run Into Issues               :BLOG:Monitoring:
+  :PROPERTIES:
+  :type:     DevOps,Docker,Monitoring,Communication
+  :END:
+---------------------------------------------------------------------
+I'm running docker containers for all side projects. Usually one single container. Sometimes multiple containers started by docker-compose[1]. 
+
+If containers get issues, I want to get alerts.
+*What a typical monitoring requirement!* But if you do some research, you will find the information is just overwhelming. cAdvisor, Prometheus, InfluxDB, etc. Excuse me? Can't we have a simple solution for this simple requirement? Here is my answer. Try it and discuss with me.
+
+[[image-blog:Get Alerts, When Containers Run Into Issues][https://www.dennyzhang.com/wp-content/uploads/denny/monitor_docker_compose.png]]
+---------------------------------------------------------------------
+
+This solution works for docker-compose deployment. Please check Prometheus[2], for more complex docker environments.
+*BASIC IDEA*
+Firstly I admit: Prometheus can do the job. Yes, it's capable, but ...
+/Hint: Want to use prometheus in a relatively easy way, try dockprom/ [3]
+
+Frankly speaking, learning Prometheus took much longer than what I had expected. And it's a bit over-killing for my scenario. Prometheus solution itself will start multiple containers. But my envs only have very few containers to monitor.
+
+Ironically "docker ps -a" can easily answer most of my questions.
+#+BEGIN_EXAMPLE
+root@denny-blog:~# docker ps -a
+CONTAINER ID    IMAGE             COMMAND                  CREATED         STATUS                     PORTS                   NAMES
+2936e1d7ec34    denny_wordpress   "/bin/sh -c /docke..."   3 weeks ago     Up 13 days (healthy)       0.0.0.0:443->443/tcp    blog-wordpress
+87665b7a76df    mysql:5.7         "docker-entrypoint..."   3 weeks ago     Up 3 weeks                 3306/tcp                blog-mysql
+4aa821fa9d37    denny/ss:v2       "ssserver -c /etc/..."   3 weeks ago     Up 3 weeks (healthy)       0.0.0.0:6187->6187/tcp  shadowsock
+ea96f4dbefaa    ubuntu:14.04      "/bin/bash"              14 seconds ago  Exited (0) 6 seconds ago                           nginx-test
+#+END_EXAMPLE
+
+1. To get stopped container: just check "STATUS" of each container.
+2. To get unhealthy containers: check status for "unhealthy" output. 
+  /Hint: To enable docker healthcheck[4], you need update your Dockerfiles properly/
+3. Send alerts, whenever any of above occurrences have happened. Should be easy, Right?
+
+[[color:#c7254e][So how about we start a container, which keeps polling status of all containers.]] Then send out alerts, if necessary?
+
+You may think: we won't be able to run "docker ps" in containers. It only runs in docker host. 
+
+Yes, you're right. But there is one way out. You can query status via docker unix socket file. Try below locally, you will understand.
+#+BEGIN_EXAMPLE
+docker run -v /var/run/docker.sock:/var/run/docker.sock \
+    -t -d --privileged --name test-socket \
+    --entrypoint=/bin/sh byrnedo/alpine-curl
+
+docker exec -it test-socket \
+    curl -XGET --unix-socket /var/run/docker.sock \
+    http://localhost/containers/json
+#+END_EXAMPLE
+*HOW TO USE*
+Check code in [[https://github.com/dennyzhang/monitor-docker-slack][Github]]. [[github:DennyZhang][GitHub]]
+
+[[image-github:https://github.com/dennyzhang/monitor-docker-slack][https://www.dennyzhang.com/wp-content/uploads/denny/github-docker-monitor-container.png]]
+
+[[image-github:https://github.com/dennyzhang/monitor-docker-slack][https://www.dennyzhang.com/wp-content/uploads/denny/github-docker-monitor-compose.png]]
+
+_Try it_, if you find it's useful. And discuss with [[https://www.linkedin.com/in/dennyzhang001][me]].
+
+[1] https://docs.docker.com/compose/
+[2] https://prometheus.io
+[3] https://github.com/stefanprodan/dockprom
+[4] https://goo.gl/pCiDWc
+
+More Reading:
+- [[https://www.dennyzhang.com/slack_activesprint][Get Slack Notifications For New Active Sprint]]
+- [[https://www.dennyzhang.com/avoid_toi_communication][Avoid Unnecessary Communication Of TOI]]
+- [[https://www.dennyzhang.com/demo_jenkins][Demo Jenkins: How I Enforce CI/CD]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/docker_monitor"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+* misc                                                             :noexport:
+** [#A] How to use                                                 :noexport:
+https://github.com/dennyzhang/monitor-docker-slack
+
+export SLACK_CHANNEL="#alerts"
+export NOTIFICATION_PREFIX_TEXT="Docker Env in Denny Laptop"
+export SLACK_TOKEN="xoxp-101825940183-101071735379-217558609776-79ddbf86d67dbd4cc7ba493795a04608"
+export SLACK_USERNAME="dennyzhang"
+** TODO docker cadvisor get docker healthcheck status
+https://blog.codeship.com/monitoring-docker-containers-with-elasticsearch-and-cadvisor/
+https://blog.couchbase.com/monitoring-docker-containers-docker-stats-cadvisor-universal-control-plane/
+** useful link
+https://docs.docker.com/engine/reference/api/docker_remote_api/
+http://jpetazzo.github.io/2016/04/03/one-container-to-rule-them-all/
+https://medium.com/lucjuggery/about-var-run-docker-sock-3bfd276e12fd
+https://forums.docker.com/t/how-can-i-run-docker-command-inside-a-docker-container/337
+https://github.com/codegram/status-notify-slack/blob/master/entry-point.sh
+
+http://blog.takipi.com/docker-monitoring-5-methods-for-monitoring-java-applications-in-docker/
+
+https://github.com/zekizeki/healthcheck/
+slack_url="https://hooks.slack.com/services/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"
+
+docker run -d -e SERVER="google.co.uk:443" -e USE_HTTPS=true -e NOTIFICATION_URL="$slack_url" zekizeki/healthcheck:latest
+https://github.com/codegram/status-notify-slack
+** TODO [#A] slack configure username
+** TODO docker monitoring: why no stdout output in my bash
