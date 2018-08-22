@@ -1,0 +1,78 @@
+* GoodBye Shell, Hello Python!                                   :BLOG:Linux:
+:PROPERTIES:
+:type:   DevOps,Shell
+:END:
+---------------------------------------------------------------------
+As a Ops/DevOps professional, I have many years of experience writing shell scripts. Probably you're the same as me, right?
+
+I deeply treasure my achievements with shell. Yes, I still do, even now. But I have to make a decision. Finally! *Drop Shell And Embrace Python*.
+
+Why is that? Check this blog post and discuss with me.
+
+[[image-blog:GoodBye Shell, Hello Python!][https://www.dennyzhang.com/wp-content/uploads/denny/shell_python.png]]
+
+---------------------------------------------------------------------
+[[color:#c7254e][It's really hard to reject the temptation of shell]]. Apparently shell is a very old and widely-used language. But it's far from modern programming languages. Poor error handling, weird syntax, no package mechanism to reuse the code, the list goes on and on ...
+
+However, as you can see, shell scripts are almost everywhere on the internet. It's really hard to avoid them. *So Why?*
+
+1. *Unix PIPE philosophy makes shell the default glue language*. It integrate all kinds of (relatively) small tools, solving a bigger problem. So if you check any popular online tutorials now, you will probably see shell scripts somewhere.
+- With shell, it's super easy to *get your hands dirty and obtain fuzzy warm feeling of making progress*. Each shell command you have issued in the terminal, it's a reward. It makes you feel that you're making constant progress. Hard to say no, isn't?
+- *No extra wrapper layer*. Let's say, you need to trigger some [[https://www.dennyzhang.com/query_elasticsearch][elasticsearch actions]] by programming. You can either call elasticsearch management REST API directly by shell, or use elasticsearch Python SDK. If you choose python, and the script is not working. Then what? It could be some bugs in Python SDK or the way you use Python SDK. No doubt people are in favor of shell scripting sometime.
+
+Regardless of all benefits, my DevOps fellows, we have to look ahead. And move on.
+
+[[color:#c7254e][I will choose Python as default for all unattended scripts which will run automatically]]. There are still some room for shell. For example, quickly wrap up some commands, and execute them manually from the terminal.
+
+Netflix is also using Python a lot for their DevOps work.[1]
+*What drives me to switch from Shell to Python?*
+
+First of all, it doesn't necessarily need to be Python. It could be any modern programming languages which you're comfortable with. Like Ruby, Golang, etc.
+
+1. *Reuse code and modules across projects*. With years' accumulation, I come up with a shell common library ([[https://github.com/dennyzhang/devops_public/tree/tag_v4/common_library][Github]]). With this library, I can easily and quickly accomplish lots of DevOps tasks. e.g, [[https://www.dennyzhang.com/enforce_precheck][Enforce Pre-check Before Deployment]], run deployment and maintanence via [[https://www.dennyzhang.com/demo_jenkins][Jenkins]], etc. However distributing the shell scripts and upgrading them is quite a burden. Now with Python, I can easily pack up the logic as pip package.
+- *Super hard to make decent and reliable shell scripts*. Think you're shell Ninja? Run [[https://www.dennyzhang.com/shellcheck][Shellcheck]] against your scripts. And with the absence of error handling, your scripts can easily give you false positives. And consequently it may incur serious damage, or make your trouble shooting difficult.
+- *Easy requirements may not be easily supported*. For example, when you run the scripts, you want to see the output in both terminal and logfiles. With some research, you may finalize with the solution of [[https://www.dennyzhang.com/shell_tee][tee command]]. However you will have to deal with weird bash issues like [[https://www.dennyzhang.com/bash_errcode_exit][this one]].
+
+Now my Python journey starts. What about yours?
+
+Note: I will keep open source my DevOps Python scripts in [[https://github.com/dennyzhang/devops_public/tree/tag_v6/python][Github]]. [[github:DennyZhang][GitHub]]
+
+[1] https://medium.com/netflix-techblog/python-at-netflix-86b6028b3b3e
+
+More Reading:
+- [[https://www.dennyzhang.com/shellcheck][ShellCheck: Code Check For Shell Scripts]]
+- [[https://www.dennyzhang.com/shell_tee][Shell Redirect Output To File, And Still Have It On Screen]]
+- [[https://www.dennyzhang.com/bash_errcode_exit][Bash -e Doesn't Exit As I expect]]
+
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/shell_to_python"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+* misc                                                             :noexport:
+** list your library from shell to python
+** Choose in bewtween Python, Ruby, and Golang
+** precheck logic
+** reivew existing posts

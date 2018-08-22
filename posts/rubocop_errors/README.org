@@ -1,0 +1,1308 @@
+* Common Rubocop Errors: Improve Your Ruby Code Quality Quickly :BLOG:General:
+:PROPERTIES:
+:type:   DevOps,Testing
+:END:
+---------------------------------------------------------------------
+Rubocop is a static code check tool for ruby. Very handy and powerful.
+
+Here is a list of Common Rubocop Errors, for your reference. You can simply *search by your Rubocop error message* in this post. And get your code improved quickly.
+
+[[image-blog:Common Rubocop Errors: Improve Your Ruby Code Quality][https://www.dennyzhang.com/wp-content/uploads/denny/rubocop.jpg]]
+
+---------------------------------------------------------------------
+*Ruby* is a frequently used glue language for DevOps. Both Chef and Puppet are implemented by Ruby. For ruby code check, I use Rubocop[1] and Foodcritic[2] frequently. For Python code, I use pylint[3]. For Shell code, I highly recommend [[https://www.dennyzhang.com/shellcheck][shellcheck]].
+
+[[color:#c7254e][Tips: Create Jenkins jobs to run periodical check for all your scripts]].
+
+Here are samples in Github: [[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/RubyCodeQualityCheck][Ruby]], [[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/PythonCodeQualityCheck][Python]] and [[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/BashCodeQualityCheck][Bash]]. [[github:DennyZhang][GitHub]]
+
+I also maintain a free and available demo Jenkins [[https://www.dennyzhang.com/demo_jenkins][here]].
+** Use Latest Stable Version Of Rubocop
+Latest version has a lot of new checks enforced. Make sure your ruby is no older than 2.2.5. Upgrade your Rubocop to the latest version you can get. Then stick to that version.
+
+Tips For Package Installation: [[https://www.dennyzhang.com/installation_failure/#sec-1-4][Always install latest versions could be troublesome]].
+
+#+BEGIN_SRC sh
+# Install rubocop
+gem install rubocop
+
+# Update rubocop
+gem update rubocop
+#+END_SRC
+** Rubocop Skip Certain Files Or Rules
+Customize [[https://github.com/bbatsov/rubocop/blob/master/config/default.yml][.rubocop.yml]] like below.
+#+BEGIN_EXAMPLE
+AllCops:
+  Excludes:
+    - Berksfile
+    - recipes/basic.rb
+    - attributes/*.rb
+
+# Customize rules
+Metrics/LineLength:
+  Max: 95
+
+MethodLength:
+  Max: 35
+
+Metrics/AbcSize:
+   Enabled: false
+
+BlockLength:
+  Max: 70
+#+END_EXAMPLE
+
+Below is [[color:#c7254e][a list of Rubocop Common Error Messages and Corrections]].
+
+Okay, you can stop reading and now. Press Ctrl + F, then search by error messages.
+** Rubocop Error: Use 0o for octal literals
+See [[http://www.rubydoc.info/gems/rubocop/RuboCop/Cop/Style/NumericLiteralPrefix][Official Link]]. mode 0700 -> mode 0o700
+
+- Error Message:
+#+BEGIN_EXAMPLE
+recipes/basic.rb:24:8: C: Use 0o for octal literals.
+  mode 0700
+       ^^^^
+#+END_EXAMPLE
+
+- From:
+#+BEGIN_SRC ruby
+template '/opt/app/logback.xml' do
+  source 'logback.xml.erb'
+  mode 0700
+end
+#+END_SRC
+
+- To:
+#+BEGIN_SRC ruby
+template '/opt/app/logback.xml' do
+  source 'logback.xml.erb'
+  mode 0o700
+end
+#+END_SRC
+
+You can also ignore the rule, by changing .rubocop.yml. (Thanks to [[https://www.dennyzhang.com/rubocop_errors/#comment-3243829554][Jack Lee]]).
+#+BEGIN_EXAMPLE
+Style/NumericLiteralPrefix:
+    EnforcedOctalStyle: zero_only
+#+END_EXAMPLE
+** Rubocop Error: C: Prefer single-quoted strings
+- Error Message:
+#+BEGIN_EXAMPLE
+recipes/precheck.rb:28:23: C: Prefer single-quoted strings when you don't need string interpolation or special symbols.
+#+END_EXAMPLE
+
+- From:
+#+BEGIN_EXAMPLE
+if disk['mount'] == "/" && disk.has_key?('kb_available')
+                    ^^^
+#+END_EXAMPLE
+
+- To:
+#+BEGIN_EXAMPLE
+if disk['mount'] == '/' && disk.has_key?('kb_available')
+#+END_EXAMPLE
+** Rubocop Error: C: Use \ instead of + or << to concatenate those strings.
+- Error Message:
+#+BEGIN_EXAMPLE
+recipes/basic.rb:36:67: C: Use \ instead of + or << to concatenate those strings.
+"http://#{node['my_couchbase']['repo_server']}/couchbase-server" + \
+                                                                  ^
+recipes/basic.rb:37:47: C: Use \ instead of + or << to concatenate those strings.
+"-#{node['couchbase']['server']['edition']}_" + \
+                                              ^
+#+END_EXAMPLE
+
+- From:
+#+BEGIN_EXAMPLE
+node.default['couchbase']['server']['package_full_url'] = \
+"http://#{node['my_couchbase']['repo_server']}/couchbase-server" + \
+"-#{node['couchbase']['server']['edition']}_" + \
+"#{node['couchbase']['server']['version']}-ubuntu12.04_amd64.deb"
+#+END_EXAMPLE
+
+- To:
+#+BEGIN_EXAMPLE
+node.default['couchbase']['server']['package_full_url'] = \
+"http://#{node['my_couchbase']['repo_server']}/couchbase-server" \
+"-#{node['couchbase']['server']['edition']}_" \
+"#{node['couchbase']['server']['version']}-ubuntu12.04_amd64.deb"
+#+END_EXAMPLE
+** Rubocop Error: C: Redundant return detected.
+  CLOSED: [2016-05-19 Thu 17:05]
+- Error Message:
+#+BEGIN_EXAMPLE
+serverspec/server_spec.rb:21:3: C: Redundant return detected.
+  return " -p devops_branch_name=#{devops_branch_name}"
+  ^^^^^^
+#+END_EXAMPLE
+
+- From:
+#+BEGIN_EXAMPLE
+def build_parameter_updatejenkins(devops_branch_name)
+  return " -p devops_branch_name=#{devops_branch_name}"
+end
+#+END_EXAMPLE
+
+- To:
+#+BEGIN_EXAMPLE
+def build_parameter_updatejenkins(devops_branch_name)
+  " -p devops_branch_name=#{devops_branch_name}"
+end
+#+END_EXAMPLE
+** Rubocop Error: C: Hash#has_key? is deprecated in favor of Hash#key?.
+- Error Message:
+#+BEGIN_EXAMPLE
+recipes/precheck.rb:28:35: C: Hash#has_key? is deprecated in favor of Hash#key?.
+#+END_EXAMPLE
+
+- From:
+#+BEGIN_EXAMPLE
+if disk['mount'] == "/" && disk.has_key?('kb_available')
+                                ^^^^^^^^
+#+END_EXAMPLE
+
+- To:
+#+BEGIN_EXAMPLE
+if disk['mount'] == "/" && disk.key?('kb_available')
+#+END_EXAMPLE
+** Rubocop Error: chef only_if/not_if avoid grep command
+- Error Message:
+#+BEGIN_EXAMPLE
+chef only_if/not_if avoid grep command
+#+END_EXAMPLE
+
+- From:
+#+BEGIN_EXAMPLE
+execute 'Fix MySQL init.d script to sleep longer' do
+  cwd '/etc/init.d'
+  command 'patch -p0 mysql < /tmp/mysql_init.patch'
+  action :run
+  only_if "grep 'sleep 1' /etc/init.d/mysql"
+end
+#+END_EXAMPLE
+
+- To:
+#+BEGIN_EXAMPLE
+execute 'Fix MySQL init.d script to sleep longer' do
+  cwd '/etc/init.d'
+  command 'patch -p0 mysql < /tmp/mysql_init.patch'
+  action :run
+  only_if do
+    File.read('/etc/init.d/mysql').match(/sleep 1/)
+  end
+end
+#+END_EXAMPLE
+** Rubocop Error: C: Use snake_case for source file names.
+- Error Message:
+#+BEGIN_EXAMPLE
+recipes/github-key.rb:1:1: C: Use snake_case for source file names.
+#
+^
+#+END_EXAMPLE
+
+- Rename github-key.rb to github_key.rb
+** Rubocop Error: C: Block has too many lines
+- Error Message:
+#+BEGIN_EXAMPLE
+recipes/nagios_client.rb:75:1: C: Block has too many lines. [37/25]
+node['common_basic']['service_list'].each do |service| ...
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+recipes/nagios_server.rb:39:1: C: Block has too many lines. [53/25]
+node['common_basic']['service_list'].each do |service| ...
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#+END_EXAMPLE
+
+- Fix: Update .rubocop.yml with workaround. Or cut your code into small chunks.
+#+BEGIN_EXAMPLE
+# .rubocop.yml
+BlockLength:
+  Max: 90
+#+END_EXAMPLE
+** Rubocop Error: C: Use the return of the conditional
+See [[http://www.rubydoc.info/github/bbatsov/RuboCop/RuboCop/Cop/Style/ConditionalAssignment][official link]].
+
+- Error Message:
+#+BEGIN_EXAMPLE
+files.rb:1:1: C: Use the return of the conditional for variable assignment and comparison.
+if node['my_app']['enable_remotehost'] == '' ...
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#+END_EXAMPLE
+
+- From:
+#+BEGIN_EXAMPLE
+if node['my_app']['enable_remotehost'] == ''
+  logback_remotehost = node['my_app']['server1_hosts'][0]
+else
+  logback_remotehost = node['my_app']['master_host']
+end
+#+END_EXAMPLE
+
+To:
+#+BEGIN_EXAMPLE
+logback_remotehost = if node['my_app']['enable_remotehost'] == ''
+                       node['my_app']['server1_hosts'][0]
+                     else
+                       node['my_app']['master_host']
+                     end
+#+END_EXAMPLE
+** Rubocop Error: C: Use a guard clause instead of wrapping the code conditionally
+See [[http://www.rubydoc.info/github/bbatsov/rubocop/Rubocop/Cop/Style/GuardClause][official link]].
+
+- Error Message:
+#+BEGIN_EXAMPLE
+serverspec/general_helper.rb:67:7: C: Use a guard clause instead of wrapping the code inside a conditional expression.
+      if item == skip_item
+      ^^
+#+END_EXAMPLE
+
+From:
+#+BEGIN_EXAMPLE
+    loop do
+      break if item != skip_item
+      item = list_get_random_item(list)
+    end
+#+END_EXAMPLE
+
+To:
+#+BEGIN_EXAMPLE
+    loop do
+      if item == skip_item
+        item = list_get_random_item(list)
+      else
+        break
+      end
+    end
+#+END_EXAMPLE
+** Rubocop Error: C: Separate every 3 digits in the integer portion
+- Error Message:
+#+BEGIN_EXAMPLE
+files.rb:2:8: C: Separate every 3 digits in the integer portion of a number with underscores(_).
+  port 48080
+       ^^^^^
+#+END_EXAMPLE
+
+- From:
+#+BEGIN_SRC ruby
+firewall_rule 'port_list_allowall' do
+  port 48080
+  protocol :tcp
+  position 1
+  action :allow
+end
+#+END_SRC
+
+- To:
+#+BEGIN_SRC ruby
+firewall_rule 'port_list_allowall' do
+  port 48_080
+  protocol :tcp
+  position 1
+  action :allow
+end
+#+END_SRC
+** Rubocop Error: C: Freeze mutable objects assigned to constants.
+- Error Message:
+#+BEGIN_EXAMPLE
+vagrant/Vagrantfile:7:16: C: Freeze mutable objects assigned to constants.
+FOLDER_SHARE = 'local_code_share'
+               ^^^^^^^^^^^^^^^^^^
+#+END_EXAMPLE
+
+- From:
+#+BEGIN_SRC ruby
+FOLDER_SHARE = 'local_code_share'
+#+END_SRC
+
+- To:
+#+BEGIN_SRC ruby
+folder_share = 'local_code_share'
+#+END_SRC
+** Rubocop Error: C: Closing array brace must be on the line...
+See [[http://www.rubydoc.info/gems/rubocop/RuboCop/Cop/Style/MultilineArrayBraceLayout][official link]].
+
+- Error Message:
+#+BEGIN_EXAMPLE
+files.rb:3:39: C: Closing array brace must be on the line after the last array element when opening brace is on a separate line from the first array element.
+  /opt/devops/logs /opt/devops/plugins).each do |x|
+                                      ^
+#+END_EXAMPLE
+
+- From:
+#+BEGIN_EXAMPLE
+%w(
+  /opt/devops /opt/devops/bin /opt/devops/config /opt/devops/config/env.d
+  /opt/devops/logs /opt/devops/plugins).each do |x|
+  directory x do
+    owner 'root'
+    group 'root'
+    mode 0o755
+    action :create
+  end
+end
+#+END_EXAMPLE
+
+- To:
+#+BEGIN_EXAMPLE
+%w(
+  /opt/devops /opt/devops/bin /opt/devops/config /opt/devops/config/env.d
+  /opt/devops/logs /opt/devops/plugins
+).each do |x|
+  directory x do
+    owner 'root'
+    group 'root'
+    mode 0o755
+    action :create
+  end
+end
+#+END_EXAMPLE
+** Rubocop Error: C: Use Kernel#loop for infinite loops
+See [[http://www.rubydoc.info/gems/rubocop/RuboCop/Cop/Style/InfiniteLoop][official link]]
+
+#+BEGIN_EXAMPLE
+test/shared/common_spec_helper.rb:32:5: C: Use Kernel#loop for infinite loops.
+    while true
+    ^^^^^
+test/shared/common_spec_helper.rb:32:11: W: Literal true appeared in a condition.
+    while true
+          ^^^^
+#+END_EXAMPLE
+
+- From:
+#+BEGIN_SRC ruby
+while true
+  if item == skip_item
+    item = list_get_random_item(list)
+  else
+    break
+  end
+end
+#+END_SRC
+
+- To:
+#+BEGIN_SRC ruby
+loop do
+  break if item != skip_item
+  item = list_get_random_item(list)
+end
+#+END_SRC
+
+[1] http://batsov.com/rubocop/
+[2] http://acrmp.github.io/foodcritic/
+[3] https://www.pylint.org
+
+More Reading:
+- [[https://www.dennyzhang.com/docker_code_check][Run Code Static Check Via A Temporary Container]]
+- [[https://www.dennyzhang.com/shellcheck][ShellCheck: Code Check For Shell Scripts]]
+
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/rubocop_errors"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+* misc                                                             :noexport:
+** DONE C: Missing utf-8 encoding comment.
+   CLOSED: [2015-05-23 Sat 16:38]
+# -*- encoding: utf-8 -*-
+** TODO Rubocop Error: W: (...) interpreted as grouped expression.
+- Error Message:
+#+BEGIN_EXAMPLE
+files.rb:12:16: W: (...) interpreted as grouped expression.
+  configuration ({
+               ^
+files.rb:13:19: C: Use 2 spaces for indentation in a hash, relative to the start of the line where the left curly brace is.
+                  'cluster.name' => node['my_elasticsearch']['cluster_name'],
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+files.rb:17:18: C: Indent the right brace the same as the start of the line where the left brace is.
+                 })
+                 ^
+#+END_EXAMPLE
+
+- From:
+#+BEGIN_EXAMPLE
+elasticsearch_configure 'elasticsearch' do
+  allocated_memory node['my_elasticsearch']['allocated_memory']
+  configuration ({
+                  'cluster.name' => node['my_elasticsearch']['cluster_name'],
+                  'discovery.zen.ping.multicast.enabled' => \
+                  node['my_elasticsearch']['ping_timeout'],
+                  'network.host' => es_network_host
+                 })
+end
+#+END_EXAMPLE
+
+- To:
+#+BEGIN_EXAMPLE
+elasticsearch_configure 'elasticsearch' do
+  allocated_memory node['my_elasticsearch']['allocated_memory']
+  configuration
+  ({
+    'cluster.name' => node['my_elasticsearch']['cluster_name'],
+    'discovery.zen.ping.multicast.enabled' => \
+    node['my_elasticsearch']['enable_multicast'],
+    'discovery.zen.ping.unicast.hosts' => \
+    node['my_elasticsearch']['unicast_hosts'],
+    'http.port' => node['my_elasticsearch']['es_port'],
+    'discovery.zen.minimum_master_nodes' => 1,
+    'discovery.zen.ping.timeout' => \
+    node['my_elasticsearch']['ping_timeout'],
+    'network.host' => es_network_host
+  })
+end
+#+END_EXAMPLE
+** TODO Align the operands of an expression in an assignment spanning multiple lines.
+recipes/setup_repo_server.rb:28:1: C: Align the elements of an array literal if they span more than one line.
+jdk-8u40-linux-x64.tar.gz).each do |x|
+^^^^^^^^^^^^^^^^^^^^^^^^^
+#+BEGIN_EXAMPLE
+%w(couchbase-server-enterprise_3.0.3-ubuntu12.04_amd64.deb\
+jdk-8u40-linux-x64.tar.gz).each do |x|
+  remote_file "/var/www/repo/#{x}" do
+    source "http://#{node['my_jenkins']['repo_server']}/#{x}"
+    use_last_modified true
+    mode '0644'
+    owner 'root'
+    action :create
+  end
+end
+#+END_EXAMPLE
+** DONE rubocop: skip: Method has too many lines
+   CLOSED: [2016-10-26 Wed 17:28]
+http://code.openhub.net/file?fid=dW5TLoqyvq0v6EEg03kHgxqK9mI&cid=fnP2s60Ol70&s=&fp=413519&mp&projSelected=true#L0
+MethodLength:
+  Max: 20
+** DONE FC009: Resource attribute not recognised: sandbox-test/recipes/default.rb:21
+   CLOSED: [2015-05-24 Sun 15:33]
+MacPro:cookbooks mac$ foodcritic sandbox-test
+FC009: Resource attribute not recognised: sandbox-test/recipes/default.rb:27
+
+log 'gem install berkshelf'
+gem_package 'berkshelf' do
+  action :install
+  timeout 900
+end
+
+attribute: timeout
+** DONE mail: ruby coding style failure: Missing top-level class documentation comment. :noexport:
+  CLOSED: [2015-10-21 Wed 17:59]
+[[gnus:nnfolder%2Barchive:mail.sent.mail#m2lhawlf2d.fsf@126.com][Email from Denny Zhang (Wed, 21 Oct 2015 17:57:14 +0800): ruby coding style failure: Mis]]
+#+begin_example
+From: Denny Zhang <markfilebat@126.com>
+Subject: ruby coding style failure: Missing top-level class documentation comment.
+To: mingli <daywbdb@qq.com>
+Cc: youyou <syrett_uu@163.com>, Denny Zhang <markfilebat@126.com>
+Date: Wed, 21 Oct 2015 17:57:14 +0800
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.4 (darwin)
+
+Hi mingli
+
+参照如下link:
+https://github.com/bbatsov/rubocop/issues/751
+
+问题:
+当chef代码有类似内容时
+class Object; undef test; end
+
+rubocop会报错
+,-----------
+| Offenses:
+|
+| autotest-auth/recipes/default.rb:25:3: C: Missing top-level class documentation comment.
+|   class Object; undef test; end
+|   ^^^^^
+`-----------
+
+解决的办法,将代码改成如下内容:
+,-----------
+|   class Object # rubocop:disable Documentation
+|     undef test
+|   end
+`-----------
+
+--
+Denny Zhang(张巍)
+Email: filebat.mark@gmail.com
+Website: https://www.dennyzhang.com
+
+People can deny your logic, but they can never deny your enthusiasm
+
+(⊙_⊙)
+
+#+end_example
+** DONE rubocop failure: Space missing to the left of {.
+  CLOSED: [2015-10-22 Thu 00:40]
+elasticsearch_audit_unicast_hosts.split(',').each \
+{ |x| audit_unicast_hosts << "\"" + x + "\"" }.join('; ')
+
+#+BEGIN_EXAMPLE
++ rubocop ../my-app
+/var/lib/jenkins/code/codestyle/dev/mydevops/cookbooks/my-app/.rubocop.yml - AllCops/Excludes was renamed to AllCops/Exclude
+Inspecting 5 files
+....C
+
+Offenses:
+
+recipes/default.rb:24:1: C: Space missing to the left of {.
+{ |x| unicast_hosts << "\"" + x + "\"" }.join('; ')
+^
+recipes/default.rb:30:1: C: Space missing to the left of {.
+{ |x| audit_unicast_hosts << "\"" + x + "\"" }.join('; ')
+^
+
+5 files inspected, 2 offenses detected
+#+END_EXAMPLE
+** TODO C: Avoid using {...} for multi-line blocks.
+https://github.com/bbatsov/rubocop/issues/376
+
+nagios3/recipes/nagios_server.rb:183:11: C: Avoid using {...} for multi-line blocks.
+  only_if { ::File.exist?("#{node['nagios']['download_dir']}/#{nagiosgraph_tar}") \
+          ^
+#  --8<-------------------------- separator ------------------------>8--
+
+execute 'Unpack nagiosgraph Tarball' do
+  command "tar -xf #{node['nagios']['download_dir']}/#{nagiosgraph_tar}"
+  action :run
+  only_if { ::File.exist?("#{node['nagios']['download_dir']}/#{nagiosgraph_tar}") \
+            && !::File.exist?("#{node['nagios']['download_dir']}/nagiosgraph-1.5.2")}
+  cwd node['nagios']['download_dir']
+  notifies :run, 'execute[Deploy nagiosgraph]', :immediately
+end
+** TODO [#A] rubocop: Ambiguous regexp literal                    :IMPORTANT:
+Offenses:
+
+test.rb:11:31: W: Ambiguous regexp literal. Parenthesize the method arguments if it's surely a regexp literal, or add a whitespace to the right of the / if it should be a division.
+  its(:stdout) { should match /^#{max_num} / }
+                              ^
+test.rb:16:31: W: Ambiguous regexp literal. Parenthesize the method arguments if it's surely a regexp literal, or add a whitespace to the right of the / if it should be a division.
+  its(:stdout) { should match /#{service} .* is running with/ }
+                              ^
+
+#+BEGIN_SRC ruby
+min_num = '123'
+str = '123 hello'
+if str =~ /^#{min_num} /
+  puts 'yes'
+else
+  puts 'no'
+end
+
+describe command('wc -l node_list_file') do
+  its(:stdout) { should match /^#{max_num} / }
+end
+
+describe command('docker exec all-in-one service service status') do
+  its(:stdout) { should match /#{service} .* is running with/ }
+end
+#+END_SRC
+** DONE rubocop: C: Do not use parallel assignment.
+  CLOSED: [2016-10-26 Wed 13:42]
+http://www.rubydoc.info/gems/rubocop/RuboCop/Cop/Style/ParallelAssignment
+#+BEGIN_EXAMPLE
+serverspec/general_helper.rb:26:3: C: Do not use parallel assignment.
+  orig, Socket.do_not_reverse_lookup = Socket.do_not_reverse_lookup, true
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#+END_EXAMPLE
+
+From:
+
+orig, Socket.do_not_reverse_lookup = Socket.do_not_reverse_lookup, true
+
+To:
+orig = Socket.do_not_reverse_lookup
+Socket.do_not_reverse_lookup = true
+** rubocop --auto-gen-config: generate a file that you can use to disable the offenses.
+** DONE rubocop: C: Missing space after #.
+  CLOSED: [2016-06-04 Sat 10:24]
+http://stackoverflow.com/questions/20309346/how-to-prevent-rubocop-to-add-a-space-after-hash
+You'll have to disable the LeadingCommentSpace cop. It ensures that there is a space between # and the text that follows it. Puts something like this in your .rubocop.yml:
+
+LeadingCommentSpace:
+  enabled: false
+What you've stumbled upon is a bug, that I'll fix in the next RuboCop release (I'm its author). Obviously #! should be treated specially.
+
+#+BEGIN_EXAMPLE
+ # -*- encoding: utf-8 -*-
+ #!/usr/bin/ruby
+ ##-------------------------------------------------------------------
+#+END_EXAMPLE
+** DONE foodcritic: FC064: Ensure issues_url is set in metadata
+  CLOSED: [2016-10-26 Wed 10:38]
+https://github.com/acrmp/foodcritic/issues/435
+
+======================== test foodcritic my-jenkins
+FC064: Ensure issues_url is set in metadata: my-jenkins/metadata.rb:1
+FC065: Ensure source_url is set in metadata: my-jenkins/metadata.rb:1
+
+#+BEGIN_EXAMPLE
+For FC064: Ensure issues_url is set in metadata you have the fix as:
+
+source_url 'https://github.com/chef-cookbooks/something' if respond_to?(:source_url)
+For FC065: Ensure source_url is set in metadata you have the fix as:
+
+issues_url 'https://github.com/chef-cookbooks/something/issues' if respond_to?(:issues_url)
+#+END_EXAMPLE
+** DONE rubocop: C: Use tr instead of gsub.
+  CLOSED: [2016-10-26 Wed 10:56]
+http://www.rubydoc.info/gems/rubocop/RuboCop/Cop/Performance/StringReplacement
+Error message:
+#+BEGIN_EXAMPLE
+recipes/namenode.rb:41:58: C: Use tr instead of gsub.
+  content node['my_hadoop']['namenode_hosts'].join(';').gsub(';', "\n")
+                                                         ^^^^^^^^^^^^^^^
+#+END_EXAMPLE
+
+From:
+#+BEGIN_EXAMPLE
+file '/etc/hadoop/conf/master' do
+  content node['my_hadoop']['namenode_hosts'].join(';').gsub(';', "\n")
+end
+#+END_EXAMPLE
+
+To:
+#+BEGIN_EXAMPLE
+file '/etc/hadoop/conf/master' do
+  content node['my_hadoop']['namenode_hosts'].join(';').tr(';', "\n")
+end
+#+END_EXAMPLE
+** DONE rubocop: Indent the first line of the right-hand-side of a multi-line assignment.
+  CLOSED: [2016-10-26 Wed 09:42]
+Denny-mac:my-couchbase mac$ rubocop .
+/Users/mac/backup/totvs_code/mydevops/dev/mydevops/cookbooks/my-couchbase/.rubocop.yml - AllCops/Excludes was renamed to AllCops/Exclude
+Inspecting 8 files
+......CC
+
+Offenses:
+
+test/integration/cluster-3nodes/serverspec/server_spec.rb:28:4: C: Indent the first line of the right-hand-side of a multi-line assignment.
+   '/opt/couchbase/lib/ns_server/erlang/lib/ns_server/priv/public/js/documents.js'
+   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+test/integration/default/serverspec/server_spec.rb:22:1: C: Indent the first line of the right-hand-side of a multi-line assignment.
+'/opt/couchbase/lib/ns_server/erlang/lib/ns_server/priv/public/js/documents.js'
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+8 files inspected, 2 offenses detected
+** web page: Crowd Interactive Blog | Improve your Ruby syntax with Rubocop
+http://blog.crowdint.com/2013/11/29/improve-your-ruby-syntax-with-rubocop.html
+*** webcontent                                                     :noexport:
+#+begin_example
+Location: http://blog.crowdint.com/2013/11/29/improve-your-ruby-syntax-with-rubocop.html
+Crowd Interactive
+
+  * What we do
+  * Portfolio
+  * About Us
+  * Team
+  * Contact Us
+
+  * What We Do
+  * Portfolio
+  * About Us
+  * Team
+  * Contact Us
+
+  *
+  *
+  *
+  *
+  *
+
+We write about
+
+iOS
+
+Shopify
+
+Spree
+
+Javascript
+
+Open Source
+
+eCommerce
+
+Craftsmanship
+
+Refactoring
+
+Rails
+
+Videoblog
+
+Community
+
+Performance
+
+Ruby
+
+Mobile Dev
+
+Go
+
+Web Dev
+
+[select one   ]
+Next >Home / Community< Previous
+>Home / Community<
+
+Improve your Ruby syntax with Rubocop
+
+0a7f0e6f530779c6e947a5ad6ab0da37by Fernando Perales|
+
+Nov 29, 2013
+
+|Community
+
+As software developers, we are always trying to improve our projects: refactoring, updating gems,
+trying alternatives to make our applications faster and more reliable. But it seems that there is a
+topic about which it is very hard for us to come to an agreement: that's syntax.
+
+Compare these classes:
+
+class DummyClass
+
+end
+
+class SecondDummyClass
+end
+
+class AnotherDummyClass; end
+
+class AThirdDummyClass;end
+
+Which one do you think is the right one, and why? All of them are right: all of them will run
+without any problems in our projects. The problem arises when one of the developers in your team
+uses the first one and you use the third one, but your client likes the fourth one and your Project
+Manager the second one: everyone will try to make the others use the syntax they like.
+
+Introducing Rubocop
+
+Rubocop is a code analyzer whose purpose is to force you to write code that follows the style guide
+dictated by the Ruby community.
+
+Quickstart
+
+Let's install Rubocop
+
+gem install rubocop
+
+You can run Rubocop directly in your app directory
+
+cd your_app
+rubocop
+
+But be careful: this will review ALL of your Ruby files in your application including gems. So you
+might want to be more selective about what to scan, and you can do it by sending an extra param to
+the rubocop command
+
+rubocop app
+
+This will make Rubocop scan only the app directory. If we want to scan more files or directories,
+we can pass them as params
+
+rubocop app spec config/application.rb
+
+Hands on
+
+Let's do an example with this smelly code found in example\of_bad_code.rb_
+
+class A_bad_named_class
+
+    def ABadNamed_Method
+        a = 2
+    if a
+      a+=1
+    return true
+    else
+      return false
+    end
+      return false
+    end
+end
+
+Now we run
+
+rubocop example_of_bad_code.rb
+
+As soon as Rubocop finishes inspecting the files, we will get an output similar to this:
+
+Inspecting 1 file
+W
+
+Offences:
+
+example.rb:1:1: C: Missing top-level class documentation comment.
+class A_bad_named_class
+^^^^^
+example.rb:1:7: C: Use CamelCase for classes and modules.
+class A_bad_named_class
+      ^^^^^^^^^^^^^^^^^
+example.rb:3:7: C: Use snake_case for methods.
+  def ABadNamed_Method
+      ^^^^^^^^^^^^^^^^
+example.rb:6:7: W: Useless assignment to variable - a
+      a+=1
+      ^
+example.rb:6:8: C: Surrounding space missing for operator '+='.
+      a+=1
+       ^^
+example.rb:11:7: C: Redundant `return` detected.
+      return false
+      ^^^^^^
+example.rb:12:5: W: end at 12, 4 is not aligned with def at 3, 2
+    end
+    ^^^
+
+1 file inspected, 7 offences detected
+
+The default output is a complete list of the problems found in our code.
+
+The previous case showed 7 errors in a single file and the output is still easy to handle. But,
+what can we do when Rubocop reports hundred of errors?
+
+Get in format with formatters
+
+Rubocop provides us with a lot of formatters that display the output in different ways. We can
+specify the output format from the console by using the --format option:
+
+The formatter I have found more useful is the offences formatter
+
+rubocop example_of_bad_code.rb --format offences
+
+Now the output will look like this:
+
+1  EndAlignment
+1  RedundantReturn
+1  SpaceAroundOperators
+1  UselessAssignment
+1  MethodName
+1  ClassAndModuleCamelCase
+1  Documentation
+
+As you may have guessed, this formatter groups the offences into categories and gives us a good
+overview of our project.
+
+Cops and donuts
+
+Now that we have an idea about what is wrong with our syntax, it's time to start taking a more
+detailed look to the cops. In Rubocop, a cop is the name of the specific 'error' presented in our
+code (i.e. EndAlignment cop tells us that an 'end' keyword is not properly aligned with its opening
+keyword)
+
+Cops are divided into 3 types: Lint, Rails and Style
+
+If we want to see a complete list of available cops, we can do it by running:
+
+rubocop --show-cops
+
+No offences allowed
+
+By knowing the name of the cops, we can look up for a specific cop in our code by running:
+
+rubocop --only EndAlignment
+
+On the other hand, we might consider not to pay attention to certain cops. But, how can we exclude
+them from the analysis?
+
+Setting a default behavior
+
+The behavior of the analysis can be controlled via rubocop.yml, a file that can be placed in the
+root of your project or your home directory.
+
+For example, to change the default line length in the LineLength cop from 79 to 60, we can add this
+to our Rubocop file:
+
+LineLength:
+  Max: 60
+
+A complete list of cops and configuration options is found in the list of cops --show-cops
+
+Fix all the things!
+
+One of the coolest features in Rubocop is its ability to automatically fix certain kind of errors
+with the --auto-correct option
+
+Before using this option, I really encourage you to stage the actual status of your project, just
+in case something goes wrong with the autocorrection:
+
+rubocop --auto-correct
+
+Once that we have checked that the autocorrection didn't mess up our code, we can start fixing any
+remaining offences by hand.
+
+Final words
+
+Remember that these standards are outlined by the Ruby community and it is up to you to decide if
+each particular kind of offence is relevant to your project. You can find more information in the
+official repository. Thanks for reading!
+
+0a7f0e6f530779c6e947a5ad6ab0da37All posts from Fernando Perales
+
+  * MagmaConf '14 LiveBlogging: Desi McAdam - Influence
+  * MagmaConf '14 LiveBlogging: Richard Schneeman - The Good Rubyist Challenge
+  * MagmaConf '14 LiveBlogging: Discussion Panel - Let's get ready to rumbleeeeeee: MV* stack VS
+    Rails 4 omakase
+
+blog comments powered byDisqus
+
+Take control of your eCommerce:
+Integrate, automate and launch
+quickly.
+
+Take control of your eCommerce:
+Integrate, automate and launch quickly.
+
+  * About Us
+  * Team
+  * Careers
+  * RSS
+
+  *
+  *
+  *
+  *
+  *
+
+© Crowd Interactive 2015
+
+#+end_example
+** CANCELED W: Ambiguous regexp literal.
+   CLOSED: [2015-05-24 Sun 16:06]
+os-basic/test/integration/default/serverspec/server_spec.rb:8:31: W: Ambiguous regexp literal. Parenthesize the method arguments if it's surely a regexp literal, or add a whitespace to the right of the / if it should be a division.
+  its(:stdout) { should match /java version \"1.8/ }
+                              ^
+** DONE rubocop Prefer each over for.
+  CLOSED: [2016-05-19 Thu 15:24]
+for num1 in 1..5 do
+  puts num1
+end
+
+(1..5).each do |num2|
+  puts num2
+end
+** DONE C: Use 2 spaces for indentation in an array
+   CLOSED: [2015-05-24 Sun 16:06]
+os-basic/recipes/basic.rb:10:1: C: Use 2 spaces for indentation in an array, relative to the start of the line where the left bracket is.
+/opt/devops /opt/devops/bin /opt/devops/config /opt/devops/config/env.d
+^^^^^^^^
+
+os-basic/recipes/packages.rb:11:1: C: Use 2 spaces for indentation in an array, relative to the start of the line where the left bracket is.
+build-essential openssl libreadline6 libreadline6-dev curl
+^^^^^^^^^^^^^^^
+** BYPASS rubocop: Assignment Branch Condition size for ... is too high.
+  CLOSED: [2016-05-19 Thu 18:25]
+http://c2.com/cgi/wiki?AbcMetric
+
+http://stackoverflow.com/questions/30932732/what-is-meant-by-assignment-branch-condition-size-too-high-and-how-to-fix-it
+https://github.com/bbatsov/rubocop/blob/ca377951bb2ba17184d5ea9fb1bc8842097de1c9/lib/rubocop/cop/metrics/abc_size.rb
+http://codereview.stackexchange.com/questions/69800/refactoring-a-crawler
+
+Metrics/AbcSize:
+   Enabled: false
+
+#+BEGIN_EXAMPLE
+What that warning is saying is that, according to rubocop's standard, you have too many assignments, branches, and conditionals (ABCs) in that method. ABCs are associated with code that is complex and harder to reason about. It can also indicate that a method is trying to do too much, as I would say it is telling you about this method.
+
+Looking over the method in question, we can clearly see it has several responsibilities:
+
+Guard clauses for validity
+Tokenizing a proxy string into a hash data structure
+Setting a proxy with the data from that data structure
+Tearing apart and rebuilding a URL
+Fetching a page over HTTP
+Parsing markup for image tags, and shoving them on an array
+Filtering that array of images
+Returning that array
+#+END_EXAMPLE
+
+Offenses:
+
+test.rb:3:1: C: Assignment Branch Condition size for run_check_jenkins_job is too high. [17.03/15]
+def run_check_jenkins_job(jenkins_run_cmd, job_name, parameters)
+^^^
+
+rubocop:disable Metrics/AbcSize
+
+#+BEGIN_SRC ruby
+def run_check_jenkins_job(jenkins_run_cmd, job_name, parameters)
+  jenkins_check_cmd = build_jenkins_check_cmd(job_name)
+
+  describe command("#{jenkins_run_cmd} #{job_name} -w #{parameters}") do
+    its(:stdout) { should contain 'Started ' }
+    its(:exit_status) { should eq 0 }
+  end
+
+  describe command(jenkins_check_cmd) do
+    its(:stdout) { should contain 'Jenkins job success: ' }
+    its(:exit_status) { should eq 0 }
+  end
+end
+#+END_SRC
+** DONE [#A] rubocop add whitelist for: Use next to skip iteration.
+   CLOSED: [2015-05-24 Sun 16:23]
+http://stackoverflow.com/questions/26342570/rubocop-linelength-how-to-ignore-lines-with-comments
+https://github.com/bbatsov/rubocop/blob/master/README.md
+rubocop --auto-gen-config and it will generate a file that you can use to disable the offenses.
+
+https://github.com/bbatsov/rubocop/issues/1122
+https://github.com/bbatsov/rubocop/issues/1238
+
+all-in-one/recipes/precheck.rb:27:20: C: Use next to skip iteration.
+node['filesystem'].each do |mnt, disk|
+                   ^^^^
+** DONE FC023: Prefer conditional attributes: sandbox-test/recipes/docker.rb:68
+   CLOSED: [2015-05-23 Sat 10:54]
+style
+
+This warning means you have surrounded a resource with an if or unless rather than defining the condition directly on the resource itself. Note that this warning is only raised for single resources as you could reasonably enclose multiple resources in a condition like this for brevity.
+
+Jay Feldblum has expressed criticism of this rule because the effect is that resources are defined unnecessarily and ignored only at run-time. His view is that it is cleaner to use standard Ruby conditionals to avoid defining them in the first place.
+
+Resource enclosed in a condition
+This example matches the FC023 rule because it encloses a rule within a condition, rather than using the built-in Chef not_if or only_if conditional execution attributes.
+
+http://wiki.opscode.com/display/chef/Resources#Resources-ConditionalExecution
+Modified version
+You can avoid the warning above with more idiomatic Chef that specifies the condition above as an attribute on the resource:
+
+# Don't do this
+if node['foo'] == 'bar'
+  service "apache" do
+    action :enable
+  end
+end
+
+# Do this
+service "apache" do
+  action :enable
+  only_if { node['foo'] == 'bar' }
+end
+** #  --8<-------------------------- separator ------------------------>8--
+** web page: chef-cookbooks/.rubocop.yml at master · facebook/chef-cookbooks · GitHub
+https://github.com/facebook/chef-cookbooks/blob/master/.rubocop.yml
+*** webcontent                                                     :noexport:
+#+begin_example
+Location: https://github.com/facebook/chef-cookbooks/blob/master/.rubocop.yml
+Skip to content
+
+  * Features
+  * Business
+  * Explore
+  * Marketplace
+  * Pricing
+
+This repository [                    ]
+Sign in or Sign up
+
+  * Watch 48
+  * Star 324
+  * Fork 55
+
+facebook/chef-cookbooks
+
+Code Issues 1 Pull requests 0 Projects 0
+Insights
+Pulse Graphs
+Permalink
+Branch: master
+Switch branches/tags
+[                    ]
+
+  * Branches
+  * Tags
+
+master
+Nothing to show
+Nothing to show
+Find file Copy path
+chef-cookbooks/.rubocop.yml
+66ab611 Jul 26, 2017
+@zfjagann zfjagann Disable Style/FormatStringToken
+3 contributors @davide125 @jaymzh @zfjagann
+
+Users who have contributed to this file
+
+  * @davide125 davide125
+  * @jaymzh jaymzh
+  * @zfjagann zfjagann
+
+Raw Blame History
+178 lines (129 sloc) 3.03 KB
+
+ #
+ # Disabled rules
+ #
+ Encoding:
+ Enabled: false
+ NumericLiterals:
+ Enabled: false
+ MultilineTernaryOperator:
+ Enabled: false
+ ModuleLength:
+ Enabled: false
+ MethodLength:
+ Enabled: false
+ ClassLength:
+ Enabled: false
+ # It would forbid action [:enable, :start]
+ SymbolArray:
+ Enabled: false
+ # This recommends using external gems to parse heredocs
+ Style/IndentHeredoc:
+ Enabled: false
+ CyclomaticComplexity:
+ Enabled: false
+ # So just keep iterating instead of breaking? wtf.
+ Next:
+ Enabled: false
+ # While this can be nice, it also can promote errors. Let people
+ # use what's comfortable for them
+ GuardClause:
+ Enabled: false
+ AbcSize:
+ Enabled: false
+ # less readable, not more
+ IfUnlessModifier:
+ Enabled: false
+ # Really?
+ PerlBackrefs:
+ Enabled: false
+ # Unrealistic
+ BlockNesting:
+ Enabled: false
+ # Disabled because of the way 'variables' works.
+ BracesAroundHashParameters:
+ Enabled: false
+ WordArray:
+ Enabled: false
+ RedundantReturn:
+ Enabled: false
+ RedundantSelf:
+ Enabled: false
+ CommentAnnotation:
+ Enabled: false
+ # this trips on *any* method called 'get_*' wtf.
+ AccessorMethodName:
+ Enabled: false
+ # backslash is extra dumb in ruby, we want the OPPOSITE of this rule
+ LineEndConcatenation:
+ Enabled: false
+ # this isn't testing for consistency it always wants % w() which is dumb
+ PercentLiteralDelimiters:
+ Enabled: false
+ # it wants File.exist? instead of File.exists?
+ DeprecatedClassMethods:
+ Enabled: false
+ # This blows up on things like base_packages-redhat
+ FileName:
+ Enabled: false
+ # I don't know what it's metric for "human complexity" is, but it's wrong.
+ PerceivedComplexity:
+ Enabled: false
+ UnneededDisable:
+ Enabled: false
+ # Seems buggy - https://github.com/bbatsov/rubocop/issues/2690
+ MultilineOperationIndentation:
+ Enabled: false
+ # buggy: https://github.com/bbatsov/rubocop/issues/2639
+ Performance/RedundantMatch:
+ Enabled: false
+ # We'll .times.map all we want.
+ Performance/TimesMap:
+ Enabled: false
+ # https://github.com/bbatsov/rubocop/issues/2676
+ Performance/RedundantMerge:
+ Enabled: false
+ # Bug with constants? https://phabricator.fb.com/P56108678
+ Style/ConditionalAssignment:
+ Enabled: false
+ #
+ # Modified rules
+ #
+ LineLength:
+ Max: 80
+ DotPosition:
+ EnforcedStyle: trailing
+ HashSyntax:
+ EnforcedStyle: hash_rockets
+ Style/Documentation:
+ Enabled: false
+ TrailingCommaInLiteral:
+ EnforcedStyleForMultiline: comma
+ TrailingCommaInArguments:
+ EnforcedStyleForMultiline: comma
+ Style/FormatStringToken:
+ Enabled: false
+ Style/IndentArray:
+ EnforcedStyle: consistent
+ Style/SignalException:
+ EnforcedStyle: semantic
+ Style/NumericLiteralPrefix:
+ Enabled: false
+ Style/VariableNumber:
+ Enabled: false
+ Style/RegexpLiteral:
+ EnforcedStyle: mixed
+ Metrics/BlockLength:
+ Enabled: false
+ Style/PercentLiteralDelimiters:
+ PreferredDelimiters:
+ default: {}
+ '% i': {}
+ '% w': {}
+ # no, we're not putting parens around `lazy`
+ Lint/AmbiguousBlockAssociation:
+ Enabled: false
+ AllCops:
+ TargetRubyVersion: 2.1
+ Exclude:
+ # template files named `rb` instead of `erb` are a sin against ruby-nature.
+ - '**/templates/**/*.rb'
+
+  * Copy lines
+  * Copy permalink
+  * View git blame
+  * Open new issue
+
+Jump to Line
+[                    ] Go
+  * © 2017 GitHub, Inc.
+  * Terms
+  * Privacy
+  * Security
+  * Status
+  * Help
+
+  * Contact GitHub
+  * API
+  * Training
+  * Shop
+  * Blog
+  * About
+
+You can't perform that action at this time.
+You signed in with another tab or window. Reload to refresh your session. You signed out in another
+tab or window. Reload to refresh your session.
+
+#+end_example
