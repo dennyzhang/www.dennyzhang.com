@@ -1,0 +1,75 @@
+* Book Review For DevOps Reading                                  :BLOG:Life:
+:PROPERTIES:
+:type:     DevOps,Life,Recommend,Book,Selling
+:END:
+---------------------------------------------------------------------
+Books I found very useful for my daily work. 
+
+I recommend you also get a copy, and *READ them*.
+
+Share your recommendation with me in below!
+
+[[image-blog:The Phoenix Project][https://www.dennyzhang.com/wp-content/uploads/denny/book-devops.jpg]]
+---------------------------------------------------------------------
+- [[url-external:https://www.amazon.com/Phoenix-Project-DevOps-Helping-Business/dp/0988262509/ref=as_sl_pc_qf_sp_asin_til?tag=dennyzhang-20&linkCode=w00&linkId=71878608a6bfd8fe98ca2cc56a10031a&creativeASIN=0988262509][The Phoenix Project]]: An interesting novel. I love it! Quite easy to read and very amusing. 
+
+And it helps to answer one common question: What is DevOps? How does it look like?
+
+One big problem for reading is it's super hard to start. This novel makes it easier. Try it.
+
+#+BEGIN_HTML
+<div>
+<iframe style="width: 120px; height: 240px;" src="//ws-na.amazon-adsystem.com/widgets/q?ServiceVersion=20070822&amp;OneJS=1&amp;Operation=GetAdHtml&amp;MarketPlace=US&amp;source=ac&amp;ref=qf_sp_asin_til&amp;ad_type=product_link&amp;tracking_id=dennyzhang-20&amp;marketplace=amazon&amp;region=US&amp;placement=0988262509&amp;asins=0988262509&amp;linkId=71878608a6bfd8fe98ca2cc56a10031a&amp;show_border=false&amp;link_opens_in_new_window=false&amp;price_color=333333&amp;title_color=0066c0&amp;bg_color=ffffff" width="300" height="150" frameborder="0" marginwidth="0" marginheight="0" scrolling="no">
+</iframe>
+#+END_HTML
+
+---------------------------------------------------------------------
+- [[url-external:https://www.amazon.com/DevOps-Handbook-World-Class-Reliability-Organizations/dp/1942788002/ref=as_sl_pc_tf_til?tag=dennyzhang-20&linkCode=w00&linkId=0334e7e74eb6e585093729ad44f59e04&creativeASIN=1942788002][The DevOps Handbook]]: Structured introduction about DevOps principles and practice. Definitely a good book from the famous DevOps influencer, [[https://www.amazon.com/Gene-Kim/e/B00AERCJ9E/ref=dp_byline_cont_book_1][Gene Kim]].
+
+Personally I agree is great and useful. But I found it makes me feeling sleepy sometimes. :(
+
+#+BEGIN_HTML
+<iframe style="width: 120px; height: 240px;" src="//ws-na.amazon-adsystem.com/widgets/q?ServiceVersion=20070822&amp;OneJS=1&amp;Operation=GetAdHtml&amp;MarketPlace=US&amp;source=ac&amp;ref=tf_til&amp;ad_type=product_link&amp;tracking_id=dennyzhang-20&amp;marketplace=amazon&amp;region=US&amp;placement=1942788002&amp;asins=1942788002&amp;linkId=0334e7e74eb6e585093729ad44f59e04&amp;show_border=false&amp;link_opens_in_new_window=false&amp;price_color=333333&amp;title_color=0066c0&amp;bg_color=ffffff" width="300" height="150" frameborder="0" marginwidth="0" marginheight="0" scrolling="no">
+</iframe>
+#+END_HTML
+
+See LinkedIn Discussion: [[url-external:https://www.linkedin.com/feed/update/urn:li:activity:6303067687996182528][here]].
+---------------------------------------------------------------------
+
+- [[url-external:https://www.amazon.com/Site-Reliability-Engineering-Production-Systems/dp/149192912X/ref=as_sl_pc_qf_sp_asin_til?tag=dennyzhang-20&linkCode=w00&linkId=2597588f2e45ec8d7582fd8e46108cc0&creativeASIN=149192912X][Site Reliability Engineering]]: From this book, we know how Google do DevOps, how Google do SRE. Read it online [[url-external:https://landing.google.com/sre/book/index.html][here]].
+
+#+BEGIN_HTML
+<iframe style="width: 120px; height: 240px;" src="//ws-na.amazon-adsystem.com/widgets/q?ServiceVersion=20070822&amp;OneJS=1&amp;Operation=GetAdHtml&amp;MarketPlace=US&amp;source=ac&amp;ref=qf_sp_asin_til&amp;ad_type=product_link&amp;tracking_id=dennyzhang-20&amp;marketplace=amazon&amp;region=US&amp;placement=149192912X&amp;asins=149192912X&amp;linkId=2597588f2e45ec8d7582fd8e46108cc0&amp;show_border=false&amp;link_opens_in_new_window=false&amp;price_color=333333&amp;title_color=0066c0&amp;bg_color=ffffff" width="300" height="150" frameborder="0" marginwidth="0" marginheight="0" scrolling="no">
+</iframe>
+#+END_HTML
+---------------------------------------------------------------------
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/devops_books"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/devops_books
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

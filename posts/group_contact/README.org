@@ -1,0 +1,58 @@
+* Slack Group Contact Info                                        :BLOG:Page:
+:PROPERTIES:
+:type:     Ads
+:END:
+---------------------------------------------------------------------
+#+BEGIN_HTML
+<b>GIVE PEOPLE CREDITS</b>, if someone has helped you a lot in <a target="_blank" rel="nofollow" href="https://www.dennyzhang.com/slack"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/slack.png" alt="slack" /></a>
+#+END_HTML
+1. Endorse his/her skills in LinkedIn
+- Write a LinkedIn recommendation
+- Or simply __Say Hi__ him/her privately
+
+[[color:#c7254e][Don't feel obligated to do anything.]]
+
+#+TBLFM: $1=@-1$1+1;N
+**More Group Contact**
+| Num | Slack ID               | Location         | Links    |
+|-----+------------------------+------------------+----------|
+|   3 | @Lexies Leon           | Chile            | [[https://www.linkedin.com/in/lexiesleon/][LinkedIn]] |
+|   5 | @Kim Kao               | Taiwan           | [[https://www.linkedin.com/in/kim-kao-b93b2b68/][LinkedIn]] |
+|   9 | @Chandra Prakash Meher | Mumbai, India    | [[https://www.linkedin.com/in/chandraprakash-meher-548382119/][LinkedIn]] |
+#+TBLFM: $1=@-1$1+1;N
+**Slack Admin**
+[[image-blog:Slack Group Contact Info][https://www.dennyzhang.com/wp-content/uploads/denny/slack_admin.png]]
+**Invite Your Friends Into Slack**
+[[image-blog:Slack Group Contact Info][https://www.dennyzhang.com/wp-content/uploads/denny/slack_group_friends.png]]
+
+---------------------------------------------------------------------
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/group_contact"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/group_contact
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

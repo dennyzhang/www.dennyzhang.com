@@ -1,0 +1,83 @@
+* ChatOps Bot: Query Node Info Without Manual Login            :BLOG:ChatOps:
+  :PROPERTIES:
+  :type:     DevOps,ChatOps,Docker
+  :END:
+---------------------------------------------------------------------
+*Try Your Best To Avoid Any SSH Operations*. Yes, I deeply believe in this principle. But my reality is the automation is never so perfect. I still need to login and check system status sometimes. Though the chance is rare.
+*It may happen at nights or even when I'm on vacation*. So what I can do? Just carry my laptop with me wherever I go? This is certainly bad, isn't it?
+
+We're living in the world of [[color:#c7254e][ChatOps]]. And mobile phones dominate our daily life (Sadly!) *So why don't we implement a ChatOps bot for this*? Here comes a slack command: [[color:#c7254e][/chatqueryhost]]. (Note: The solution is not limited to Slack)
+
+[[image-blog:ChatOps Bot: Query Node Info Without Manual Login][https://www.dennyzhang.com/wp-content/uploads/denny/chatqueryhost.png]]
+
+---------------------------------------------------------------------
+Check More Discussion In [[url-external:https://www.linkedin.com/feed/update/urn:li:activity:6290985346456969216][LinkedIn]]
+
+[[image-linkedin:ChatOps Bot: Query Node Info Without Manual Login][https://www.dennyzhang.com/wp-content/uploads/denny/linkedin_queryhost.jpg]]
+
+---------------------------------------------------------------------
+*1. Install [[https://github.com/dennyzhang/devops_public/tree/tag_v6/python/node_usage][node_usage.py]] For Each Nodes.*
+
+It will get status for each node as *a json output*.
+- OS resource utilization: RAM, CPU, and disk.
+- [Optional] Get service status, or tail log files.
+
+(See why I choose Python over Shell: [[https://www.dennyzhang.com/shell_to_python][GoodBye Shell, Hello Python!]])
+
+[[image-github:https://github.com/dennyzhang/chatops_slack][https://www.dennyzhang.com/wp-content/uploads/denny/github_node_usage.jpg]]
+
+[[github:DennyZhang][GitHub]]
+*2. Start A Web Server, Serving Slack Requests.*
+
+It will start a webserver with Python flask + uwsgi.
+- Get requests from Slack input.
+- Run remote ssh command, which is literally node_usage.py.
+
+Code is [[https://github.com/dennyzhang/chatops_slack][GitHub]]. [1] (Warning. I admit: It's not well documented. Just F.Y.I).
+
+You can design and implement your own ChatOps solution for this.
+
+And here are some suggestions I've for you, my friends:
+1. Slack command must return within 3 seconds.[2]
+2. Instead of running ssh commands, it's safer to wrap py script as agents. Then the agent serves as a tcp or http server.
+3. Support find node by fuzzy match. Your env may have tens of nodes, if not hundereds of. So support people to identify node by giving part of hostname.
+
+[1] https://github.com/dennyzhang/chatops_slack
+[2] https://api.slack.com/slash-commands#responding_to_a_command
+
+---------------------------------------------------------------------
+More Reading:
+
+- [[https://www.dennyzhang.com/check_process][How To Check Linux Process Deeply With Common Sense]]
+- [[https://www.dennyzhang.com/nmap_port_scan][Use Nmap To Automate Insecure Ports Check]]
+- [[https://www.dennyzhang.com/ssh_fail][4 Reasons Why SSH Connection Fails]]
+
+#+BEGIN_EXPORT HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/chatqueryhost"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_EXPORT
+
+Blog URL: https://www.dennyzhang.com/chatqueryhost
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

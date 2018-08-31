@@ -1,0 +1,1157 @@
+* 5 Tips Of GUI Tests With Python + Selenium                      :BLOG:Tool:
+  :PROPERTIES:
+  :type:     DevOps,Testing,Docker
+  :END:
+---------------------------------------------------------------------
+I have been using *Python + Selenium* for years. Honestly speaking, I'm far from a frontend expert or a QA expert. Here are my lessons learned from this journey.
+
+If you're also a Python user and need GUI testing, check this out!
+
+[[image-blog:5 Tips For GUI Automation Test In Python][https://www.dennyzhang.com/wp-content/uploads/denny/gui_python_selenium.png]]
+---------------------------------------------------------------------
+*1. Use Docker To Setup Selenium headless Environments*
+Setup GUI testkit takes effort. Especially in old days! Ever heard of something like Xvfb[1], Xephyr, PyVirtualDisplay[2], etc.
+
+Too much information, isn't it? It will blow your mind. Not to mention the maintenance effort. And yes, the trouble shooting!
+
+[[color:#c7254e][Remember Using Docker To Setup Your GUI TestKit]]
+
+Check dockerfile in [[https://github.com/dennyzhang/python-selenium][github]]. [[github:DennyZhang][GitHub]]
+#+BEGIN_EXAMPLE
+# Start container
+docker run -d --restart=always \
+    -v /tmp/screenshot:/tmp/screenshot \
+    -h selenium --name selenium denny/python-selenium:v1
+
+# Run A Sample Test.
+# With customized test scripts, you can do more!
+docker exec selenium \
+   python /home/seluser/selenium_load_page.py \
+   --page_url https://www.dennyzhang.com --should_save_screenshot
+
+# Check Screenshot
+ls -lth /tmp/screenshot
+#+END_EXAMPLE
+
+With above simple command, your remote Xvfb server would be up and running now.
+
+If it had crashed, your container will crash too. Consequently it will be restarted automatically. Beautiful, isn't it?
+#+BEGIN_EXAMPLE
+contact$dennyzhang.com docker exec -it selenium ps -ef | grep -i xvfb
+seluser     12     1  0 Sep04 ?        00:00:00 /bin/sh /usr/bin/xvfb-run -n 99
+seluser     23    12  0 Sep04 ?        00:00:00 Xvfb :99 -screen 0 1360x1020x24
+#+END_EXAMPLE
+
+[[color:#c7254e][Add your own test script]]
+
+Inside the container, we have /home/seluser/selenium_load_page.py. It's the GUI test script.
+
+Definitely you will need to implement your own GUI test coode, right? Once it's done, you can mount your script as docker volume.
+
+Then start the container with the volume, by docker/docker-compose/kubernets. 
+
+So it's like *GUI testkit(container)* + *test scripts(docker volume)*.
+
+*2. Deal with async loading for javascripts and css*
+
+In web programming, async loading is quite common. Especially with the technology of nodejs. So before we check UI functionalities, we need to wait until elements to be shown.[3]
+#+BEGIN_EXAMPLE
+from selenium import webdriver
+
+driver = webdriver.Firefox()
+driver.implicitly_wait(10) # seconds
+driver.get("http://somedomain/url_that_delays_loading")
+myDynamicElement = driver.find_element_by_id("myDynamicElement")
+#+END_EXAMPLE
+
+*3. Raise Alerts, If Page Load Is Too Slow*
+Apparently the first priority is making sure the major functionalities work.
+
+But also remember to watch out the slowness. This helps people to detect the performance issues.
+#+BEGIN_EXAMPLE
+import time
+
+print("Open page: %s" % (page_url))
+start_clock = time.clock()
+
+gui_login_webpage(driver, page_url, username, password)
+
+end_clock = time.clock()
+elapsed_seconds = ((end_clock - start_clock) * 1000)
+is_ok = True
+if elapsed_seconds > max_load_seconds:
+    print("ERROR: page load is too slow. It took %s seconds, more than %d seconds." \
+          % ("{:.2f}".format(elapsed_seconds), max_load_seconds))
+    is_ok = False
+else:
+    print("Page load took: %s seconds." % ("{:.2f}".format(elapsed_seconds)))
+#+END_EXAMPLE
+
+*4. Raise Alerts, If Any 5XX or 4XX Errors Are Detected.*
+One URL request will launch lots of http sub-requests. If any requests run into issues, we need to notify developers.
+
+e.g:
+#+BEGIN_EXAMPLE
+IGNORE_ERROR_LIST = ["favicon.ico"]
+
+all_warnings = driver.get_log('browser')
+critical_errors = []
+for warning in all_warnings:
+    if warning['level'] == 'SEVERE':
+        has_error = True
+        for ignore_err in IGNORE_ERROR_LIST:
+            if ignore_err in warning['message']:
+                has_error = False
+                break
+        if has_error is True:
+            critical_errors.append(warning)
+#+END_EXAMPLE
+
+*5. Wrap GUI Test As Jenkins Jobs*
+People only accept solutions which are easy to use. So let's use jenkins to achieve visualOps.
+
+[[image-github:https://github.com/dennyzhang/python-selenium][https://www.dennyzhang.com/wp-content/uploads/denny/github_jenkins_gui_login_job.png]]
+*Quick Python Selenium CheatSheet* [4]
+| Name                  | Summary                                                        |
+|-----------------------+----------------------------------------------------------------|
+| find element by name  | driver.find_element_by_name("emailAddress")                    |
+| find element by id    | driver.find_element_by_id("password")                          |
+| find element by css   | driver.find_elements_by_class_name("f-launchpad")              |
+| find element by xpath | driver.find_elements_by_xpath(xpath="//div[@label='Here']")[5] |
+| save screenshot       | driver.save_screenshot_as_file('/tmp/screenshot.png')[6]       |
+
+[1] https://en.wikipedia.org/wiki/Xvfb
+[2] https://pypi.python.org/pypi/PyVirtualDisplay
+[3] http://selenium-python.readthedocs.io/waits.html
+[4] http://selenium-python.readthedocs.io
+[5] http://selenium-python.readthedocs.io/locating-elements.html
+[6] http://jjbohn.info/blog/2013/07/31/how-to-take-a-screenshot-with-rubys-selenium-web-driver/
+
+More Reading:
+- [[https://www.dennyzhang.com/selenium_docker][Run GUI Test With Docker: Detect Web Page Loading Issues]]
+- [[https://www.dennyzhang.com/test_internet_tools][Useful Tools To Test Your Internet]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/python_selenium"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/python_selenium
+
+* misc                                                             :noexport:
+** basic use                                                       :noexport:
+#+begin_example
+http://luolonghao.iteye.com/blog/1472708
+
+Selenium-Web界面测试工具
+1. Selenium可以使用录制工具录制脚本,测试页面.
+2. Selenium可以生成类html代码,java代码,ruby代码等.
+3. Selenium录制工具根据id属性定位html元素
+#+end_example
+** useful link
+http://selenium-python.readthedocs.io/page-objects.html#page-elements
+http://docs.seleniumhq.org/projects/ide/
+
+http://www.cnblogs.com/emilyzhang68/archive/2012/02/24/2366796.html
+
+http://dionysus.uraganov.net/software/how-to-install-selenium-server-with-firefox-on-ubuntu-11-10/
+
+http://alex.nederlof.com/blog/2012/11/19/installing-selenium-with-jenkins-on-ubuntu/
+
+http://python.dzone.com/articles/python-getting-started
+http://www.cnblogs.com/fnng/archive/2011/10/23/2222157.html
+http://blog.likewise.org/2013/04/webdriver-testing-with-python-and-ghostdriver/
+http://www.cnblogs.com/harolei/p/3466284.html
+https://gist.github.com/alonisser/11192482
+https://github.com/exratione/protractor-selenium-server-vagrant
+https://registry.hub.docker.com/u/elgalu/docker-selenium/dockerfile/
+
+http://pietervogelaar.nl/ubuntu-14-04-install-selenium-as-service-headless
+http://alex.nederlof.com/blog/2012/11/19/installing-selenium-with-jenkins-on-ubuntu/
+
+http://www.danstraw.com/installing-selenium-server-2-as-a-service-on-ubuntu/2010/09/23/
+http://www.techbeamers.com/selenium-webdriver-python-tutorial/
+** #  --8<-------------------------- separator ------------------------>8--
+** TODO Add common scenarios
+** TODO wait for elements to be loaded
+** TODO javascript async loading
+** TODO missing experience of css
+** #  --8<-------------------------- separator ------------------------>8--
+** DONE install PhantomJS is a headless Webkit
+   CLOSED: [2017-09-04 Mon 19:45]
+apt-get install phantomjs
+sudo apt-get install xvfb python-pip
+sudo pip install selenium
+sudo pip install pyvirtualdisplay
+
+http://phantomjs.org
+http://phantomjs.org/download.html
+** [#A] Samples
+*** [#A] sample: python webdriver connecting google
+http://docs.seleniumhq.org/docs/03_webdriver.jsp
+#+begin_src python
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
+from selenium.webdriver.support import expected_conditions as EC # available since 2.26.0
+
+# Create a new instance of the Firefox driver
+driver = webdriver.Firefox()
+
+# go to the google home page
+driver.get("http://www.google.com")
+
+# find the element that's name attribute is q (the google search box)
+inputElement = driver.find_element_by_name("q")
+
+# type in the search
+inputElement.send_keys("Cheese!")
+
+# submit the form (although google automatically searches now without submitting)
+inputElement.submit()
+
+# the page is ajaxy so the title is originally this:
+print driver.title
+
+try:
+    # we have to wait for the page to refresh, the last thing that seems to be updated is the title
+    WebDriverWait(driver, 10).until(EC.title_contains("cheese!"))
+
+    # You should see "cheese! - Google Search"
+    print driver.title
+
+finally:
+    driver.quit()
+#+end_src
+*** sample: python webdriver search baidu
+sudo pip install selenium
+
+#+begin_src python
+from selenium import webdriver
+
+driver = webdriver.Firefox()
+driver.get('http://www.baidu.com/')
+inputElement = driver.find_element_by_id("kw")
+inputElement.send_keys("sophia")
+inputElement.submit()
+#+end_src
+*** DONE Sample: python login 126.com mailbox            :IMPORTANT:noexport:
+    CLOSED: [2015-05-25 Mon 01:57]
+python
+>>> from selenium import webdriver
+>>> driver = webdriver.PhantomJS('phantomjs')
+>>> driver.get("http://126.com")
+>>> driver.title
+>>> driver.current_url
+>>> driver.find_element_by_id("idInput").send_keys("markfilebat")
+>>> driver.find_element_by_id("pwdInput").send_keys("zhang.sophia8")
+>>> driver.find_element_by_id("loginBtn").click()
+>>> driver.current_url
+u'http://www.google.com/search?hl=en&source=hp&q=selenium&gbv=2&oq=selenium'
+driver.save_screenshot('screenshot.png')
+*** DONE Sample: hello world
+    CLOSED: [2017-09-04 Mon 19:45]
+- sudo pip install selenium
+- add test.py with below content
+
+#+begin_src python
+from selenium import webdriver
+
+driver = webdriver.Firefox()
+driver.get('http://www.baidu.com/')
+inputElement = driver.find_element_by_id("kw")
+inputElement.send_keys("sophia")
+inputElement.submit()
+#+end_src
+
+- python ./test.py
+
+[[file:http://blog.ec-ae.com/wp-includes/gif/seleinum.gif]]
+*** DONE selenium login website with username and password         :noexport:
+    CLOSED: [2015-05-24 Sun 19:14]
+#+BEGIN_SRC python
+# -*- coding: utf-8 -*-
+#!/usr/bin/python
+##-------------------------------------------------------------------
+## @copyright 2014 DennyZhang.com
+## File : selenium_test.py
+## Author : Denny <denny.zhang001@gmail.com>
+## Description :
+## --
+## Created : <2014-07-16>
+## Updated: Time-stamp: <2014-11-18 10:18:21>
+##-------------------------------------------------------------------
+from selenium import webdriver
+from pyvirtualdisplay import Display
+import os, sys, getopt, random
+import time
+
+EXIT_OK=0
+EXIT_WARNING=1
+EXIT_ERROR=2
+
+novirtualdisplay = False
+user_credential_list = \
+{
+    # (domain name, username, password)
+    "user1":("https://totvs.fluigidentity.com/cloudpass", "fluigid.arg@totvs.com.br", "totvs@123"),
+    "user2":("https://totvs.fluigidentity.com/cloudpass",  "fluigid.sp@totvs.com.br", "totvs@123"),
+    "user3":("https://totvs.fluigidentity.com/cloudpass",  "fluigid.jv@totvs.com.br", "totvs@123"),
+    "user4":("https://totvs.fluigidentity.com/cloudpass",  "fluigid.eua@totvs.com.br", "totvs@123"),
+    "user5":("https://totvs.fluigidentity.com/cloudpass",  "fluigid.bh@totvs.com.br", "totvs@123"),
+    "user6":("https://totvs.fluigidentity.com/cloudpass",  "fluigid.df@totvs.com.br", "totvs@123"),
+    "user7":("https://totvs.fluigidentity.com/cloudpass",  "fluigid.mex@totvs.com.br", "totvs@123"),
+    "user8":("https://totvs.fluigidentity.com/cloudpass",  "fluigid.poa@totvs.com.br", "totvs@123"),
+    "user9":("https://totvs.fluigidentity.com/cloudpass",  "fluigid.rec@totvs.com.br", "totvs@123"),
+    "user10":("https://totvs.fluigidentity.com/cloudpass",  "fluigid.rjo@totvs.com.br", "totvs@123"),
+}
+
+def adsync_login(driver, domain_name, username, password):
+    driver.get(domain_name) # time consuming
+
+    inputElement = driver.find_element_by_name("emailAddress")
+    inputElement.send_keys(username)
+
+    inputElement = driver.find_element_by_id("password")
+    inputElement.send_keys(password)
+    inputElement.submit()
+
+    inputElements = driver.find_elements_by_class_name("f-launchpad")
+    return inputElements != []
+
+def test_adsync(domain_name, username, password):
+    # TODO: add timeout mechanism
+    status = False
+    display = None
+    global novirtualdisplay
+
+    (start_clock, end_clock) = (0, 0)
+
+    if novirtualdisplay is False:
+        display = Display(visible=0, size=(1024, 768))
+        display.start()
+    driver = webdriver.Firefox() # time consuming
+    start_clock = time.clock()
+
+    try:
+        status = adsync_login(driver, domain_name, username, password)
+    except Exception as e:
+        print "Unexpected error:%s, %s" % (sys.exc_info()[0], e)
+
+    end_clock = time.clock()
+    driver.quit() # driver.close() won't delete the tmp folder
+    if novirtualdisplay is False:
+        display.stop()
+
+    elapsed_seconds = "{:0.3f}".format((end_clock - start_clock) * 1000)
+    return (elapsed_seconds, status)
+
+def pic_random_user():
+    count = len(user_credential_list)
+    index = random.randint(0, count-1)
+    key = user_credential_list.keys()[index]
+    return user_credential_list[key]
+
+def parse_arg(argv):
+    global novirtualdisplay
+    (domain_name, username, password) = (None, None, None)
+    try:
+        opts, args = getopt.getopt(argv,"hd:u:p:",["domain=","username=", "password=", "novirtualdisplay"])
+    except getopt.GetoptError:
+        print 'selenium_test.py -d <domain> -u <username> -p <password>'
+        print "ERROR: invalid input parameter"
+        sys.exit(EXIT_ERROR)
+    for opt, arg in opts:
+        if opt == '-h':
+            print 'selenium_test.py -d <domain> -u <username> -p <password>'
+            sys.exit(EXIT_WARNING)
+        if opt == '--novirtualdisplay':
+            novirtualdisplay = True
+        elif opt in ("-d", "--domain"):
+            domain_name = arg
+        elif opt in ("-u", "--username"):
+            username = arg
+        elif opt in ("-p", "--password"):
+            password = arg
+    return (domain_name, username, password)
+
+# To pic a random user from predefined list for test
+#    python ./selenium_test.py
+#
+# Specify a certain user for test
+#    python ./selenium_test.py -d "https://totvs.fluigidentity.com/cloudpass" -u "fluig.arg@totvs.com.br" -p "totvs@123"
+if __name__=='__main__':
+    (domain_name, username, password) = parse_arg(sys.argv[1:])
+
+    # if not user is given, pic one from predefined list randomly
+    if domain_name is None:
+        (domain_name, username, password) = pic_random_user()
+
+    # perform the test
+    (elapsed_seconds, status) = test_adsync(domain_name, username, password)
+    WARNING_THRESHOLD = 30
+    CRITICAL_THRESHOLD = 40
+    seconds = float(elapsed_seconds)
+
+    if status is False:
+        print "CRITICAL: ADSYNC TEST Failed. Username is %s. It takes %s seconds |time=%s s;30;40;10" % \
+                (username, elapsed_seconds, elapsed_seconds)
+        sys.exit(EXIT_ERROR)
+
+    ret = EXIT_ERROR
+    if seconds < WARNING_THRESHOLD:
+        print "OK: ADSYNC TEST is GOOD . Username is %s. It takes %s seconds |time=%s s;30;40;10" % \
+                (username, elapsed_seconds, elapsed_seconds)
+        ret = EXIT_OK
+    elif seconds >= WARNING_THRESHOLD and seconds < CRITICAL_THRESHOLD:
+        print "WARNING: ADSYNC TEST is slow. Username is %s. It takes %s seconds |time=%s s;30;40;10" % \
+                (username, elapsed_seconds, elapsed_seconds)
+        ret = EXIT_WARNING
+    elif seconds >= CRITICAL_THRESHOLD:
+        print "CRITICAL: ADSYNC TEST is timeout. Username is %s. It takes %s seconds |time=%s s;30;40;10" % \
+                (username, elapsed_seconds, elapsed_seconds)
+        ret = EXIT_ERROR
+    else:
+        print "UNKNOWN: performing ADSYNC TEST failed. Username is %s. It takes %s seconds |time=%s s;30;40;10" % \
+                (username, elapsed_seconds, elapsed_seconds)
+        ret = EXIT_ERROR
+    sys.exit(ret)
+#+END_SRC
+** DONE selelinum specify chrome driver path
+   CLOSED: [2017-04-23 Sun 23:25]
+#+BEGIN_SRC python
+def load_page(page_url, save_screenshot_filepath = ''):
+    import time
+    from selenium import webdriver
+    seconds_to_load = 0
+    load_timeout = 300 # seconds
+
+    # driver_path = "/Users/mac/Downloads/chromedriver"
+    # driver = webdriver.Chrome(driver_path)
+    driver = webdriver.Chrome()
+
+    # cleanup cache
+    driver.delete_all_cookies()
+
+    # Clean cache
+    driver.set_page_load_timeout(load_timeout)
+
+    print "Open page: %s" % (page_url)
+    start_clock = time.clock()
+    p = driver.get(page_url)
+    end_clock = time.clock()
+    elapsed_seconds = ((end_clock - start_clock) * 1000)
+    print "Page load took: %f seconds." % (elapsed_seconds)
+
+    all_warnings = driver.get_log('browser')
+    network_warnings = []
+    javascript_warnings = []
+#+END_SRC
+** DONE selenum is not responding: not enough privilege
+   CLOSED: [2014-07-23 Wed 18:42]
+#+begin_example
+bash-3.2$ make test
+(cd ./code && python ./selenium_test.py)
+Traceback (most recent call last):
+  File "./selenium_test.py", line 44, in <module>
+    test_adsync()
+  File "./selenium_test.py", line 25, in test_adsync
+    driver = webdriver.Firefox()
+  File "/usr/local/lib/python2.7/site-packages/selenium/webdriver/firefox/webdriver.py", line 61, in __init__
+    self.binary, timeout),
+  File "/usr/local/lib/python2.7/site-packages/selenium/webdriver/firefox/extension_connection.py", line 47, in __init__
+    self.binary.launch_browser(self.profile)
+  File "/usr/local/lib/python2.7/site-packages/selenium/webdriver/firefox/firefox_binary.py", line 51, in launch_browser
+    self._wait_until_connectable()
+  File "/usr/local/lib/python2.7/site-packages/selenium/webdriver/firefox/firefox_binary.py", line 95, in _wait_until_connectable
+    self.profile.path, self._get_firefox_output()))
+selenium.common.exceptions.WebDriverException: Message: "Can't load the profile. Profile Dir: /var/folders/n7/wyw4zz1d4wj91l6j3rb8rw780000gn/T/tmpAvWM8V Firefox output: 1406155260128\taddons.xpi\tDEBUG\tstartup\n1406155260129\taddons.xpi\tDEBUG\tSkipping unavailable install location app-system-share\n1406155260130\taddons.xpi\tDEBUG\tcheckForChanges\n1406155260135\taddons.xpi\tDEBUG\tNo changes found\n*** Blocklist::_loadBlocklistFromFile: blocklist is disabled\nJavaScript error: chrome://browser/content/urlbarBindings.xml, line 651: aUrl is undefined\nJavaScript error: chrome://browser/content/urlbarBindings.xml, line 651: aUrl is undefined\nJavaScript error: chrome://browser/content/urlbarBindings.xml, line 651: aUrl is undefined\n"
+make: *** [test] Error 1
+#+end_example
+** Xvfb remote server
+*** DONE check Xvfb
+    CLOSED: [2014-07-23 Wed 19:34]
+#+begin_example
+mv-fi-mon-01:/home/fluig/devop/adservice-test# ps -ef | grep -i Xvfb
+fluig     8894     1  0 23:18 ?        00:00:02 Xvfb :99 -ac
+root     11768 10796  0 23:34 pts/1    00:00:00 grep -i Xvfb
+#+end_example
+*** DONE selenium error: Xvfb is not configured properly
+    CLOSED: [2014-07-23 Wed 19:29]
+#+begin_example
+fluig@mv-fi-mon-01:~/devop$ cd ./adservice-test/
+fluig@mv-fi-mon-01:~/devop/adservice-test$ sudo make test
+(cd ./code && python ./selenium_test.py)
+Traceback (most recent call last):
+  File "./selenium_test.py", line 71, in <module>
+    test_adsync()
+  File "./selenium_test.py", line 26, in test_adsync
+    driver = webdriver.Firefox()
+  File "/usr/local/lib/python2.7/dist-packages/selenium/webdriver/firefox/webdriver.py", line 59, in __init__
+    self.binary, timeout),
+  File "/usr/local/lib/python2.7/dist-packages/selenium/webdriver/firefox/extension_connection.py", line 47, in __init__
+    self.binary.launch_browser(self.profile)
+  File "/usr/local/lib/python2.7/dist-packages/selenium/webdriver/firefox/firefox_binary.py", line 61, in launch_browser
+    self._wait_until_connectable()
+  File "/usr/local/lib/python2.7/dist-packages/selenium/webdriver/firefox/firefox_binary.py", line 100, in _wait_until_connectable
+    self._get_firefox_output())
+selenium.common.exceptions.WebDriverException: Message: "The browser appears to have exited before we could connect. The output was: \n(firefox:8465): Gtk-WARNING **: Locale not supported by C library.\n\tUsing the fallback 'C' locale.\nError: no display specified\n"
+make: *** [test] Error 1
+#+end_example
+*** DONE [#A] run selenum test on ssh: xvfb                       :IMPORTANT:
+    CLOSED: [2014-07-17 Thu 16:51]
+http://stackoverflow.com/questions/15929685/running-test-ng-selenium-tests-through-ssh
+
+http://stackoverflow.com/questions/4335717/selenium-and-headless-environment
+
+http://stackoverflow.com/questions/7109840/cannot-start-browser-for-selenium-through-ssh
+
+Install Xvfb, which pretends to be a monitor, but doesn't show up anywhere.
+sudo apt-get install xvfb.
+
+If you want less errors add these fonts, but those warning aren't important.
+sudo apt-get install xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic
+
+Then start it running and set your display to something the system won't use. Here is what I do, remeber the & makes the terminal run something in the background.
+Xvfb :99 -ac &
+export DISPLAY=:99
+nohup firefox &
+
+Also I was having problems with a ruby on rails server disconnecting when I quit the ssh terminal. To fix that problem use Screen. Screen runs another terminal without being affected by the ssh.
+sudo apt-get install screen
+
+Then just start screen before you you do the stuff above.
+screen
+
+#+begin_example
+fluig@generic08:selenium_example$ sudo make test
+(cd ./code && python ./selenium_test.py)
+Traceback (most recent call last):
+  File "./selenium_test.py", line 22, in <module>
+    test_google()
+  File "./selenium_test.py", line 15, in test_google
+    driver = webdriver.Firefox()
+  File "/usr/local/lib/python2.7/dist-packages/selenium/webdriver/firefox/webdriver.py", line 59, in __init__
+    self.binary, timeout),
+  File "/usr/local/lib/python2.7/dist-packages/selenium/webdriver/firefox/extension_connection.py", line 47, in __init__
+    self.binary.launch_browser(self.profile)
+  File "/usr/local/lib/python2.7/dist-packages/selenium/webdriver/firefox/firefox_binary.py", line 61, in launch_browser
+    self._wait_until_connectable()
+  File "/usr/local/lib/python2.7/dist-packages/selenium/webdriver/firefox/firefox_binary.py", line 100, in _wait_until_connectable
+    self._get_firefox_output())
+selenium.common.exceptions.WebDriverException: Message: 'The browser appears to have exited before we could connect. The output was: Error: no display specified\n'
+make: *** [test] Error 1
+#+end_example
+*** DONE [#A] headless selenium test: python with PyVirtualDisplay
+    CLOSED: [2015-05-24 Sun 19:08]
+http://coreygoldberg.blogspot.com/2011/06/python-headless-selenium-webdriver.html
+- PyVirtualDisplay, a Python wrapper for Xvfb and Xephyr.
+
+sudo apt-get install xvfb python-pip
+sudo pip install selenium
+sudo pip install pyvirtualdisplay
+
+#+BEGIN_SRC python
+#!/usr/bin/env python
+
+from pyvirtualdisplay import Display
+from selenium import webdriver
+
+display = Display(visible=0, size=(800, 600))
+display.start()
+
+# now Firefox will run in a virtual display.
+# you will not see the browser.
+browser = webdriver.Firefox()
+browser.get('http://www.google.com')
+print browser.title
+browser.quit()
+
+display.stop()
+#+END_SRC
+** DONE selenium.common.exceptions.WebDriverException: The problem is Firefox requires a display.
+   CLOSED: [2014-08-01 Fri 10:26]
+http://stackoverflow.com/questions/13039530/unable-to-call-firefox-from-selenium-in-python-on-aws-machine
+
+from pyvirtualdisplay import Display
+driver = webdriver.Firefox()
+
+#+begin_example
+root@fluig-id-cdn-01:~# /usr/lib/nagios/plugins/check_nrpe -H 127.0.0.1 -c check_ad_account -t 20
+<r/lib/nagios/plugins/check_nrpe -H 127.0.0.1 -c check_ad_account -t 20
+Unexpected error:<class 'selenium.common.exceptions.WebDriverException'>, Message: 'The browser appears to have exited before we could connect. The output was: Error: no display specified\n'
+CRITICAL: ADSYNC TEST Failed. Username is fluigid.jv@totvs.com.br | seconds=0.000
+#+end_example
+** DONE selenium firefox remove /tmp/tmp*
+   CLOSED: [2014-08-06 Wed 12:59]
+#+begin_example
+ ## Description :
+ ## --
+ ## Created : <2014-07-16>
+-## Updated: Time-stamp: <2014-08-03 23:53:44>
++## Updated: Time-stamp: <2014-08-06 12:52:09>
+ ##-------------------------------------------------------------------
+ from selenium import webdriver
+ from pyvirtualdisplay import Display
+ @@ -62,7 +62,7 @@ def test_adsync(domain_name, username, password):
+         start_clock = time.clock()
+         status = adsync_login(driver, domain_name, username, password)
+         end_clock = time.clock()
+-        driver.close()
++        driver.quit() # driver.close() won't delete the tmp folder
+         if novirtualdisplay is False:
+             display.stop()
+     except Exception as e:
+#+end_example
+[8/6/14, 12:50:41] denny: Should change below line from "driver.close()" to "driver.quit()"
+https://github.com/TOTVS/devop/blob/master/adservice-test/code/selenium_test.py#L65
+[8/6/14, 12:50:57] denny: More detail explanation can be found here:
+http://stackoverflow.com/questions/18549105/python-firefox-webdriver-tmp-files
+** DONE selenium python check whether button is enabled: element.is_enabled()
+   CLOSED: [2017-08-23 Wed 16:50]
+https://stackoverflow.com/questions/23498151/how-to-verify-if-a-button-is-enabled-and-disabled-in-webdriver-python
+className.Property.is_enabled()
+https://stackoverflow.com/questions/43980929/verify-if-a-button-is-disabled-in-python-selenium
+#+BEGIN_EXAMPLE
+element = driver.find_element_by_name("sub_activate")
+print element.is_enabled()
+#+END_EXAMPLE
+** DONE seleinum python use remote server
+   CLOSED: [2017-04-24 Mon 12:59]
+http://stackoverflow.com/questions/31469340/run-selenium-python-script-on-remote-server
+driver = webdriver.Remote(command_executor='http://127.0.0.1:4444/wd/hub', desired_capabilities=DesiredCapabilities.CHROME)
+** DONE selenium add chrome driver
+   CLOSED: [2017-04-23 Sun 18:50]
+https://sites.google.com/a/chromium.org/chromedriver/getting-started
+#+BEGIN_SRC python
+#!/usr/bin/python
+from selenium import webdriver
+
+driver = webdriver.Chrome("/Users/mac/Downloads/chromedriver")
+driver.get('http://www.baidu.com/')
+inputElement = driver.find_element_by_id("kw")
+inputElement.send_keys("sophia")
+inputElement.submit()
+#+END_SRC
+** #  --8<-------------------------- separator ------------------------>8--
+** DONE selenium: install firefox
+   CLOSED: [2014-07-16 Wed 13:27]
+http://www.noobslab.com/2012/10/install-latest-firefox-16-in-ubuntu.html
+sudo add-apt-repository ppa:ubuntu-mozilla-security/ppa
+sudo apt-get update
+sudo apt-get install firefox
+
+#+begin_example
+fluig@generic08:selenium_example$ sudo make test
+(cd ./code && python ./selenium_test.py)
+Traceback (most recent call last):
+  File "./selenium_test.py", line 22, in <module>
+    test_google()
+  File "./selenium_test.py", line 15, in test_google
+    driver = webdriver.Firefox()
+  File "/usr/local/lib/python2.7/dist-packages/selenium/webdriver/firefox/webdriver.py", line 49, in __init__
+    self.binary = FirefoxBinary()
+  File "/usr/local/lib/python2.7/dist-packages/selenium/webdriver/firefox/firefox_binary.py", line 43, in __init__
+    self._start_cmd = self._get_firefox_start_cmd()
+  File "/usr/local/lib/python2.7/dist-packages/selenium/webdriver/firefox/firefox_binary.py", line 154, in _get_firefox_start_cmd
+    " Please specify the firefox binary location or install firefox")
+RuntimeError: Could not find firefox in your system PATH. Please specify the firefox binary location or install firefox
+make: *** [test] Error 1
+#+end_example
+** #  --8<-------------------------- separator ------------------------>8--
+** TODO python selenium: selenium.common.exceptions.ElementNotVisibleException
+#+begin_example
+bash-3.2$ sudo python ./selenium_test.py -d "https://totvs.fluigidentity.com/cloudpass" -u "fluig.jv@totvs.com.br" -p "totvs@123"
+<selenium.webdriver.remote.webelement.WebElement object at 0x10226d3d0>
+Unexpected error: <class 'selenium.common.exceptions.ElementNotVisibleException'>
+CRITICAL: ADSYNC TEST Failed. Username is fluig.jv@totvs.com.br | seconds=22.095
+#+end_example
+** web page: Tutorial: How to use Headless Firefox for Scraping in Linux :noexport:
+http://scraping.pro/use-headless-firefox-scraping-linux/
+*** webcontent                                                     :noexport:
+#+begin_example
+Location: http://scraping.pro/use-headless-firefox-scraping-linux/
+Web Scraping
+
+web scraping, screen scraping, data parsing and other related things
+
+Follow us on
+
+  * #
+  * #
+  * #
+  * #
+
+RSS
+
+  * Web Scraper Test Drive!
+  * Software for Web Scraping
+  * Contact Us
+
+[                    ]
+Tutorial: How to use Headless Firefox for Scraping in Linux
+
+Mar 11, 2014 ByMichael Shilov in Development No Comments Tags: selenium
+
+[headless] I have already written several articles on how to use Selenium WebDriver for web
+scraping and all those examples were for Windows. But what about if you want to run your
+WebDriver-based scraper somewhere on a headless Linux server? For example on a Virtual Private
+Server with SSH-only access. Here I will show you how to do it in several simple steps.
+
+Let's say you already have a virtual or dedicated Debian server with Python installed. The
+following tutorial will guide you from installing all necessary software to running your first
+WebDriver-based scraping program in Python. I assume that you are logged in as an administrator.
+
+1. Install Xvfb
+
+Since your server doesn't have a screen to run FireFox you need to simulate one. Xvfb is a software
+that simulates a display doing everything in memory and not showing any screen output. You can
+install it with a simple command:
+
+[apt-get install xvfb]
+
+1 apt-get install xvfb
+
+2. Install Firefox
+
+If Firefox is not installed on your system you can install it in the following way:
+
+[apt-get remove icewe]
+
+1 apt-get remove iceweasel
+2 echo -e "\ndeb http://downloads.sourceforge.net/project/ubuntuzilla/mozilla/apt all main" | tee
+3 -a /etc/apt/sources.list > /dev/null
+4 apt-key adv --recv-keys --keyserver keyserver.ubuntu.com C1289A29
+5 apt-get update
+6 apt-get install firefox-mozilla-build
+7 apt-get install libdbus-glib-1-2
+8 apt-get install libgtk2.0-0
+  apt-get install libasound2
+
+The first command removes a native Debian browser Iceweasel (if it is installed on your system).
+Then we add a package repository that contains Firefox, install the corresponding key and update
+the local package list. After that we install Firefox with some libraries (some of them may
+probably be already installed on your system).
+
+3. Install PyVirtualDisplay
+
+PyVirtualDisplay is a Python wrapper for Xvfb. It allows you to easily work with a virtual display
+in Python. Installation is simple:
+
+[pip install pyvirtua]
+
+1 pip install pyvirtualdisplay
+
+If you don't have pip on your system you can install it with the following command:
+
+[curl --silent --show]
+
+1 curl --silent --show-error --retry 5 https://raw.github.com/pypa/pip/master/contrib/get-pip.py |
+  sudo python
+
+4. Install Selenium
+
+To install Selenium you can run the following:
+
+[pip install selenium]
+
+1 pip install selenium
+
+5. Run a simple scraping program
+
+Now we're ready to run a simple program that uses Firefox for scraping Google's home page title (I
+found this code here):
+
+Python
+[from pyvirtualdispla]
+
+1  from pyvirtualdisplay import Display
+2  from selenium import webdriver
+3
+4  display = Display(visible=0, size=(800, 600))
+5  display.start()
+6
+7  browser = webdriver.Firefox()
+8  browser.get('http://www.google.com')
+9  print browser.title
+10 browser.quit()
+11
+12 display.stop()
+
+That's it!
+
+« Kimono scraper is now enhanced with Pagination, Crawling and Data History » Easy Data
+Visualisation with Silk.co
+
+Leave a Reply Cancel
+
+[                              ]Your Name
+
+[                              ]Your Email
+
+[                              ]Your Website
+
+[                                             ]
+[                                             ]
+[                                             ]
+[                                             ]
+[                                             ]
+[                                             ]
+[                                             ]
+[                                             ]
+
+ Post Comment
+
+RELATED POSTS
+
+  * Pros and Cons of using Selenium WebDriver for Website Scraping
+  * Example of Scraping with Selenium WebDriver in C#
+  * How to use Selenium WebDriver with Java
+
+import.io
+
+Tag Cloud
+
+analytics anti-scrape big data captcha cookie crawling data mining free google http import.io java
+json kimono php proxy python regex scrape-detection scraper scraping tool scrapy selenium seo
+service sniffer statistics structured APIs visual web ripper visualization web scraping xpath
+Leave Blank:[                    ]Do Not Change:[http://             ]
+
+Your email:
+[Enter email address.]
+
+ Subscribe   Unsubscribe
+
+Featured
+
+  * OutWit Hub Review
+  * Helium Scraper Review
+  * Visual Web Ripper Review
+
+Blogroll
+
+  * SEO and Growth Hacking
+  * SQL Backup Blog
+  * Unbiased Software Reviews
+
+Web Scraping
+© Michael Shilov 2012-2014. All Rights Reserved.
+
+[copyscape]
+
+No part of this website or any of its contents may be reproduced, copied, modified or adapted,
+without the prior written consent of the author,
+unless otherwise indicated for stand-alone materials.
+Themify - Elemin theme is used in this blog.
+
+↑ Back to top
+
+OutWit Hub Logo
+
+Don't forget that as our reader you can get
+a good price for OutWit Hub.
+
+×
+
+#+end_example
+** TODO [#A] selenium get all elements loaded by url              :IMPORTANT:
+http://stackoverflow.com/questions/27112731/selenium-common-exceptions-nosuchelementexception-message-unable-to-locate-ele
+http://stackoverflow.com/questions/12992861/selenium-not-finding-the-element
+** python selenum script
+http://selenium-python.readthedocs.org/en/latest/getting-started.html
+
+http://selenium-python.readthedocs.org
+*** web page: Selenium with Python - Selenium Python Bindings 2 documentation :noexport:
+http://selenium-python.readthedocs.org/
+**** webcontent                                                    :noexport:
+#+begin_example
+Location: http://selenium-python.readthedocs.org/
+Selenium Python Bindings
+[                    ]
+  * 1. Installation
+      + 1.1. Introduction
+      + 1.2. Downloading Python bindings for Selenium
+      + 1.3. Detailed instructions for Windows users
+      + 1.4. Downloading Selenium server
+  * 2. Getting Started
+      + 2.1. Simple Usage
+      + 2.2. Walk through of the example
+      + 2.3. Using Selenium to write tests
+      + 2.4. Walk through of the example
+      + 2.5. Using Selenium with remote WebDriver
+  * 3. Navigating
+      + 3.1. Interacting with the page
+      + 3.2. Filling in forms
+      + 3.3. Drag and drop
+      + 3.4. Moving between windows and frames
+      + 3.5. Popup dialogs
+      + 3.6. Navigation: history and location
+      + 3.7. Cookies
+  * 4. Locating Elements
+      + 4.1. Locating by Id
+      + 4.2. Locating by Name
+      + 4.3. Locating by XPath
+      + 4.4. Locating Hyperlinks by Link Text
+      + 4.5. Locating Elements by Tag Name
+      + 4.6. Locating Elements by Class Name
+      + 4.7. Locating Elements by CSS Selectors
+  * 5. Waits
+      + 5.1. Explicit Waits
+      + 5.2. Implicit Waits
+  * 6. WebDriver API
+      + 6.1. Exceptions
+      + 6.2. Action Chains
+      + 6.3. Alerts
+      + 6.4. Special Keys
+      + 6.5. Firefox WebDriver
+      + 6.6. Chrome WebDriver
+      + 6.7. Remote WebDriver
+      + 6.8. WebElement
+      + 6.9. UI Support
+      + 6.10. Color Support
+      + 6.11. Expected conditions Support
+  * 7. Appendix: Frequently Asked Questions
+      + 7.1. How to use ChromeDriver ?
+      + 7.2. Does Selenium 2 support XPath 2.0 ?
+      + 7.3. How to scroll down to the bottom of a page ?
+      + 7.4. How to auto save files using custom Firefox profile ?
+      + 7.5. How to use firebug with Firefox ?
+      + 7.6. How to take screenshot of the current window ?
+
+  Selenium Python Bindings
+
+  * Docs »
+  * Selenium with Python
+  * Edit on GitHub
+
+---------------------------------------------------------------------------------------------------
+
+Selenium with Python¶
+
+Author:  Baiju Muthukadan
+License: This document is licensed under a Creative Commons Attribution-ShareAlike 4.0
+         International License.
+
+Note
+
+This is not an official documentation. Official API documentation is available here.
+
+  * 1. Installation
+      + 1.1. Introduction
+      + 1.2. Downloading Python bindings for Selenium
+      + 1.3. Detailed instructions for Windows users
+      + 1.4. Downloading Selenium server
+  * 2. Getting Started
+      + 2.1. Simple Usage
+      + 2.2. Walk through of the example
+      + 2.3. Using Selenium to write tests
+      + 2.4. Walk through of the example
+      + 2.5. Using Selenium with remote WebDriver
+  * 3. Navigating
+      + 3.1. Interacting with the page
+      + 3.2. Filling in forms
+      + 3.3. Drag and drop
+      + 3.4. Moving between windows and frames
+      + 3.5. Popup dialogs
+      + 3.6. Navigation: history and location
+      + 3.7. Cookies
+  * 4. Locating Elements
+      + 4.1. Locating by Id
+      + 4.2. Locating by Name
+      + 4.3. Locating by XPath
+      + 4.4. Locating Hyperlinks by Link Text
+      + 4.5. Locating Elements by Tag Name
+      + 4.6. Locating Elements by Class Name
+      + 4.7. Locating Elements by CSS Selectors
+  * 5. Waits
+      + 5.1. Explicit Waits
+      + 5.2. Implicit Waits
+  * 6. WebDriver API
+      + 6.1. Exceptions
+      + 6.2. Action Chains
+      + 6.3. Alerts
+      + 6.4. Special Keys
+      + 6.5. Firefox WebDriver
+      + 6.6. Chrome WebDriver
+      + 6.7. Remote WebDriver
+      + 6.8. WebElement
+      + 6.9. UI Support
+      + 6.10. Color Support
+      + 6.11. Expected conditions Support
+  * 7. Appendix: Frequently Asked Questions
+      + 7.1. How to use ChromeDriver ?
+      + 7.2. Does Selenium 2 support XPath 2.0 ?
+      + 7.3. How to scroll down to the bottom of a page ?
+      + 7.4. How to auto save files using custom Firefox profile ?
+      + 7.5. How to use firebug with Firefox ?
+      + 7.6. How to take screenshot of the current window ?
+
+Indices and tables¶
+
+  * Index
+  * Module Index
+  * Search Page
+
+Next
+---------------------------------------------------------------------------------------------------
+
+© Copyright 2011-2014, Baiju Muthukadan.
+
+Sphinx theme provided by Read the Docs
+Read the Docs v: latest
+
+Versions
+    latest
+
+Downloads
+    PDF
+    HTML
+    Epub
+
+On Read the Docs
+    Project Home
+    Builds
+
+---------------------------------------------------------------------------------------------------
+Free document hosting provided by Read the Docs.
+
+#+end_example
+** #  --8<-------------------------- separator ------------------------>8--
+** DONE [#A] selelinum get all errors
+   CLOSED: [2017-04-24 Mon 15:01]
+http://stackoverflow.com/questions/25431380/capturing-browser-logs-with-selenium
+https://groups.google.com/forum/#!topic/selenium-users/v7rdTChQkbM
+http://stackoverflow.com/questions/10755480/how-to-capture-all-requests-made-by-page-in-webdriver-is-there-any-alternative
+https://www.quora.com/Is-there-a-way-to-capture-network-calls-using-selenium-webdriver
+https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/141
+
+In a more shorter way, you can do:
+
+LogEntries logs = driver.manage().logs().get("browser");
+For me it worked wonderfully for catching JS errors in console. Then you can add some verification for it's size (for example, if it's > 0, add some error output).
+
+print driver.log_types
+
+print driver.get_log('browser')
+print driver.get_log('server')
+print driver.get_log('client')
+print driver.get_log('driver')
+
+data = driver.get_log('browser')
+print data
+data[0]
+
+#+BEGIN_EXAMPLE
+>>> print data
+[{u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995934449, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995935764, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995937158, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995938548, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995939888, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995941255, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995954078, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995955413, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995956772, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995958128, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995959459, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995960843, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995962202, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995963592, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995964930, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995966273, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995967663, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995969065, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995970396, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995971933, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995973418, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995974894, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995976221, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995977606, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995978926, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995980293, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995981671, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995982932, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995984324, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995985663, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995987049, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995988363, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995989721, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995991010, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995992331, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995993653, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995995041, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995996356, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995997654, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492995998940, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492996000352, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492996001681, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492996003031, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492996004334, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492996005703, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492996007034, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492996008391, u'level': u'SEVERE'},
+ {u'source': u'javascript', u'message': u"javascript 0:351 Uncaught TypeError: Cannot read property 'appendChild' of undefined", u'timestamp': 1492996009732, u'level': u'SEVERE'},
+ {u'source': u'network', u'message': u'http://doc.carol.ai:8082/livereload.js - Failed to load resource: net::ERR_CONNECTION_TIMED_OUT', u'timestamp': 1492996010441, u'level': u'SEVERE'}]
+#+END_EXAMPLE
+** DONE selenium: Session deleted due to client timeout
+   CLOSED: [2017-07-16 Sun 19:10]
+driver.quit()
+https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/3224
+
+#+BEGIN_EXAMPLE
+19:03:31.240 INFO - Session 0e4a42a7-4950-4c42-85a6-999bd25cb36f deleted due to client timeout
+19:03:31.257 INFO - Session 64b8938c-59d7-44c2-912a-1e25f1fadb81 deleted due to client timeout
+#+END_EXAMPLE
+** #  --8<-------------------------- separator ------------------------>8--
+** TODO Selenium Python: how to wait until the page is loaded?
+http://stackoverflow.com/questions/26566799/selenium-python-how-to-wait-until-the-page-is-loaded
+** TODO selenium python enable button by script
+https://stackoverflow.com/questions/32848539/selenium-shows-me-a-button-as-disabled-why
+https://stackoverflow.com/questions/7794087/running-javascript-in-selenium-using-python
+https://stackoverflow.com/questions/44078391/how-to-enable-a-disabled-button-in-java-for-selenium-webdriver
+Button is disabled because it has attribute disabled="disabled", it is shown that way because it is implemented that way, f.e.
+** TODO selenium python change button css to enable it
+** TODO selenium python refresh css
+** TODO selenium explictly wait for ajax
+http://selenium-python.readthedocs.io/waits.html
+** DONE kim blog review feedback
+   CLOSED: [2017-09-06 Wed 23:18]
+yikaikao [10:46 PM] 
+Hi Denny, here comes my opinion :smile:
+5 tips are covered multiple viewpoints of how to test with python + selenium , but i think the covered subjects are too wide. maybe  you can  classify them first. 
+ex:
+
+1. Selenium driver tips - you may address more tips about how to test effectively or precisely( which is listed from 2nd to 4th tips).
+2. CI tips  - set the automation process into CI last mile (which is listed as the 5th tip.) speech out that the way to help dev/qa team to get quality info.
+
+besides, the first tip i think that is the pros to consider to leverage docker to build up gui-related environment, it prevents polluting your laptop or workspaces, and ... it's really easy :smile:
+
+Overall, content is really excellent. I just supposed were I a  noob on automation test and container , and I 'm interested in how to use it. (edited)
+
+
+dennyzhang [11:18 PM] 
+Nice, Kim.
+
+Let me think about it. See how I can improve
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

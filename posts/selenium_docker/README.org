@@ -1,0 +1,841 @@
+* Run GUI Test With Docker: Detect Web Page Loading Issues        :BLOG:Tool:
+  :PROPERTIES:
+  :type:     DevOps,Tool,Testing,Selenium
+  :END:
+---------------------------------------------------------------------
+How fast your web pages load on client sides, especially the portal or login pages? And how do you detect unexpected 302, 404 or 5XX responses. It would probably hurt your user experience or even the functionalities. *Slow or problematic page loading are always bad*.
+
+Good, if you have examined that carefully. And most likely, with multiple unpleasant manual steps. The thing is how can you be so sure that it's always good. *Even with the endless code changes.*
+
+To automate the GUI test? You have to learn lots of GUI automation skills, and the complicated setup. Yes, I certainly believe you are capable for this, my friend. But you might not have enough time.
+
+Good news! With container technology, things are way much easier now. Check out this short post. *And have a try now!*
+
+[[image-blog:Use Docker To Run GUI Test: Detect Web Page Loading Issues][https://www.dennyzhang.com/wp-content/uploads/denny/docker_selenium_gui_test.png]]
+---------------------------------------------------------------------
+
+[[color:#c7254e][For Impatient Users]]: please check [[https://www.dennyzhang.com/selenium_docker/#sec-1-4][the docker section]] directly.
+** Why We Need To Care About Web Page Loading Issues?
+
+For good user experience[1], we should limit the load of landing page within [[color:#c7254e][0.5 to 2 seconds]].
+
+(Tips: To test how fast your website loads from all over the world, use [[https://www.dennyzhang.com/free_tool_check_website/#sec-1-3][this free tool]]).
+
+Unfortunately we have lots of technical challenges.
+
+Not only hard to achieve that fast loading, but also difficult to detect the potential issues:
+1. The user experience may not be equally the same among your visitors. Driving you crazy, right?
+- The issue might not be easy to reproducible. Instability of external sources for javascripts or css files download. Web caching, tricky firewall settings, or even bugs in frontend/backend code.
+- It's functionally working. And slowness in client network misleads you. Consequently you overlook the issues, which hurt your users every single visit.
+- The list goes on...
+
+As a serious IT professional, you want to be on top of these issues. And when it happens, you want to be notified before anyone even notice. You want that, do you?
+** Web Browsers Usually Provide Useful Developer Tools.
+It helps us to diagnose this kind of issues.
+
+Take Chrome for example. With Chrome DevTools[2], we can easily detect:
+1. How fast the web page loads.
+
+   (Tips: Remember to always clean the web browser cache. Restarting web browsers may not be good enough, since some browsers have filesystem caching.)
+
+2. Any 4XX or 5XX issues by checking Network tab in below.
+
+[[image-blog:Use Docker To Run GUI Test: Detect Web Page Loading Issues][https://www.dennyzhang.com/wp-content/uploads/denny/chrome_devtool.png]]
+
+But this is a manual way.
+*How to automate the process? And what's better?* Get alerted, if page loads start to take longer than before, or some new problematic network responses are captured.
+
+At the first glance, I'm thinking about recursively download with typical command lines, like wget or curl. Or use network packets sniffer tools, like tcpdump for TCP layer or justniffer for http layer[3].
+
+But they all turn out to be dead ends.
+
+When opening a web page, we might need to interpret the html code and launch the implied http requests. Typically fetching javascripts and css files.
+** Selenium Turns Out To Be A Good Fit For GUI Automation.
+Selenium will launch a web browser and perform the GUI requests.[4]
+
+Once you get Selenium and web browser driver correctly setup, you can easily try below python code.
+#+BEGIN_SRC python
+from selenium import webdriver
+
+driver = webdriver.Chrome()
+p = driver.get('http://dennyzhang.com/')
+
+# Save screenshot
+fname = '/tmp/dennyzhang.png'
+driver.get_screenshot_as_file(fname)
+
+driver.close()
+#+END_SRC
+
+But the setup is tricky and dealing with selenium SDK, it takes time.
+
+That's why I'm in favor of the docker way.
+** Have Fun With Docker!
+Here I've released one open docker image in [[https://hub.docker.com/r/denny/selenium][docker hub]] and [[https://github.com/dennyzhang/devops_docker_image/blob/master/selenium/selenium_v1.dockerfile][github]].
+[[github:DennyZhang][GitHub]]
+
+It has everything you need to run a test against page loading:
+1. Packages: selenium server, Chrome driver, python SDK
+
+- Scripts: [[https://github.com/dennyzhang/devops_public/blob/tag_v6/python/selenium_load_page/selenium_load_page.py][selenium_load_page.py]], which runs the actual page loading tests.
+
+[[color:#c7254e][How to run GUI test in my local machines?]]
+
+- Step1: Install docker daemon in your machines. Super easy with docker doc[6], right?.
+
+- Step2: Run below commands to perform a helloworld test case.
+
+That's it!
+
+#+BEGIN_EXAMPLE
+# Start selenium docker container
+# docker stop selenium; docker rm selenium
+mkdir -p /tmp/screenshot && chmod 777 /tmp/screenshot
+docker run -d -p 4444:4444 -v /tmp/screenshot:/tmp/screenshot \
+     -h selenium --name selenium denny/selenium:v1
+docker ps
+
+# wait for selenium service to be up and running
+sleep 5
+
+# Test page loading
+docker exec selenium python selenium_load_page.py \
+           --page_url "https://www.dennyzhang.com"
+
+# Check generated screenshot
+ls -lth /tmp/screenshot
+
+# Destroy selenium container, after testing
+docker stop selenium; docker rm selenium
+#+END_EXAMPLE
+[[https://github.com/dennyzhang/devops_public/blob/tag_v6/python/selenium_load_page/selenium_load_page.py][selenium_load_page.py]] should be able to solve most of your problems.
+
+[[image-blog:Use Docker To Run GUI Test: Detect Web Page Loading Issues][https://www.dennyzhang.com/wp-content/uploads/denny/selenium_page_loading.png]]
+
+Please leave me comments, if I'm too proud of this script.
+
+(Note: About login pages which requires credential. Yes, we do need some work. PRs or input are warmly welcomed.)
+
+#+BEGIN_EXAMPLE
+## Sample:
+##   - Test page load: basic test
+##        python ./selenium_load_page.py --page_url https://www.dennyzhang.com
+##
+##   - Test page load: if it takes more than 5 seconds, fail the test. Default timeout is 10 seconds
+##        python ./selenium_load_page.py --page_url https://www.dennyzhang.com --max_load_seconds 5
+##
+##   - Test page load: after page loading, save screenshot
+##        python ./selenium_load_page.py --page_url https://www.dennyzhang.com --should_save_screenshot true
+#+END_EXAMPLE
+
+If you're selenium ninja, you can definitely create your own test scripts. Login the docker container and do whatever your want.
+
+Please don't forget to share this post to your QA or DevOps colleagues, if you think it's helpful for your projects. Thanks, my friend!
+
+[1] http://www.webdesignerdepot.com/2016/02/how-slow-is-too-slow-in-2016/
+[2] https://developer.chrome.com/devtools
+[3] http://justniffer.sourceforge.net/#!/examples
+[4] http://docs.seleniumhq.org/projects/ide/
+[5] https://hub.docker.com/r/denny/selenium/
+[6] https://docs.docker.com/manuals/
+
+Related Reading:
+
+- [[https://www.dennyzhang.com/process_execution][Linux Measure Process Execution Time, When Already Started]]
+- [[https://www.dennyzhang.com/ssh_key_projects][Avoid Using Same SSH Private Key For All Your Servers]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/selenium_docker"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/selenium_docker
+* misc                                                             :noexport:
+** Things you might be interested
+** What for: integration test? avoid caching?
+*** How fast it fully loads?
+*** Any 302, 4XX or 5XX errors?
+*** Capture js errors and warnings.
+*** #  --8<-------------------------- separator ------------------------>8--
+*** Common issues: caching
+*** Common issues: manual check, hard to automate and record the history
+*** [#A] Automation test and verification
+** Alternative ways: Chrome developer tools
+** monitor http requests with tcpdump
+tcpdump  -vvv -XX -s 0 -f -c 1000 -nn -i en0 'host 104.236.159.226'
+
+http://doc.carol.ai/
+
+Flush cache
+** monitor http requests with sniffer(http layer) or tcpdump(tcp layer)
+*** sudo tcpdump  -vvv -XX -s 0 -f -c 1000 -nn -i en0 'host doc.carol.ai'
+tcpdump  -vvv -XX -s 0 -f -c 1000 -nn -i en0 'host doc.carol.ai'
+*** TODO mac install justniffer
+https://github.com/onotelli/justniffer/issues/3
+** #  --8<-------------------------- separator ------------------------>8--
+** wget -r http://doc.carol.ai
+https://www.lifewire.com/uses-of-command-wget-2201085
+#+BEGIN_EXAMPLE
+Denny-mac:tmp mac$ wget -r http://doc.carol.ai
+--2017-04-23 17:30:30--  http://doc.carol.ai/
+Resolving doc.carol.ai (doc.carol.ai)... 104.236.159.226
+Connecting to doc.carol.ai (doc.carol.ai)|104.236.159.226|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 6486 (6.3K) [text/html]
+Saving to: 'doc.carol.ai/index.html'
+
+doc.carol.ai/index.html         100%[=========================================================>]   6.33K  --.-KB/s   in 0.01s
+
+2017-04-23 17:30:30 (610 KB/s) - 'doc.carol.ai/index.html' saved [6486/6486]
+
+Loading robots.txt; please ignore errors.
+--2017-04-23 17:30:30--  http://doc.carol.ai/robots.txt
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 404 Not Found
+2017-04-23 17:30:31 ERROR 404: Not Found.
+
+--2017-04-23 17:30:31--  http://doc.carol.ai/img/favicon.ico
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 1150 (1.1K) [image/vnd.microsoft.icon]
+Saving to: 'doc.carol.ai/img/favicon.ico'
+
+doc.carol.ai/img/favicon.ico    100%[=========================================================>]   1.12K  --.-KB/s   in 0s
+
+2017-04-23 17:30:31 (40.6 MB/s) - 'doc.carol.ai/img/favicon.ico' saved [1150/1150]
+
+--2017-04-23 17:30:31--  http://doc.carol.ai/css/theme.css
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 88973 (87K) [text/css]
+Saving to: 'doc.carol.ai/css/theme.css'
+
+doc.carol.ai/css/theme.css      100%[=========================================================>]  86.89K   218KB/s   in 0.4s
+
+2017-04-23 17:30:31 (218 KB/s) - 'doc.carol.ai/css/theme.css' saved [88973/88973]
+
+--2017-04-23 17:30:31--  http://doc.carol.ai/css/theme_extra.css
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 2542 (2.5K) [text/css]
+Saving to: 'doc.carol.ai/css/theme_extra.css'
+
+doc.carol.ai/css/theme_extra.cs 100%[=========================================================>]   2.48K  --.-KB/s   in 0s
+
+2017-04-23 17:30:31 (162 MB/s) - 'doc.carol.ai/css/theme_extra.css' saved [2542/2542]
+
+--2017-04-23 17:30:31--  http://doc.carol.ai/css/highlight.css
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 1682 (1.6K) [text/css]
+Saving to: 'doc.carol.ai/css/highlight.css'
+
+doc.carol.ai/css/highlight.css  100%[=========================================================>]   1.64K  --.-KB/s   in 0s
+
+2017-04-23 17:30:31 (4.61 MB/s) - 'doc.carol.ai/css/highlight.css' saved [1682/1682]
+
+--2017-04-23 17:30:31--  http://doc.carol.ai/js/jquery-2.1.1.min.js
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 84245 (82K) [application/javascript]
+Saving to: 'doc.carol.ai/js/jquery-2.1.1.min.js'
+
+doc.carol.ai/js/jquery-2.1.1.mi 100%[=========================================================>]  82.27K   204KB/s   in 0.4s
+
+2017-04-23 17:30:32 (204 KB/s) - 'doc.carol.ai/js/jquery-2.1.1.min.js' saved [84245/84245]
+
+--2017-04-23 17:30:32--  http://doc.carol.ai/js/modernizr-2.8.3.min.js
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 11084 (11K) [application/javascript]
+Saving to: 'doc.carol.ai/js/modernizr-2.8.3.min.js'
+
+doc.carol.ai/js/modernizr-2.8.3 100%[=========================================================>]  10.82K  --.-KB/s   in 0.02s
+
+2017-04-23 17:30:32 (567 KB/s) - 'doc.carol.ai/js/modernizr-2.8.3.min.js' saved [11084/11084]
+
+--2017-04-23 17:30:32--  http://doc.carol.ai/js/highlight.pack.js
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 300764 (294K) [application/javascript]
+Saving to: 'doc.carol.ai/js/highlight.pack.js'
+
+doc.carol.ai/js/highlight.pack. 100%[=========================================================>] 293.71K   337KB/s   in 0.9s
+
+2017-04-23 17:30:33 (337 KB/s) - 'doc.carol.ai/js/highlight.pack.js' saved [300764/300764]
+
+--2017-04-23 17:30:33--  http://doc.carol.ai/js/theme.js
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 1751 (1.7K) [application/javascript]
+Saving to: 'doc.carol.ai/js/theme.js'
+
+doc.carol.ai/js/theme.js        100%[=========================================================>]   1.71K  --.-KB/s   in 0.001s
+
+2017-04-23 17:30:33 (1.79 MB/s) - 'doc.carol.ai/js/theme.js' saved [1751/1751]
+
+--2017-04-23 17:30:33--  http://doc.carol.ai/2-stack/
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 6687 (6.5K) [text/html]
+Saving to: 'doc.carol.ai/2-stack/index.html'
+
+doc.carol.ai/2-stack/index.html 100%[=========================================================>]   6.53K  --.-KB/s   in 0.01s
+
+2017-04-23 17:30:33 (637 KB/s) - 'doc.carol.ai/2-stack/index.html' saved [6687/6687]
+
+--2017-04-23 17:30:33--  http://doc.carol.ai/3-first-steps/
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 12427 (12K) [text/html]
+Saving to: 'doc.carol.ai/3-first-steps/index.html'
+
+doc.carol.ai/3-first-steps/inde 100%[=========================================================>]  12.14K  --.-KB/s   in 0.03s
+
+2017-04-23 17:30:33 (392 KB/s) - 'doc.carol.ai/3-first-steps/index.html' saved [12427/12427]
+
+--2017-04-23 17:30:33--  http://doc.carol.ai/4-building-integration/
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 31957 (31K) [text/html]
+Saving to: 'doc.carol.ai/4-building-integration/index.html'
+
+doc.carol.ai/4-building-integra 100%[=========================================================>]  31.21K  --.-KB/s   in 0.05s
+
+2017-04-23 17:30:33 (585 KB/s) - 'doc.carol.ai/4-building-integration/index.html' saved [31957/31957]
+
+--2017-04-23 17:30:33--  http://doc.carol.ai/5-querying-data/
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 29612 (29K) [text/html]
+Saving to: 'doc.carol.ai/5-querying-data/index.html'
+
+doc.carol.ai/5-querying-data/in 100%[=========================================================>]  28.92K  --.-KB/s   in 0.04s
+
+2017-04-23 17:30:33 (661 KB/s) - 'doc.carol.ai/5-querying-data/index.html' saved [29612/29612]
+
+--2017-04-23 17:30:33--  http://doc.carol.ai/img/architecture.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 161474 (158K) [image/png]
+Saving to: 'doc.carol.ai/img/architecture.png'
+
+doc.carol.ai/img/architecture.p 100%[=========================================================>] 157.69K   393KB/s   in 0.4s
+
+2017-04-23 17:30:34 (393 KB/s) - 'doc.carol.ai/img/architecture.png' saved [161474/161474]
+
+--2017-04-23 17:30:34--  http://doc.carol.ai/img/step1.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 245617 (240K) [image/png]
+Saving to: 'doc.carol.ai/img/step1.png'
+
+doc.carol.ai/img/step1.png      100%[=========================================================>] 239.86K   530KB/s   in 0.5s
+
+2017-04-23 17:30:35 (530 KB/s) - 'doc.carol.ai/img/step1.png' saved [245617/245617]
+
+--2017-04-23 17:30:35--  http://doc.carol.ai/img/step2.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 194983 (190K) [image/png]
+Saving to: 'doc.carol.ai/img/step2.png'
+
+doc.carol.ai/img/step2.png      100%[=========================================================>] 190.41K   587KB/s   in 0.3s
+
+2017-04-23 17:30:35 (587 KB/s) - 'doc.carol.ai/img/step2.png' saved [194983/194983]
+
+--2017-04-23 17:30:35--  http://doc.carol.ai/img/step3.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 438344 (428K) [image/png]
+Saving to: 'doc.carol.ai/img/step3.png'
+
+doc.carol.ai/img/step3.png      100%[=========================================================>] 428.07K   596KB/s   in 0.7s
+
+2017-04-23 17:30:36 (596 KB/s) - 'doc.carol.ai/img/step3.png' saved [438344/438344]
+
+--2017-04-23 17:30:36--  http://doc.carol.ai/img/step4.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 592761 (579K) [image/png]
+Saving to: 'doc.carol.ai/img/step4.png'
+
+doc.carol.ai/img/step4.png      100%[=========================================================>] 578.87K   597KB/s   in 1.0s
+
+2017-04-23 17:30:37 (597 KB/s) - 'doc.carol.ai/img/step4.png' saved [592761/592761]
+
+--2017-04-23 17:30:37--  http://doc.carol.ai/fonts/fontawesome-webfont.eot?v=4.1.0
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 37405 (37K) [application/vnd.ms-fontobject]
+Saving to: 'doc.carol.ai/fonts/fontawesome-webfont.eot?v=4.1.0'
+
+doc.carol.ai/fonts/fontawesome- 100%[=========================================================>]  36.53K  --.-KB/s   in 0.06s
+
+2017-04-23 17:30:37 (616 KB/s) - 'doc.carol.ai/fonts/fontawesome-webfont.eot?v=4.1.0' saved [37405/37405]
+
+--2017-04-23 17:30:37--  http://doc.carol.ai/fonts/fontawesome-webfont.eot?
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 37405 (37K) [application/vnd.ms-fontobject]
+Saving to: 'doc.carol.ai/fonts/fontawesome-webfont.eot?'
+
+doc.carol.ai/fonts/fontawesome- 100%[=========================================================>]  36.53K  --.-KB/s   in 0.06s
+
+2017-04-23 17:30:37 (591 KB/s) - 'doc.carol.ai/fonts/fontawesome-webfont.eot?' saved [37405/37405]
+
+--2017-04-23 17:30:37--  http://doc.carol.ai/fonts/fontawesome-webfont.woff?v=4.1.0
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 43572 (43K) [application/x-font-woff]
+Saving to: 'doc.carol.ai/fonts/fontawesome-webfont.woff?v=4.1.0'
+
+doc.carol.ai/fonts/fontawesome- 100%[=========================================================>]  42.55K  --.-KB/s   in 0.08s
+
+2017-04-23 17:30:37 (562 KB/s) - 'doc.carol.ai/fonts/fontawesome-webfont.woff?v=4.1.0' saved [43572/43572]
+
+--2017-04-23 17:30:37--  http://doc.carol.ai/fonts/fontawesome-webfont.ttf?v=4.1.0
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 79076 (77K) [application/octet-stream]
+Saving to: 'doc.carol.ai/fonts/fontawesome-webfont.ttf?v=4.1.0'
+
+doc.carol.ai/fonts/fontawesome- 100%[=========================================================>]  77.22K   390KB/s   in 0.2s
+
+2017-04-23 17:30:38 (390 KB/s) - 'doc.carol.ai/fonts/fontawesome-webfont.ttf?v=4.1.0' saved [79076/79076]
+
+--2017-04-23 17:30:38--  http://doc.carol.ai/fonts/fontawesome-webfont.svg?v=4.1.0
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 197829 (193K) [image/svg+xml]
+Saving to: 'doc.carol.ai/fonts/fontawesome-webfont.svg?v=4.1.0'
+
+doc.carol.ai/fonts/fontawesome- 100%[=========================================================>] 193.19K   555KB/s   in 0.3s
+
+2017-04-23 17:30:38 (555 KB/s) - 'doc.carol.ai/fonts/fontawesome-webfont.svg?v=4.1.0' saved [197829/197829]
+
+--2017-04-23 17:30:38--  http://doc.carol.ai/img/fluig-data-stack.jpg
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 159606 (156K) [image/jpeg]
+Saving to: 'doc.carol.ai/img/fluig-data-stack.jpg'
+
+doc.carol.ai/img/fluig-data-sta 100%[=========================================================>] 155.87K   593KB/s   in 0.3s
+
+2017-04-23 17:30:38 (593 KB/s) - 'doc.carol.ai/img/fluig-data-stack.jpg' saved [159606/159606]
+
+--2017-04-23 17:30:38--  http://doc.carol.ai/img/generic-client-fd-connection.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 142653 (139K) [image/png]
+Saving to: 'doc.carol.ai/img/generic-client-fd-connection.png'
+
+doc.carol.ai/img/generic-client 100%[=========================================================>] 139.31K   368KB/s   in 0.4s
+
+2017-04-23 17:30:39 (368 KB/s) - 'doc.carol.ai/img/generic-client-fd-connection.png' saved [142653/142653]
+
+--2017-04-23 17:30:39--  http://doc.carol.ai/img/generic-client-database.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 201297 (197K) [image/png]
+Saving to: 'doc.carol.ai/img/generic-client-database.png'
+
+doc.carol.ai/img/generic-client 100%[=========================================================>] 196.58K   301KB/s   in 0.7s
+
+2017-04-23 17:30:40 (301 KB/s) - 'doc.carol.ai/img/generic-client-database.png' saved [201297/201297]
+
+--2017-04-23 17:30:40--  http://doc.carol.ai/img/generic-client-file.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 110081 (108K) [image/png]
+Saving to: 'doc.carol.ai/img/generic-client-file.png'
+
+doc.carol.ai/img/generic-client 100%[=========================================================>] 107.50K   571KB/s   in 0.2s
+
+2017-04-23 17:30:40 (571 KB/s) - 'doc.carol.ai/img/generic-client-file.png' saved [110081/110081]
+
+--2017-04-23 17:30:40--  http://doc.carol.ai/img/generic-client-consumer.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 178924 (175K) [image/png]
+Saving to: 'doc.carol.ai/img/generic-client-consumer.png'
+
+doc.carol.ai/img/generic-client 100%[=========================================================>] 174.73K   603KB/s   in 0.3s
+
+2017-04-23 17:30:40 (603 KB/s) - 'doc.carol.ai/img/generic-client-consumer.png' saved [178924/178924]
+
+--2017-04-23 17:30:40--  http://doc.carol.ai/img/generic-client-process.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 100519 (98K) [image/png]
+Saving to: 'doc.carol.ai/img/generic-client-process.png'
+
+doc.carol.ai/img/generic-client 100%[=========================================================>]  98.16K   651KB/s   in 0.2s
+
+2017-04-23 17:30:41 (651 KB/s) - 'doc.carol.ai/img/generic-client-process.png' saved [100519/100519]
+
+--2017-04-23 17:30:41--  http://doc.carol.ai/img/services-oauth.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 41490 (41K) [image/png]
+Saving to: 'doc.carol.ai/img/services-oauth.png'
+
+doc.carol.ai/img/services-oauth 100%[=========================================================>]  40.52K  --.-KB/s   in 0.07s
+
+2017-04-23 17:30:41 (586 KB/s) - 'doc.carol.ai/img/services-oauth.png' saved [41490/41490]
+
+--2017-04-23 17:30:41--  http://doc.carol.ai/img/services-oauth-parameters-sample.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 181060 (177K) [image/png]
+Saving to: 'doc.carol.ai/img/services-oauth-parameters-sample.png'
+
+doc.carol.ai/img/services-oauth 100%[=========================================================>] 176.82K   635KB/s   in 0.3s
+
+2017-04-23 17:30:41 (635 KB/s) - 'doc.carol.ai/img/services-oauth-parameters-sample.png' saved [181060/181060]
+
+--2017-04-23 17:30:41--  http://doc.carol.ai/img/services-oauth-swagger-sample.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 20047 (20K) [image/png]
+Saving to: 'doc.carol.ai/img/services-oauth-swagger-sample.png'
+
+doc.carol.ai/img/services-oauth 100%[=========================================================>]  19.58K  --.-KB/s   in 0.02s
+
+2017-04-23 17:30:41 (1.04 MB/s) - 'doc.carol.ai/img/services-oauth-swagger-sample.png' saved [20047/20047]
+
+--2017-04-23 17:30:41--  http://doc.carol.ai/img/services-staging-area.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 144383 (141K) [image/png]
+Saving to: 'doc.carol.ai/img/services-staging-area.png'
+
+doc.carol.ai/img/services-stagi 100%[=========================================================>] 141.00K   544KB/s   in 0.3s
+
+2017-04-23 17:30:42 (544 KB/s) - 'doc.carol.ai/img/services-staging-area.png' saved [144383/144383]
+
+--2017-04-23 17:30:42--  http://doc.carol.ai/img/fluig-data-consumption-configuration.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 184102 (180K) [image/png]
+Saving to: 'doc.carol.ai/img/fluig-data-consumption-configuration.png'
+
+doc.carol.ai/img/fluig-data-con 100%[=========================================================>] 179.79K   586KB/s   in 0.3s
+
+2017-04-23 17:30:42 (586 KB/s) - 'doc.carol.ai/img/fluig-data-consumption-configuration.png' saved [184102/184102]
+
+--2017-04-23 17:30:42--  http://doc.carol.ai/img/fluig-data-consumption-configuration-schema.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 38034 (37K) [image/png]
+Saving to: 'doc.carol.ai/img/fluig-data-consumption-configuration-schema.png'
+
+doc.carol.ai/img/fluig-data-con 100%[=========================================================>]  37.14K  --.-KB/s   in 0.04s
+
+2017-04-23 17:30:42 (921 KB/s) - 'doc.carol.ai/img/fluig-data-consumption-configuration-schema.png' saved [38034/38034]
+
+--2017-04-23 17:30:42--  http://doc.carol.ai/img/services-consume.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 90140 (88K) [image/png]
+Saving to: 'doc.carol.ai/img/services-consume.png'
+
+doc.carol.ai/img/services-consu 100%[=========================================================>]  88.03K  --.-KB/s   in 0.1s
+
+2017-04-23 17:30:42 (600 KB/s) - 'doc.carol.ai/img/services-consume.png' saved [90140/90140]
+
+--2017-04-23 17:30:42--  http://doc.carol.ai/img/fluig-data-consumption-transformatio.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 171988 (168K) [image/png]
+Saving to: 'doc.carol.ai/img/fluig-data-consumption-transformatio.png'
+
+doc.carol.ai/img/fluig-data-con 100%[=========================================================>] 167.96K   599KB/s   in 0.3s
+
+2017-04-23 17:30:43 (599 KB/s) - 'doc.carol.ai/img/fluig-data-consumption-transformatio.png' saved [171988/171988]
+
+--2017-04-23 17:30:43--  http://doc.carol.ai/img/fluig-data-consumption-transformation-mapping.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 226559 (221K) [image/png]
+Saving to: 'doc.carol.ai/img/fluig-data-consumption-transformation-mapping.png'
+
+doc.carol.ai/img/fluig-data-con 100%[=========================================================>] 221.25K   600KB/s   in 0.4s
+
+2017-04-23 17:30:43 (600 KB/s) - 'doc.carol.ai/img/fluig-data-consumption-transformation-mapping.png' saved [226559/226559]
+
+--2017-04-23 17:30:43--  http://doc.carol.ai/img/filter-endpoint.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 91619 (89K) [image/png]
+Saving to: 'doc.carol.ai/img/filter-endpoint.png'
+
+doc.carol.ai/img/filter-endpoin 100%[=========================================================>]  89.47K   577KB/s   in 0.2s
+
+2017-04-23 17:30:43 (577 KB/s) - 'doc.carol.ai/img/filter-endpoint.png' saved [91619/91619]
+
+--2017-04-23 17:30:43--  http://doc.carol.ai/img/warning.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 3085 (3.0K) [image/png]
+Saving to: 'doc.carol.ai/img/warning.png'
+
+doc.carol.ai/img/warning.png    100%[=========================================================>]   3.01K  --.-KB/s   in 0.002s
+
+2017-04-23 17:30:44 (1.30 MB/s) - 'doc.carol.ai/img/warning.png' saved [3085/3085]
+
+--2017-04-23 17:30:44--  http://doc.carol.ai/img/filter-namedquery.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 75358 (74K) [image/png]
+Saving to: 'doc.carol.ai/img/filter-namedquery.png'
+
+doc.carol.ai/img/filter-namedqu 100%[=========================================================>]  73.59K  --.-KB/s   in 0.1s
+
+2017-04-23 17:30:44 (605 KB/s) - 'doc.carol.ai/img/filter-namedquery.png' saved [75358/75358]
+
+--2017-04-23 17:30:44--  http://doc.carol.ai/img/filter-namedquery-exec.png
+Reusing existing connection to doc.carol.ai:80.
+HTTP request sent, awaiting response... 200 OK
+Length: 107688 (105K) [image/png]
+Saving to: 'doc.carol.ai/img/filter-namedquery-exec.png'
+
+doc.carol.ai/img/filter-namedqu 100%[=========================================================>] 105.16K   541KB/s   in 0.2s
+
+2017-04-23 17:30:44 (541 KB/s) - 'doc.carol.ai/img/filter-namedquery-exec.png' saved [107688/107688]
+
+FINISHED --2017-04-23 17:30:44--
+Total wall clock time: 14s
+Downloaded: 42 files, 4.7M in 9.6s (495 KB/s)
+Denny-mac:tmp mac$
+#+END_EXAMPLE
+** can't get the traffic
+http://doc.carol.ai:8082/livereload.js
+
+#+BEGIN_EXAMPLE
+sh-3.2#  tcpdump  -vvv -XX -s 0 -f -c 10000 -nn -i en0 'port 8082'
+tcpdump: listening on en0, link-type EN10MB (Ethernet), capture size 262144 bytes
+18:30:09.042363 IP (tos 0x0, ttl 64, id 51391, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60446 > 104.236.159.226.8082: Flags [S], cksum 0x4699 (correct), seq 2481986892, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813188121 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 c8bf 4000 4006 b313 ac14 0a02 68ec  .@..@.@.......h.
+	0x0020:  9fe2 ec1e 1f92 93f0 1d4c 0000 0000 b002  .........L......
+	0x0030:  ffff 4699 0000 0204 05b4 0103 0305 0101  ..F.............
+	0x0040:  080a 3078 4419 0000 0000 0402 0000       ..0xD.........
+18:30:09.292829 IP (tos 0x0, ttl 64, id 8700, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60451 > 104.236.159.226.8082: Flags [SEW], cksum 0xde57 (correct), seq 1734848606, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813188364 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 21fc 4000 4006 59d7 ac14 0a02 68ec  .@!.@.@.Y.....h.
+	0x0020:  9fe2 ec23 1f92 6767 b05e 0000 0000 b0c2  ...#..gg.^......
+	0x0030:  ffff de57 0000 0204 05b4 0103 0305 0101  ...W............
+	0x0040:  080a 3078 450c 0000 0000 0402 0000       ..0xE.........
+18:30:10.091546 IP (tos 0x0, ttl 64, id 44116, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60446 > 104.236.159.226.8082: Flags [S], cksum 0x42b0 (correct), seq 2481986892, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813189122 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 ac54 4000 4006 cf7e ac14 0a02 68ec  .@.T@.@..~....h.
+	0x0020:  9fe2 ec1e 1f92 93f0 1d4c 0000 0000 b002  .........L......
+	0x0030:  ffff 42b0 0000 0204 05b4 0103 0305 0101  ..B.............
+	0x0040:  080a 3078 4802 0000 0000 0402 0000       ..0xH.........
+18:30:10.350408 IP (tos 0x0, ttl 64, id 28713, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60451 > 104.236.159.226.8082: Flags [S], cksum 0xdb2e (correct), seq 1734848606, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813189365 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 7029 4000 4006 0baa ac14 0a02 68ec  .@p)@.@.......h.
+	0x0020:  9fe2 ec23 1f92 6767 b05e 0000 0000 b002  ...#..gg.^......
+	0x0030:  ffff db2e 0000 0204 05b4 0103 0305 0101  ................
+	0x0040:  080a 3078 48f5 0000 0000 0402 0000       ..0xH.........
+18:30:11.144302 IP (tos 0x0, ttl 64, id 23632, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60446 > 104.236.159.226.8082: Flags [S], cksum 0x3ec8 (correct), seq 2481986892, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813190122 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 5c50 4000 4006 1f83 ac14 0a02 68ec  .@\P@.@.......h.
+	0x0020:  9fe2 ec1e 1f92 93f0 1d4c 0000 0000 b002  .........L......
+	0x0030:  ffff 3ec8 0000 0204 05b4 0103 0305 0101  ..>.............
+	0x0040:  080a 3078 4bea 0000 0000 0402 0000       ..0xK.........
+18:30:11.387959 IP (tos 0x0, ttl 64, id 64410, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60451 > 104.236.159.226.8082: Flags [S], cksum 0xd746 (correct), seq 1734848606, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813190365 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 fb9a 4000 4006 8038 ac14 0a02 68ec  .@..@.@..8....h.
+	0x0020:  9fe2 ec23 1f92 6767 b05e 0000 0000 b002  ...#..gg.^......
+	0x0030:  ffff d746 0000 0204 05b4 0103 0305 0101  ...F............
+	0x0040:  080a 3078 4cdd 0000 0000 0402 0000       ..0xL.........
+18:30:12.149125 IP (tos 0x0, ttl 64, id 57760, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60446 > 104.236.159.226.8082: Flags [S], cksum 0x3ae0 (correct), seq 2481986892, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813191122 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 e1a0 4000 4006 9a32 ac14 0a02 68ec  .@..@.@..2....h.
+	0x0020:  9fe2 ec1e 1f92 93f0 1d4c 0000 0000 b002  .........L......
+	0x0030:  ffff 3ae0 0000 0204 05b4 0103 0305 0101  ..:.............
+	0x0040:  080a 3078 4fd2 0000 0000 0402 0000       ..0xO.........
+18:30:12.393291 IP (tos 0x0, ttl 64, id 40063, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60451 > 104.236.159.226.8082: Flags [S], cksum 0xd35d (correct), seq 1734848606, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813191366 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 9c7f 4000 4006 df53 ac14 0a02 68ec  .@..@.@..S....h.
+	0x0020:  9fe2 ec23 1f92 6767 b05e 0000 0000 b002  ...#..gg.^......
+	0x0030:  ffff d35d 0000 0204 05b4 0103 0305 0101  ...]............
+	0x0040:  080a 3078 50c6 0000 0000 0402 0000       ..0xP.........
+18:30:13.152193 IP (tos 0x0, ttl 64, id 63227, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60446 > 104.236.159.226.8082: Flags [S], cksum 0x36f8 (correct), seq 2481986892, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813192122 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 f6fb 4000 4006 84d7 ac14 0a02 68ec  .@..@.@.......h.
+	0x0020:  9fe2 ec1e 1f92 93f0 1d4c 0000 0000 b002  .........L......
+	0x0030:  ffff 36f8 0000 0204 05b4 0103 0305 0101  ..6.............
+	0x0040:  080a 3078 53ba 0000 0000 0402 0000       ..0xS.........
+18:30:13.397355 IP (tos 0x0, ttl 64, id 53734, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60451 > 104.236.159.226.8082: Flags [S], cksum 0xcf74 (correct), seq 1734848606, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813192367 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 d1e6 4000 4006 a9ec ac14 0a02 68ec  .@..@.@.......h.
+	0x0020:  9fe2 ec23 1f92 6767 b05e 0000 0000 b002  ...#..gg.^......
+	0x0030:  ffff cf74 0000 0204 05b4 0103 0305 0101  ...t............
+	0x0040:  080a 3078 54af 0000 0000 0402 0000       ..0xT.........
+18:30:14.159179 IP (tos 0x0, ttl 64, id 14260, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60446 > 104.236.159.226.8082: Flags [S], cksum 0x3310 (correct), seq 2481986892, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813193122 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 37b4 4000 4006 441f ac14 0a02 68ec  .@7.@.@.D.....h.
+	0x0020:  9fe2 ec1e 1f92 93f0 1d4c 0000 0000 b002  .........L......
+	0x0030:  ffff 3310 0000 0204 05b4 0103 0305 0101  ..3.............
+	0x0040:  080a 3078 57a2 0000 0000 0402 0000       ..0xW.........
+18:30:14.406545 IP (tos 0x0, ttl 64, id 50108, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60451 > 104.236.159.226.8082: Flags [S], cksum 0xcb8c (correct), seq 1734848606, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813193367 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 c3bc 4000 4006 b816 ac14 0a02 68ec  .@..@.@.......h.
+	0x0020:  9fe2 ec23 1f92 6767 b05e 0000 0000 b002  ...#..gg.^......
+	0x0030:  ffff cb8c 0000 0204 05b4 0103 0305 0101  ................
+	0x0040:  080a 3078 5897 0000 0000 0402 0000       ..0xX.........
+18:30:16.169736 IP (tos 0x0, ttl 64, id 61227, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60446 > 104.236.159.226.8082: Flags [S], cksum 0x2b40 (correct), seq 2481986892, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813195122 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 ef2b 4000 4006 8ca7 ac14 0a02 68ec  .@.+@.@.......h.
+	0x0020:  9fe2 ec1e 1f92 93f0 1d4c 0000 0000 b002  .........L......
+	0x0030:  ffff 2b40 0000 0204 05b4 0103 0305 0101  ..+@............
+	0x0040:  080a 3078 5f72 0000 0000 0402 0000       ..0x_r........
+18:30:16.415198 IP (tos 0x0, ttl 64, id 22545, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60451 > 104.236.159.226.8082: Flags [S], cksum 0xc3bc (correct), seq 1734848606, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813195367 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 5811 4000 4006 23c2 ac14 0a02 68ec  .@X.@.@.#.....h.
+	0x0020:  9fe2 ec23 1f92 6767 b05e 0000 0000 b002  ...#..gg.^......
+	0x0030:  ffff c3bc 0000 0204 05b4 0103 0305 0101  ................
+	0x0040:  080a 3078 6067 0000 0000 0402 0000       ..0x`g........
+18:30:20.182786 IP (tos 0x0, ttl 64, id 55304, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60446 > 104.236.159.226.8082: Flags [S], cksum 0x1ba0 (correct), seq 2481986892, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813199122 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 d808 4000 4006 a3ca ac14 0a02 68ec  .@..@.@.......h.
+	0x0020:  9fe2 ec1e 1f92 93f0 1d4c 0000 0000 b002  .........L......
+	0x0030:  ffff 1ba0 0000 0204 05b4 0103 0305 0101  ................
+	0x0040:  080a 3078 6f12 0000 0000 0402 0000       ..0xo.........
+18:30:20.428856 IP (tos 0x0, ttl 64, id 5500, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60451 > 104.236.159.226.8082: Flags [S], cksum 0xb41b (correct), seq 1734848606, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813199368 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 157c 4000 4006 6657 ac14 0a02 68ec  .@.|@.@.fW....h.
+	0x0020:  9fe2 ec23 1f92 6767 b05e 0000 0000 b002  ...#..gg.^......
+	0x0030:  ffff b41b 0000 0204 05b4 0103 0305 0101  ................
+	0x0040:  080a 3078 7008 0000 0000 0402 0000       ..0xp.........
+18:30:28.209898 IP (tos 0x0, ttl 64, id 42737, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60446 > 104.236.159.226.8082: Flags [S], cksum 0xfc5f (correct), seq 2481986892, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813207122 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 a6f1 4000 4006 d4e1 ac14 0a02 68ec  .@..@.@.......h.
+	0x0020:  9fe2 ec1e 1f92 93f0 1d4c 0000 0000 b002  .........L......
+	0x0030:  ffff fc5f 0000 0204 05b4 0103 0305 0101  ..._............
+	0x0040:  080a 3078 8e52 0000 0000 0402 0000       ..0x.R........
+18:30:28.457098 IP (tos 0x0, ttl 64, id 3165, offset 0, flags [DF], proto TCP (6), length 64)
+    172.20.10.2.60451 > 104.236.159.226.8082: Flags [S], cksum 0x94da (correct), seq 1734848606, win 65535, options [mss 1460,nop,wscale 5,nop,nop,TS val 813207369 ecr 0,sackOK,eol], length 0
+	0x0000:  a218 28bb 7e64 2cf0 ee2e 5ef6 0800 4500  ..(.~d,...^...E.
+	0x0010:  0040 0c5d 4000 4006 6f76 ac14 0a02 68ec  .@.]@.@.ov....h.
+	0x0020:  9fe2 ec23 1f92 6767 b05e 0000 0000 b002  ...#..gg.^......
+	0x0030:  ffff 94da 0000 0204 05b4 0103 0305 0101  ................
+	0x0040:  080a 3078 8f49 0000 0000 0402 0000       ..0x.I........
+
+#+END_EXAMPLE
+** console output
+#+BEGIN_EXAMPLE
+     26:	GET / HTTP/1.1
+     40:	0x0040:  3775 4745 5420 2f20 4854 5450 2f31 2e31  7uGET./.HTTP/1.1
+     76:	HTTP/1.1 200 OK
+     93:	0x0040:  67b0 4854 5450 2f31 2e31 2032 3030 204f  g.HTTP/1.1.200.O
+    305:	GET /css/theme.css HTTP/1.1
+    319:	0x0050:  2e63 7373 2048 5454 502f 312e 310d 0a48  .css.HTTP/1.1..H
+    412:	GET /css/theme_extra.css HTTP/1.1
+    450:	GET /css/highlight.css HTTP/1.1
+    488:	GET /js/jquery-2.1.1.min.js HTTP/1.1
+    525:	GET /js/modernizr-2.8.3.min.js HTTP/1.1
+    540:	0x0060:  2048 5454 502f 312e 310d 0a48 6f73 743a  .HTTP/1.1..Host:
+    562:	GET /js/highlight.pack.js HTTP/1.1
+    641:	HTTP/1.1 200 OK
+    658:	0x0040:  684e 4854 5450 2f31 2e31 2032 3030 204f  hNHTTP/1.1.200.O
+   1899:	HTTP/1.1 200 OK
+   1916:	0x0040:  686d 4854 5450 2f31 2e31 2032 3030 204f  hmHTTP/1.1.200.O
+   1989:	GET /js/theme.js HTTP/1.1
+   2003:	0x0050:  6a73 2048 5454 502f 312e 310d 0a48 6f73  js.HTTP/1.1..Hos
+   2067:	HTTP/1.1 200 OK
+   2084:	0x0040:  686d 4854 5450 2f31 2e31 2032 3030 204f  hmHTTP/1.1.200.O
+   2424:	HTTP/1.1 200 OK
+   2441:	0x0040:  686d 4854 5450 2f31 2e31 2032 3030 204f  hmHTTP/1.1.200.O
+   3382:	HTTP/1.1 200 OK
+   3400:	0x0040:  686d 4854 5450 2f31 2e31 2032 3030 204f  hmHTTP/1.1.200.O
+   4510:	HTTP/1.1 200 OK
+   4527:	0x0040:  686d 4854 5450 2f31 2e31 2032 3030 204f  hmHTTP/1.1.200.O
+   6696:	HTTP/1.1 200 OK
+   6713:	0x0040:  68e2 4854 5450 2f31 2e31 2032 3030 204f  h.HTTP/1.1.200.O
+   7894:	GET /img/architecture.png HTTP/1.1
+  12929:	HTTP/1.1 200 OK
+  12944:	0x0040:  6948 4854 5450 2f31 2e31 2032 3030 204f  iHHTTP/1.1.200.O
+  24486:	GET /img/step1.png HTTP/1.1
+  24500:	0x0050:  2e70 6e67 2048 5454 502f 312e 310d 0a48  .png.HTTP/1.1..H
+  24531:	HTTP/1.1 200 OK
+  24546:	0x0040:  6a5e 4854 5450 2f31 2e31 2032 3030 204f  j^HTTP/1.1.200.O
+
+#+END_EXAMPLE
+** Chrome DevTools: PhantomJS
+http://stackoverflow.com/questions/24070370/manipulate-chrome-dev-tools-with-python
+http://phantomjs.org
+** #  --8<-------------------------- separator ------------------------>8--
+** TODO [#A] selenium get all connections when loading a page
+http://stackoverflow.com/questions/3712278/selenium-rc-how-do-you-use-capturenetworktraffic-in-python
+http://stackoverflow.com/questions/17710817/how-to-capture-traffic-in-python
+** #  --8<-------------------------- separator ------------------------>8--
+** TODO selelinum cleanup cache
+** TODO [#A] selenium get how fast a web page loads               :IMPORTANT:
+http://stackoverflow.com/questions/11245062/how-can-we-get-exact-time-to-load-a-page-using-selenium-webdriver
+http://stackoverflow.com/questions/15122864/selenium-wait-until-document-is-ready
+
+#+BEGIN_SRC python
+#!/usr/bin/python
+import time
+from selenium import webdriver
+
+driver = webdriver.Chrome("/Users/mac/Downloads/chromedriver")
+driver.set_page_load_timeout(300)
+
+start_clock = time.clock()
+#p = driver.get('http://www.google.com/')
+p = driver.get('http://doc.carol.ai/')
+end_clock = time.clock()
+elapsed_seconds = ((end_clock - start_clock) * 1000)
+print "end_clock:%f, start_clock:%f" % (start_clock, end_clock)
+print elapsed_seconds
+#+END_SRC
+** useful link
+https://ask.wireshark.org/questions/12824/how-to-get-all-of-the-http-sessions-related-to-one-web-page
+http://stackoverflow.com/questions/3771103/how-do-i-get-a-list-of-all-httpsession-objects-in-a-web-application
+https://unix.stackexchange.com/questions/148985/how-to-get-a-response-from-any-url
+https://docs.python.org/3.4/howto/urllib2.html
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

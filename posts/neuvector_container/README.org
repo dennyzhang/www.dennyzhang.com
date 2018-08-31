@@ -1,0 +1,345 @@
+* [Product Review] NeuVector, Build Run-Time Container Security :BLOG:Docker:
+:PROPERTIES:
+:type:   DevOps,Docker,Security
+:END:
+---------------------------------------------------------------------
+[[http://neuvector.com][NeuVector]] is a startup company in Bay Area, focusing on run-time container security. In our previous post, we find [[https://www.dennyzhang.com/docker_bench_security][docker-bench-security]] useful to avoid many common Docker pitfalls.
+
+NeuVector helps to address some Docker security issues, which are not well resolved before. e.g, intelligently detect malicious traffic within servers of our critical envs, visualize network topology with large scale of docker envs, etc.
+
+[[image-blog:NeuVector, Build Run-Time Container Security][https://www.dennyzhang.com/wp-content/uploads/denny/neuvector_diagram.jpg]]
+
+---------------------------------------------------------------------
+Enclosed are a *product review* of NeuVector and an *interview* with their CEO.
+
+Disclaimer: I don't work for NeuVector.
+
+The CEO, [[https://www.linkedin.com/in/fei-huang-7990162][Fei Huang]] is one of my acquaintances. And I believe his product could be useful for our blog audience. Make Docker envs more secured in our DevOps practice.
+---------------------------------------------------------------------
+Security concerns, based on survey in 2016:
+1. 53% of enterprises deploying containers cite Security as top concern (Forrester)
+- VMs provide security and isolation which does not exist in containers (Gartner)
+- Firewalls can't keep up with the rapid pace and fluidity of container deployments
+- 30% of all official container images contain high priority vulnerabilities
+
+Personally I've been using Docker for over 2 years. Mostly it's about testing or development cycle. *Running Docker in prod env? Not yet*. Security is one thing raising the biggest concern. [[https://www.dennyzhang.com/docker_bench_security][docker_bench_security]] could be a big help to keep align with latest Docker security practices.
+
+[[color:#c7254e][Still some gaps to fill, which makes NeuVector quite useful.]]
+
+[[https://vimeo.com/180921657/9959b7a9b9][https://www.dennyzhang.com/wp-content/uploads/denny/vimeo_neuvector.jpg]]
+*1. Mostly traffic within our VPC(virtual private cloud) is widely open*.
+It's no secret. Most of us choose to trust all traffic within our data center. For simplicity. And many of us are using root. Again for simplicity.
+
+Well, what does this mean? If one machine has been break-in, hackers can use it as a jumpbox to attack almost anything!
+
+People may ask why we don't enforce more strict firewall rules? It's really hard. Firstly the inter-communication could be complicated and dynamic. Secondly, with container technology, container restart/recreation happen frequently. Usually the container ip won't persist. However firewall is usually ip-address based. Thirdly, well-defined security policy takes a significant amount of effort. _As a conclusion, it's nearly impossible to keep the firewall rules up-to-date._
+
+NeuVector tries to solve the problem in another way. *It will automatically study the network traffic*. Visualize them, and audit or block the suspicious ones. In below diagram, blue lines indicate the safe traffic. Lines in red are suspicious.
+[[image-blog:NeuVector, Build Run-Time Container Security][https://www.dennyzhang.com/wp-content/uploads/denny/neuvector_vpc.jpg]]
+*2. Large scale Docker env is dynamic and hard to manage*.
+Imagine we have hundreds of containers. We may see containers up and down all the time. Very likely, we can lose the trace. Let alone the possible security risks. We need a way to visualize the network topology and traffic.
+
+Here is the one example provided by NeuVector. *It follows "zero-configuration" model*. We just need to start some extra containers, then the feature is ready. To disable it, simply stop dispose the container(s).
+[[image-blog:NeuVector, Build Run-Time Container Security][https://www.dennyzhang.com/wp-content/uploads/denny/neuvector_network_topology.jpg]]
+*3. Too many security risks to crack*.
+We may have security issues in network layer, OS layer, application layer, etc. Just too much to follow for small teams.
+
+Here NeuVector provides an all-in-one security toolkit. Much eaiser. Isn't it?
+** Interview with NeuVector CEO, Fei Huang
+Fei's LinkedIn Profile: [[url-external:https://www.linkedin.com/in/fei-huang-7990162][here]]
+
+- Q1: What your mission or main motivations for the startup project?
+  A: Containers have exploded in popularity in the last year but knowledge of how to monitor and secure them in production is severely lacking. Just like I saw when VMs first came out, there are many benefits which are causing companies to rush to deploy containers. But there are also new attack surfaces with containers just like there were with VMs. The difference today is that security teams can't slow down deployment, updates, and scaling, which is happening at a much faster pace than before.
+#+BEGIN_HTML
+<br/>
+#+END_HTML
+- Q2: What're your main competitors, and how is NeuVector different than others?
+  A: There's a number of companies trying to promote container management, monitoring, and security. It's a new space so it can be very confusing to buyers. We recommend taking basic steps to lock down your OS and container platform and using tools such as vArmour and SeLinux. Then, just deploy NeuVector during test, staging, and production to make sure everything is visible and protected, just in case something gets through.
+  We're really *the only company focused on run-time container security from a networking perspective*. Container networking can be complicated, especially with overlay networks and so much east-west data center traffic. Public cloud security and traditional firewalls can't keep up with containers, so a security solution must be built with container networking in mind. Securing the entire networking stack from L3 to L7 is our specialty. NeuVector recognizes authorized application behavior and protects them without having to continuously update security rules.
+#+BEGIN_HTML
+<br/>
+#+END_HTML
+
+- Q3: Docker.Inc keeps making security improvements. What is your play and extra value, considering the security update of Docker Inc itself?
+  A: We talked to the Docker security team, and they are definitely focusing on platform security which is reasonable as well. Docker and other platform vendors will need to keep hardening their engine, network and platforms to reduce the risks from the infrastructure layer. For example the latest Docker swarm has started supporting network encryption. NeuVector is focusing on the application side instead so it is not a conflict with the platforms. For example NeuVector's network security works smoothly with Docker swarm encryption features. The extra value NeuVector provides is *deep application knowledge based security and automation, visibility and protection between application containers, and the global or logical view of application stacks*. So, NeuVector is providing strong container security because from a user point of view it is agnostic to platform, overlay network or infrastructure. And yes no vendor lock-in is another side benefit.
+#+BEGIN_HTML
+<br/>
+#+END_HTML
+
+- Q4: How much I shall pay for using the service?
+  A: NeuVector is priced on a per host basis for annual subscriptions, which includes support. We offer free trials for qualified companies, and a starter kit is available for under $10K for 10 nodes. NeuVector is easy to download and deploy, just like any other container.
+#+BEGIN_HTML
+<br/>
+#+END_HTML
+
+- Q5: How would I get started with NeuVector?
+  A: It's really simple. Contact us on our website [[http://neuvector.com/try-neuvector/][neuvector.com]]. And we'll authorize you to download the containers from our private Docker Hub registry. There's also a docs container so that makes it easy. Then it takes just minutes to deploy onto new environments or even 'brownfield' ones with production applications already running.
+#+BEGIN_HTML
+<br/>
+#+END_HTML
+
+- Q6: Any special requirements to use NeuVector?
+  A: In general, NeuVector itself is a containerized solution so any container management platforms or tool will be able to manage NeuVector's containers. No special requirements are needed. NeuVector will always provide a deep level of application and network awareness to protect your containers with built-in intelligence. The Docker -icc flag is not necessary but it doesn't matter even if it's turned on. To get advice for a layered security strategy for containers, check out our sharing "[[http://neuvector.com/blog/15-tips-run-time-container-security-strategy/][15 tips for a run-time container security strategy]]".
+#+BEGIN_HTML
+<br/>
+#+END_HTML
+
+So much for today's session of NeuVector. If you have experience or feedback about this, please leave us comments or check [[http://neuvector.com/][NeuVector website]] directly.
+
+[[color:#c7254e][Remeber to share the post with your peeps, if useful.]]
+
+More Reading:
+
+- [[https://www.dennyzhang.com/docker_bench_security][docker-bench-security: Audit Well-Known Docker Vulnerabilities]]
+- [[https://www.dennyzhang.com/docker_deployment][5 Tips For Building Docker Image]]
+- [[https://www.dennyzhang.com/docker_image_scan][Audit Docker Image Security]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/neuvector_container"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/neuvector_container
+* misc                                                             :noexport:
+** #  --8<-------------------------- separator ------------------------>8--
+** off-page SEO
+- twitter
+https://twitter.com/docker/status/794283033151082496
+- find twitter users to @
+
+- reddit:
+
+- quora:
+https://www.quora.com/What-is-the-most-vulnerable-aspect-of-container-technology-from-a-security-perspective-i-e-Docker
+
+- v2ex:
+https://www.v2ex.com/go/linux
+** community discussion
+https://www.reddit.com/r/docker/comments/5bdhrb/experience_about_dockerbenchsecurity/
+** similar pages
+http://www.srikalyan.com/post/146523063033/docker-bench-security
+https://blog.docker.com/2015/05/docker-security-tools/
+** #  --8<-------------------------- separator ------------------------>8--
+** TODO Q2 is similar with Q3
+** TODO Answer Q4
+** TODO add a youtube video
+** #  --8<-------------------------- separator ------------------------>8--
+** TODO google good product review
+** CANCELED ask to give off some trial account
+   CLOSED: [2016-11-19 Sat 09:42]
+** TODO mail: Re: Q&A                                              :noexport:
+[[gnus:mail.misc#MWHPR11MB151879844E0808592C58F9D5B8BC0@MWHPR11MB1518.namprd11.prod.outlook.com][Email from Fei Huang (Mon, 14 Nov 2016 22:58:09 +0000): Re: Q&A]]
+#+begin_example
+From: Fei Huang <fei@neuvector.com>
+Subject: Re: Q&A
+To: Glen Kosaka <glen@neuvector.com>, Denny Zhang <denny@dennyzhang.com>
+Date: Tue, 15 Nov 2016 06:58:09 +0800
+
+Thanks Glen.
+
+Hi Denny,
+
+Below you can find the Q&A section please.
+
+The test page looks pretty good in general, I only got one question: you talked about the container
+security problems, the NeuVector workflow and highlights, then Q&A. I was thinking it will be nice
+if we can talk a bit more detail about product functions/features from DevOps point of view? Just
+for example, as part of your day to day work managing your containers, deployment of security
+containers is much easier than before? will our visibility feature provide some values to ease of
+your work, and then would the "zero-configuration" model fit into the quick changing DevOps
+environment with scale? Maybe after you tried a bit more on some sample apps, you may have some
+good inputs about these. Anyway just give some quick thoughts about product functions that we hope
+that can benefit the most. :)
+
+thanks all!
+
+Fei
+
+---------------------------------------------------------------------------------------------------
+From: Glen Kosaka
+Sent: Monday, November 14, 2016 12:44 PM
+To: Fei Huang
+Subject: Q&A
+
+Interview with NeuVector CEO
+
+Q: What your mission or main motivations for the startup project?
+
+A: Containers have exploded in popularity in the last year but knowledge of how to monitor and
+secure them in production is severely lacking. Just like I saw when VMs first came out, there are
+many benefits which are causing companies to rush to deploy containers. But there are also new
+attack surfaces with containers just like there were with VMs. The difference today is that
+security teams can't slow down deployment, updates, and scaling, which is happening at a much
+faster pace than before.
+
+Q: How much I shall pay for using the service?
+
+A: NeuVector is priced on a per host basis for annual subscriptions, which includes support. We
+offer free trials for qualified companies, and a starter kit is available for under $10K for 10
+nodes. NeuVector is easy to download and deploy, just like any other container.
+
+Q: What's your main competitors, or alternatives I can try and compare?
+
+A: There's a number of companies trying to promote container management, monitoring, and security.
+It's a new space so it can be very confusing to buyers. We recommend taking basic steps to lock
+down your OS and container platform and using tools such as vArmour and SeLinux. Then, just deploy
+NeuVector during test, staging, and production to make sure everything is visible and protected,
+just in case something gets through.
+
+Q: How is NeuVector different than others?
+
+A:  We're really the only company focused on run-time container security from a networking
+perspective. Container networking can be complicated, especially with overlay networks and so much
+east-west data center traffic. Public cloud security and traditional firewalls can't keep up with
+containers, so a security solution must be built with container networking in mind. Securing the
+entire networking stack from L3 to L7 is our specialty. NeuVector recognizes authorized application
+behavior and protects them without having to continuously update security rules.
+
+Q: How would I get started with NeuVector?
+
+A: It's really simple. Contact us on our website neuvector.com, and we'll authorize you to download
+the containers from our private Docker Hub registry. There's also a docs container so that makes it
+easy. Then it takes just minutes to deploy onto new environments or even 'brownfield' ones with
+production applications already running.
+
+#+end_example
+** #  --8<-------------------------- separator ------------------------>8--
+** TODO mail: Denny: Welcome to the NeuVector trial                :noexport:
+[[gnus:mail.misc#MWHPR11MB151802C9136537686115D1F3B8AC0@MWHPR11MB1518.namprd11.prod.outlook.com][Email from Fei Huang (Sat, 29 Oct 2016 02:48:40 +0000): Denny: Welcome to the NeuVecto]]
+#+begin_example
+From: Fei Huang <fei@neuvector.com>
+Subject: Denny: Welcome to the NeuVector trial
+To: Denny Zhang <denny@dennyzhang.com>
+Date: Sat, 29 Oct 2016 10:48:40 +0800
+
+Hi Denny:
+
+Welcome to the NeuVector trial and thanks in advance! Below is important info for getting started.
+You've already been added to the Neuvector Docker Hub private registry so you can download our
+containers!
+
+As a reminder, NeuVector delivers run-time container security and visibility to:
+
+  * [01914a53-790a-4755-8a1e-00ef552f5ca5]Discover running applications, services, and process, and
+    apply the built-in security policies for them
+  * Monitor running containers for violations, threats, and vulnerabilities
+  * Protect your containers from suspicious activity with no manual policies required
+  * Easily manage and deploy NeuVector components with support for Docker, Kubernetes, Rancher,
+    Mesos and more.
+
+Getting Started
+
+ 1. Pull the NeuVector containers, including /docs from Docker Hub
+ 2. Run the /docs container to read how to install and deploy the NeuVector All-in-one and Enforcer
+    containers
+    $ docker run -itd --name docs -p 80:80 neuvector/docs
+ 3. Deploy the allinone and enforcer containers using docker-compose
+ 4. Run traffic through your test application to see how NeuVector discovers your running services
+    and builds a map, just like the picture above
+ 5. Put NeuVector in Monitor, then Protect mode and try some violations to see how we identify and
+    prevent them
+ 6. Enable the Auto-Scan feature in Vulnerabilities to scan your running containers
+ 7. Give us feedback at info support@neuvector.com! We'll send you goodies like movie tickets or
+    coffee cards as a small thank-you.
+
+Other Resources and Tips
+
+  * Watch demo videos on our private product page to learn how to deploy and generate violations.
+    Use nv1851blvd to get access
+  * Ask any questions, make suggestions or report bugs at support@neuvector.com.
+
+Enjoy!
+
+Fei
+#+end_example
+** TODO mail: NeuVector's solution                                 :noexport:
+[[gnus:mail.misc#MWHPR11MB15184C0B23F116D8A2E8A408B8AC0@MWHPR11MB1518.namprd11.prod.outlook.com][Email from Fei Huang (Sat, 29 Oct 2016 02:52:30 +0000): NeuVector's solution]]
+#+begin_example
+From: Fei Huang <fei@neuvector.com>
+Subject: NeuVector's solution
+To: Denny Zhang <denny@dennyzhang.com>
+Date: Sat, 29 Oct 2016 10:52:30 +0800
+Attachment:
+ [4. NeuVector Container Security - Deck 2016.pdf --- application/pdf; NeuVector Container Security - Deck 2016.pdf]...
+
+Hi Denny,
+
+So attached file is the presentation we went through today.
+
+Yes as we discussed, please keep it confidential.
+
+thank you!
+
+Fei
+
+[4. NeuVector Container Security - Deck 2016.pdf --- application/pdf; NeuVector Container Security - Deck 2016.pdf]...
+
+#+end_example
+** TODO mail: You have been added to the tryneuvector group in the neuvector organization :noexport:
+[[gnus:mail.misc#20161029024614.25505.86760.C13EE73E@notify.docker.com][Email from no-reply@notify.docker.com (Sat, 29 Oct 2016 02:46:14 +0000): You have been added to the try]]
+#+begin_example
+From: no-reply@notify.docker.com
+Subject: You have been added to the tryneuvector group in the neuvector organization
+To: filebat.mark@gmail.com
+Date: Sat, 29 Oct 2016 10:46:14 +0800
+
+[container-]
+
+You have been added to the neuvector organization.
+
+You are now a member of the tryneuvector team in the neuvector organization.
+
+You can view and manage your organization's repositories, applications and infrastructure here:
+
+https://cloud.docker.com/neuvector/
+
+#+end_example
+** [#A] Interview sample for prod review
+Q: What your mission or main motivations for the startup project?
+A: (Denny note: IMO, the question is more about: What's the problem? What normal people do? What're the benefits I can get?)
+
+Q: How much I shall pay for using the service?
+A: (Denny note: What's the cost? And how stable the solution/product is?)
+
+Q: What's your main competitors, or alternatives I can try and compare?
+A: (Denny note: Closed-source solution, what about vendor lock-in concern?)
+** DONE notifiy NeuVector: send out the compaign
+  CLOSED: [2016-11-22 Tue 08:24]
+- Linkedin groups:
+https://www.linkedin.com/groups/2825397/2825397-6206267043755450368
+https://www.linkedin.com/groups/6585254/6585254-6206267043763843072
+https://www.linkedin.com/groups/3726537/3726537-6206266234900713474
+
+- Linkedin Update:
+https://www.linkedin.com/nhome/updates?activity=6206473688477470720
+
+- Twitter Update:
+https://twitter.com/dennyzhang001/status/800708007936094208
+
+- Google+ Update:
+https://plus.google.com/110003543979899851370/posts/TZme464TCTx
+
+- Reddit: https://www.reddit.com/r/docker/comments/5e20a9/product_review_neuvector_build_runtime_container/
+
+- Newsletter: I've manually added Fei and Glen in the list.
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
