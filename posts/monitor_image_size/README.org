@@ -1,0 +1,82 @@
+* Get Notification: Monitor Your Docker Image Sizing            :BLOG:Docker:
+  :PROPERTIES:
+  :type:     DevOps,Docker,Tool
+  :END:
+---------------------------------------------------------------------
+With Docker deployment, smaller images are usually better.
+
+But your docker images will keep changing. And you just don't remember to check it for a while. Then someday you happen to find out some huge images in your deployment pipeline. Feel uncomfortable, don't you? Any thoughts about how to improve it?
+
+[[color:#c7254e][My answer is like always: Monitor That!]] And Get Slack notifications.
+
+Enclosed is my approach. Check it out! And discuss with me, my friends.
+
+[[image-blog:Get Notifcation: Monitor Your Docker Image Sizing][https://www.dennyzhang.com/wp-content/uploads/denny/docker_image_size.png]]
+
+---------------------------------------------------------------------
+Check More Discussion In [[url-external:https://www.linkedin.com/feed/update/urn:li:activity:6282546795075694592][Discussion1]], [[url-external:https://www.linkedin.com/feed/update/urn:li:activity:6283269678051713024][Discussion2]]
+
+[[image-linkedin:Get Notifcation: Monitor Your Docker Image Sizing][https://www.dennyzhang.com/wp-content/uploads/denny/linkedin_docker_image.png]]
+
+---------------------------------------------------------------------
+Checking docker image size is super easy.
+
+#+BEGIN_SRC sh
+docker images | grep $image_name
+#+END_SRC
+
+We all want small images.
+
+1. The question is how small is small enough? It actually depends on your expectation, your project, etc.
+- And you don't set one expectation for all images, do you? More likely it would be some images should be less than 50MB, while some other should be less than 300MB, etc.
+
+Examine it manually? It works.
+
+But you can do better. I trust you! Maybe you can automate the check. What's better, make the solution general. The same approach should apply to different projects with no extra effort.
+
+Here comes my suggestion: [[https://github.com/dennyzhang/devops_public/blob/tag_v6/python/docker_tool/detect_big_docker_image.py][detect_big_docker_image.py]].
+[[github:DennyZhang][GitHub]]
+
+1. By default, the script examines all docker images in the docker host machine.
+- Different images can have different check threshold.
+- We can skip check for certain docker images.
+
+Why Python instead of Shell? (See [[https://www.dennyzhang.com/shell_to_python][GoodBye Shell, Hello Python!]])
+
+[[image-github:https://github.com/dennyzhang][https://www.dennyzhang.com/wp-content/uploads/denny/github_detect_big_docker_image.png]]
+
+I love Jenkins. (See [[https://www.dennyzhang.com/jenkins_benefits][5 Reasons Why Jenkins Is So Useful And Popular]]).
+
+Thus I usually create a Jenkins job, which runs the check weekly.
+
+[[image-blog:Get Notifcation: Monitor Your Docker Image Sizing][https://www.dennyzhang.com/wp-content/uploads/denny/docker_image_size.png]]
+
+If the job fails, I will get slack notifications.
+
+[[image-blog:Get Notifcation: Monitor Your Docker Image Sizing][https://www.dennyzhang.com/wp-content/uploads/denny/docker_image_size_slack.png]]
+
+---------------------------------------------------------------------
+More Reading:
+- [[https://www.dennyzhang.com/docker_deployment][5 Tips For Building Docker Image]]
+- [[https://www.dennyzhang.com/docker_bench_security][docker-bench-security: Audit Well-Known Docker Vulnerabilities]]
+- [[https://www.dennyzhang.com/selenium_docker][Run GUI Test With Docker: Detect Web Page Loading Issues]]
+- [[https://www.dennyzhang.com/docker_capacity][Docker Low Disk Space. Clean Up Disk Leak!]]
+
+[1] https://fralef.me/docker-and-iptables.html
+[2] https://uptimerobot.com
+[3] https://github.com/docker/compose/issues/3140
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

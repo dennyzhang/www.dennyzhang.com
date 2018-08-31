@@ -1,0 +1,164 @@
+* Audit Docker Image Security                                   :BLOG:Docker:
+  :PROPERTIES:
+  :type:     DevOps,Docker,Security,Popular
+  :END:
+---------------------------------------------------------------------
+Nowadays people are happy to use community Docker images. It's super fast and easy to setup infrastructure, compared to old black days. But watch out security risks hidding inside!
+
+Ignoring them could result in serious damages sooner or later. *How to easily identity security holes inside docker images*?
+
+[[image-blog:Docker Image Security][https://www.dennyzhang.com/wp-content/uploads/denny/docker_image_scan.jpg]]
+
+---------------------------------------------------------------------
+** Common Security Issues Inside Public Docker Images
+Here is a simple example. Doubtless it will misleading and hard to diagnose in real world.
+
+- In L18-19, a ssh key is injected to to authorized_keys. If you start sshd, you're in danger.
+- In L22, root password has been reset. Not good, isn't it?
+- In L25-26, a malicious OS user has been added.
+- In L29-31, the user has been promoted as super admin, and he/she can run any commands without password!
+- In L34-36, your jenkins has an unpleasant admin user now. Yes, Jenkins is hot and popular. You can do a lot of things with Jenkins. So do the hackers! This case represents *security of application layer*. It's certainly the most dangerous and difficult case.
+#+BEGIN_EXAMPLE -n
+########## How To Use Docker Image ###############
+##
+##  Install docker utility
+##  Download docker image:
+##   docker pull denny/test:v1
+##  Boot docker container:
+##   docker run -t -P -d --name my-test denny/test:v1 /bin/bash
+##
+##  Build Image From Dockerfile.
+##   docker build -f Dockerfile -t denny/test:v1 --rm=false .
+##################################################
+
+FROM ubuntu:14.04
+MAINTAINER Denny <denny@dennyzhang.com>
+
+RUN mkdir -p /root/.ssh && \
+  # SSH login by key file
+  echo "ssh-rsa AAAAB3NzaC1...lOvno6KN5 denny@dennyzhang.com" \
+       >> /root/.ssh/authorized_keys && \
+
+  # Reset root password
+  echo 'root:ChangeMe1' | chpasswd && \
+
+  # Add a malicious user
+  useradd denny && \
+  echo 'denny:ChangeMe1' | chpasswd && \
+
+  # Add user to super admin
+  echo '%denny ALL=(ALL:ALL) NOPASSWD: ALL' > \
+        /etc/sudoers.d/admins && \
+  chmod 400 /etc/sudoers.d/admins && \
+
+  # Add superadmin user to
+  mkdir -p /var/lib/jenkins/users/superadmin && \
+  wget -O /var/lib/jenkins/users/superadmin/config.xml \
+    https://github.com/dennyzhang/devops_public/raw/tag_v6/doc/admin_conf_xml
+
+CMD ["/bin/bash"]
+#+END_EXAMPLE
+** Dump Change List Of Docker Images
+Apparently we still want to use community docker images. Just need to rule out insecure ones. Also audit potential security risks as many as possible. Docker images are built directly or indirectly from golden images provided by trusted sources. Original golden docker images are usually clean. *So literally speaking, what changes community docker images have made*?
+
+People can inspect change of docker containers by "[[https://docs.docker.com/engine/reference/commandline/diff][docker diff $container_id]]". Unfortunately docker doesn't support [[https://github.com/docker/docker/issues/12641][images comparison]]. Here is a feasible workaround:
+- List all files in golden image like below.
+#+BEGIN_EXAMPLE
+container_name="container1"
+docker_image="ubuntu:14.04"
+result_list="/tmp/list1.txt"
+docker stop $container_name; \
+ docker rm $container_name || true
+# Start a container from golden image
+docker run -t --name $container_name \
+ -d $docker_image /bin/bash
+
+# List all files inside the container
+docker export $container_name | \
+  docker run -i --rm ubuntu tar tvf - \
+  > $result_list
+
+# Check the list
+tail $result_list
+# drwxr-xr-x 0/0      0   2016-08-02 08:26 bin/
+# -rwxr-xr-x 0/0  21112   2014-10-07 19:22 bin/bash
+# -rwxr-xr-x 0/0  31152   2013-10-21 13:15 bin/bunzip2
+# lrwxrwxrwx 0/0      0   2013-10-21 13:15 bin/bzcmp -> bzdiff
+# -rwxr-xr-x 0/0   2140   2013-10-21 13:15 bin/bzdiff
+# ...
+#+END_EXAMPLE
+
+- List all files in problematic image. Note it might take tens of minutes for large images.
+#+BEGIN_SRC sh
+container_name="container2"
+docker_image="denny/gitlab:v1"
+result_list="/tmp/list2.txt"
+docker stop $container_name; \
+ docker rm $container_name || true
+# Start a container from golden image
+docker run -t --name $container_name \
+ -d $docker_image /bin/bash
+
+# List all files inside the container
+docker export $container_name | \
+  docker run -i --rm ubuntu tar tvf - \
+  > $result_list
+
+# Check the list
+tail $result_list
+#+END_SRC
+
+- Compare Two list
+#+BEGIN_EXAMPLE
+result1="/tmp/list1.txt"
+result2="/tmp/list2.txt"
+diff_result="/tmp/diff.txt"
+
+diff $result1 $result2 > $diff_result
+
+tail $diff_result
+# > drwxr-xr-x 0/0     0  2015-12-20 13:34 var/spool/postfix/pid/
+# > drwx------ 103/0   0  2015-12-20 13:34 var/spool/postfix/private/
+# > drwx--s--- 103/0   0  2015-12-20 13:34 var/spool/postfix/public/
+# > drwx------ 103/0   0  2015-12-20 13:34 var/spool/postfix/saved/
+#+END_EXAMPLE
+
+- Check for security vulnerability
+#+BEGIN_SRC sh
+diff_result="/tmp/diff.txt"
+
+# Check ssh authorized login
+grep authorized_keys $diff_result
+
+# check OS users
+grep "etc/group" $diff_result
+
+# Check sudo users
+grep "etc/sudoers.d" $diff_result
+
+# Check ssh key pair
+grep ".ssh/.*id_rsa" $diff_result
+
+# Add your checks in below
+# ...
+# ...
+#+END_SRC
+
+After the test, remember to remove useless containers.
+
+Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
+[display-posts tag="docker" posts_per_page="20"]
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

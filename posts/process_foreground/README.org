@@ -1,0 +1,164 @@
+* Docker Tip: Run Daemon Service In Foreground                  :BLOG:Docker:
+  :PROPERTIES:
+  :type:     DevOps,Docker
+  :END:
+---------------------------------------------------------------------
+Running daemon services in foreground helps for trouble shooting. Also a very useful trick for container environments.
+
+Here is the *general practice*. And some real examples of popular services, like Apache, MySQL and Jenkins.
+
+[[image-blog:How To Run Daemon Service In Foreground][https://www.dennyzhang.com/wp-content/uploads/denny/process_background.png]]
+---------------------------------------------------------------------
+Update Per Audience Feedback:
+- Thanks to [[http://www.linkedin.com/hp/update/6196632573909798912][Neelesh Gurjar]]: We can also use [[http://neeleshgurjar.co.in/techidnyan/setsid_how_to_keep_commands_running_after_exiting_shell_prompt/#more-12][setsid]], to run command with another user.
+---------------------------------------------------------------------
+** Why Run Process In Foreground?
+*Usually we don't*. Running process in Daemon mode gives us a lot of benefits. Service can be easily managed. Remember "service XXX start", "chkconfig XXX on"?. When terminal disconnects, the process remains.
+
+However sometimes services just fail to start. We may want to run the process in foreground mode. *To understand why*? Say duplicated global envs, incorrect conf files, missing folders, access denied, etc[1]. Related reading: [[https://www.dennyzhang.com/check_process][How To Check Linux Process Deeply With Common Sense]].
+
+In container envs, each container usually host one and only one process. *One trick to lower the operation cost*. When containers start, the service automatically starts. When service stops, the container stops. To achieve this, we'd like find a way running process in foreground. Then change the entrypoint to the start command.
+
+Take redis container for example.
+
+From:
+#+BEGIN_SRC sh
+docker run -t -d --name my-nginx nginx /bin/sh
+# Start containers, then start process
+docker exec -it my-nginx bash
+service nginx start
+#+END_SRC
+
+To:
+#+BEGIN_SRC sh
+docker stop my-nginx; docker rm my-nginx
+# When container starts, start process inside
+docker run -t -d --name my-nginx nginx \
+  /usr/sbin/nginx -g "daemon off;"
+
+docker exec -it my-nginx bash
+ps -ef | grep nginx
+#+END_SRC
+** Figure Out The Start Command To Run in Foreground
+[[color:#c7254e][Daemon Service = Binary + Configuration + Initscript]]
+
+To run process in foreground, we just need to the first 2 ingredients.
+- Binary: _bash -x /etc/init.d/XXX start_. Here "-x" instructs shell to display verbose output. Should be easy to figure out binary path. Another trick: _"ps -ef | grep $PROCESS_PATTERN"_
+- Configuration: Typically speaking, we can dig out from console output of "bash -x". Sometimes it's just too long to read. Then figure out the process id. Then list environment from _cat /proc/$pid/environ_
+*Lots of decent services refuses to run as root*, for security concerns. Here is how to impersonate other users with root.
+#+BEGIN_SRC sh
+su -l elasticsearch -c "java XXX"
+#+END_SRC
+
+- Sample output of "bash -x /etc/init.d/jenkins start"
+#+BEGIN_EXAMPLE
+root@denny:/# bash -x /etc/init.d/jenkins start
+bash -x /etc/init.d/jenkins start
++ PATH=/bin:/usr/bin:/sbin:/usr/sbin
++ DESC='Jenkins Continuous Integration Server'
++ NAME=jenkins
++ SCRIPTNAME=/etc/init.d/jenkins
++ '[' -r /etc/default/jenkins ']'
++ . /etc/default/jenkins
+++ NAME=jenkins
+++ JAVA=/usr/bin/java
+++ JAVA_ARGS=-Djava.awt.headless=true
+...
+...
++ '[' no '!=' no ']'
++ ulimit -n 8192
++ '[' -n '' ']'
++ /bin/su -l jenkins --shell=/bin/bash -c
+'/usr/bin/daemon --name=jenkins --inherit
+--env=JENKINS_HOME=/var/lib/jenkins
+--output=/var/log/jenkins/jenkins.log
+--pidfile=/var/run/jenkins/jenkins.pid
+-- /usr/bin/java  -Dhudson.diyChunking=false
+-Djenkins.install.runSetupWizard=false
+-jar /usr/share/jenkins/jenkins.war
+--webroot=/var/cache/jenkins/war
+--httpPort=18080'
++ START_STATUS=0
++ do_check_started_ok 0
++ sleep 1
++ '[' 0 -ne 0 ']'
++ get_running
+++ grep -c .
+++ egrep -e '(java|daemon)'
+++ ps -U jenkins --no-headers -f
+...
+...
++ return 0
++ exit 0
+#+END_EXAMPLE
+** Run Apache/Jenkins/MySQL In Foreground
+Using above technique, we can figure start command running popular services in foreground.
+
+- Run apache in foreground [2]
+#+BEGIN_SRC sh
+cd /etc/apache2/ && \
+apachectl -d /etc/apache2 -e info -DFOREGROUND
+#+END_SRC
+
+- Run Jenkins in foreground
+#+BEGIN_SRC sh
+/bin/su -l jenkins --shell=/bin/bash \
+-c '/usr/bin/daemon --name=jenkins \
+--inherit --env=JENKINS_HOME=/var/lib/jenkins \
+--output=/var/log/jenkins/jenkins.log \
+--pidfile=/var/run/jenkins/jenkins.pid -- \
+/usr/bin/java  -Dhudson.diyChunking=false \
+-Djenkins.install.runSetupWizard=false -jar \
+/usr/share/jenkins/jenkins.war \
+--webroot=/var/cache/jenkins/war \
+--httpPort=18080'
+#+END_SRC
+
+- Run Mysql in foreground
+#+BEGIN_SRC sh
+/bin/sh /usr/bin/mysqld_safe
+#+END_SRC
+
+- Run Nginx in foreground [3]
+#+BEGIN_SRC sh
+/usr/sbin/nginx -g "daemon off;"
+#+END_SRC
+
+[1] ma.ttias.be/varnish-running-in-foreground-but-fails-to-run-as-servicedaemon/
+[2] http://zroger.com/blog/apache-in-the-foreground/
+[3] http://honeyco.nyc/blog/running-nginx-in-the-foreground/
+
+More Reading:
+- [[https://www.dennyzhang.com/suspicious_process][Detect Suspicious Linux Processes]]
+- [[https://www.dennyzhang.com/installation_failure][5 Common Failures Of Package Installation]].
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+* useful link                                                      :noexport:
+https://leonid.shevtsov.me/post/how-to-make-a-java-daemon-with-start-stop-daemon/
+
+http://smarden.org/runit/faq.html
+runit - Frequently asked questions
+
+http://serverfault.com/questions/41009/how-do-i-bring-a-daemon-process-to-foreground
+How do I bring a daemon process to foreground?
+
+https://blog.nodejitsu.com/keep-a-nodejs-server-up-with-forever/
+Keep a node.js server up with Forever
+
+https://janus.conf.meetecho.com/docs/service.html
+Janus as a daemon/service
+
+http://slopjong.de/2014/09/17/install-and-run-a-web-server-in-a-docker-container/
+Install and run a web server in a docker container
