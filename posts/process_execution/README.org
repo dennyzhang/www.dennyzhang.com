@@ -87,7 +87,7 @@ More Reading:
 - [[https://www.dennyzhang.com/linux_cp][Better cp Command, Before Changing Config Files Manually]]
 - [[https://www.dennyzhang.com/track_change_history][Automatically Track All Change History]]
 
-#+BEGIN_EXPORT HTML
+#+BEGIN_HTML
 <a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/process_execution"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 
 <div id="the whole thing" style="overflow: hidden;">
@@ -98,7 +98,7 @@ More Reading:
 
 <br/><br/>
 <a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
-#+END_EXPORT
+#+END_HTML
 
 Blog URL: https://www.dennyzhang.com/process_execution
 * misc                                                             :noexport:
