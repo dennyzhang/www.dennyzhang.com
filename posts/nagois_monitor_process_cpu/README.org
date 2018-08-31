@@ -34,6 +34,8 @@ More Reading:
 <a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
 #+END_HTML
 
+
+Blog URL: https://www.dennyzhang.com/nagois_monitor_process_cpu
 * misc                                                             :noexport:
 - When it's started
   who initiate is?

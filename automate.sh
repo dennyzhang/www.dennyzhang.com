@@ -49,26 +49,21 @@ function git_pull() {
 
 function refresh_link() {
     echo "refresh link"
-    for f in $(ls -1t */posts/README.org); do
+    cd posts
+    for f in $(ls -1t */README.org); do
         dirname=$(basename $(dirname $f))
-        if ! grep "Blog link: https:\/\/code.dennyzhang.com.*$dirname" $f 1>/dev/null 2>&1; then
-            echo "Update blog url for $f"
-            sed -ie "s/Blog link: https:\/\/code.dennyzhang.com\/.*/Blog link: https:\/\/code.dennyzhang.com\/$dirname/g" $f
-            rm -rf $dirname/README.orge
-        fi
-
-        if ! grep "tree\/master.*$dirname" $f 1>/dev/null 2>&1; then
-            echo "Update GitHub url for $f"
-            sed -ie "s/tree\/master\/.*/tree\/master\/$dirname][challenges-leetcode-interesting]]/g" $f
-            rm -rf $dirname/README.orge
-        fi
-
-        if ! grep -i lintcode.com $f 1>/dev/null 2>&1; then
-            if ! grep "leetcode.com.*$dirname" $f 1>/dev/null 2>&1; then
-                echo "Update Leetcode url for $f"            
-                sed -ie "s/https:\/\/leetcode.com\/problems\/.*/https:\/\/leetcode.com\/problems\/$dirname\/description\/][leetcode.com]]/g" $f
+        if ! grep "<a href=\"https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/$dirname" $f 1>/dev/null 2>&1; then
+            if grep "https://github.com/dennyzhang/www.dennyzhang.com" $f 1>/dev/null 2>&1; then
+                echo "Update GitHub url for $f"
+                sed -ie "s/<a href=\"https:\/\/github.com\/dennyzhang\/www.dennyzhang.com\/tree\/master\/posts\/[^\"]*\"/<a href=\"https:\/\/github.com\/dennyzhang\/www.dennyzhang.com\/tree\/master\/posts\/$dirname\"/g" $f
                 rm -rf $dirname/README.orge
             fi
+        fi
+
+        if ! grep "Blog URL: https://www.dennyzhang.com/$dirname" $f 1>/dev/null 2>&1; then
+            echo "Update Blog url for $f"
+            sed -ie "s/Blog URL: https:\/\/www.dennyzhang.com\/.*/Blog URL: https:\/\/www.dennyzhang.com\/$dirname/g" $f
+            rm -rf $dirname/README.orge
         fi
     done
 }

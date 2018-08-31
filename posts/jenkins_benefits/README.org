@@ -133,6 +133,8 @@ More Reading:
 [8] wiki.jenkins-ci.org/display/JENKINS/Build-timeout+Plugin
 [9] wiki.jenkins-ci.org/display/JENKINS/Git+Plugin
 [10] https://goo.gl/vsJKfu
+
+Blog URL: https://www.dennyzhang.com/jenkins_benefits
 * misc                                                             :noexport:
 #+BEGIN_EXAMPLE
 104.131.129.100:48080/job/BuildMDMRepoCodeActiveSprintPR/

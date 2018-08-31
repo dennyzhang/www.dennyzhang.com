@@ -58,6 +58,8 @@ More Reading: [[https://www.dennyzhang.com/avoid_toi_communication][Avoid Unnece
 <br/><br/>
 <a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
 #+END_HTML
+
+Blog URL: https://www.dennyzhang.com/devops_hiring
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone showall
 #+DESCRIPTION: 

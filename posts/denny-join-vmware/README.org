@@ -46,6 +46,8 @@ If you're not local, it's fine as well. When you have questions related to DevOp
 <br/><br/>
 <a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
 #+END_HTML
+
+Blog URL: https://www.dennyzhang.com/denny-join-vmware
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone showall
 #+DESCRIPTION: 

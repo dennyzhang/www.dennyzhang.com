@@ -54,6 +54,8 @@ It would be even better if your monitoring system can help on capacity planning,
 <br/><br/>
 <a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
 #+END_HTML
+
+Blog URL: https://www.dennyzhang.com/nagios_chef_supermarket
 * misc                                                             :noexport:
 - When it's started
   who initiate is?
