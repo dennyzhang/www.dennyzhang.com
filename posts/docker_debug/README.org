@@ -1,79 +1,133 @@
-* Verify Docker Images Build By Docker-In-Docker                :BLOG:Docker:
-:PROPERTIES:
-  :type:     DevOps,Deployment,Docker
+* [Container] Run Process Debug Tools, But Install Nothing      :BLOG:Docker:
+  :PROPERTIES:
+  :type:     DevOps,Docker
   :END:
 ---------------------------------------------------------------------
-Using Docker, deployments are more reliable and faster than ever. But how about the docker images build? Containers don't have any silver bullets. *It shifts installation instability from deployment cycle to image build cycle*.
+Ever need to *debug your process in containers*? Use strace, lsof, pstree, or anything you name it. But after login, you get a surprise: The tools are not installed!
 
-I would expect *a general solution* for the verification of all docker images build. And it should work across different projects. This means less time and effort. Certainly, save money!
+So what will you do?  Typically we have 3 different methods. Check it out, and discuss with me.
 
-[[image-github:https://github.com/dennyzhang][https://www.dennyzhang.com/wp-content/uploads/denny/github_BuildAllDockerImages_jenkins.png]]
+(Hint: You don't have to install the tools at all)
+
+[[image-blog:Container Run Process Debug Tools, But Install Nothing][https://www.dennyzhang.com/wp-content/uploads/denny/docker_debug_with_no_install.png]]
+
 ---------------------------------------------------------------------
-With endless development, we need to rebuild docker images occasionally:
-1. Install new packages
-- Update existing packages to a new version.
-- Reconfigure or tune services via config files or similar ways.
+Check More Discussion In [[url-external:https://www.linkedin.com/feed/update/urn:li:activity:6297172976324395008][LinkedIn]]
 
-Rebuilding old images may fail in many ways:
-1. Unexpected manual steps. It would be frustrating, if we can't *build images purely from Dockerfile*.
-- Package installation with latest versions may incur incompatible issues.
-- Package installation with specific versions fail. They might have been marked as obsoleted in the repo.
-- Outage of dependent services, etc.
+[[image-linkedin:3 Ways To Run Debug Tools Against Your Container Process][https://www.dennyzhang.com/wp-content/uploads/denny/linkedin_tool_withoutinstall.jpg]]
 
-See more about this: [[https://www.dennyzhang.com/installation_failure][5 Common Failures Of Package Installation]]
-** Why Docker-In-Docker?
-I choose to use Docker-In-Docker to verify image build. Why? Yes, I know many people are strongly against dind(docker-in-docker). Like this one.[1]
+---------------------------------------------------------------------
+Start a nginx container for explanation. We will run tools against the nginx process afterwards.
+#+BEGIN_EXAMPLE
+# pull docker image
+docker pull nginx:alpine
 
-With my years' experience, I'm confident that *dind is very capable for this scenario*:
-1. Super easy to setup and run. Literally we only need to use "docker run", then perform tests.
-2. Leave no trace or garbage in docker host. If using a shared host, people's daily work might be disturbed by our tests.
+# start container
+docker run -t -d --privileged \
+    -h nginxtest --name nginx-test \
+    -p 8080:80 nginx:alpine
+#+END_EXAMPLE
 
-For your convenience, I've published a docker image(See [[https://github.com/dennyzhang/devops_docker_image/blob/tag_v6/docker/docker_v1_0.dockerfile][Dockerfile]]).[[github:DennyZhang][GitHub]]
+Check nginx process:
+#+BEGIN_EXAMPLE
+# verify nginx httpd service
+curl http://localhost:8080
+
+# check process pid
+docker exec nginx-test ps -ef | grep nginx
+#+END_EXAMPLE
+** METHOD1: Debug From The Container Inside
+Let's say you want to "strace -p $nginx_pid". But strace is not available in nginx:alpine image.
+
+Login and install. Yes, it will work. But just old school.
 
 #+BEGIN_EXAMPLE
-# Pull docker image
-docker pull denny/docker:v1.0
+docker exec -u root -it nginx-test sh
 
-# Start a container to build images inside
-docker run -t -d --privileged -h dockerimages \
-  --name docker-images denny/docker:v1.0 /usr/bin/dockerd
+# Install strace
+apk --update add strace
 
-# Login to the container
-docker exec -it docker-images bash
-
-# Download a dockerfile for test purpose
-wget -O /root/java_v1_0.dockerfile \
-  https://raw.githubusercontent.com/DennyZhang/devops_docker_image/tag_v6/java/java_v1_0.dockerfile
-
-# Build docker image inside current container
-cd /root/
-docker build -f java_v1_0.dockerfile -t denny/java:v1.0 --rm=true .
-
-# Verify docker images
-docker images | grep denny/java
+# strace nginx process
+strace -p 1
+##   strace: Process 1 attached
+##   rt_sigsuspend([], 8
 #+END_EXAMPLE
-** Suggestions Of Running DIND
-1. Don't use devicemapper as your storage driver. By default, containers can only have 10GB disk. Yes, we could mount volume for big folders. Still, inconvenient.
-- Stop containers first, before decommission. At the end of testing, make sure we stop containers first, then stop dockerd and finally destroy the env.
-- When building multiple images, the sequence matters. Let's say, image B might depends on image A. If image A is public, do we still need to care about the test sequence? The answer is yes. We need to build B based on latest A, instead of the version in docker hub.
-- Speed up image build by loading frequently used golden images first. The pre-loading would not only save us lots of time, but also the false negatives of network turbulence.
+
+Why it's old school? It will populate the env. Especially when the containers are in production mode.
+
+[[color:#c7254e][The more packages you have installed, the more issues you will get]].
+
+(Similar reading: [[https://www.dennyzhang.com/list_packages_install][What Packages Were Installed In My Server]], [[https://www.dennyzhang.com/installation_failure][5 Common Failures Of Package Installation]])
+** METHOD2: Debug From Docker Host
+Linux containers share the same linux kernel.
+
+We can find the process id from docker host, then debug the process.
 #+BEGIN_EXAMPLE
-# Export docker image
-docker save ubuntu:14.04 > ubuntu_1404.tar.gz
-# Import docker image
-docker load -i ubuntu_1404.tar.gz
+# get nginx process pid
+root@denny:/tmp# ps -ef | grep nginx
+root     27871 27834  0 22:00 pts/2    00:00:00 nginx: master process nginx -g daemon off;
+systemd+ 27931 27871  0 22:00 pts/2    00:00:00 nginx: worker process
+root     31324 27756  0 23:26 pts/1    00:00:00 grep --color=auto nginx
+
+# Install tools in docker host
+apt-get install -y strace
+
+# Run tools from docker host
+root@denny:/tmp# strace -p 27871
+strace: Process 27871 attached
+rt_sigsuspend([], 8
 #+END_EXAMPLE
-** What About Sensitive Files?
-** Wrap Up Everything As A Jenkins Job.
-Here comes Jenkins job ([[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/BuildAllDockerImages][BuildAllDockerImages]]). You can also find a live demo [[https://www.dennyzhang.com/demo_jenkins][here]].
-[[github:DennyZhang][GitHub]]
+** METHOD3: Debug From An Ephemeral Container
+- Build a temporary image with tools installed
+#+BEGIN_EXAMPLE
+# Dockerfile
+cat > Dockerfile <<EOF
+FROM alpine
+RUN apk update && apk add strace
+CMD ["strace", "-p", "1"]
+EOF
 
-[[image-github:https://github.com/dennyzhang][https://www.dennyzhang.com/wp-content/uploads/denny/github_BuildAllDockerImages_jenkins.png]]
+# Build image
+docker build -t strace .
+#+END_EXAMPLE
 
-[1] https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/
+- Start a temporary container(nginx-test). Then debug nginx process by strace.
+#+BEGIN_EXAMPLE
+export test_conainter="nginx-test"
+docker run -t --name strace-test \
+  --pid=container:$test_conainter \
+  --net=container:$test_conainter \
+  --cap-add sys_admin \
+  --cap-add sys_ptrace \
+  strace
+#+END_EXAMPLE
 
-Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
-[display-posts tag="docker" posts_per_page="20"]
+Don't forget to destroy the container, when you have finished your debugging.
+
+Apparently I like method3 the best. In this article, we use strace tool. Surely we can support more tools like this.
+
+Not so difficult as you thought. Right, my friend?
+
+So why don't you give it a try now? Or share this post with your colleagues?
+---------------------------------------------------------------------
+More Reading:
+
+- [[https://www.dennyzhang.com/process_foreground][Docker Tip: Run Daemon Service In Foreground]]
+- [[https://www.dennyzhang.com/suspicious_process][Detect Suspicious Linux Processes]]
+- [[https://www.dennyzhang.com/check_process][How To Check Linux Process Deeply With Common Sense]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/shell_to_python"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone showall
 #+DESCRIPTION: 
@@ -88,22 +142,6 @@ Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
 #+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
 #+LINK_UP:   
 #+LINK_HOME: 
-* misc                                                             :noexport:
-** #  --8<-------------------------- separator ------------------------>8--
-** off-page SEO
-- twitter
-
-- find twitter users to @
-
-- reddit:
-
-- quora:
-
-- v2ex:
-** community discussion
-https://www.reddit.com/r/docker/comments/5esfs0/whats_your_experience_running_docker_in_docker/
-** similar pages
-
-https://github.com/dimorinny/dockerfile-testing
-https://www.reddit.com/r/docker/comments/5eyw0b/be_sure_in_your_docker_images/
-https://www.reddit.com/r/docker/comments/5eyw0b/be_sure_in_your_docker_images/
+* useful link                                                      :noexport:
+https://blogs.oracle.com/developers/hardcore-container-debugging?lipi=urn%3Ali%3Apage%3Ad_flagship3_detail_base%3BOD3KYb%2FaT6WOE0Ogbw5dUA%3D%3D
+https://medium.com/@rothgar/how-to-debug-a-running-docker-container-from-a-separate-container-983f11740dc6

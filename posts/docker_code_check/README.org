@@ -1,79 +1,185 @@
-* Verify Docker Images Build By Docker-In-Docker                :BLOG:Docker:
-:PROPERTIES:
-  :type:     DevOps,Deployment,Docker
+* Run Code Static Check Via A Temporary Container               :BLOG:Docker:
+  :PROPERTIES:
+  :type:     DevOps,Docker,Testing
   :END:
 ---------------------------------------------------------------------
-Using Docker, deployments are more reliable and faster than ever. But how about the docker images build? Containers don't have any silver bullets. *It shifts installation instability from deployment cycle to image build cycle*.
+*How Would You Enforce Code Static Check*? Learn and understand the check tools. Then install and configure them in your servers.
 
-I would expect *a general solution* for the verification of all docker images build. And it should work across different projects. This means less time and effort. Certainly, save money!
+With [[color:#c7254e][docker]], it could be much easier than ever! Let me show you how. The solution has built-in supports for: *Python, Ruby, Shell*. (You definitely can add more).
+*And What Does It Take?* 5 minutes. Yes, you hear me. Only 5 minutes!
 
-[[image-github:https://github.com/dennyzhang][https://www.dennyzhang.com/wp-content/uploads/denny/github_BuildAllDockerImages_jenkins.png]]
+[[image-blog:Run Static Check Against Your Scripts Via A Temporary Container][https://www.dennyzhang.com/wp-content/uploads/denny/docker_code_check.png]]
+
 ---------------------------------------------------------------------
-With endless development, we need to rebuild docker images occasionally:
-1. Install new packages
-- Update existing packages to a new version.
-- Reconfigure or tune services via config files or similar ways.
+Check More Discussion In [[url-external:https://www.linkedin.com/feed/update/urn:li:activity:6282693138029043712][LinkedIn Discussion]].
 
-Rebuilding old images may fail in many ways:
-1. Unexpected manual steps. It would be frustrating, if we can't *build images purely from Dockerfile*.
-- Package installation with latest versions may incur incompatible issues.
-- Package installation with specific versions fail. They might have been marked as obsoleted in the repo.
-- Outage of dependent services, etc.
+[[image-linkedin:Get Notifcation: Monitor Your Docker Image Sizing][https://www.dennyzhang.com/wp-content/uploads/denny/linkedin_codecheck.png]]
 
-See more about this: [[https://www.dennyzhang.com/installation_failure][5 Common Failures Of Package Installation]]
-** Why Docker-In-Docker?
-I choose to use Docker-In-Docker to verify image build. Why? Yes, I know many people are strongly against dind(docker-in-docker). Like this one.[1]
+---------------------------------------------------------------------
 
-With my years' experience, I'm confident that *dind is very capable for this scenario*:
-1. Super easy to setup and run. Literally we only need to use "docker run", then perform tests.
-2. Leave no trace or garbage in docker host. If using a shared host, people's daily work might be disturbed by our tests.
+What are the problems with the old way?
 
-For your convenience, I've published a docker image(See [[https://github.com/dennyzhang/devops_docker_image/blob/tag_v6/docker/docker_v1_0.dockerfile][Dockerfile]]).[[github:DennyZhang][GitHub]]
+- *It takes time*. We need time to learn and understand the tools. Install them, configure them, or even migrate them across servers. These are all costs.
 
+- *It might be tricky and troublesome.* Installing extra packages might mean headaches. Upgrading the tools might mean nightmares.
+
+Let's say you want to install rubocop v0.49.1. And it requires ruby2.4. But your server has already installed ruby2.5 or ruby3. What would you do? Downgrade to 2.4? Are you sure this is a good idea, and it won't break anything?
+
+Okay, you have downgraded your ruby to 2.4 or even make multiple ruby versions installed(which is tricky). Anyway it's working. Congratulations!
+
+But two months later, rubocop v1.0.3 has been released. And you want to try it. But you just find out rubocop v1.0.3 requires ruby3.5!
+*How do you feel now, my friend?* (Note you are living a pretty busy life. )
+
+[[color:#c7254e][Yes, We Need The Code Check Tools. But Do We Really Have To Install Them In Our Servers?]]
+
+Here is the new idea:
+1. Create a temporary docker container. And it has tools installed and configured inside.
+2. When the container starts, it get source code as docker volumes.
+3. Inside the container, the test runs.
+** Example: Pylint For Python Scripts
 #+BEGIN_EXAMPLE
-# Pull docker image
-docker pull denny/docker:v1.0
+cd /tmp
+# Get the code of sample project. It could be any repos.
+# https://github.com/dennyzhang/devops_public
+git clone git@github.com:DennyZhang/devops_public.git
+code_dir="/tmp/devops_public"
 
-# Start a container to build images inside
-docker run -t -d --privileged -h dockerimages \
-  --name docker-images denny/docker:v1.0 /usr/bin/dockerd
+# Dockerfile: https://github.com/dennyzhang/devops_docker_image/tree/tag_v6/codecheck
+image_name="denny/pylintcheck:1.0"
+container_name="pylintcheck"
 
-# Login to the container
-docker exec -it docker-images bash
+ignore_file="/tmp/pylint_ignore"
+cat > "$ignore_file" <<EOF
+python/cleanup_old_files/cleanup_old_files.py
+check_elasticsearch_shard.py
+EOF
 
-# Download a dockerfile for test purpose
-wget -O /root/java_v1_0.dockerfile \
-  https://raw.githubusercontent.com/DennyZhang/devops_docker_image/tag_v6/java/java_v1_0.dockerfile
+# Start container
+docker run -t -d -v ${code_dir}:/code \
+    -v "$ignore_file":"$ignore_file" \
+    --name "$container_name" "$image_name"
 
-# Build docker image inside current container
-cd /root/
-docker build -f java_v1_0.dockerfile -t denny/java:v1.0 --rm=true .
+# Install pip packages
+docker exec -it "$container_name" \
+  /usr/bin/pip install elasticsearch flask selenium
 
-# Verify docker images
-docker images | grep denny/java
+# Run the test
+docker exec -it "$container_name" \
+  python /enforce_pylint.py --code_dir /code --check_ignore_file "$ignore_file"
+
+# Destroy container
+docker stop "$container_name"; docker rm "$container_name"
 #+END_EXAMPLE
-** Suggestions Of Running DIND
-1. Don't use devicemapper as your storage driver. By default, containers can only have 10GB disk. Yes, we could mount volume for big folders. Still, inconvenient.
-- Stop containers first, before decommission. At the end of testing, make sure we stop containers first, then stop dockerd and finally destroy the env.
-- When building multiple images, the sequence matters. Let's say, image B might depends on image A. If image A is public, do we still need to care about the test sequence? The answer is yes. We need to build B based on latest A, instead of the version in docker hub.
-- Speed up image build by loading frequently used golden images first. The pre-loading would not only save us lots of time, but also the false negatives of network turbulence.
+** Example: Shellcheck For Bash Scripts
 #+BEGIN_EXAMPLE
-# Export docker image
-docker save ubuntu:14.04 > ubuntu_1404.tar.gz
-# Import docker image
-docker load -i ubuntu_1404.tar.gz
+cd /tmp
+# Get the code of sample project
+# https://github.com/dennyzhang/devops_public
+git clone git@github.com:DennyZhang/devops_public.git
+code_dir="/tmp/devops_public"
+
+# Dockerfile: https://github.com/dennyzhang/devops_docker_image/tree/tag_v6/codecheck
+image_name="denny/shellcheck:1.0"
+container_name="shellcheck"
+
+# whitelist: skip checks for certain files
+ignore_file="/tmp/shellcheck_ignore"
+cat > "$ignore_file" <<EOF
+common_library/refresh_common_library.sh
+common_library/general_helper.sh
+list_os_packages.sh
+EOF
+
+# whitelist: skip some shellcheck rules
+exclude_code_list="SC1090,SC1091,SC2154,SC2001,SC2002,SC2181,SC2188"
+
+# Start container
+# User docker volume: get the source code and check whitelist
+docker run -t -d -v ${code_dir}:/code \
+    -v "$ignore_file":"$ignore_file" \
+    --name "$container_name" "$image_name"
+
+# Run the test
+docker exec -it "$container_name" \
+      python /enforce_shellcheck.py \
+      --code_dir /code \
+      --check_ignore_file "$ignore_file" \
+      --exclude_code_list "$exclude_code_list"
+
+# Destroy container
+docker stop "$container_name"; docker rm "$container_name"
 #+END_EXAMPLE
-** What About Sensitive Files?
-** Wrap Up Everything As A Jenkins Job.
-Here comes Jenkins job ([[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/BuildAllDockerImages][BuildAllDockerImages]]). You can also find a live demo [[https://www.dennyzhang.com/demo_jenkins][here]].
+
+(Related Reading: [[https://www.dennyzhang.com/shellcheck][ShellCheck: Code Check For Shell Scripts]])
+** Example: Rubocop For Ruby Scripts
+#+BEGIN_EXAMPLE
+cd /tmp
+# Get the code of sample project
+# https://github.com/dennyzhang/chef_community_cookbooks
+git clone git@github.com:DennyZhang/chef_community_cookbooks.git
+
+code_dir="/tmp/chef_community_cookbooks/cookbooks"
+
+# Dockerfile: https://github.com/dennyzhang/devops_docker_image/tree/tag_v6/codecheck
+image_name="denny/rubocopcheck:1.0"
+container_name="rubocopcheck"
+
+# Start the container
+docker run -t -d --privileged -v ${code_dir}:/code \
+      --name "$container_name" "$image_name"
+
+# Run the test
+docker exec -it "$container_name" \
+      python /enforce_rubocopcheck.py \
+      --code_dir /code
+
+# Destroy container
+docker stop "$container_name"; docker rm "$container_name"
+#+END_EXAMPLE
+
+(Related Reading: [[https://www.dennyzhang.com/rubocop_errors][Common Rubocop Errors]])
+** Example: More Languages
+You can support more languages like this. I'm sure you're capable for it!
+
+So publish your solution to GitHub, once it's ready. And share it with me, my friend.
+** Use Jenkins To Simplify The Solution
+Now we have a generic and clean solution of code static check. And it works for almost all repos. Do you agree?
+
+To make the solution even better, I find Jenkins jobs is easier than issuing multiple docker commands.
+
+Here is an example. (You should create your own jobs easily)
+
+[[image-github:https://github.com/dennyzhang][https://www.dennyzhang.com/wp-content/uploads/denny/github_jenkins_shellcheckrepo.png]]
+
+(Related Reading: [[https://www.dennyzhang.com/jenkins_benefits][5 Reasons Why Jenkins Is So Useful And Popular]])
+** Recap: No Need To Install Code Check Tools To Your Servers.
+Please leave me comments with your thoughts.
+
+And more importantly, give it a try. And improve your projects now.
+
+It's just 5 minutes away!
+
+Dockerfile for above docker images can be found in [[https://github.com/dennyzhang/devops_docker_image/tree/tag_v6/codecheck][GitHub]].
 [[github:DennyZhang][GitHub]]
+---------------------------------------------------------------------
 
-[[image-github:https://github.com/dennyzhang][https://www.dennyzhang.com/wp-content/uploads/denny/github_BuildAllDockerImages_jenkins.png]]
+More Reading:
 
-[1] https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/
+- [[https://www.dennyzhang.com/shellcheck][ShellCheck: Code Check For Shell Scripts]]
+- [[https://www.dennyzhang.com/rubocop_errors][Common Rubocop Errors]]
+- [[https://www.dennyzhang.com/enforce_precheck][Enforce Pre-check Before Deployment]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/shell_to_python"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 
-Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
-[display-posts tag="docker" posts_per_page="20"]
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone showall
 #+DESCRIPTION: 
@@ -89,6 +195,13 @@ Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
 #+LINK_UP:   
 #+LINK_HOME: 
 * misc                                                             :noexport:
+** How to bring project source code to the SonarQube
+cd /root
+git clone git@bitbucket.org:nubesecure/penroz.git
+** quick demo: https://bitbucket.org/nubesecure/devops/wiki/Docker:%20Enforce%20SonarQube%20Check%20For%20Java%20Projects
+http://45.33.87.74:49000/dashboard/index/test:myproject
+
+http://45.33.87.74:9000/dashboard/index/test:myproject
 ** #  --8<-------------------------- separator ------------------------>8--
 ** off-page SEO
 - twitter
@@ -101,9 +214,15 @@ Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
 
 - v2ex:
 ** community discussion
-https://www.reddit.com/r/docker/comments/5esfs0/whats_your_experience_running_docker_in_docker/
 ** similar pages
+** install sonarqube scanner
+cd /opt/sonarqube
 
-https://github.com/dimorinny/dockerfile-testing
-https://www.reddit.com/r/docker/comments/5eyw0b/be_sure_in_your_docker_images/
-https://www.reddit.com/r/docker/comments/5eyw0b/be_sure_in_your_docker_images/
+wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-2.5.zip && \
+unzip sonar-scanner-2.5.zip && rm -rf sonar-scanner-2.5.zip
+
+export SONAR_RUNNER_HOME=/opt/sonarqube/sonar-scanner-2.5
+export PATH=$PATH:$SONAR_RUNNER_HOME/bin
+
+which sonar-runner
+

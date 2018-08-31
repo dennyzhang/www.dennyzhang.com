@@ -44,7 +44,6 @@ More Reading:
 - [[https://www.dennyzhang.com/shell_tee][Shell Redirect Output To File, And Still Have It On Screen]]
 - [[https://www.dennyzhang.com/bash_errcode_exit][Bash -e Doesn't Exit As I expect]]
 
-
 #+BEGIN_HTML
 <a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/shell_to_python"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 

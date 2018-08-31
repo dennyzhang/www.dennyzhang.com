@@ -1,79 +1,140 @@
-* Verify Docker Images Build By Docker-In-Docker                :BLOG:Docker:
-:PROPERTIES:
-  :type:     DevOps,Deployment,Docker
+* Docker Low Disk Space. Clean Up Disk Leak!                    :BLOG:Docker:
+  :PROPERTIES:
+  :type:     DevOps,Docker
   :END:
 ---------------------------------------------------------------------
-Using Docker, deployments are more reliable and faster than ever. But how about the docker images build? Containers don't have any silver bullets. *It shifts installation instability from deployment cycle to image build cycle*.
+We have changed daily CI tests from VM to Docker, ever since early last year. It is just awesome! Way too fast and cost-effective.
 
-I would expect *a general solution* for the verification of all docker images build. And it should work across different projects. This means less time and effort. Certainly, save money!
+But one annoying thing keeps dragging us slow. *The Docker daemon server runs into low disk capacity quite often*.
 
-[[image-github:https://github.com/dennyzhang][https://www.dennyzhang.com/wp-content/uploads/denny/github_BuildAllDockerImages_jenkins.png]]
+[[image-blog:Low Disk][https://www.dennyzhang.com/wp-content/uploads/denny/low_disk_capacity.jpg]]
 ---------------------------------------------------------------------
-With endless development, we need to rebuild docker images occasionally:
-1. Install new packages
-- Update existing packages to a new version.
-- Reconfigure or tune services via config files or similar ways.
+Update Per Audience Feedback:
+- docker-gc[1]: helps to remove all containers that has been exited over an hour ago, together with their respective images.
+---------------------------------------------------------------------
+Just for deployment CI, we run below routine testcases:
+1. All-In-One deployment
+- Standard 3-nodes cluster, 6-nodes cluster deployment
+- Customized cluster deployment
+- DB and application HA deployment test
+- Continuous upgrade test
+- [[https://www.dennyzhang.com/sandbox_setup][Sandbox Test]] by docker-in-docker
+- etc
 
-Rebuilding old images may fail in many ways:
-1. Unexpected manual steps. It would be frustrating, if we can't *build images purely from Dockerfile*.
-- Package installation with latest versions may incur incompatible issues.
-- Package installation with specific versions fail. They might have been marked as obsoleted in the repo.
-- Outage of dependent services, etc.
+All testcases apply both Docker and DigitalOcean. Docker is the default driver for sure. Consequently, two potential unpleasant issues happen:
+1. Docker machine runs into OOM (Out-Of-Memory), when heavy tests run simultaneously. Then we have to reboot machine by force. This leaves garbage files.
+- Container removal fails in docker-in-docker scenario. Again the failure of resource cleanup costs.
 
-See more about this: [[https://www.dennyzhang.com/installation_failure][5 Common Failures Of Package Installation]]
-** Why Docker-In-Docker?
-I choose to use Docker-In-Docker to verify image build. Why? Yes, I know many people are strongly against dind(docker-in-docker). Like this one.[1]
+_Eventually, we get alerts of low disk over and over_. What to do?
+** Remove All Useless Resources.
+A very common suggestion. Yes, remove all unused containers, images and volumes.
+*** Remove exited containers
+#+BEGIN_SRC sh
+docker ps --filter status=exited -aq \
+ | xargs -r docker rm -v
+#+END_SRC
 
-With my years' experience, I'm confident that *dind is very capable for this scenario*:
-1. Super easy to setup and run. Literally we only need to use "docker run", then perform tests.
-2. Leave no trace or garbage in docker host. If using a shared host, people's daily work might be disturbed by our tests.
+Even better, you can try a handy tool, docker-gc[1]. It removes all containers that has been exited over an hour ago, together with their respective images.
 
-For your convenience, I've published a docker image(See [[https://github.com/dennyzhang/devops_docker_image/blob/tag_v6/docker/docker_v1_0.dockerfile][Dockerfile]]).[[github:DennyZhang][GitHub]]
+Literally speaking, we're facing resource leak. This tip helps, unfortunately it doesn't solve the problem.
+*** Remove unused docker images
+#+BEGIN_SRC sh
+docker rmi $(docker images | grep "<none>"\
+ | awk -F' ' '{print $3}')
 
+# Remove orphaned docker volumes
+docker volume rm \
+ $(docker volume ls -qf dangling=true)
+#+END_SRC
+*** Remove dead containers
+#+BEGIN_SRC sh
+docker ps --filter status=dead -aq \
+ | xargs -r docker rm -v
+#+END_SRC
+*** Remove intermediate containers generated during docker build
+#+BEGIN_SRC sh
+docker ps -a | grep "/bin/sh -c" | \
+  awk -F' ' '{print $1}' | xargs docker rm
+#+END_SRC
+*** Remove Image with <none> string
 #+BEGIN_EXAMPLE
-# Pull docker image
-docker pull denny/docker:v1.0
-
-# Start a container to build images inside
-docker run -t -d --privileged -h dockerimages \
-  --name docker-images denny/docker:v1.0 /usr/bin/dockerd
-
-# Login to the container
-docker exec -it docker-images bash
-
-# Download a dockerfile for test purpose
-wget -O /root/java_v1_0.dockerfile \
-  https://raw.githubusercontent.com/DennyZhang/devops_docker_image/tag_v6/java/java_v1_0.dockerfile
-
-# Build docker image inside current container
-cd /root/
-docker build -f java_v1_0.dockerfile -t denny/java:v1.0 --rm=true .
-
-# Verify docker images
-docker images | grep denny/java
+echo "Remove docker images with <none> string"
+if docker images | grep none | tee; then
+   docker rmi $(docker images | grep "<none>"  | awk -F' ' '{print $3}') | tee
+fi
 #+END_EXAMPLE
-** Suggestions Of Running DIND
-1. Don't use devicemapper as your storage driver. By default, containers can only have 10GB disk. Yes, we could mount volume for big folders. Still, inconvenient.
-- Stop containers first, before decommission. At the end of testing, make sure we stop containers first, then stop dockerd and finally destroy the env.
-- When building multiple images, the sequence matters. Let's say, image B might depends on image A. If image A is public, do we still need to care about the test sequence? The answer is yes. We need to build B based on latest A, instead of the version in docker hub.
-- Speed up image build by loading frequently used golden images first. The pre-loading would not only save us lots of time, but also the false negatives of network turbulence.
-#+BEGIN_EXAMPLE
-# Export docker image
-docker save ubuntu:14.04 > ubuntu_1404.tar.gz
-# Import docker image
-docker load -i ubuntu_1404.tar.gz
-#+END_EXAMPLE
-** What About Sensitive Files?
-** Wrap Up Everything As A Jenkins Job.
-Here comes Jenkins job ([[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/BuildAllDockerImages][BuildAllDockerImages]]). You can also find a live demo [[https://www.dennyzhang.com/demo_jenkins][here]].
-[[github:DennyZhang][GitHub]]
+** Keep Docker Up To Date
+Everyday we see more and more exciting news or improvements of Docker. Definitely newer version is more capable to handle this resource reclaim issue.
 
-[[image-github:https://github.com/dennyzhang][https://www.dennyzhang.com/wp-content/uploads/denny/github_BuildAllDockerImages_jenkins.png]]
+Install latest docker:
+#+BEGIN_SRC sh
+curl -sSL https://get.docker.com/ | sudo sh
+#+END_SRC
 
-[1] https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/
+Upgrade docker to given version. *Use this on your own risk!* Docker might fail to start.
+#+BEGIN_SRC sh
+# Install resources
+wget -qO- https://get.docker.com/ | sh
+# Show version which are available
+apt-cache showpkg docker-engine
+# Install given version of docker
+apt-get install docker-engine=1.12.1-0~trusty
+# Prevent upgrade on sys upgrade
+apt-mark hold docker-engine
+docker version
 
-Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
-[display-posts tag="docker" posts_per_page="20"]
+#+END_SRC
+** Rebuild Docker Env From Scratch
+
+We're using aufs for docker storage, which quite common. The folders growing in size are:
+- /var/lib/docker/aufs/diff
+- /var/lib/docker/aufs/mnt
+
+Running /du/ command, we know our mnt directory takes 18GB and diff directory 85GB. With reasonable estimation, it should be less than 10 GB. No doubt some folders could be deleted to reclaim capacity. *But how to selectively remove folders*? Before docker 1.10, we can mapping container id to subdirectories under diff[2]. Now it's more complicated! Even if we can, it's better not. No idea how docker would evolve in the future.
+
+Examining our CI case carefully, just notice there is actually only one important container. It runs Jenkins + facilities (Kitchen, Chef, ssh scripts, etc). Any other containers are disposable. *Another approach: what if we re-install docker to have a fresh restart?*
+- Firstly export unrecoverable data from the container.
+#+BEGIN_SRC sh
+# Caculate disk usage of containers.
+# Note this do take time!
+docker ps -s
+
+# Or run du command inside containers.
+du -h -d 1 /
+#+END_SRC
+
+To export valuable data, we don't want to handle all the tricky application backup or redo manual steps. Thus we simply export container to an archived file. To keep the file as small as possible, remember to do clean up inside the container before export.
+#+BEGIN_SRC sh
+docker export $container_id > $container.tar
+#+END_SRC
+
+- Soft delete /var/lib/docker and reinstall docker daemon.
+- Recreate container and restore to original state.
+#+BEGIN_SRC sh
+docker import $container.tar
+#+END_SRC
+
+The whole process might take a while. For your reference, our jenkins container takes 14GB disk, /docker export/ takes 5 min, /docker import/ takes 10 min.
+** Recap for our discussion of docker disk reclaim
+1. Keep docker up-to-date.
+- When ordinary trick doesn't help for the disk resource leak, try to rebuild docker daemon with proper export/import.
+
+More Reading: [[https://www.dennyzhang.com/docker_image_scan][Explore Docker Image For Security Concern]]
+
+[1] https://github.com/spotify/docker-gc
+[2] [[https://docs.docker.com/engine/userguide/storagedriver/aufs-driver/#/local-storage-and-aufs][https://docs.docker.com/engine/userguide/storagedriver]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/shell_to_python"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone showall
 #+DESCRIPTION: 
@@ -89,21 +150,84 @@ Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
 #+LINK_UP:   
 #+LINK_HOME: 
 * misc                                                             :noexport:
-** #  --8<-------------------------- separator ------------------------>8--
-** off-page SEO
-- twitter
+** HALF recreate docker daemon
+docker exec -it docker-jenkins stop
+docker exec -it docker-jenkins start
+docker stop docker-jenkins
 
-- find twitter users to @
+service docker stop
 
-- reddit:
+mv /var/lib/docker  /var/lib/docker.bak
 
-- quora:
+1.11.2
 
-- v2ex:
-** community discussion
-https://www.reddit.com/r/docker/comments/5esfs0/whats_your_experience_running_docker_in_docker/
-** similar pages
+docker start docker-jenkins
 
-https://github.com/dimorinny/dockerfile-testing
-https://www.reddit.com/r/docker/comments/5eyw0b/be_sure_in_your_docker_images/
-https://www.reddit.com/r/docker/comments/5eyw0b/be_sure_in_your_docker_images/
+docker exec -it docker-jenkins service apache2 start
+** TODO [#A] totvslabs docker disk
+https://github.com/docker/docker/issues/7758
+https://meta.discourse.org/t/docker-diff-very-big-how-to-clean/12696/9
+https://github.com/docker/docker/issues/22207
+To free disk space after removing a container
+
+/var/lib/docker/aufs/mnt: 18GB: ./6a07f0ed8cccbe0f48814bd71a7b914c47d0e0da327c1c97ce384b0d47c45991
+/var/lib/docker/aufs/diff: 85GB:
+** HALF Free up space on your Linux server
+http://www.eq8.eu/blogs/23-spring-cleaning-for-webdevelopers
+
+Delete downloaded packages (.deb)
+E.g.: already installed (and no longer needed)
+
+sudo apt-get clean
+Remove stored archives in your cache
+E.g.: packages that can not be downloaded anymore, packages are no longer in the repository or that have a newer version in the repository
+
+sudo apt-get autoclean
+Remove packages after uninstalling an application
+sudo apt-get autoremove
+Remove old unused kernels
+list all your kernels (installed and deinstalled) :
+
+dpkg --get-selections | grep linux-image
+your currently used kernel
+
+uname -r
+to remove particular kernel:
+
+sudo apt-get remove --purge linux-image-X.X.XX-XX-generic
+** TODO [#A] Blog: docker disk capacity cleanup: /var/lib/docker/aufs
+https://github.com/docker/docker/issues/21925
+
+https://groups.google.com/forum/#!topic/docker-dev/xRRVwyBO3Fc
+
+To be more accurate, the folders growing in size are /var/lib/docker/aufs/diff and /var/lib/docker/aufs/mnt
+
+- keep docker up-to-date: how to install docker with given version
+
+http://stackoverflow.com/questions/27812807/orphaned-docker-mounted-host-volumes/35130945#35130945
+*** useful link
+https://forums.meteor.com/t/low-disk-space-docker-container-increasing-in-size-everyday/24424/5
+http://blog.benhall.me.uk/2015/01/boot2docker-runs-disk-space/
+http://www.eq8.eu/blogs/23-spring-cleaning-for-webdevelopers
+https://coderwall.com/p/gy2cig/get-size-of-running-docker-containers
+** TODO [#A] analyze container disk usage
+http://stackoverflow.com/questions/26753087/docker-how-to-analyze-a-containers-disk-usage
+
+http://odino.org/spring-cleaning-of-your-docker-containers/
+
+# it do take time!
+docker ps -s
+
+down vote
+accepted
+Posting this as an answer because my comments above got hidden:
+
+List the size of a container:
+
+du -d 2 -h /var/lib/docker/devicemapper | grep `docker inspect -f "{{.Id}}" <container_name>`
+List the sizes of a container's volumes:
+
+docker inspect -f "{{.Volumes}}" <container_name> | sed 's/map\[//' | sed 's/]//' | tr ' ' '\n' | sed 's/.*://' | xargs sudo du -d 1 -h
+** TODO docker no-run-if-empty
+** [#A] https://docs.docker.com/engine/userguide/storagedriver/aufs-driver/
+

@@ -12,7 +12,7 @@ function my_test() {
 
 function refresh_wordpress() {
     echo "Use emacs to update README.ord"
-    for f in $(ls -1t */README.org); do
+    for f in $(ls -1t */posts/README.org); do
         echo "Update $f"
         dirname=$(basename $(dirname $f))
         cd $dirname
@@ -49,7 +49,7 @@ function git_pull() {
 
 function refresh_link() {
     echo "refresh link"
-    for f in $(ls -1t */README.org); do
+    for f in $(ls -1t */posts/README.org); do
         dirname=$(basename $(dirname $f))
         if ! grep "Blog link: https:\/\/code.dennyzhang.com.*$dirname" $f 1>/dev/null 2>&1; then
             echo "Update blog url for $f"
