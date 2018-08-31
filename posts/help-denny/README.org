@@ -1,0 +1,83 @@
+* Help Denny                                                      :BLOG:Page:
+:PROPERTIES:
+:type:     Ads
+:END:
+---------------------------------------------------------------------
+#+BEGIN_HTML
+<a href="https://www.linkedin.com/in/dennyzhang001"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/linkedin2.png" alt="Connect me on LinkedIn" data-canonical-src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/linkedin2.png"></a>
+#+END_HTML
+Happy you check this page! *Hope You Enjoy Reading My Blog!*
+
+[[color:#c7254e][My Goals:]]
+1. Explain DevOps in a simple language
+2. Be a bridge to connect DevOps talents and knowledges
+
+---------------------------------------------------------------------
+I keep seeing new friends reading my blog or giving me LinkedIn comments. The feeling is just so GREAT! It makes my proud and confident.
+
+Even better. Occasionally some new friends send me private message like below. Almost once a week! [[color:#c7254e][Denny, Anything I Can Help, Just Ask.]]
+
+After some thinking, yes, you can. Your question itself helps. Your visit itself helps.
+
+Specifically here are something I wish I can grow. (Don't feel obligated to do it.)
+
+---------------------------------------------------------------------
+#+BEGIN_HTML
+<li style="display: inline; margin: 0 20px 0 0;"><a style="text-decoration:none;" href="https://www.dennyzhang.com/slack"><img style="border:1px solid black;padding:5px" src="https://www.dennyzhang.com/wp-content/uploads/sns/slack.png" alt="slack" /></a></li>
+#+END_HTML
+1. Join my [[https://www.dennyzhang.com/slack][Slack Group]].
+- Share your questions with me.
+- Share your suggestions with me.
+---------------------------------------------------------------------
+#+BEGIN_HTML
+<li style="display: inline; margin: 0 20px 0 0;"><a style="text-decoration:none;" href="https://www.linkedin.com/in/dennyzhang001"><img style="border:1px solid black;padding:5px;" src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></li>
+#+END_HTML
+1. Connect with me in [[https://www.linkedin.com/in/dennyzhang001][LinkedIn]].
+- Say hi to me in [[https://www.linkedin.com/in/dennyzhang001/][LinkedIn]].
+- [[https://www.linkedin.com/in/dennyzhang001][Endorse]] me or write a [[https://www.linkedin.com/in/dennyzhang001][Recommendation]].
+---------------------------------------------------------------------
+[[github:DennyZhang][GitHub]]
+1. Follow me In [[https://github.com/dennyzhang?tab=followers][Github]]
+- Like my [[https://github.com/dennyzhang][GitHub Projects]].
+---------------------------------------------------------------------
+**More**
+1. Subscribe to [[http://us8.campaign-archive1.com/home/?u=91be09f7497c00c729049e650&id=bd99597fd9][My NewLetter]].
+- Try [[https://www.dennyzhang.com/tools][Free Tools]] I recommend.
+- Read [[https://www.dennyzhang.com/books][Books]] I recommend.
+- mailto: contact[@]dennyzhang.com
+---------------------------------------------------------------------
+[[color:#c7254e][Friends help friends!]]
+
+Let me know how I can help you. Thanks for checking this page!
+
+[[image-blog:Help Denny][https://www.dennyzhang.com/wp-content/themes/portfolio-press/images/denny_201706.png]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/help-denny"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/help-denny
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

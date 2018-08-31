@@ -1,0 +1,59 @@
+* Slack                                                           :BLOG:Page:
+:PROPERTIES:
+:type:     Ads
+:END:
+---------------------------------------------------------------------
+Join our DevOps slack group: [[slack:slack][slack]]
+
+https://slack.dennyzhang.com
+
+We operate this slack group as an OpenSource project in GitHub.
+
+[[image-github:https://github.com/USDevOps/mywechat-slack-group][https://cdn.dennyzhang.com/images/blog/github_slack_group.jpg]]
+
+Active slack memebers in [[url-external:http://slack.romain.tech][a world map]].
+[[image-blog:DevOps Slack][https://cdn.dennyzhang.com/images/blog/my_slack.jpg]]
+See contact of active members in [[url-external:https://github.com/USDevOps/mywechat-slack-group/blob/master/Members.md][GitHub]].
+
+I want to be connected with you. And you can have freechat with me any time.
+
+As friends:
+- We talk to each other every day.
+- We listen to each other every day.
+- We help each other every day.
+
+I feel obligated to help friends. Yes, I do. [[color:#c7254e][So Let's Be Friends In Slack Today!]]
+
+Send me([[color:#c7254e][@dennyzhang]]) a private message, when you're in. Cheers!
+---------------------------------------------------------------------
+[[slack:slack][slack]] [[github:DennyZhang][GitHub]] [[image-linkedin:LinkedIn][https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/slack"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/slack
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

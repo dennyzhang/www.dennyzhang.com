@@ -1,0 +1,58 @@
+* Popular                                                         :BLOG:Page:
+:PROPERTIES:
+:type:     Ads
+:END:
+---------------------------------------------------------------------
+Fundamentals:
+- [[https://www.dennyzhang.com/tag/docker][Docker]]: Container technogloy will tremendously reshaping IT world
+- [[https://www.dennyzhang.com/tag/devops][DevOps]]: DevOps Mindsets And Toolkits
+- [[https://www.dennyzhang.com/tag/aws][AWS]]: AWS Certification
+- [[https://www.dennyzhang.com/tag/linux][Linux]]: Linux Productivity Tips
+- [[https://www.dennyzhang.com/tag/security][Security]]: Never ignore security
+
+Mindset & Soft Skills:
+- [[https://www.dennyzhang.com/tag/linux][Monitoring]]: Monitoring skills
+- [[https://www.dennyzhang.com/tag/jenkins][Jenkins]]: Jenkins integrate scripts and jobs. Visual Ops is much easier to achieve
+- [[https://www.dennyzhang.com/tag/communication][Communication]]: Improve team communications. Slack, automation, mindset, etc
+
+Misc:
+- [[https://www.dennyzhang.com/tag/testing][Testing]]: Testing methodology and skills.
+- [[https://www.dennyzhang.com/tag/database][Database]]: Database stuff
+- [[https://www.dennyzhang.com/tag/startup][Startup]]: Tips for saving cost and improving availability for startup/SMB
+---------------------------------------------------------------------
+#+BEGIN_HTML
+<li style="display: inline; margin: 0 20px 0 0;"><a style="text-decoration:none;" href="https://www.linkedin.com/in/dennyzhang001"><img style="border:1px solid black;padding:5px;" src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></li>
+<li style="display: inline; margin: 0 20px 0 0;"><a style="text-decoration:none;" href="https://github.com/dennyzhang"><img style="border:1px solid black;padding:5px;" src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></li>
+<li style="display: inline; margin: 0 20px 0 0;"><a style="text-decoration:none;" href="https://www.dennyzhang.com/slack"><img style="border:1px solid black;padding:5px" src="https://www.dennyzhang.com/wp-content/uploads/sns/slack.png" alt="slack" /></a></li>
+#+END_HTML
+---------------------------------------------------------------------
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/popular"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/popular
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

@@ -1,0 +1,48 @@
+* Thank Your For Subscribing                                      :BLOG:Page:
+:PROPERTIES:
+:type:     Ads
+:END:
+---------------------------------------------------------------------
+Last step: [[color:#c7254e][Login Your Email, And Click Yes.]]
+
+Now we're connected via my weekly NewsLetter: 
+1. You can get my recent learnings and latest [[https://www.linkedin.com/in/dennyzhang001][LinkedIn]] DevOps discussions.
+- You can reply emails with *your DevOps questions* directly.
+
+(See [[http://us8.campaign-archive1.com/home/?u=91be09f7497c00c729049e650&id=bd99597fd9][Email Archive]])
+
+I hate talking nonsense and bluffing. Feel free to unsubscribe any time.
+
+Really appreciate it, if you can suggest me how to improve.
+
+[[image-blog:Contact][https://www.dennyzhang.com/wp-content/themes/portfolio-press/images/denny_201706.png]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/thank-subscribe"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/thank-subscribe
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
