@@ -1,0 +1,501 @@
+* docker-bench-security: Audit Well-Known Docker Vulnerabilities :BLOG:Docker:
+  :PROPERTIES:
+  :type:     DevOps,Docker,Security,Popular
+  :END:
+---------------------------------------------------------------------
+[[https://github.com/docker/docker-bench-security][docker-bench-security]] is a script that checks for dozens of common best-practices around deploying Docker containers in production.
+*We use Docker to save effort, not the other way around*. Try docker-bench-security to avoid common pitfalls using Docker. It's provided by Docker, Inc. Totally free and constantly polished.
+
+Enclosed is all you need to know, in order to understand and use the tool.
+
+[[image-blog:docker-bench-security: audit all known container vulnerabilities][https://www.dennyzhang.com/wp-content/uploads/denny/docker_bench_security_diagram.png]]
+
+---------------------------------------------------------------------
+Before we dive deep, please remember there is nothing that is absolutely secure. Nothing. It's up to you to figure out what your security boundary is, and how you mitigate failures.
+
+Besides this tool, I will introduce more tips or skills in *future posts*. Hope all the effort can better secure your Docker envs. ([[https://www.dennyzhang.com/neuvector_container][Product Review: NeuVector, Build Run-Time Container Security]])
+
+---------------------------------------------------------------------
+*Security is one of the biggest challenges for docker*. Too many pitfalls and potential vulnerabilities. As normal users, not everyone can be or should be a Docker security expert.
+
+Here comes docker-bench-security in [[https://github.com/docker/docker-bench-security][github]]. By now, the script enforces 63 known security checks for Docker. To audit OS security, people usually use tools like [[https://www.dennyzhang.com/linux_security/#sec-1-8][lynis]]. To audit Docker security, try this one.
+** Enforce docker-bench-security is super easy.
+Just start a container, run the check, and dispose the container afterwards.
+#+BEGIN_EXAMPLE
+# Pull docker image
+docker pull docker/docker-bench-security
+
+# Enforce the check
+docker run -it --net host --pid host \
+ --cap-add audit_control \
+ -v /var/lib:/var/lib \
+ -v /var/run/docker.sock:/var/run/docker.sock \
+ -v /usr/lib/systemd:/usr/lib/systemd \
+ -v /etc:/etc --label docker_bench_security \
+ docker/docker-bench-security
+#+END_EXAMPLE
+
+[[image-blog:docker-bench-security: audit all known container vulnerabilities][https://www.dennyzhang.com/wp-content/uploads/denny/docker_benchmark_log.png]]
+** Understand Common Failures
+No doubt we may get many warnings/errors for the first time. No worry, we will conquer the major ones together.
+
+Getting familiar with docker-bench-security is good. More importantly, [[color:#c7254e][we learn how to avoid common pitfalls for Docker security]].
+
+Let's go through the common major issues with below format:
+1. Error Msg. Console output of docker-bench-security.
+- What For. What does it mean and what's the impact.
+** [WARN] - Create a separate partition for containers
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 1.1  - Create a separate partition for containers
+#+END_EXAMPLE
+For docker daemon, create a separate partition for the data folder. It is usually /var/lib/docker.
+
+Personally I think it's also a good practice to do the same for docker containers.
+1. Be safe with our key data. Store key data in a separate partition. This will dramatically simplify our backup/restore process. When something goes terribly wrong, we can skip the trouble shooting. Simply start a new container, and mount the volume. 2. *For devicemapper storage driver, containers will only have 10GB disk*. Without volume mount, we run into low capacity easily.
+** [WARN] - Keep Docker up to date
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 1.5  - Keep Docker up to date
+[WARN]       * Using 1.12.2, when 1.12.3 is current as of 2016-10-26
+#+END_EXAMPLE
+Docker is in rapid development. New version is usually better. The upgrade might fix issues and improve the performance. *Warnings*: 1. Run rehearsal before upgrading our critical envs. [[https://www.dennyzhang.com/installation_failure/#sec-1-4][Always install latest versions could be troublesome]]. 2. Be prepared for potential upgrade failures.
+
+#+BEGIN_SRC sh
+# Upgrade Docker Daemon
+
+# Check version before upgrade
+docker version
+service docker stop
+
+curl -sSL https://get.docker.com/ | sudo sh
+
+# Check version after upgrade
+docker version
+docker ps
+#+END_SRC
+** TODO [WARN] - Failed to inspect: auditctl command not found.
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 1.7  - Failed to inspect: auditctl command not found.
+[WARN] 1.8  - Failed to inspect: auditctl command not found.
+[WARN] 1.9  - Failed to inspect: auditctl command not found.
+#+END_EXAMPLE
+** [WARN] - Remove all non-essential services from the host - Network
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 1.4  - Remove all non-essential services from the host - Network
+[WARN]      * Host listening on: 9 ports
+#+END_EXAMPLE
+
+Ideally each container should only run one service. If our container listen on multiple ports, usually it would be a violation of this principle.
+** [WARN] - Restrict network traffic between containers
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 2.1  - Restrict network traffic between containers
+#+END_EXAMPLE
+
+By default, unrestricted network traffic is enabled between all containers on the same host. If our containers doesn't need to talk with each other, we should disable it. Add _--icc=false_ to $DOCKER_OPTS, when we start docker daemon.
+
+#+BEGIN_EXAMPLE
+root@denny:/var/log# dockerd --help | grep -C 5 icc
+ --fixed-cidr-v6             IPv6 subnet for fixed IPs
+ -G, --group=docker          Group for the unix socket
+ -g, --graph=/var/lib/docker Root of the Docker runtime
+ -H, --host=[]               Daemon socket(s) to connect to
+ -h, --help                  Print usage
+ --icc=true                  Enable inter-container communication
+ --insecure-registry=[]      Enable insecure registry communication
+ --ip=0.0.0.0                Default IP when binding container ports
+ --ip-forward=true           Enable net.ipv4.ip_forward
+ --ip-masq=true              Enable IP masquerading
+ --iptables=true             Enable addition of iptables rules
+#+END_EXAMPLE
+
+Another useful post about this[1].
+** [WARN] - Set the logging level
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 2.2  - Set the logging level
+#+END_EXAMPLE
+
+Specify log level, when we start docker daemon. Usually, we can add "-l log" to $DOCKER_OPTS. For Ubuntu/Debian, check /etc/default/docker.
+** TODO [WARN] - Configure TLS authentication for Docker daemon
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 2.6  - Configure TLS authentication for Docker daemon
+[WARN]      * Docker daemon currently listening on TCP without --tlsverify
+#+END_EXAMPLE
+** TODO [WARN] - Enable user namespace support
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 2.8  - Enable user namespace support
+#+END_EXAMPLE
+** TODO [WARN] - Configure centralized and remote logging
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 2.12 - Configure centralized and remote logging
+#+END_EXAMPLE
+** TODO [WARN] - Create a user for the container
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 4.1  - Create a user for the container
+[WARN]      * Running as root: my-ss
+[WARN]      * Running as root: docker-jenkins
+#+END_EXAMPLE
+
+su -l docker -c "service docker start"
+
+#+BEGIN_EXAMPLE
+If you would like to use Docker as a non-root user, you should now consider
+adding your user to the "docker" group with something like:
+
+  sudo usermod -aG docker your-user
+
+Remember that you will have to log out and back in for this to take effect!
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+root@denny:~# ps -ef | grep dockerd
+root      3611     1  0 Oct25 ?        01:25:11 /usr/bin/dockerd --iptables=true --tlsverify --tlscacert=/root/docker/ca.pem --tlscert=/root/docker/server-cert.pem --tlskey=/root/docker/server-key.pem -H tcp://0.0.0.0:4243 -H unix:///var/run/docker.sock --raw-logs
+root     31250  2709  0 04:39 pts/1    00:00:00 grep --color=auto dockerd
+#+END_EXAMPLE
+** TODO [WARN] - Verify AppArmor Profile, if applicable
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 5.1  - Verify AppArmor Profile, if applicable
+[WARN]      * No AppArmorProfile Found: my-ss
+[WARN]      * No AppArmorProfile Found: docker-jenkins
+#+END_EXAMPLE
+** [WARN] - Do not use privileged containers
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 5.4  - Do not use privileged containers
+[WARN]      * Container running in Privileged mode: my-ss
+[WARN]      * Container running in Privileged mode: docker-jenkins
+#+END_EXAMPLE
+
+Don't use "--privileged" to start containers, unless we 100% need that.
+** [WARN] - Do not run ssh within containers
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 5.6  - Do not run ssh within containers
+[WARN]      * Container running sshd: docker-jenkins
+#+END_EXAMPLE
+
+Avoid running sshd, thus we can reduce the attack surface. Read more: her.[2]
+** [WARN] - Limit memory usage for container
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 5.10 - Limit memory usage for container
+[WARN]      * Container running without memory restrictions: my-ss
+[WARN]      * Container running without memory restrictions: docker-jenkins
+#+END_EXAMPLE
+
+Limit the maximum memory your container can use. Thanks to cgroup, a very good self-protection mechanism.
+
+To enable this, we can start containers with _-m_ option. Let's do a small experiment. With stress we can simulate a process using any given memory.[3]
+#+BEGIN_EXAMPLE
+# Start a container, only allow to use 600MB RAM at most
+docker run -t -d --privileged -h mytest --name my-test \
+  -m 600M ubuntu:14.04 /bin/bash
+
+docker exec -it my-test bash
+
+# Install stress tool
+apt-get -y update
+apt-get -y install stress
+
+# Simulate using 500MB memory: should be fine
+stress --vm-bytes 500m --vm-keep -m 1
+
+# Simulate using 1000MB memory: should crash
+stress --vm-bytes 1000m --vm-keep -m 1
+
+# Sample output:
+# stress: info: [83] dispatching hogs: 0 cpu, 0 io, 1 vm, 0 hdd
+# stress: FAIL: [83] (416) <-- worker 84 got signal 9
+# stress: WARN: [83] (418) now reaping child worker processes
+# stress: FAIL: [83] (452) failed run completed in 2s
+#+END_EXAMPLE
+** [WARN] - Set container CPU priority appropriately
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 5.11 - Set container CPU priority appropriately
+[WARN]      * Container running without CPU restrictions: my-ss
+[WARN]      * Container running without CPU restrictions: docker-jenkins
+#+END_EXAMPLE
+
+Similar like above.
+** TODO [WARN] - Mount container's root filesystem as read only
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 5.12 - Mount container's root filesystem as read only
+[WARN]      * Container running with root FS mounted R/W: my-ss
+[WARN]      * Container running with root FS mounted R/W: docker-jenkins
+#+END_EXAMPLE
+** [WARN] - Bind incoming container traffic to a specific host interface
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 5.13 - Bind incoming container traffic to a specific host interface
+[WARN]      * Port being bound to wildcard IP: 0.0.0.0 in my-ss
+[WARN]      * Port being bound to wildcard IP: 0.0.0.0 in docker-jenkins
+[WARN]      * Port being bound to wildcard IP: 0.0.0.0 in docker-jenkins
+[WARN]      * Port being bound to wildcard IP: 0.0.0.0 in docker-jenkins
+[WARN]      * Port being bound to wildcard IP: 0.0.0.0 in docker-jenkins
+#+END_EXAMPLE
+*This would be the most dangerous issue, if you're running docker in public cloud*.
+
+Let's say, we start a container like below. And we export the db port 3306.
+#+BEGIN_EXAMPLE
+docker run -t -d -p 3306:3306 denny/app:v1 /bin/bash
+#+END_EXAMPLE
+
+This makes the docker wrapper transparent for end users. Whenever I visit $docker_host_ip:3306, it points me to my db service directly. This is super nice, especially for development cycle.
+*However if we expose tcp ports like that, docker will configure our iptables to wildly open*. That would be a serious problem, if running in public cloud. Anything can visit our db port directly. Sounds exciting, isn't it?
+
+The most absurd thing is Docker doesn't support us to customize the behavior. Surely we can manually hack iptables rules, but it would be very tricky. Say when containers restart, container ip will change. Thus iptables rules need to updated manually. Again!
+
+See more discussion in reddit.[4]
+** TODO [WARN] - Set the 'on-failure' container restart policy to 5
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 5.14 - Set the 'on-failure' container restart policy to 5
+[WARN]      * MaximumRetryCount is not set to 5: my-ss
+[WARN]      * MaximumRetryCount is not set to 5: docker-jenkins
+#+END_EXAMPLE
+** TODO [WARN] - Restrict container from acquiring additional privileges
+- Error Msg:
+#+BEGIN_EXAMPLE
+[WARN] 5.25 - Restrict container from acquiring additional privileges
+[WARN]      * Privileges not restricted: my-ss
+[WARN]      * Privileges not restricted: docker-jenkins
+#+END_EXAMPLE
+** [WARN] - Avoid image sprawl
+- Error Msg:
+#+BEGIN_EXAMPLE
+[INFO] 6.4 - Avoid image sprawl
+[INFO]      * There are currently: 52 images
+[WARN]      * Only 9 out of 52 are in use
+#+END_EXAMPLE
+
+Remove unnecessary or unused docker images. This will help us to save disk capacity.
+** What's Next?
+In the future posts, I will introduce more docker security tools. Open source or commercial. Hopeful they will help us to improve our Docker security even more.
+
+[[color:#c7254e][Your input, please.]]
+
+[1] http://containertutorials.com/docker-security/daemon_security.html#restrict-network-traffic-between-containers
+[2] https://jpetazzo.github.io/2014/06/23/docker-ssh-considered-evil/
+[3] http://people.seas.harvard.edu/~apw/stress/
+[4] https://goo.gl/QmO4iZ
+
+Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
+[display-posts tag="docker" posts_per_page="20"]
+** ---------------------------------------------------------------------
+** #  --8<-------------------------- separator ------------------------>8--
+** off-page SEO                                                    :noexport:
+- find twitter users to @
+
+- twitter
+https://twitter.com/docker/status/794283033151082496
+
+- reddit:
+
+- quora:
+https://www.quora.com/What-is-the-most-vulnerable-aspect-of-container-technology-from-a-security-perspective-i-e-Docker
+
+- v2ex:
+https://www.v2ex.com/go/linux
+- find twitter users to @
+
+- twitter
+https://twitter.com/search?q=transfer.sh&src=typd
+
+- reddit:
+
+- quora:
+https://www.quora.com/What-is-the-most-vulnerable-aspect-of-container-technology-from-a-security-perspective-i-e-Docker
+
+- v2ex:
+https://www.v2ex.com/go/linux
+https://www.quora.com/Are-Docker-unprivileged-containers-absolutely-secure
+** community discussion                                            :noexport:
+https://www.reddit.com/r/docker/comments/5bdhrb/experience_about_dockerbenchsecurity/
+** similar pages                                                   :noexport:
+http://www.srikalyan.com/post/146523063033/docker-bench-security
+https://blog.docker.com/2015/05/docker-security-tools/
+https://medium.com/@alexeiled/docker-security-testing-3545e7493843#.499u9l7g9
+https://www.alfresco.com/blogs/devops/2015/12/03/docker-security-tools-audit-and-vulnerability-assessment/
+http://www.infoworld.com/article/3068222/application-virtualization/docker-security-scanning-helps-root-out-container-vulnerabilities.html
+http://www.tomsitpro.com/articles/docker-container-scanning-benchmark-security,1-3283.html
+https://www.quora.com/Are-Docker-unprivileged-containers-absolutely-secure
+https://www.quora.com/Internet-Security-What-are-good-ways-to-set-up-a-bastion-host-with-Docker
+That if the underlay system that runs the containers is compromised, the attacker could potentially affect all the containers in that system.
+http://www.brendangregg.com/blog/2016-10-27/dtrace-for-linux-2016.html
+https://www.oreilly.com/ideas/five-security-concerns-when-using-docker
+https://blog.opendns.com/2016/03/17/considering-docker-consider-security-first/
+https://www.sumologic.com/blog-devops/securing-docker-containers/
+https://opensource.com/business/14/7/docker-security-selinux
+https://www.quora.com/How-secure-is-Docker-1
+https://www.quora.com/Is-there-a-set-of-vulnerable-software-artefacts-I-can-download-to-test-against-Docker-security-scanners
+https://www.linkedin.com/pulse/why-docker-winner-versus-vms-miha-ahronovitz?trk=hp-feed-article-title-comment
+** #  --8<-------------------------- separator ------------------------>8--
+** notes                                                           :noexport:
+These all come with additional trade offs - lower utilization, increased management overhead, etc - it's totally dependent on what your requirements are.
+
+If the security of your Docker container is compromised, it would most likely be for code that hasn't been tested.
+** sample output                                                   :noexport:
+#+BEGIN_EXAMPLE
+root@denny:~# docker run -it --net host --pid host --cap-add audit_control \
+>     -v /var/lib:/var/lib \
+>     -v /var/run/docker.sock:/var/run/docker.sock \
+>     -v /usr/lib/systemd:/usr/lib/systemd \
+>     -v /etc:/etc --label docker_bench_security \
+>     docker/docker-bench-security
+
+Initializing Sun Nov  6 01:48:59 UTC 2016
+
+
+[INFO] 1 - Host Configuration
+[WARN] 1.1  - Create a separate partition for containers
+[PASS] 1.2  - Use an updated Linux Kernel
+[WARN] 1.4  - Remove all non-essential services from the host - Network
+[WARN]      * Host listening on: 9 ports
+[WARN] 1.5  - Keep Docker up to date
+[WARN]       * Using 1.12.2, when 1.12.3 is current as of 2016-10-26
+[INFO]       * Your operating system vendor may provide support and security maintenance for docker
+[INFO] 1.6  - Only allow trusted users to control Docker daemon
+[INFO]      * docker:x:999
+[WARN] 1.7  - Failed to inspect: auditctl command not found.
+[WARN] 1.8  - Failed to inspect: auditctl command not found.
+[WARN] 1.9  - Failed to inspect: auditctl command not found.
+[INFO] 1.10 - Audit Docker files and directories - docker.service
+[INFO]      * File not found
+[INFO] 1.11 - Audit Docker files and directories - docker.socket
+[INFO]      * File not found
+[WARN] 1.12 - Failed to inspect: auditctl command not found.
+[INFO] 1.13 - Audit Docker files and directories - /etc/docker/daemon.json
+[INFO]      * File not found
+[INFO] 1.14 - Audit Docker files and directories - /usr/bin/docker-containerd
+[INFO]      * File not found
+[INFO] 1.15 - Audit Docker files and directories - /usr/bin/docker-runc
+[INFO]      * File not found
+
+
+[INFO] 2 - Docker Daemon Configuration
+[WARN] 2.1  - Restrict network traffic between containers
+[WARN] 2.2  - Set the logging level
+[PASS] 2.3  - Allow Docker to make changes to iptables
+[PASS] 2.4  - Do not use insecure registries
+[PASS] 2.5  - Do not use the aufs storage driver
+[WARN] 2.6  - Configure TLS authentication for Docker daemon
+[WARN]      * Docker daemon currently listening on TCP without --tlsverify
+[INFO] 2.7 - Set default ulimit as appropriate
+[INFO]      * Default ulimit doesn't appear to be set
+[WARN] 2.8  - Enable user namespace support
+[PASS] 2.9  - Confirm default cgroup usage
+[PASS] 2.10 - Do not change base device size until needed
+[WARN] 2.11 - Use authorization plugin
+[WARN] 2.12 - Configure centralized and remote logging
+[WARN] 2.13 - Disable operations on legacy registry (v1)
+
+
+[INFO] 3 - Docker Daemon Configuration Files
+[INFO] 3.1  - Verify that docker.service file ownership is set to root:root
+[INFO]      * File not found
+[INFO] 3.2  - Verify that docker.service file permissions are set to 644
+[INFO]      * File not found
+[INFO] 3.3  - Verify that docker.socket file ownership is set to root:root
+[INFO]      * File not found
+[INFO] 3.4  - Verify that docker.socket file permissions are set to 644
+[INFO]      * File not found
+[PASS] 3.5  - Verify that /etc/docker directory ownership is set to root:root
+[PASS] 3.6  - Verify that /etc/docker directory permissions are set to 755
+[INFO] 3.7  - Verify that registry certificate file ownership is set to root:root
+[INFO]      * Directory not found
+[INFO] 3.8  - Verify that registry certificate file permissions are set to 444
+[INFO]      * Directory not found
+[INFO] 3.9  - Verify that TLS CA certificate file ownership is set to root:root
+[INFO]      * No TLS CA certificate found
+[INFO] 3.10 - Verify that TLS CA certificate file permissions are set to 444
+[INFO]      * No TLS CA certificate found
+[INFO] 3.11 - Verify that Docker server certificate file ownership is set to root:root
+[INFO]      * No TLS Server certificate found
+[INFO] 3.12 - Verify that Docker server certificate file permissions are set to 444
+[INFO]      * No TLS Server certificate found
+[INFO] 3.13 - Verify that Docker server key file ownership is set to root:root
+[INFO]      * No TLS Key found
+[INFO] 3.14 - Verify that Docker server key file permissions are set to 400
+[INFO]      * No TLS Key found
+[PASS] 3.15 - Verify that Docker socket file ownership is set to root:docker
+[PASS] 3.16 - Verify that Docker socket file permissions are set to 660
+[INFO] 3.17 - Verify that daemon.json file ownership is set to root:root
+[INFO]      * File not found
+[INFO] 3.18 - Verify that daemon.json file permissions are set to 644
+[INFO]      * File not found
+[PASS] 3.19 - Verify that /etc/default/docker file ownership is set to root:root
+[PASS] 3.20 - Verify that /etc/default/docker file permissions are set to 644
+
+
+[INFO] 4 - Container Images and Build Files
+[WARN] 4.1  - Create a user for the container
+[WARN]      * Running as root: my-ss
+[WARN]      * Running as root: docker-jenkins
+[WARN] 4.5  - Enable Content trust for Docker
+
+
+[INFO] 5  - Container Runtime
+[WARN] 5.1  - Verify AppArmor Profile, if applicable
+[WARN]      * No AppArmorProfile Found: my-ss
+[WARN]      * No AppArmorProfile Found: docker-jenkins
+[PASS] 5.2  - Verify SELinux security options, if applicable
+[PASS] 5.3  - Restrict Linux Kernel Capabilities within containers
+[WARN] 5.4  - Do not use privileged containers
+[WARN]      * Container running in Privileged mode: my-ss
+[WARN]      * Container running in Privileged mode: docker-jenkins
+[PASS] 5.5  - Do not mount sensitive host system directories on containers
+[WARN] 5.6  - Do not run ssh within containers
+[WARN]      * Container running sshd: docker-jenkins
+[PASS] 5.7  - Do not map privileged ports within containers
+[PASS] 5.9 - Do not share the host's network namespace
+[WARN] 5.10 - Limit memory usage for container
+[WARN]      * Container running without memory restrictions: my-ss
+[WARN]      * Container running without memory restrictions: docker-jenkins
+[WARN] 5.11 - Set container CPU priority appropriately
+[WARN]      * Container running without CPU restrictions: my-ss
+[WARN]      * Container running without CPU restrictions: docker-jenkins
+[WARN] 5.12 - Mount container's root filesystem as read only
+[WARN]      * Container running with root FS mounted R/W: my-ss
+[WARN]      * Container running with root FS mounted R/W: docker-jenkins
+[WARN] 5.13 - Bind incoming container traffic to a specific host interface
+[WARN]      * Port being bound to wildcard IP: 0.0.0.0 in my-ss
+[WARN]      * Port being bound to wildcard IP: 0.0.0.0 in docker-jenkins
+[WARN]      * Port being bound to wildcard IP: 0.0.0.0 in docker-jenkins
+[WARN]      * Port being bound to wildcard IP: 0.0.0.0 in docker-jenkins
+[WARN]      * Port being bound to wildcard IP: 0.0.0.0 in docker-jenkins
+[WARN] 5.14 - Set the 'on-failure' container restart policy to 5
+[WARN]      * MaximumRetryCount is not set to 5: my-ss
+[WARN]      * MaximumRetryCount is not set to 5: docker-jenkins
+[PASS] 5.15 - Do not share the host's process namespace
+[PASS] 5.16 - Do not share the host's IPC namespace
+[PASS] 5.17 - Do not directly expose host devices to containers
+[INFO] 5.18 - Override default ulimit at runtime only if needed
+[INFO]      * Container no default ulimit override: my-ss
+[INFO]      * Container no default ulimit override: docker-jenkins
+[PASS] 5.19 - Do not set mount propagation mode to shared
+[PASS] 5.20 - Do not share the host's UTS namespace
+[PASS] 5.21 - Do not disable default seccomp profile
+[PASS] 5.24 - Confirm cgroup usage
+[WARN] 5.25 - Restrict container from acquiring additional privileges
+[WARN]      * Privileges not restricted: my-ss
+[WARN]      * Privileges not restricted: docker-jenkins
+
+
+[INFO] 6  - Docker Security Operations
+[INFO] 6.4 - Avoid image sprawl
+[INFO]      * There are currently: 52 images
+[WARN]      * Only 9 out of 52 are in use
+[INFO] 6.5 - Avoid container sprawl
+[INFO]      * There are currently a total of 9 containers, with 3 of them currently running
+#+END_EXAMPLE

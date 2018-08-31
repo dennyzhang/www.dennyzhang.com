@@ -27,7 +27,6 @@ File me [[https://github.com/DennyZhang/www.dennyzhang.com/issues][Issues]] or s
  #+END_HTML
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone hidestars
-#+TITLE:  https://www.dennyzhang.com
 #+DESCRIPTION: 
 #+KEYWORDS: 
 #+AUTHOR: Denny Zhang

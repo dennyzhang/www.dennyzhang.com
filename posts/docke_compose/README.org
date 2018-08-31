@@ -1,0 +1,543 @@
+* 8 Lessons Learned Using docker-compose                        :BLOG:Docker:
+  :PROPERTIES:
+  :type:     DevOps,Docker,Tool
+  :END:
+---------------------------------------------------------------------
+Nowadays when people setup and configure services, probably nobody will enjoy doing it in a manual way.
+
+Here comes a new question. *How do you automate the process, and make it fast and reliable?*
+
+Wrap up some ssh scripts? Leverage CM(configuration management tools) like chef, ansible, or pupet? Use _docker run_? It's great that we now have many options. But, as you may guess, not all of them are equally good.
+
+You want a headache-free solution, right? And you also want it real quick, do you? [[color:#c7254e][Then You Can Not Miss docker-compose!]] Here are some useful tips and lessons learned using docker-compose.
+
+[[image-blog:8 Lessons Learned Using docker-compose][https://www.dennyzhang.com/wp-content/uploads/denny/docker-compose.jpg]]
+---------------------------------------------------------------------
+
+I'm not here to argue with you that docker-compose is the best for all scenarios. Definitely there are some, which we can not or should not dockerize. Well, I still insist that it's capable for most cases.
+
+CM is good, but docker/docker-compose is just better for env setup. (Read: [[https://www.dennyzhang.com/installation_failure][5 Common Failures Of Package Installation]]). Not convinced, my friends? Give it a try and challenge me now!
+
+With plain docker facility, we can setup envs like below.
+#+BEGIN_EXAMPLE
+docker run --rm -p 8080:8080 \
+ -h mytest --name my-test\
+ -v /var/run/docker.sock:/var/run/docker.sock \
+ --group-add=$(stat -c %g /var/run/docker.sock) \
+ jenkinsci/docker-workflow-demo
+#+END_EXAMPLE
+
+But... The command is just too long, isn't it? What if you need to start multiple different containers? You may easily mess it up, right?
+
+Show time for docker-compose, an advanced version of docker run.
+
+[[color:#c7254e][Just one single command, docker-compose up -d!]] We can run the same deployment process against another new environment within just a few seconds. Beautiful, isn't it?
+
+[[image-blog:8 Lessons Learned Using docker-compose][https://www.dennyzhang.com/wp-content/uploads/denny/docker-compose-logic.png]]
+
+Here are my lessons learned using docker-compose.
+** 1. [Infrastructure-as-code] Host all setup and configuration logic in git repo
+Host all necessary things in git repo: [[color:#c7254e][docker-compose.yml]], [[color:#c7254e][.env]] and [[color:#c7254e][docker volume files]].
+- Everything you need can be and should be found in git repo.
+- People can easily review and comment your changes via PRs.
+- You can audit the change history, and understand issues.
+** 2. [Port Mapping] Default docker port mapping is dangerous for public cloud.
+You may get surprised how insecure docker port mapping feature is! Let me show you.
+
+Image you have a mysql instance running with below docker-compose.yml.
+#+BEGIN_EXAMPLE
+version: '2'
+services:
+  db:
+    container_name: db
+    image: mysql
+    ports:
+      - "3306:3306"
+    volumes:
+     - db_home:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: user1
+      MYSQL_PASSWORD: password1
+      MYSQL_DATABASE: db1
+
+volumes:
+  db_home:
+#+END_EXAMPLE
+
+With default setting, anyone from the internet can access your db, port 3306.[1]
+#+BEGIN_EXAMPLE
+root@denny:# docker-compose up -d
+root@denny:# iptables -L -n | grep 3306
+ACCEPT  tcp  --  anywhere  172.17.0.2  tcp dpt:3306
+root@denny:# telnet $YOUR_IP 3306
+#+END_EXAMPLE
+
+Why? docker add iptables rules widely open FOR YOU. (Sweet, isn't it?) Anywhere can access.
+
+So let's limit the source ip for the access. Good idea! Unfortunately, it's impossible. That rule is added by docker. To make it worse, it provides no hook points for us to change this behavior.
+
+With some more thinking, you may think: how about I delete the rules created by docker, and add a new rule? I'm an iptable expert, it's easy. Well, it's not easy. The tricky part is your customized iptable rules won't be recognized and managed by docker. It would easily mess up, when service/machine reboot. Especially when we restart container, the ip will change.
+
+So instead of default port mapping, I only bound the port mapping to specific ip address like below.
+#+BEGIN_EXAMPLE
+    ports:
+      - "127.0.0.1:3306:3306"
+#+END_EXAMPLE
+** 3. [Data Volume] Separate data from application using docker volume
+Make sure containers doesn't hold any unrecoverable application data.
+
+Consequently we can safely recreate docker envs, or even migrate to another environment completely and easily.
+*** docker-compose mount local folders and named volumes
+#+BEGIN_EXAMPLE
+  db:
+    container_name: db
+    image: mysql
+    networks:
+      - network_application
+    volumes:
+    # Named volumes
+    - db_home:/var/lib/mysql
+    # Local folders
+    - ./scripts:/var/lib/mysql/scripts
+
+volumes:
+  db_home:
+#+END_EXAMPLE
+*** docker-compose overwrite an existing file
+    CLOSED: [2017-04-24 Mon 11:32]
+#+BEGIN_EXAMPLE
+services:
+  shadowsock:
+    image: denny/ss:v1
+    ports:
+      - "6187:6187"
+    volumes:
+      - ./shadowsock.json:/etc/shadowsocks.json:rw
+    entrypoint: ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
+#+END_EXAMPLE
+** 4. [Migration Rehearsal] Run rehearsal for the docker-compose migration
+It's always a good idea to run migration rehearsal.
+
+Ideally there should be no more than 3 steps:
+- scp data volume from old env to new env
+- Install docker compose and run "docker-compose up -d"
+- Very few manual steps, mostly it's about credentials.
+** 5. [Backup] Enforce weekly backup for data volumes
+All critical data would be in volumes only. To backup the system, we just need to backup the folders of data volumes.
+
+When the data volumes are not very big, we can:
+- Enforce periodical folder backup for data volumes, like weekly backup.
+- To reduce out-of-disk issues, remember to rotate very old backupset. (Read: [[https://www.dennyzhang.com/low_disk][Reduce Support Effort Of Low Free Disk Issues]]).
+- To avoid local VM failures, backup to a remote VMs or AWS S3.
+** 6. [Docker Image] Build your own docker image
+During deployment, any request to external services is a failure point.
+
+To make sure the deployment is more smoothly, I always build my own docker images pre-download packages/files, if necessary.
+** 7. [Monitoring] Use docker healthcheck and external SaaS monitoring
+Monitoring and alerting are good.
+
+- Define docker healthcheck, thus trouble shooting would be as simple as below
+#+BEGIN_SRC sh
+docker-compose ps
+docker ps | grep unhealthy
+#+END_SRC
+
+- External monitoring is easy and useful.
+
+Try uptimerobot.com[2]. It an run url check/port check every 5 minutes. If the check has failed, we can easily get slack or email notifications.
+
+Didn't I mentioned, uptimerobot.com is totally free? I'm happy to be a loytal customers for more than 5 years.
+** 8. [Debugging] Change entrypoint in docker-compose.yml for temporary trouble shooting
+For a complicated docker-compose env, some services may fail to start. But debugging the issues, it's better we have the containers up and running.
+
+I find it useful to replace the containers' start logic with some dummy place holder.[3]
+#+BEGIN_EXAMPLE
+  service1:
+    container_name: service1
+    image: someimage1
+    entrypoint: ["sleep", "10000"]
+    environment:
+    ...
+    ...
+#+END_EXAMPLE
+
+Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
+[display-posts tag="docker" posts_per_page="20"]
+
+[1] https://fralef.me/docker-and-iptables.html
+[2] https://uptimerobot.com
+[3] https://github.com/docker/compose/issues/3140
+** ---------------------------------------------------------------------
+** #  --8<-------------------------- separator ------------------------>8--
+** BYPASS docker-compose mount volume and change file ownership or file mode: change underline folder priviledge in docker host
+   CLOSED: [2017-05-11 Thu 23:49]
+** basic use
+| Name                                       | Summary                             |
+|--------------------------------------------+-------------------------------------|
+| docker-compose up                          |                                     |
+| docker-compose up -d                       |                                     |
+| docker-compose -f docker-compose-vm.yml up |                                     |
+| docker-compose stop                        |                                     |
+|--------------------------------------------+-------------------------------------|
+| docker-compose down                        | remove all containers and networks  |
+| docker-compose down --volumes              | remove everything including volumes |
+|--------------------------------------------+-------------------------------------|
+| docker-compose ps                          |                                     |
+| docker-compose logs $container_name        |                                     |
+** avoid check-in credentials
+** Setup env via Docker
+*** Step1: Credentials and code
+root@carol-repo:/data/initial_setup/mdmdevops# git status
+On branch master
+Your branch is up-to-date with 'origin/master'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+
+        misc/repo.carol.ai/pre_setup/BACKUPSET_2017-03-25_14-41_.zip
+        misc/repo.carol.ai/pre_setup/git_doc
+        misc/repo.carol.ai/pre_setup/git_documentation
+        misc/repo.carol.ai/pre_setup/git_www
+        misc/repo.carol.ai/pre_setup/mdm_id_rsa
+        misc/repo.carol.ai/pre_setup/server.ca-bundle
+        misc/repo.carol.ai/pre_setup/server.crt
+        misc/repo.carol.ai/pre_setup/server.key
+        misc/repo.carol.ai/pre_setup/totvslabs.htpasswd
+**** Folder hireachy
+root@carol-repo:/data# ls -lth /data
+total 28K
+drwxr-xr-x  3 root root 4.0K Apr 19 16:44 initial_setup
+drwxr-xr-x  6 root root 4.0K Mar 25 13:43 docker_volume
+drwx--x--x 11 root root 4.0K Mar 22 20:51 docker_data
+*** Step2: Running data: docker volume
+*** Step3: Define docker-compose to customize the deployment
+*** Step4: Run daily folder backup
+*** Step5: Create crontab and regular monitoring via uptimerobot.com
+Use docker healthcheck
+** TODO [#A] Setup denny blog image <2017-03-07 15:53 UTC +8>
+https://hub.docker.com/_/wordpress/
+https://docs.docker.com/compose/wordpress/
+
+# install docker
+wget -qO- https://get.docker.com/ | sh
+
+# install docker-compose
+curl -L "https://github.com/docker/compose/releases/download/1.10.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+mkdir /root/devopsblog
+cd  /root/devopsblog
+>  docker-compose.yml && vi docker-compose.yml
+
+docker-compose up -d
+docker-compose ps
+
+curl http://localhost:80
+
+docker exec -it devopsblog_wordpress_1 bash
+*** docker-compose.yml
+version: '2'
+
+services:
+   db:
+     image: mysql:5.7
+     volumes:
+       - db_data:/var/lib/mysql
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: denny123
+       MYSQL_DATABASE: devopsblog
+       MYSQL_USER: devopsblog
+       MYSQL_PASSWORD: devopsBLOG2015
+
+   wordpress:
+     depends_on:
+       - db
+     image: wordpress:latest
+     ports:
+       - "80:80"
+     restart: always
+     environment:
+       WORDPRESS_DB_HOST: db:3306
+       WORDPRESS_DB_PASSWORD: denny123
+volumes:
+    db_data:
+*** #  --8<-------------------------- separator ------------------------>8--
+*** install basic packages in both container
+docker exec -it devopsblog_wordpress_1 bash
+apt-get -y update
+apt-get install -y vim cron curl
+apt-get install -y git
+
+docker exec -it devopsblog_wordpress_1 bash
+apt-get -y update
+apt-get install -y vim cron curl
+*** restore data of mysql
+scp mysql-dennyblog-20170307.sql root@www.dennyzhang.com:/root/
+
+docker cp /root/mysql-dennyblog-20170307.sql devopsblog_db_1:/root/
+
+docker exec -it devopsblog_db_1 bash
+mysql -udevopsblog -pdevopsBLOG2015 devopsblog < /root/mysql-dennyblog*.sql
+*** login apache container
+docker exec -it devopsblog_wordpress_1 bash
+
+
+mkdir -p /root/.ssh
+cat > /root/.ssh/id_rsa <<EOF
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAmq/enTWEkWu6VXZ6wrBV6fv3098AAkFOAFxW2xkZmsgAp81r
+3o9u+W+OBREJ4+BeST74/wvHPA0/BEsDly7QZqM9U9jJBe9pFt8aepCPfupuiWp9
+V+8ZQw3EXWjky69c77BvI542FVdLs85Q98QrDuRmiIddNmyR8b8VPaF2NiMKlDiO
+9T/VGPs8xYlCinph1AzybfaPEFWkbRb5E4rrhotF5Zv7Ol9hKz519Z8kSfyOa3yj
+9EceP++a3yEpg3ifvGl+sBL51CmawsBbLZX4Vkx/DmQRY0crQ8JGEA2RS8JOrIUz
+Dn+1l29PqyHflCnJ+koeiuZJEARIXEZnsd0apQIDAQABAoIBAAENfVhYiuRqdUQr
+oD4+8Pa8rj0U4W0igKNj/XtUOmZhQg/iR/+lvj2YUsEaEpUoa7vX393seJiiBnHD
+CO04dlacecheS0/tBywOrKF05mUYt1PcE6pLiEJ6j4GLOzNfqCRBcSAu7XNLusoo
+d0iYXyqkx0XalfnO11dr03st5B4OMEiAk03QySjILDlOQkjqhUzPvpFSe6xjNMdd
++p5VmePDK2MEKYrQPjlx1wHvAElcpi1PDclW7av3o1FBpqX3Sn3KEoZu1YmyaANy
+dXfrFtPve5FIuSM2nh3/Qjna6j+qTD+9dM20XIAf9E1JrEEYI0rBhGeBSC/1wFn3
+O94ezQECgYEAzYEswFIfotoLU0vK6o1gJELDYTciZ815fOIM6OA1PdTeJUBBOtyG
+dDkROHA2/QZtANQzPcA83Y7dc5us8BNwTfU5qZB7CBAIXuenysoRBQ44E/7Fa0qQ
+qTdh+rAmxzaF+y496wk0CzMo5/z0ttxkHOC8OUixtK2I+3gH5FU3yGECgYEAwLIf
+byFaLwzPMPMnC4wjTN/mDJWCEz7pQsQA4z/WH7WpBiK+TigD9ANcDEm08RmyQdkp
+xmhv17YPHrbYJ0ovFpxjT6rd/PDu44udNFVsahVj6gwCR/+ZC3QNgvyFJryG/oVV
+5KDApF9sCyD9NOfDKJGgvsnY6usgblhtrQ9Y6MUCgYB4dt1Vy44x92EmLcrAHama
+9+vyA9DOSnuJwjTRGgT7vtmNupHCQF0sqfs3O0hwoCCrmLiE3TiQo9ualkoU3UA6
+4qIvjLsiKcvOXjtUu4iojwI+bl0pnKcaGpX7zuCcbJCzghLXwShZ3F6BRx3oR18E
+MpUDe2J4SDWBO4ZcybuOYQKBgDaVPho4lFcnhbkT50d6FrW75mpCH2pcM67Z3naA
+qqKozowSY124MAZ6vSQt7Lcu1DOa1B6DjsrHo1jL6kaW2OfKvMbgW6k+hiyma41b
+dS5HiNnPNQY3/J4l7X3hEcZ7OLH4CvCMKIVnEi/E1HScAcgIGERy4KMKn1Eic07G
+PiURAoGAJHFs7V+9DJV7L526PeUE+WXaqwxRk6stuiI8nDLiMFVbfidvG2pRndsh
+dDkeXigLp+f/7UukzYfSFQBgIYywUg4Cg5nZU+f9k/wCOQueeGkOdM+yVd5yimRf
+oIrXWFU0OwA0/FqzUkV6KNbZRJ+SzJIlsstJQhE21R5bK+YeBzo=
+-----END RSA PRIVATE KEY-----
+EOF
+
+chmod 600 /root/.ssh/id_rsa
+*** setup apache2 vhost
+cd /etc/apache2/sites-enabled/
+rm -rf *
+cat > /etc/apache2/sites-enabled/devops-blog.conf <<EOF
+<VirtualHost *:80>
+	# The ServerName directive sets the request scheme, hostname and port that
+	# the server uses to identify itself. This is used when creating
+	# redirection URLs. In the context of virtual hosts, the ServerName
+	# specifies what hostname must appear in the request's Host: header to
+	# match this virtual host. For the default virtual host (this file) this
+	# value is not decisive as it is used as a last resort host regardless.
+	# However, you must set it for any further virtual host explicitly.
+	ServerName www.dennyzhang.com
+        ServerAlias dennyzhang.com
+
+	ServerAdmin webmaster@localhost
+	DocumentRoot /var/www/devops_blog
+        <Directory /var/www/devops_blog>
+            Options All
+            AllowOverride All
+            Require all granted
+        </Directory>
+
+	# Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
+	# error, crit, alert, emerg.
+	# It is also possible to configure the loglevel for particular
+	# modules, e.g.
+	#LogLevel info ssl:warn
+
+	ErrorLog \${APACHE_LOG_DIR}/dennyzhang_blog_error.log
+	CustomLog \${APACHE_LOG_DIR}/dennyzhang_blog_access.log combined
+
+	# For most configuration files from conf-available/, which are
+	# enabled or disabled at a global level, it is possible to
+	# include a line for only one particular virtual host. For example the
+	# following line enables the CGI configuration for this host only
+	# after it has been globally disabled with "a2disconf".
+	#Include conf-available/serve-cgi-bin.conf
+    <IfModule sapi_apache2.c>
+        php_admin_flag engine on
+    </IfModule>
+    <IfModule mod_php5.c>
+        php_admin_flag engine on
+    </IfModule>
+    <IfModule mod_headers.c>
+     Header set Connection keep-alive
+    </IfModule>
+    <IfModule mod_alias.c>
+     RedirectMatch 403 favicon.ico
+    </IfModule>
+    <IfModule mod_rewrite.c>
+      <Directory /var/www/denny_blog/>
+        RewriteEngine On
+        RewriteBase /
+        RewriteRule ^index\.php\$ - [L]
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteCond %{REQUEST_FILENAME} !-d
+        RewriteRule . /index.php [L]
+     </Directory>
+    </IfModule>
+
+    <IfModule mod_mime.c>
+    AddType application/x-javascript .js
+    AddType text/css .css
+    </IfModule>
+
+    <IfModule mod_deflate.c>
+     AddOutputFilterByType DEFLATE text/css application/x-javascript text/x-component text/html text/richtext image/svg+xml text/plain text/xsd text/xsl text/xml image/x-icon application/javascript image/png
+     </IfModule>
+     <IfModule mod_setenvif.c>
+      BrowserMatch ^Mozilla/4 gzip-only-text/html
+      BrowserMatch ^Mozilla/4\.0[678] no-gzip
+      BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+     </IfModule>
+     <IfModule mod_headers.c>
+      Header append Vary User-Agent env=!dont-vary
+     </IfModule>
+</VirtualHost>
+EOF
+*** checkout git clone
+docker exec -it devopsblog_wordpress_1 bash
+
+cd /var/www/
+git clone git@bitbucket.org:lrpdevops/devops_blog.git
+
+cd /var/www/devops_blog
+git branch --set-upstream-to=origin/master master
+chown www-data:www-data -R /var/www/devops_blog
+*** enable Apache2 modules
+docker exec -it devopsblog_wordpress_1 bash
+
+a2enmod proxy
+a2enmod proxy_http
+a2enmod rewrite
+
+service apache2 reload
+
+curl http://localhost:80
+*** #  --8<-------------------------- separator ------------------------>8--
+*** define crontab
+# Pull git code update
+
+# Perform local backup
+docker exec -it devopsblog_db_1 bash
+
+mkdir -p /opt/devops
+
+cat > /opt/devops/backup_wp_mysql.sh << EOF
+#!/bin/bash -e
+date
+
+echo "Backup mysql"
+mysqldump -udevopsblog -pdevopsBLOG2015 devopsblog > /opt/devops/mysql-devopsblog.sql
+
+echo "Perform remote backup"
+scp /opt/devops/mysql-devopsblog.sql root@104.236.159.226:/data/backup/
+
+date
+EOF
+
+echo "bash /opt/devops/backup_wp_mysql.sh >> /var/log/backup_wp_sql.log" > /etc/cron.daily/backup_db
+
+ps -ef | grep cron
+crontab -l
+# Copy to remote server
+** DONE install docker compose
+   CLOSED: [2017-02-18 Sat 00:23]
+curl -L "https://github.com/docker/compose/releases/download/1.10.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+** DONE docker-compose to auto source env sh: .env
+   CLOSED: [2017-02-18 Sat 00:23]
+** #  --8<-------------------------- separator ------------------------>8--
+** TODO redirect docker-compose output to logfile
+** #  --8<-------------------------- separator ------------------------>8--
+** TODO docker build?
+https://github.com/nubs/overthemonkey.com/blob/3b8fe468d0c478b2b88e54f79e32f3dfef96d6bd/docker-compose.yml
+** TODO Docker containers log
+https://stefanprodan.com//2017/docker-log-transport-and-aggregation-at-scale/
+** TODO docker-compose run? docker-compose build?
+https://docs.docker.com/compose/django/
+** #  --8<-------------------------- separator ------------------------>8--
+** DONE docker-compose.yml volume mount local folder: You can mount a relative path on the host,
+   CLOSED: [2017-03-23 Thu 11:26]
+http://stackoverflow.com/questions/34447607/docker-compose-not-mounting-volumes
+
+In addition to @VonC answer, it's different when using docker-compose since the docs mention
+
+You can mount a relative path on the host, which will expand relative to the directory of the Compose configuration file being used. Relative paths should always begin with . or ..
+
+#+BEGIN_EXAMPLE
+version: '2'
+services:
+  official-jenkins:
+    container_name: official-jenkins
+    build:
+      context: .
+    command: /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
+    volumes:
+    - ../../../../../docker_volume/jenkins_repo_volume:/var/www/repo/
+    - ../../../../../docker_volume/jenkins_backup_volume/:/var/lib/jenkins/backup/
+    ports:
+    - "18000:18000"
+    - "18080:18080"
+#+END_EXAMPLE
+** TODO docker-compose remove images generated by docker-compose build
+** DONE docker-compose bind /etc/hosts: extra_hosts
+   CLOSED: [2017-03-23 Thu 13:54]
+https://docs.docker.com/compose/compose-file/#extrahosts
+version: '2'
+services:
+  http-repo:
+    container_name: http-repo
+    hostname: http-repo
+    extra_hosts:
+    - "www.totvslabs.com:127.0.0.1"
+    - "doc.carol.ai:127.0.0.1"
+    - "docs.carol.ai:127.0.0.1"
+    - "prod-doc.carol.ai:127.0.0.1"
+    - "prod-docs.carol.ai:127.0.0.1"
+    - "repo.carol.ai:127.0.0.1"
+** DONE docker-compose specify container hostname
+   CLOSED: [2017-03-23 Thu 13:52]
+https://docs.docker.com/compose/compose-file/#domainname-hostname-ipc-macaddress-privileged-readonly-restart-shmsize-stdinopen-tty-user-workingdir
+http://stackoverflow.com/questions/29924843/how-do-i-set-hostname-in-docker-compose
+#+BEGIN_EXAMPLE
+version: '2'
+services:
+  official-jenkins:
+    container_name: official-jenkins
+    hostname: official-jenkins
+    build:
+      context: .
+    command: /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
+    volumes:
+    - ../../../../../docker_volume/jenkins_repo_volume:/var/www/repo/
+    - ../../../../../docker_volume/jenkins_backup_volume/:/var/lib/jenkins/backup/
+    ports:
+    - "18000:18000"
+    - "18080:18080"
+#+END_EXAMPLE
+** TODO How to start a stopped Docker container with a different command?
+http://stackoverflow.com/questions/32353055/how-to-start-a-stopped-docker-container-with-a-different-command
+vi /var/lib/docker/containers/923...4f6/config.json
+
+#  --8<-------------------------- separator ------------------------>8--
+The accepted answer is too complicated.
+
+Find your stopped container id
+
+docker ps -a
+Commit the stopped container:
+
+docker commit $CONTAINER_ID user/test_image
+Start/run with a different entry point:
+
+docker run -ti --entrypoint=sh user/test_image
+Entrypoint argument description: https://docs.docker.com/engine/reference/run/#/entrypoint-default-command-to-execute-at-runtime
+
+Source: (last comment) https://github.com/docker/docker/issues/18078
+** DONE docker external link
+   CLOSED: [2017-04-19 Wed 19:09]
+http://docs.master.dockerproject.org/compose/compose-file/#/external-1
+https://serverfault.com/questions/827962/how-external-links-in-docker-compose-works
+
+docker network ls

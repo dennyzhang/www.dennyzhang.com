@@ -1,0 +1,95 @@
+* Verify Docker Images Build By Docker-In-Docker                :BLOG:Docker:
+:PROPERTIES:
+  :type:     DevOps,Deployment,Docker
+  :END:
+---------------------------------------------------------------------
+Using Docker, deployments are more reliable and faster than ever. But how about the docker images build? Containers don't have any silver bullets. *It shifts installation instability from deployment cycle to image build cycle*.
+
+I would expect *a general solution* for the verification of all docker images build. And it should work across different projects. This means less time and effort. Certainly, save money!
+
+[[image-github:https://github.com/dennyzhang][https://www.dennyzhang.com/wp-content/uploads/denny/github_BuildAllDockerImages_jenkins.png]]
+---------------------------------------------------------------------
+With endless development, we need to rebuild docker images occasionally:
+1. Install new packages
+- Update existing packages to a new version.
+- Reconfigure or tune services via config files or similar ways.
+
+Rebuilding old images may fail in many ways:
+1. Unexpected manual steps. It would be frustrating, if we can't *build images purely from Dockerfile*.
+- Package installation with latest versions may incur incompatible issues.
+- Package installation with specific versions fail. They might have been marked as obsoleted in the repo.
+- Outage of dependent services, etc.
+
+See more about this: [[https://www.dennyzhang.com/installation_failure][5 Common Failures Of Package Installation]]
+** Why Docker-In-Docker?
+I choose to use Docker-In-Docker to verify image build. Why? Yes, I know many people are strongly against dind(docker-in-docker). Like this one.[1]
+
+With my years' experience, I'm confident that *dind is very capable for this scenario*:
+1. Super easy to setup and run. Literally we only need to use "docker run", then perform tests.
+2. Leave no trace or garbage in docker host. If using a shared host, people's daily work might be disturbed by our tests.
+
+For your convenience, I've published a docker image(See [[https://github.com/dennyzhang/devops_docker_image/blob/tag_v6/docker/docker_v1_0.dockerfile][Dockerfile]]).[[github:DennyZhang][GitHub]]
+
+#+BEGIN_EXAMPLE
+# Pull docker image
+docker pull denny/docker:v1.0
+
+# Start a container to build images inside
+docker run -t -d --privileged -h dockerimages \
+  --name docker-images denny/docker:v1.0 /usr/bin/dockerd
+
+# Login to the container
+docker exec -it docker-images bash
+
+# Download a dockerfile for test purpose
+wget -O /root/java_v1_0.dockerfile \
+  https://raw.githubusercontent.com/DennyZhang/devops_docker_image/tag_v6/java/java_v1_0.dockerfile
+
+# Build docker image inside current container
+cd /root/
+docker build -f java_v1_0.dockerfile -t denny/java:v1.0 --rm=true .
+
+# Verify docker images
+docker images | grep denny/java
+#+END_EXAMPLE
+** Suggestions Of Running DIND
+1. Don't use devicemapper as your storage driver. By default, containers can only have 10GB disk. Yes, we could mount volume for big folders. Still, inconvenient.
+- Stop containers first, before decommission. At the end of testing, make sure we stop containers first, then stop dockerd and finally destroy the env.
+- When building multiple images, the sequence matters. Let's say, image B might depends on image A. If image A is public, do we still need to care about the test sequence? The answer is yes. We need to build B based on latest A, instead of the version in docker hub.
+- Speed up image build by loading frequently used golden images first. The pre-loading would not only save us lots of time, but also the false negatives of network turbulence.
+#+BEGIN_EXAMPLE
+# Export docker image
+docker save ubuntu:14.04 > ubuntu_1404.tar.gz
+# Import docker image
+docker load -i ubuntu_1404.tar.gz
+#+END_EXAMPLE
+** What About Sensitive Files?
+** Wrap Up Everything As A Jenkins Job.
+Here comes Jenkins job ([[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/BuildAllDockerImages][BuildAllDockerImages]]). You can also find a live demo [[https://www.dennyzhang.com/demo_jenkins][here]].
+[[github:DennyZhang][GitHub]]
+
+[[image-github:https://github.com/dennyzhang][https://www.dennyzhang.com/wp-content/uploads/denny/github_BuildAllDockerImages_jenkins.png]]
+
+[1] https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/
+
+Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
+[display-posts tag="docker" posts_per_page="20"]
+* misc                                                             :noexport:
+** #  --8<-------------------------- separator ------------------------>8--
+** off-page SEO
+- twitter
+
+- find twitter users to @
+
+- reddit:
+
+- quora:
+
+- v2ex:
+** community discussion
+https://www.reddit.com/r/docker/comments/5esfs0/whats_your_experience_running_docker_in_docker/
+** similar pages
+
+https://github.com/dimorinny/dockerfile-testing
+https://www.reddit.com/r/docker/comments/5eyw0b/be_sure_in_your_docker_images/
+https://www.reddit.com/r/docker/comments/5eyw0b/be_sure_in_your_docker_images/

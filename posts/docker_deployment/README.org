@@ -1,0 +1,116 @@
+* 5 Tips For Building Docker Image                              :BLOG:Docker:
+  :PROPERTIES:
+  :type:     DevOps,Deployment,Docker,Popular
+  :END:
+---------------------------------------------------------------------
+No doubt container is a breakthrough technology in DevOps world. *How to effectively build and use docker image to speed up our deployment?* This would be important to in both our development and release cycle. Here are some our experience and sharing. Check it out, buddy!
+
+[[image-blog:Blind Wait][https://www.dennyzhang.com/wp-content/uploads/denny/docker_deployment.jpg]]
+---------------------------------------------------------------------
+Tips for building docker image, to better support our deployment:
+** 1 Cache Internet Download As Much As Possible
+
+Usually deployment need to download hundreds of MB data from the internet. Quite often, critical deployments may suffer from slow internet or disconnectivity issue.
+
+The more we cache, the faster the deployment would be. The ultimate goal is to support *offline all-in-one deployment* from the Docker image.
+** 2 Treat Docker Image As Plain OS Golden Image.
+I know Docker is powerful, but we also have lots of VM or bare metal deployment. To avoid vendor-lock issue, we usually need to support Deployment with or without Docker. It's better we enforce deployment CI for both scenarios.
+
+Here is an example, if you're using kitchen for CI. By default, we test with customized Docker image. When we specify IMAGE_NAME to ubuntu:14.04, we're confident the deployment would be fine for normal Ubuntu14.04 OS.
+#+BEGIN_EXAMPLE
+---
+driver:
+  name: docker
+driver_config:
+  instance_name: "all-in-one"
+  use_sudo: false
+  privileged: true
+  remove_images: false
+  image: <%= ENV.fetch('IMAGE_NAME', "denny/mydockertest:v1") %>
+#+END_EXAMPLE
+** 3 Audit All Packages And Services Installed In Docker Image
+Start a docker container from the image, then list and check all packages/services installed.
+
+For What? Firstly we want to keep the docker image as small as possible, so that image delivery will be fast. Secondly the more packages/services enabled, the more issues we will get, such as packages conflict, tcp ports occupied problem. Some services' post installation scripts would even change critical global config files or leave unexpected flagfiles. It's better we keep the docker image simple and stupid. [[https://www.dennyzhang.com/list_packages_install][Tip: List What Packages Were Installed In My Server]].
+** 4 Clean Shutdown All Services, At The End Of Docker Build
+If we don't do this, services will be killed at the end of docker image. Lockfiles of service under /var/lock/* may not be properly handled. As a result, when we test deployment from the new built image, service may fail to start, which result in invalid tests.
+** 5 Add Verification Steps To Double Confirm The Image
+When things are changed, we may need to rebuild docker image from time to time. To confirm everything is fine, we can add automatic verification logic in the docker build process.
+
+Here is a sample with all above practices applied.
+#+BEGIN_EXAMPLE
+########## How To Use Docker Image ###############
+##  docker run -t -d --privileged -p 8022:22 \
+##          denny/mydockertest:v1 /usr/sbin/sshd -D
+##
+##################################################
+
+FROM denny/sshd:v1
+MAINTAINER Deny <denny@dennyzhang.com>
+ARG devops_branch=master
+ARG working_dir=/root/chef
+##################################################
+# Install basic packages
+RUN apt-get -yqq update && \
+    apt-get -yqq install curl && \
+    apt-get -yqq install openssh-server && \
+    apt-get install -y sudo lsb-release && \
+    # Install chef
+    curl -L https://www.opscode.com/chef/install.sh | bash && \
+    # clean up files to make this docker layer smaller
+    rm -rf /var/chef/cache/*.plugin && \
+    rm -rf /usr/share/doc && \
+    apt-get clean && apt-get autoclean
+##################################################
+# checkout code
+RUN bash /root/git_update.sh ${working_dir} \
+    git@github.com:DennyZhang/chef_community_cookbooks.git \
+    ${devops_branch} && \
+    echo "cookbook_path [\"${working_dir}/${devops_branch}/mdmdevops/community_cookbooks\", \
+    \"${working_dir}/${devops_branch}/mdmdevops/cookbooks\"]" \
+    > /root/client.rb
+
+# Chef all-in-one deployment. This step takes minutes
+RUN echo "{\"run_list\": [\"recipe[all-in-one::predownload]\"]}" \
+    > /root/client.json && \
+    chef-solo --config /root/client.rb -j /root/client.json && \
+    # Clean up to make docker image smaller
+    rm -rf /tmp/* /var/tmp/* && \
+    rm -rf /var/chef/cache/jdk-*.tar.gz && \
+    rm -rf /var/chef/cache/*.plugin && \
+    rm -rf /usr/share/doc && \
+    apt-get clean && apt-get autoclean
+##################################################
+
+# Shutdown services
+RUN service couchbase-server stop || true && \
+    service elasticsearch stop || true && \
+    service nagios3 stop || true && \
+    service apache2 stop || true && \
+    service haproxy stop || true && \
+    service nagios-nrpe-server stop || true && \
+    rm -rf /run/apache2/apache2.pid && \
+    rm -rf /var/log/apache2/* && \
+    rm -rf /usr/local/var/run/vagrant_ubuntu_trusty_64.pid && \
+    rm -rf /root/docker.rb /root/docker.json
+
+# Verify docker image
+RUN test -f /var/chef/cache/couchbase-server-enterprise_4.1.0-ubuntu14.04_amd64.deb && \
+    test -f /var/chef/cache/elasticsearch-2.3.3.deb && \
+    test -f /etc/apt/sources.list.d/ruby2.1-repo.list && \
+    test -f /etc/apt/sources.list.d/haproxy-repo.list && \
+    dpkg -s haproxy | grep "1.6.5"
+
+# Clean up to make docker image smaller
+RUN rm -rf /tmp/* /var/tmp/* /var/chef/cache/jdk-*.tar.gz && \
+    rm -rf /var/chef/cache/*.plugin && \
+    rm -rf /usr/share/doc && \
+    apt-get clean && apt-get autoclean
+
+EXPOSE 22
+CMD ["/usr/sbin/sshd", "-D"]
+##################################################
+#+END_EXAMPLE
+
+Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
+[display-posts tag="docker" posts_per_page="20"]
