@@ -1,0 +1,142 @@
+* 4 Reasons Why SSH Connection Fails                             :BLOG:Linux:
+  :PROPERTIES:
+  :type:     DevOps,Tool,Security,Linux,SSH
+  :END:
+---------------------------------------------------------------------
+As DevOps or IT professionals, people may ask us why they can't ssh to servers. It happens from time to time. Isn't right? Not much fun. Just routine work.
+
+Want to ease the pain and burden? Let's examine common ssh failures together. *Next time forward this link to your colleagues, if useful*. People may be able to identify the root cause all by themselves, or be efficient in collecting all necessary information, before turning to us.
+
+[[image-blog:Why SSH Connection Failed][https://www.dennyzhang.com/wp-content/uploads/denny/ssh_failure.png]]
+---------------------------------------------------------------------
+It's not something fancy or difficult. Just not everyone posses enough information or experience about this. *As DevOpsers, we shouldn't stand in the way for any process*. Let's empower people with a simple and easy guide.
+
+Here are [[color:#c7254e][Common SSH Failures]] sorted by frequency.
+** 1. Our SSH Public Key Is Not Injected To Servers.
+SSH by password is very dangerous. Nowadays almost all serious servers will only accept ssh by key file. Here is the process:
+- We generate a ssh key pair. Even better, protect private key with [[https://www.dennyzhang.com/ssh_passphrase][passphrase]].
+- Send our ssh public key to the person who manages the servers.
+- He/She will inject our ssh public key their. Usually it's ~/.ssh/authorized_keys.
+- Then we should be able to ssh.
+
+Here comes the most frequent ssh failure!
+#+BEGIN_EXAMPLE
+denny@laptop:/# ssh root@www.dennyzhang.com
+Permission denied (publickey).
+#+END_EXAMPLE
+
+This error message may have 2 possible clauses:
+- The private key doesn't have the privilege to login.
+Either public key is not injected correctly or simply it's missing.
+
+[[color:#c7254e][Tips: If your Ops/DevOps are not available, you can try alternatives]]. Think who else in the team can ssh. In fact anyone who can ssh, is capable to perform the change.
+
+- Local ssh public key and private key is not correctly paired.
+
+Before connecting, ssh will check whether our public key and private key is correctly paired. *If not, it will reject to use the private key silently*. Yes, silently!
+
+You may wonder how could this happen? As humans we don't, but we may have some automation scripts which create the mess. BTW, if we only have a valid private key without public key, it's fine.
+** 2. Firewall Prevents Us From Connecting
+For security concern, people may enforce a strict firewall policy. It means only certain source IP can ssh.
+#+BEGIN_EXAMPLE
+denny@laptop:/# ssh root@www.dennyzhang.com
+ssh: connect to host www.dennyzhang.com port 22: Connection refused
+
+# Confirm with telnet. Usually it shall connect in seconds
+denny@laptop:/# telnet www.dennyzhang.com
+Trying 104.237.149.124...
+#+END_EXAMPLE
+
+You may want to fetch help immediately. *Just wait a second*.
+
+People may have reconfigured sshd to listen on other port. Are you sure it's port 22? Even better, double check the server ip or dns name.
+
+I know they might be stupid questions. [[color:#c7254e][But people make these mistakes sometimes]].
+
+Once it's confirmed, talk to your DevOps. There is another possible reason for this failure: *sshd is not up and running*. Very rare I would say. But could be. In that case, DevOps/Ops need to take actions immediately.
+** 3. Host Key Check Fails
+When you see below warning for the first time, you may get confused. To be simple, it helps us to avoid the attack of man-in-the-middle.
+#+BEGIN_EXAMPLE
+denny@laptop:/# ssh root@www.dennyzhang.com
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@       WARNING: POSSIBLE DNS SPOOFING DETECTED!          @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+The ECDSA host key for [www.dennyzhang.com]:22 has changed,
+and the key for the corresponding IP address [45.33.87.74]:22
+is unknown. This could either mean that
+DNS SPOOFING is happening or the IP address for the host
+and its host key have changed at the same time.
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!
+Someone could be eavesdropping on you right now (man-in-the-middle attack)!
+It is also possible that a host key has just been changed.
+The fingerprint for the ECDSA key sent by the remote host is
+37:df:b3:af:54:a3:57:05:aa:32:65:fc:a8:e7:f9:3a.
+Please contact your system administrator.
+Add correct host key in /root/.ssh/known_hosts to get rid of this message.
+Offending ECDSA key in /root/.ssh/known_hosts:2
+  remove with: ssh-keygen -f "/root/.ssh/known_hosts" -R [www.dennyzhang.com]:22
+ECDSA host key for [www.dennyzhang.com]:22 has changed and you have requested strict checking.
+Host key verification failed.
+#+END_EXAMPLE
+
+Each server can have a fingerprint. If the server is re-provisioned or simply a different server, the fingerprint would be different. Once we have successfully login, our laptop will save the server's fingerprint locally. Next time we login, it will do a comparison first. If the fingerprint doesn't match, we will see the warning.
+
+If we're confident it has been re-provisioned recently, we can ignore this warning. Remove the entry from *~/.ssh/known_hosts*. Or you can empty the file. Even turn off ssh host key checking for all hosts.[1] Certainly I would not recommend.
+** 4. Your SSH Key File Mode Issues
+As a self-protection, the file access of your ssh key file can't be widely open. The file mode should be either 0600 or 0400.
+#+BEGIN_EXAMPLE
+denny@laptop:/# ssh -i id_rsa root@www.dennyzhang.com
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Permissions 0644 for 'id_rsa' are too open.
+It is required that your private key files are NOT accessible by others.
+This private key will be ignored.
+bad permissions: ignore key: id_rsa
+Permission denied (publickey).
+#+END_EXAMPLE
+
+Use [[color:#c7254e][-v]] for verbose output: ssh -v $user@$server_ip.
+
+More Reading:
+- [[https://www.dennyzhang.com/ssh_passphrase][Manage SSH Key File With Passphrase]]
+- [[https://www.dennyzhang.com/linux_security][9 Useful Tips For Linux Server Security]]
+
+[1] http://www.shellhacks.com/en/HowTo-Disable-SSH-Host-Key-Checking
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/ssh_fail"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/ssh_fail
+
+* misc                                                             :noexport:
+** similar pages
+https://dzone.com/articles/password-less-ssh-access-for-automation
+http://superuser.com/questions/179522/why-ssh-connection-failed
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

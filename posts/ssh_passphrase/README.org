@@ -1,0 +1,124 @@
+* Manage SSH Key File With Passphrase                         :BLOG:Security:
+  :PROPERTIES:
+  :type:     DevOps,Tool,Security,Linux,SSH
+  :END:
+---------------------------------------------------------------------
+Any serious DevOps will only ssh by key file. Not with password, right? And mostly our powerful key file can unlock many critical envs. Have you ever uploaded your private key to other envs, like jumpbox? What if your key is magically stolen by hackers somehow?
+*Time to protect your sensitive ssh key by passphrase*. And live with it, headache-free.
+
+[[image-blog:Manage SSH Key File With Passphrase][https://www.dennyzhang.com/wp-content/uploads/denny/ssh-keys-passphrase.jpg]]
+---------------------------------------------------------------------
+Update Per Audience Feedback:
+- Thanks to [[http://www.linkedin.com/hp/update/6191826021843595264][Joshua Cornutt]]: When storing a private key on a server, I'd opt for a hardware option (HSM) since it's likely the key will need to be actively used and thus a passphrase can't be securely used (think automated use of a server-side private key) .
+
+---------------------------------------------------------------------
+
+[[color:#c7254e][Cheat Sheet]] for impatient users. Recommend to read this post through, even for experienced users.
+
+| Name                    | Summary                                  |
+|-------------------------+------------------------------------------|
+| Load key file           | ssh-add ~/.ssh/id_rsa                    |
+| Remove all loaded keys  | ssh-add -D                               |
+| Whether it's encrypted  | grep "ENCRYPTED" id_rsa                  |
+| Add/Change passphrase   | ssh-keygen -p -f id_dsa                  |
+| Remove passphrase       | ssh-keygen -p -P $passwd -N "" -f id_rsa |
+| Load key without prompt | Check link: here                         |
+** Add passphrase to existing ssh key
+We can easily use *ssh-keygen* to add passphrase. This certainly gives us extra security benefit. Next, what's the impact of this change?
+- You never use your private key other than your computer. Right? If yes, nothing you need to worry. One tiny difference: you might be asked to input the passphrase once. Check all loaded keys by _ssh-add -l_.
+- In some cases, we might use key files to do passwordless login in remote servers. For example, ssh tunnel for port forwarding, ssh from jumpbox to other machines, etc. Then we have to make sure the key file is correctly loaded and recognized. Run _ssh-add ./id_rsa_, then input passphrase manually. This also can be done automatically. We will explain it shortly.
+#+BEGIN_SRC sh
+# Change file mode to allow overwrite
+chmod 700 id_rsa
+
+# Add passphrase to key file
+ssh-keygen -p -f id_rsa
+
+# Denny-mac:.ssh mac$ ssh-keygen -p -f id_rsa
+# Key has comment 'id_rsa'
+# Enter new passphrase (empty for no passp...
+# Enter same passphrase again:
+# Your identification has been saved with ...
+#+END_SRC
+** Load protected ssh key without prompt
+Pity that ssh-add itself doesn't have native support for this[1]. Here is a workaround. A bit tricky, I admit.
+#+BEGIN_SRC sh
+# Specify your passphrase here
+export YOUR_PASSPHRASE="XXX"
+
+# Load protected key without prompt
+echo "echo $YOUR_PASSPHRASE" > /tmp/mypass
+chmod 700 /tmp/mypass
+cat id_rsa| SSH_ASKPASS=/tmp/mypass ssh-add -
+
+# Verify loaded certificate
+ssh-add -l
+#+END_SRC
+** Change passphrase for existing private key
+Run below command. You will be asked to input old passphrase and new one. If the key is not encrypted, just press enter in the terminal.
+#+BEGIN_SRC sh
+ssh-keygen -p -f ~/.ssh/id_dsa
+#+END_SRC
+** Remove passphrase
+Use openssl to remove passphrase.[2] You will need to manually input old passphrase.
+#+BEGIN_SRC sh
+openssl rsa -in id_rsa -out id_rsa_new
+#+END_SRC
+
+Same can be done by ssh-keygen.[3] The amazing part is no required human intervene. Totally automated.
+#+BEGIN_SRC sh
+ssh-keygen -p -P "$OLDPASS" -N "" -f id_rsa
+#+END_SRC
+
+More Reading: [[https://www.dennyzhang.com/export_mac_laptop][Reverse SSH Tunnel: Export Your Mac Laptop To The Internet]].
+
+[1] unix.stackexchange.com/questions/90853/how-can-i-run-ssh-add-automatically-without-password-prompt
+[2] www.thinkplexx.com/learn/howto/security/ssl/remove-passphrase-password-from-private-rsa-key
+[3] stackoverflow.com/questions/112396/how-do-i-remove-the-passphrase-for-the-ssh-key-without-having-to-create-a-new-ke
+
+#+BEGIN_EXPORT HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/ssh_passphrase"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_EXPORT
+
+Blog URL: https://www.dennyzhang.com/ssh_passphrase
+* misc                                                             :noexport:
+** TODO passphrase? password?
+** TODO github ssh key passphrase protection command line
+https://help.github.com/articles/working-with-ssh-key-passphrases/
+http://stackoverflow.com/questions/21095054/ssh-key-still-asking-for-password-and-passphrase
+http://jr0cket.co.uk/2012/12/password-protected-ssh-key-for-github.html.html
+https://opensourcehacker.com/2012/10/24/ssh-key-and-passwordless-login-basics-for-developers/
+** DONE ssh-add fail: Could not open a connection to your authentication agent.
+   CLOSED: [2016-11-14 Mon 16:31]
+http://stackoverflow.com/questions/17846529/could-not-open-a-connection-to-your-authentication-agent
+eval `ssh-agent -s`
+ssh-add
+
+#+BEGIN_EXAMPLE
+root@kitchen-mdm-feature-node3:/tmp# ssh-add /tmp/id_rsa
+Could not open a connection to your authentication agent.
+#+END_EXAMPLE
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

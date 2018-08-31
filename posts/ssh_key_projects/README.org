@@ -1,0 +1,194 @@
+* Avoid Using Same SSH Private Key For All Your Servers       :Security:
+  :PROPERTIES:
+  :type:     DevOps,Tool,Security,Linux,SSH
+  :END:
+---------------------------------------------------------------------
+The more projects you handle, the more servers you manage. But when you ssh to servers of different projects, are you using *the same private key*?
+*And how secured you feel about this?* Let's imagine. One day, your powerful private key gets compromised somehow. Boom! All your servers, and all your projects are in danger.
+
+Check out this post. And get improved for all your projects, in just five minutes!
+
+[[image-blog:Avoid Using Same SSH Private Key For All Your Servers][https://www.dennyzhang.com/wp-content/uploads/denny/ssh_private_key.png]]
+---------------------------------------------------------------------
+Update Per Audience Feedback:
+
+Thanks to [[https://www.dennyzhang.com/ssh_key_projects/#comment-3265872153][Pankaj Agarwal]]. He has raised a good question: If I use multiple ssh key files and one gets compromised, the rest of key files won't be secured neither.
+
+Well, most likely. But not necessarily.
+1. Some people might upload their ssh key files into jump box. This is certainly not a good practice, but it happens. If we use different keys, it helps.
+2. We can add [[https://www.dennyzhang.com/ssh_passphrase][passphrase protection for ssh key files]]. What's better, use different passphrases for different key files. Thus even if hackers take them all, we might still survive.
+
+---------------------------------------------------------------------
+
+There're many reasons to avoid using one ssh key for all. We need to [[color:#c7254e][reduce the attack surface]].
+
+Usually I use one ssh key for one project. Meanwhile I don't want to keep switching ssh key, when I work across projects. Here is what I usually do.
+*Step1: Generate Different SSH Key Pairs For Different Projects*.
+
+Using _ssh-keygen_, we can easily generate as many ssh key pairs as we need.
+
+Let's say we already have two key pairs for two projects: project1_id_rsa and project2_id_rsa.
+*Step2: Use Different Private Keys Selectively. But In An Easy Way!*
+
+[[color:#c7254e][Version 1.0]]: Manually specify a private key, when ssh to different servers.
+#+BEGIN_SRC sh
+# ssh to server in project1
+ssh -i project1_id_rsa user1@server1
+
+# ssh to server in project2
+ssh -i project2_id_rsa user2@server2
+#+END_SRC
+
+It works. But...
+
+Typing those extra characters thousands of time, it's not fun. And pointless.
+
+[[color:#c7254e][Version 2.0]]: Create alias in ~/.ssh/config, then ssh with alias.
+
+#+BEGIN_SRC sh
+# Server in project1
+host server1
+     HostName 104.237.153.156
+     StrictHostKeyChecking no
+     Port 22
+     User user1
+     IdentityFile /data/project1_id_rsa
+
+# Server in project2
+host server2
+     HostName 52.9.159.178
+     StrictHostKeyChecking no
+     Port 22
+     User user2
+     IdentityFile /data/project2_id_rsa
+#+END_SRC
+
+SSH with alias is quite easy and straight-forward.
+#+BEGIN_SRC sh
+# ssh to server in project1
+ssh server1
+
+# ssh to server in project2
+ssh server2
+#+END_SRC
+
+So are we good now? Hang on, my friend. Not yet.
+
+Let's say you have tens of, or hundreds of servers. You don't want to configure them one by one. Right?
+
+[[color:#c7254e][Version 3.0]]: Update ~/.ssh/config to load all ssh private keys. Simply put something like below to the top of your ~/.ssh/config.
+
+#+BEGIN_SRC sh
+# Load private key of project1
+IdentityFile /data//project1_id_rsa
+
+# Load private key of project2
+IdentityFile /data/project2_id_rsa
+#+END_SRC
+
+Now you can ssh like normal: "ssh user1@server1".
+*SSH will try with all your private keys one by one*. To confirm this, ssh with [[color:#c7254e][-vvv]] option.
+
+#+BEGIN_EXAMPLE
+# $ ssh -vvv user1@server1 date 2>&1 | grep "debug1: Offering RSA public key"
+#   debug1: Offering RSA public key: /data/.ssh/project1_id_rsa
+#   debug1: Offering RSA public key: /data/.ssh/project2_id_rsa
+#+END_EXAMPLE
+
+You can argue it will waste some time for the retry. Yes, it does. But it's fast enough, before we can even notice the difference.
+
+And ssh try the keys from top to bottom. We can put frequently used keys to the top. It will speed up a little bit.
+*Step3: [Optional] Secure Your SSH Private Key With Passphrase.*
+
+To make it better, add passphrase protection for your ssh private keys. Check this: [[https://www.dennyzhang.com/ssh_passphrase][Manage SSH Key File With Passphrase]].
+
+So now, why don't you have a try for the tips shared in this post?
+
+Please leave me comments, if you have any questions or feedbacks.
+
+And don't forget to share this post, if you find it might be useful for your friends or colleagues.
+
+Related Reading:
+- [[https://www.dennyzhang.com/ssh_fail][4 Reasons Why SSH Connection Fails]]
+- [[https://www.dennyzhang.com/export_mac_laptop][Reverse SSH Tunnel: Export Your Mac Laptop To The Internet]]
+- [[https://www.dennyzhang.com/process_execution][Linux Measure Process Execution Time, When Already Started]]
+- [[https://www.dennyzhang.com/linux_cp][Better cp Command, Before Changing Config Files Manually]]
+
+Image Credit: [[http://blakesmith.me/images/public_private_many.png/][blakesmith.me]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/ssh_key_projects"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/ssh_key_projects
+* misc                                                             :noexport:
+** TODO Avoid Using Same SSH Private Key For All Your Servers
+
+http://askubuntu.com/questions/1962/how-can-multiple-private-keys-be-used-with-ssh
+You can instruct ssh to try multiple keys in succession when connecting. Here's how:
+
+$ cat ~/.ssh/config
+IdentityFile ~/.ssh/id_rsa
+IdentityFile ~/.ssh/id_rsa_old
+IdentityFile ~/.ssh/id_ed25519
+# ... and so on
+
+$ ssh server.example.com -v
+....
+debug1: Next authentication method: publickey
+debug1: Trying private key: /home/example/.ssh/id_rsa
+debug1: read PEM private key done: type RSA
+debug1: Authentications that can continue: publickey
+debug1: Trying private key: /home/example/.ssh/id_rsa_old
+debug1: read PEM private key done: type RSA
+....
+[server ~]$
+
+http://stackoverflow.com/questions/2419566/best-way-to-use-multiple-ssh-private-keys-on-one-client
+
+ssh -p 2702 root@52.74.151.55 date
+
+ssh -i /Users/mac/Dropbox/private_data/emacs_stuff/backup_small/ssh_key/osc/az_ssh_key_id_rsa -p 2702 ubuntu@52.74.151.55 date
+
+ssh -p 2702 ubuntu@52.74.151.55 date
+ssh -p 2702 root@104.237.153.158 date
+
+IdentityFile /Users/mac/Dropbox/private_data/emacs_stuff/backup_small/ssh_key/osc/az_ssh_key_id_rsa
+IdentityFile /Users/mac/Dropbox/private_data/emacs_stuff/backup_small/ssh_key/github_id_rsa
+IdentityFile /Users/mac/Dropbox/private_data/emacs_stuff/backup_small/ssh_key/totvslabs/project_ssh_key_id_rsa
+*** 3 Principle using ssh key to access servers
+**** For servers of different projects, use different ssh key
+**** Protect your local ssh key with passphrase
+**** Avoid uploading your ssh key to servers, especially jumpbox server
+*** Common ways using ssh
+**** ssh -i <key location> login@server.example.com
+**** ~/.ssh/config
+*** Puzzle: Do you use one private/public key pair for each remote machine? Or a single pair for all?
+*** useful link
+http://stackoverflow.com/questions/2419566/best-way-to-use-multiple-ssh-private-keys-on-one-client
+https://security.stackexchange.com/questions/40050/what-is-the-best-practice-separate-ssh-key-per-host-and-user-vs-one-ssh-key-for
+http://serverfault.com/questions/80478/ssh-do-you-use-one-private-public-key-pair-for-each-remote-machine-or-a-single
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

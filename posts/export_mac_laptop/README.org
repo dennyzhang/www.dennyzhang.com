@@ -1,0 +1,188 @@
+* Reverse SSH Tunnel: Export Your Mac Laptop To The Internet      :BLOG:Tool:
+  :PROPERTIES:
+  :type:     DevOps,Popular,Startup,SSH
+  :END:
+---------------------------------------------------------------------
+Lots of professional programmers use Macs heavily in their daily work. Do you know we can easily export mac laptop to the internet? *Trusted people can access our laptop directly from anywhere*. Definitely for temporary use. It could be ssh operations or various web services.
+
+Here is *A Simple And Complete Guide* in 10 min. Share it, if you like it.
+
+[[image-blog:Reverse SSH Tunnel. Export Your Mac Laptop To The Internet][https://www.dennyzhang.com/wp-content/uploads/denny/mac_laptop.jpg]]
+---------------------------------------------------------------------
+Update Per Audience Feedback:
+- Thanks to [[https://www.linkedin.com/groups/6585254/6585254-6191239865645010946][Daniel Hopper]]: Try [[https://ngrok.com][ngrok,]] secure tunnels to localhost. Your traffic will go through ngrok's server. It may impose some network penalty. Use ngrok for a quick solution, as long as the latency and security satisfy you. Even if you're a frequent user of ngrok, I still recommend you to go over this post. It helps us to better understand the trick behind the scene.
+---------------------------------------------------------------------
+Let's say you're working remotely. And you need to share some of your work with your colleagues or clients. What you would do? Take screenshots with a lot of explanations? Start a EC2 instance, do the setup again and migrate your current work there? It takes money and time. Much extra time. Worse than that, it compromises our result. *What if we can easily export our laptops directly to the audience?*
+
+Here we just focus on Mac OS X. [[color:#c7254e][The same technique shall apply to all linux boxes]]. Theoretically speaking, it would work just fine for both Ubuntu and CentOS with some minor changes.
+
+[[image-blog:Reverse SSH Tunnel. Export Your Mac Laptop To The Internet][https://www.dennyzhang.com/wp-content/uploads/denny/mac_ssh_tunnel.png]]
+
+In below example, we try to achieve this:
+- Export *ssh service* of our mac laptop. Tech geeks are addicted to ssh. Right?
+- Export a *web service*. Here we use apache for instance. It is installed by default in Mac OS X.
+
+The main trick is [[color:#c7254e][ssh reverse tunnel]].
+** Preparation Before We Start
+- *A VM in public cloud*: We need a public IP to do the proxy. Don't worry, the resource overhead is very small.
+- *Root access of the VM*: Need this to configure sshd, and/or iptables.
+** 1. Configure Your Public VM
+- Make sure, sshd config file contains [[color:#c7254e][GatewayPorts clientspecified]].
+#+BEGIN_EXAMPLE
+# mac: vim /etc/sshd_config
+# Ubuntu/CentOS: vim /etc/ssh/sshd_conf
+#+END_EXAMPLE
+
+- If the VM has iptables enabled, make sure it allows incoming traffic for port 40062 and 8088.
+#+BEGIN_EXAMPLE
+# Use ufw for Ubuntu env
+ufw allow 40062/tcp
+ufw allow 8088/tcp
+
+# Or use iptables directly
+iptables -A INPUT -i eth0 -p tcp --dport 40062 -j ACCEPT
+iptables -A OUTPUT -o eth0 -p tcp --dport 40062 -j ACCEPT
+iptables -A INPUT -i eth0 -p tcp --dport 8088 -j ACCEPT
+iptables -A OUTPUT -o eth0 -p tcp --dport 8088 -j ACCEPT
+#+END_EXAMPLE
+
+We use 40062 to do ssh reverse tunnel, so that people can ssh to our laptop. About web services, we start apache in laptop. It listens on port 80. Then do port forwarding from 8088 to 80 in this VM.
+
+For better security, you only allow traffic from trusted source ip address.
+** 2. Enable SSH Service In Your Laptop
+For security concern, Mac OS doesn't enable ssh remote login. Let's turn it on: System Preferences -> Sharing -> Remote Login. Then verify by "__telnet localhost 22__".
+
+[[image-blog:Mac Enable remote login][https://www.dennyzhang.com/wp-content/uploads/denny/mac_remote_login.png]]
+** 3. Start SSH Reverse Tunnel In Your Laptop
+#+BEGIN_SRC sh
+# Replace below with your VM's public IP
+export vm_ip=YOUR_VM_IP
+
+# Perform ssh reverse tunnel
+# Parameters: -R(reverse tunnel), -4(ipv4)
+# Here we choose 40062 to do the tunnel.
+ssh -4 -v -p 22 -fN \
+-o "PubkeyAuthentication=yes" \
+-o "StrictHostKeyChecking=false" \
+-o "PasswordAuthentication=no" \
+-o "ServerAliveInterval 60" \
+-o "ServerAliveCountMax 3" \
+-R $vm_ip:40062:localhost:22 root@$vm_ip
+
+# Verify connection
+telnet $vm_ip 40062
+#+END_SRC
+*Show Time!* Run this: __ssh -p 40062 root@$vm_ip__ from any machine. Input root password of your laptop. Then people can ssh your laptop now!
+** 4. Export Website To The Internet
+We want to simulate how to export web services. Mac OS X preinstalls apache.
+
+Let's start apache in our laptop.
+#+BEGIN_SRC sh
+# Start apache service in mac
+sudo apachectl start
+
+# Verify apache works
+curl http://localhost
+#+END_SRC
+
+In VM, do ssh tunnel from $vm_ip:8088 to port 80 in our laptop.
+#+BEGIN_SRC sh
+# ssh tunnel for port forwarding
+ssh -v -N -p 40062 -f root@$vm_ip \
+-L *:8088:localhost:80 -n /bin/bash
+#+END_SRC
+
+In any other machines, visit http://$vm_ip:8088 in web browser.
+
+[[image-blog:Export Web service by ssh tunnel][https://www.dennyzhang.com/wp-content/uploads/denny/ssh_tunnel_apache.png]]
+** What If I Don't Need It Anymore
+- Disable Remote Login in system setting.
+- Simply kill process in your laptop, which runs ssh reverse tunnel.
+#+BEGIN_SRC sh
+# Find pid in mac
+ps -ef | grep 40062
+
+# Kill process. If it fails, use 'kill -9'
+kill $pid
+
+# Verify it's done
+
+ps -ef | grep 40062
+
+telnet $vm_ip 40062
+#+END_SRC
+** Use autossh To Handle SSH Connection Unstable Issue
+Quite natural, ssh connection may break up in our laptop. Network turbulence or the computer goes to idle or hibernate.
+
+autossh: Automatically restart SSH sessions and tunnels[1]. Let's do the auto connection by autossh[2].
+#+BEGIN_SRC sh
+# Install autossh
+brew install autossh
+
+# Verify installation
+which autossh
+#+END_SRC
+
+To take effect, let's make a small change in Step #2 of ssh reverse tunnel.
+
+From:
+#+BEGIN_SRC sh
+ssh -4 -v -p 22 -fN \
+-o "PubkeyAuthentication=yes" \
+-o "StrictHostKeyChecking=false" \
+-o "PasswordAuthentication=no" \
+-o "ServerAliveInterval 60" \
+-o "ServerAliveCountMax 3" \
+-R $vm_ip:40062:localhost:22 root@$vm_ip
+#+END_SRC
+
+# To:
+#+BEGIN_SRC sh
+autossh -M 40063 -4 -v -p 22 -fN \
+-o "PubkeyAuthentication=yes" \
+-o "StrictHostKeyChecking=false" \
+-o "PasswordAuthentication=no" \
+-o "ServerAliveInterval 60" \
+-o "ServerAliveCountMax 3" \
+-R $vm_ip:40062:localhost:22 root@$vm_ip
+#+END_SRC
+
+Make sure:
+- Your VM won't block the traffic of port 40063.
+- You can ssh to VM by key file, without typing password in the terminal.
+
+Let's verify the change, by __telnet $vm_ip 40062__.
+
+[1] http://www.harding.motd.ca/autossh/
+[2] www.everythingcli.org/ssh-tunnelling-for-fun-and-profit-autossh/
+
+More Reading: [[https://www.dennyzhang.com/deploy_by_git][Deploy Your Static Or Dynamic Websites Using Git In Public Cloud]].
+
+#+BEGIN_EXPORT HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/export_mac_laptop"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_EXPORT
+
+Blog URL: https://www.dennyzhang.com/export_mac_laptop
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
