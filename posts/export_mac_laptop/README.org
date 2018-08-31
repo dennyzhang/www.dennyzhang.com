@@ -158,7 +158,7 @@ Let's verify the change, by __telnet $vm_ip 40062__.
 
 More Reading: [[https://www.dennyzhang.com/deploy_by_git][Deploy Your Static Or Dynamic Websites Using Git In Public Cloud]].
 
-#+BEGIN_EXPORT HTML
+#+BEGIN_HTML
 <a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/export_mac_laptop"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 
 <div id="the whole thing" style="overflow: hidden;">
@@ -169,7 +169,7 @@ More Reading: [[https://www.dennyzhang.com/deploy_by_git][Deploy Your Static Or 
 
 <br/><br/>
 <a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
-#+END_EXPORT
+#+END_HTML
 
 Blog URL: https://www.dennyzhang.com/export_mac_laptop
 * org-mode configuration                                           :noexport:

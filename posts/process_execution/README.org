@@ -1,0 +1,135 @@
+* Linux measure process execution time, when already started     :BLOG:Linux:
+:PROPERTIES:
+:type:   DevOps,Linux,Operate
+:END:
+---------------------------------------------------------------------
+Say you have issued a command in your servers. Typically the command might either backup something or perform a critical hot fix.
+
+Surely you know the start time of the process. But when it will end? *How can you find the execution time*, when the process has already been started?
+
+[[image-blog:Linux measure the execution time of a running process][https://www.dennyzhang.com/wp-content/uploads/denny/stopwatch.png]]
+---------------------------------------------------------------------
+*Getting the start time of a running process is easy*. Either use _ps_ cli or query /proc filesystem directly.
+
+- Query start time via ps command line. [1]
+#+BEGIN_SRC sh
+# Show process start time by pid
+ps -o lstart= -p $pid
+
+# Show process start time, cmd by pid.
+ps -o lstart,cmd $pid
+#+END_SRC
+
+- Query start time via /proc file system directly. [2]
+#+BEGIN_EXAMPLE
+awk '{print "CPU time: " $14+$15; print "start time: " $22}' \
+  /proc/$pid/stat
+#+END_EXAMPLE
+
+Getting the process execution time is also easy, if we can control how it is started. Simply use [[color:#c7254e][time $command]]. [3]
+
+Wrap the command by adding _time_ as a prefix. Super easy. Isn't it?
+#+BEGIN_EXAMPLE
+time cp /etc/hosts /tmp/
+# real    0m0.004s
+# user    0m0.000s
+# sys     0m0.000s
+#+END_EXAMPLE
+
+But what if you have forgotten to add the time prefix somehow? However unfortunately you have no estimation of when it will finish. *How can you still get the execution time, while the process is already running?*
+
+Well, you can certainly keep watching the screen, and figure it out sooner or later. A pro wouldn't do that. Pretty boring and a waste of time!
+
+Check below commands.
+- As most linux users, we all know the *watch* command, right?
+- And *tee* command might be less well-known. It reads from standard input, and writes to both standard output and files.
+
+#+BEGIN_EXAMPLE
+# Record process start time to a log file
+ps -o lstart= -p $pid > /tmp/watch_process_$pid.log
+
+# Check process every 2 seconds, using watch command.
+# When process is running, record current time to log file
+watch "ps -o lstart= -p $pid && \
+  (date | tee -a /tmp/watch_process_$pid.log)"
+#+END_EXAMPLE
+
+From the logfile, we can get:
+- The process starting time from the first entry of the log file.
+- The ending time from the last entry of the log file.
+
+Why? if the process has finished, the ps command will fail, and the following clauses will be skipped. So with this method, we can monitor any existing process. Sounds great, doesn't it?
+
+[[color:#c7254e][Any further improvement?]]
+*Get a timely notification, when the process ends*. The process could has been finished for several hours, before you even remember to login and check the status via logfile.
+
+Let's say you have wrapped up send_alert.sh. This script will send alerts properly. Make a slight change, and you will get alerts properly.
+
+Then we're all set!
+#+BEGIN_EXAMPLE
+# Record process start time to a log file
+ps -o lstart= -p $pid > /tmp/watch_process_$pid.log
+
+# Check process every 2 seconds, using watch command.
+# When process is running, record current time to log file.
+# When process has finished, send_alert.sh will be executed.
+watch "(ps -o lstart= -p $pid || (send_alert.sh && false)) \
+  && date | tee -a /tmp/watch_process_$pid.log"
+#+END_EXAMPLE
+
+[1] www.cyberciti.biz/faq/how-to-check-how-long-a-process-has-been-running/
+[2] unix.stackexchange.com/questions/7870/how-to-check-how-long-a-process-has-been-running/7871
+[3] stackoverflow.com/questions/385408/get-program-execution-time-in-the-shell
+
+Image Credit: [[http://target.scene7.com/is/image/Target/50343146?wid=450&hei=450&fmt=pjpeg][target.com]]
+
+More Reading:
+- [[https://www.dennyzhang.com/linux_cp][Better cp Command, Before Changing Config Files Manually]]
+- [[https://www.dennyzhang.com/track_change_history][Automatically Track All Change History]]
+
+#+BEGIN_EXPORT HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/process_execution"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_EXPORT
+
+Blog URL: https://www.dennyzhang.com/process_execution
+* misc                                                             :noexport:
+** off-page SEO
+- twitter
+
+- find twitter users to @
+
+- reddit:
+
+- quora:
+
+- v2ex:
+** community discussion
+** similar pages
+http://askubuntu.com/questions/53444/how-can-i-measure-the-execution-time-of-a-terminal-process/53446
+** TODO get process start time from /proc
+http://stackoverflow.com/questions/5731234/how-to-get-the-start-time-of-a-long-running-linux-process
+http://linuxcommando.blogspot.com/2008/09/how-to-get-process-start-date-and-time.html
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

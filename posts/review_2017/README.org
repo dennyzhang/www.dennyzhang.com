@@ -1,0 +1,112 @@
+* My Yearly Review: Denny In 2017                                 :BLOG:life:
+:PROPERTIES:
+:type:   life
+:END:
+---------------------------------------------------------------------
+Today is the last day of 2017. And I will be turning to my 35 in 2018. I can't believe it.
+
+[[color:#c7254e][How Time Flies!!]]
+
+[[image-blog:My Yearly Review: Denny In 2017][https://cdn.dennyzhang.com/images/blog/life/denny_2017_review.png]]
+
+Here comes my yearly review for 2017. What about yours?
+---------------------------------------------------------------------
+Achievements:
+1. Doing pretty well in *LinkedIn Engagement*. Initiated and involved in many interesting discussions and [[url-external:https://www.linkedin.com/feed/update/urn:li:activity:6339325111232974848][talented friends]]. Thanks!
+- Know how to learn and share *publicly*; and grow tech influence in an *organic* way. e.g, do daily today-review in Slack, subject study in [[https://www.dennyzhang.com/battle][GitHub]].
+- Started to *admit my weakness*, and live with it. Yes, I'm not smart. And I don't remember details that well. That's fine. It's me. It's who I am.
+- Forming the habit of *reading books*. Even if reading for nothing, it gives me peace inside. Roughly ~5 hours per week. Not bad, isn't it?
+  
+Opportunities:
+1. Need to publish *more* and *useful* blog posts. In 2017, I only published ~1 post per month.
+2. *Try* new things as many as possible. [[url-external:https://www.linkedin.com/in/pradipta-dash-a4091127/][Pradipta Dash]] inspires me a lot.
+3. *Meet* more talented friends physically or in google hangout. Glad to build a strong connection with [[url-external:https://www.linkedin.com/in/jonathan-mcallister-3789205/][Jonathan McAllister]]. He is a brave fighter by-heart.
+
+Life:
+1. Pay more attention to my health. Do 50 press-up at least. Jogging for 30 minutes per day. Let's start from this.
+- Spend more quality time with my parent and relatives. Unfortunately my father got a cancer this year. He is doing much better now. I definitely need to engage more in our family events.
+- Be prepared to be a good father. We're expecting to have a baby. Both my wife and I have a very busy professional job. It would be a tough journey. Hope we both can enjoy it.
+
+Statistics
+| Key Metrics      | 2016/12/31      | 2017/12/31 |
+| [[url-external:https://www.linkedin.com/in/dennyzhang001][LinkedIn]]         | 5K Followers    |      21.5K |
+| [[https://www.dennyzhang.com/slack][DevOps Slack]]     | 0 Members       |        910 |
+| [[url-external:https://github.com/dennyzhang][GitHub]]           | 83 Followers    |        226 |
+| [[https://www.dennyzhang.com/][Blog Posts]]       | 82              |         94 |
+| [[url-external:http://us8.campaign-archive1.com/home/?u=91be09f7497c00c729049e650&id=bd99597fd9][Newsletter]]       | 310 Subscribers |        392 |
+| [[url-external:https://feedly.com/i/subscription/feed/http://www.dennyzhang.com/feed/][Feedly]]           | 17 Subscribers  |         29 |
+| [[url-external:https://www.alexa.com/siteinfo/dennyzhang.com][Search Traffic]]   | 13.0%           |     39.30% |
+| [[url-external:https://www.alexa.com/siteinfo/dennyzhang.com][Session Duration]] | 00:01:45        |   00:02:22 |
+| [[url-external:https://www.alexa.com/siteinfo/dennyzhang.com][Bounce Rate]]      | 64.69%          |     57.10% |
+| [[url-external:https://www.alexa.com/siteinfo/dennyzhang.com][Blog PV]]          | 1.87            |        2.4 |
+| [[url-external:https://www.alexa.com/siteinfo/dennyzhang.com][Alexa Ranking]]    | 1,485,542       |  2,531,763 |
+
+So much for my yearly review. How about your? Ping me in [[url-external:https://www.linkedin.com/in/dennyzhang001/][LinkedIn]] or [[https://www.dennyzhang.com/slack][Slack]].
+
+And wish you have a wonderful year in the coming 2018!
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/review_2017"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/review_2017
+* misc                                                             :noexport:
+** [#A] Blog fact                                        :noexport:Important:
+- email list: For a beginner, a good rule of thumb is one dollar per subscriber per month.
+- a sidebar offer only converts 0.5% of new visitors to subscribers.
+- Feature Box may convert 5% of new visitors to subscribers.
+- Blacklinks should be over 250+: [[http://www.alexa.com/siteinfo/everythingsysadmin.com][Sample]].
+*** useful link                                                    :noexport:
+http://www.webkaka.com/blog/archives/williamlong-blog-traffic-and-income.html
+*** TODO Pricing and Revenue facts
+*** When a self-published author sells an ebook for $4.99, they make $3.25.
+
+Self-publishing will continue to grow because the economic model is so
+much better for authors. When a self-published author sells an ebook
+for $4.99, they make $3.25. When a traditionally published author
+sells an ebook for the same price, they make $1.25. Now that the
+technology exists to give self-published authors the same access to
+the market as traditionally published authors, there's little
+incentive to go with traditional publishing, except for the few
+markets that are still channel driven, such as children's books and
+middle-grade novels.
+
+https://puppet.com/blog/meet-william-hertling-author-of-kill-process-and-more
+** Most popular posts and lesson learned                           :noexport:
+- Need Organic way to grow your SNS fans
+- Jaw-dropping content is the king.
+*** What's good
+Learn technical stuff
+- Link builder matters
+- Grow gradually in all aspects
+- Don't be nosiy and spam people
+*** What suprises me
+- Bad in Twitter, and do well in Linkedin
+- blog posts won't go viral
+*** What's bad
+- Related reading for your competitors: On top of your topic and be an expert
+- No much engements:
+  Blog comments, Email mail list, twitter
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

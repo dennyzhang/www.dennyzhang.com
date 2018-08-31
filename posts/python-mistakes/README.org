@@ -1,0 +1,161 @@
+* My Common Python Coding Mistakes                            :BLOG:Language:
+  :PROPERTIES:
+  :type:     python, language
+  :END:
+---------------------------------------------------------------------
+My common mistakes when solving code problems.
+
+Trying to write more bug-free code, if I can. LOL
+
+[[image-blog:My Common Python Coding Mistakes][https://raw.githubusercontent.com/DennyZhang/images/master/blog/python_logo.jpg]]
+---------------------------------------------------------------------
+Similar Posts:
+- [[https://brain.dennyzhang.com/review-python][Summary Of My Python Sharing]]
+- [[https://brain.dennyzhang.com/review-python3][Incompatible Changes From Python2 to Python3]]
+- GitHub from Denny: [[url-external:https://github.com/dennyzhang/cheatsheet-python-A4][cheatsheet-python-A4]]
+- [[https://brain.dennyzhang.com/tag/python][Tag: #python]]
+---------------------------------------------------------------------
+[[color:#c7254e][Common Mistakes:]]
+- Typo issue: used a wrong variable
+---------------------------------------------------------------------
+- Use a wrong function name
+
+ERROR:
+#+BEGIN_SRC python
+if s[left].lower() == s[right].lower:
+    left, right = left+1, right-1
+#+END_SRC
+
+OK:
+#+BEGIN_SRC python
+if s[left].lower() == s[right].lower():
+    left, right = left+1, right-1
+#+END_SRC
+---------------------------------------------------------------------
+- Initialize an array by reference
+#+BEGIN_SRC python
+#!/usr/bin/env python
+dp = [{}]*(3)
+dp[0] = {0:1}
+
+dp[1][1] = 1
+print(dp[2][1]) # which one you will get? 1 or None?
+
+dp[1] == dp[2]
+#+END_SRC
+---------------------------------------------------------------------
+- Syntax error for Key data structures.
+#+BEGIN_SRC python
+# set/collection
+set1.append() # error
+set1.add() # ok
+#+END_SRC
+
+#+BEGIN_SRC python
+# list
+l = l.sort() # unexpected
+sorted(l) # in-place change or generate a new list?
+#+END_SRC
+
+#+BEGIN_SRC python
+# array
+array1.push() # ok
+array1.pop(1) # ok
+array1.pop() # error
+#+END_SRC
+
+#+BEGIN_SRC python
+# string
+str[2:4] = 'ab' # error. Can't change string
+#+END_SRC
+- Forget to add [[color:#c7254e][this.]] decorator for class function members.
+#+BEGIN_SRC python
+# From:
+self.ch = self.string[index]
+
+# To:
+self.ch = self.string[self.index]
+
+# Errmsg: UnboundLocalError: local variable 'index' referenced before assignment
+#+END_SRC
+---------------------------------------------------------------------
+- array index: For l[left:right], the right element is not excluded.
+- Cornder case: Forgot to process the initial state.
+---------------------------------------------------------------------
+- Transfer by value vs by reference: [[https://brain.dennyzhang.com/design-twitter][Design Twitter]]
+ERROR:
+#+BEGIN_SRC python
+## Blog link: https://brain.dennyzhang.com/design-twitter
+def getNewsFeed(self, userId):
+        l = self.tweet_dict[userId]
+        for followee in self.follow_dict[userId]:
+            l += self.tweet_dict[followee]
+        l.sort(reverse=True) 
+        return l[0:10]
+#+END_SRC
+
+OK:
+#+BEGIN_SRC python
+## Blog link: https://brain.dennyzhang.com/design-twitter
+def getNewsFeed(self, userId):
+        l = copy.deepcopy(self.tweet_dict[userId])
+        for followee in self.follow_dict[userId]:
+            l += self.tweet_dict[followee]
+        l.sort(reverse=True) 
+        return l[0:10]
+#+END_SRC
+---------------------------------------------------------------------
+- Adding to set, we will remove duplicate; Meanwhile adding to list, we will keep the duplicate
+
+Error:
+#+BEGIN_SRC python
+## Blog link: https://brain.dennyzhang.com/design-snake-game
+if len(self.foods) == 0 or [x2, y2] != self.foods[0]:
+    self.snake_points_set.add((x2, y2))
+    self.snake_points.append((x2, y2))
+
+    self.snake_points_set.remove(self.snake_points[0])
+    self.snake_points.popleft()
+    return self.food_index
+#+END_SRC
+
+OK:
+#+BEGIN_SRC python
+if len(self.foods) == 0 or [x2, y2] != self.foods[0]:
+    first_point = self.snake_points.popleft()
+    self.snake_points.append((x2, y2))
+
+    self.snake_points_set.add((x2, y2))
+    self.snake_points_set.remove(first_point)
+    return self.food_index
+#+END_SRC
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/python-mistakes"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/python-mistakes
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

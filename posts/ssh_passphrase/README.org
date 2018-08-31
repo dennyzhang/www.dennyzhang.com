@@ -76,7 +76,7 @@ More Reading: [[https://www.dennyzhang.com/export_mac_laptop][Reverse SSH Tunnel
 [2] www.thinkplexx.com/learn/howto/security/ssl/remove-passphrase-password-from-private-rsa-key
 [3] stackoverflow.com/questions/112396/how-do-i-remove-the-passphrase-for-the-ssh-key-without-having-to-create-a-new-ke
 
-#+BEGIN_EXPORT HTML
+#+BEGIN_HTML
 <a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/ssh_passphrase"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 
 <div id="the whole thing" style="overflow: hidden;">
@@ -87,7 +87,7 @@ More Reading: [[https://www.dennyzhang.com/export_mac_laptop][Reverse SSH Tunnel
 
 <br/><br/>
 <a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
-#+END_EXPORT
+#+END_HTML
 
 Blog URL: https://www.dennyzhang.com/ssh_passphrase
 * misc                                                             :noexport:

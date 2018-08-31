@@ -1,0 +1,98 @@
+* Favorite Personal Applications To Improve Your DevOps Productivity :BLOG:Life:
+:PROPERTIES:
+:type:     DevOps,Life,Recommend
+:END:
+---------------------------------------------------------------------
+DevOpsers, which personal applications do you use most frequently? *Here are my favorite applications, as a DevOps professional*.
+
+Check it out. Oh, yes. Please share your preference with me!
+
+[[image-blog:Favorite Applications For My DevOps Work][https://www.dennyzhang.com/wp-content/uploads/denny/devops_tools.png]]
+---------------------------------------------------------------------
+There are tons of tools for DevOps work. Like Chef, puppet, Jenkins, Docker, Vagrant, etc. Definitely an endless list!
+
+Here we only talk about tools for personal use. They shall *dramatically improve our productivity*, as DevOps professionals. Below are my favorite ones. Let me know yours!
+
+- *Comfortable laptop*. I live happily with mac air 13-inch [1] + Linode. This mac air only costs me about $1100, and the battery lasts for 6-8 hours. One mistake I shall admit. It only has 128 GB SSD. I should buy 256GB!
+
+[[image-blog:Favorite Applications For My DevOps Work][https://www.dennyzhang.com/wp-content/uploads/denny/mac_13_inch.png]]
+
+Working in a moving environment, I do most of my work in the cloud. With a monthly payment of $10 in [[https://www.linode.com/?r=e4825280de70fda18185c3cce1b92ca868bc5759][Linode]], I get a reliable VM with 2GB RAM. Also a public IP, which is tremendously helpful for trouble shooting. (Tips: export your laptop to the Internet easily like [[https://www.dennyzhang.com/export_mac_laptop][this]]).
+
+[[image-blog:Favorite Applications For My DevOps Work][https://www.dennyzhang.com/wp-content/uploads/denny/linode_vps_small.png]]
+
+Note: previously I was using DigitalOcean, now I've switched to Linode. Here is [[https://www.dennyzhang.com/vps_linode][why]].
+
+- *Local knowledgebase*. In daily DevOps work, we may run into same issues quite often. *Emacs Org-mode* is the King to build up a powerful local KnowledgeBase. I spend almost 2 months learning how to use it. Yes, 2 months! To use Org-mode, we have to get familiar with [[https://www.dennyzhang.com/mytest][emacs]] first. It's not a pleasant experience, or I shall say struggling. However I'm very proud to say it's [[color:#c7254e][the most important skill]] I have learned in my whole life.
+
+[[image-blog:Favorite Applications For My DevOps Work][https://www.dennyzhang.com/wp-content/uploads/denny/emacs-org-mode.png]]
+
+Can you believe that? *Every sentence of this blog is created and updated via emacs org-mode*. Now I can share anything I've learned in a user-friendly format. And I only takes less than *5 seconds*!
+
+- *Safe and automatic backup*. Always be prepared for your computer crash at a bad time. I use *Dropbox + Local git repo*. I keep my core data as minimum as possible. Currently it's only 400MB, which includes almost everything I've learned in the past 10 years! Then I create a local git repo for this, which gives me version support.
+
+[[image-blog:Favorite Applications For My DevOps Work][https://www.dennyzhang.com/wp-content/uploads/denny/dropbox_icon.png]]
+
+Any unrecoverable data is protected by Dropbox. My total size is 3GB.
+
+- *Quick test*. Previously I use Vagrant a lot for local test, now I switch to *Docker*. Guess you're the same, right?
+
+- *Draw diagrams*. I want to be professional in documentation. Omnigraffle [2] is quite efficient to draw various diagrams. You may notice that in multiple blog posts. [[https://www.dennyzhang.com/demo_jenkins][example1]], [[https://www.dennyzhang.com/process_foreground][exmaple2]].
+
+[[image-blog:Favorite Applications For My DevOps Work][https://www.dennyzhang.com/wp-content/uploads/denny/omnigraffle_logo.png]]
+
+Yes, it costs almost $100. But it saves a lot of troubles and it's way better than tools like Microsoft Visio.[3]
+- *Easy and fast monitoring*. For any critical envs, I will setup an external monitoring by *Uptimerobot.com*.[4]
+
+[[image-blog:Favorite Applications For My DevOps Work][https://www.dennyzhang.com/wp-content/uploads/denny/uptimerobot.png]]
+
+It's totally free. And I use it for http url and tcp port check.
+- *WebOps and Integration*. Here I choose *Jenkins*.
+
+[[image-blog:Favorite Applications For My DevOps Work][https://www.dennyzhang.com/wp-content/uploads/denny/jenkins_icon.png]]
+
+Routine tasks in my daily life will be wrapped up as Jenkins jobs. The GUI operation is usually easier and help me to track the running history.
+
+- *Personal Email account*. If you're doing any consultant work, I would suggest you use emails with your own domain. Currently I'm actively using *@dennyzhang.com to communicate with my clients or sales leads.
+
+[[image-blog:Favorite Applications For My DevOps Work][https://www.dennyzhang.com/wp-content/uploads/denny/mail_zoho.png]]
+
+Try ZOHO mail.[5] We can create 25 mail accounts for free! It's pretty reliable, according to my experience.
+
+[[color:#c7254e][Your input, please]].
+
+[1] http://www.apple.com/macbook-air/
+[2] https://www.omnigroup.com/omnigraffle
+[3] https://products.office.com/en-us/visio/flowchart-software
+[4] https://uptimerobot.com
+[5] https://www.zoho.com/mail/
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/devops_tools"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/devops_tools
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

@@ -1,0 +1,200 @@
+* Better cp Command, Before Changing Config Files Manually       :BLOG:Linux:
+:PROPERTIES:
+:type:   DevOps,Linux,Operate
+:END:
+---------------------------------------------------------------------
+People might manually change critical config files in servers occasionally. For example, /etc/hosts, /etc/hostname, etc.
+
+As an experienced operator, you will remember to backup, before making any changes. Right? What would you do? [[color:#c7254e][cp /etc/hosts /etc/hosts.bak]].
+
+But is that good enough?
+
+[[image-blog:Backup Config Files Before Manual Changes][https://www.dennyzhang.com/wp-content/uploads/denny/standard_copy.jpg]]
+---------------------------------------------------------------------
+[[color:#c7254e][Rule #1: Manual Changes Are Troublesome.]]
+
+Try our best to avoid them. Use configuration management tools if possible. Chef, Puppet, Ansible, whatever. (Related Reading: [[https://www.dennyzhang.com/track_change_history][Automatically Track All Change History]])
+
+Back to the earth. You might still want to change files directly in some cases. Yes, I totally understand. Quick fix in non-critical envs. Test some stuff in local dev envs.
+** Version 1: Normal way
+People usually backup like below.
+#+BEGIN_SRC sh
+# Simple backup
+cp /etc/hosts /etc/hosts.bak
+
+# Or a shorter command
+cp /etc/hosts{,.bak}
+#+END_SRC
+
+What are the potential problems?
+*Issue: Backup will be overwrite, if we re-run the cp command.*
+
+Most of the time, we will change files more than once. Yes, whenever we run cp command, we will get a new backup. However we will lose the previous backup(s).
+
+So we only have the backup of intermediate versions. No way to go back to the state of the very beginning!
+** Version 2: Avoid overwrite previous backup
+To avoid overwrite, we can add timestamp to the cp command:
+#+BEGIN_SRC sh
+cp /etc/hosts \
+  /etc/hosts_$(date +'%Y-%m-%d_%H%M%S')
+#+END_SRC
+
+What now? *Issue: garbage files of old backup in the servers*.
+
+Whenever we make a change, we literally generate a new "garbage" file. This will occupy disk capacity. Furthermore it might confuse our colleagues or even ourselves. We need to be careful to clear up those files.
+** Version 3: Reclaim disk from old backup
+Move backup files to a centralized directory. Then we can easily remove old backup or enforce data retention.
+#+BEGIN_EXAMPLE
+cp /etc/hosts \
+ /data/backup/hosts_$(date +'%Y-%m-%d_%H%M%S')
+#+END_EXAMPLE
+
+Looks perfect? Not yet.
+*Issue: Hard to tell the original location of the backup*. We've lost the directory hierarchy.
+** Version 4: Keep directory hierarchy of original files
+Okay, our copy command looks better.
+
+#+BEGIN_EXAMPLE
+cp /etc/hosts \
+ /data/backup/etc/hosts_$(date +'%Y-%m-%d_%H%M%S')
+#+END_EXAMPLE
+
+One more improvement.
+
+When we backup different files, we need to type too many stuff. Isn't it?
+** Version 5: Use bash alias for fast input
+We can define a bash alias. Then use it like below.
+#+BEGIN_SRC sh
+# sample: backup file
+mybackup /etc/hosts
+
+# sample: backup directory
+mybackup /etc/apache2
+#+END_SRC
+
+Here is how.
+- Step 1: Create /etc/profile.d/mybackup.sh with below content
+#+BEGIN_EXAMPLE
+#!/bin/bash -e
+mybackup() {
+    src_file=${1?"What files to backup"}
+
+    # get default value from environment variable
+    if [ -n "$BAK_ROOT_DIR" ]; then
+        bak_root_dir="$BAK_ROOT_DIR"
+    else
+        bak_root_dir="/data/backup"
+    fi
+
+    parent_dir=$(dirname "$src_file")
+    short_fname=$(basename "$src_file")
+    date="$(date +'%Y%m%d.%H%M%S')"
+    bak_dir="${bak_root_dir}$parent_dir"
+    if [ -f "$src_file" ]; then
+        mkdir -p "$bak_dir"
+        echo "cp $src_file ${bak_dir}/${short_fname}-${date}"
+        cp "$src_file" "${bak_dir}/${short_fname}-${date}"
+    elif [ -d "$src_file" ]; then
+        mkdir -p "$bak_dir-${short_fname}-${date}"
+        echo "cp -r $src_file $bak_dir-${short_fname}-${date}"
+        cp -r "$src_file" "$bak_dir-${short_fname}-${date}"
+    else
+        echo "Error: $src_file doesn't exist"
+        exit 1
+    fi
+}
+#+END_EXAMPLE
+
+- Step 2: Install bash alias
+#+BEGIN_SRC sh
+# install bash
+chmod 755 /etc/profile.d/mybackup.sh
+source /etc/profile
+
+# create destination directory
+mkdir -p /data/backup
+#+END_SRC
+
+- Step 3: Try it. And have fun!
+#+BEGIN_SRC sh
+source /etc/profile
+
+# sample: backup file
+mybackup /etc/hosts
+
+# sample: backup directory
+mybackup /etc/apache2
+
+# check backup files.
+# Install tree package, if missing
+tree /data/backup
+#+END_SRC
+** Beyond cp command
+To avoid mess up config files, here are some alternatives of cp:
+1. Replace manual changes with configuration management tools.
+- Upload backup to remote server. If your files are not mission critical, you can try [[https://www.dennyzhang.com/transfer_cli][transfer.sh]]. With one curl command, you get a safe http download link.
+- Use source control. For example, create a local git repo, create hard link of critical files/directories, then git commit. etckeeper is an nice wrapper of this mechanism.[1]
+- Use inotify to subscribe filesystem events of change/create/delete/etc.[2]
+
+[1] unix.stackexchange.com/questions/16917/best-practice-to-backup-config-files
+[2] http://inotify.aiken.cz/?section=incron&page=about&lang=en
+
+Image Credit: [[http://hqsp.info/copy-paste-page/][HQSP]]
+
+More Reading:
+- [[https://www.dennyzhang.com/track_change_history][Automatically Track All Change History]]
+- [[https://www.dennyzhang.com/transfer_cli][transfer.sh: Command Line To Share Files Across The Internet]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/linux_cp"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/linux_cp
+* misc                                                             :noexport:
+** more tips: use diff                                             :noexport:
+Use diff to understand the changeset
+
+diff -q /etc/systemd/system.conf system.conf.org
+diff compares two files, -q produces a brief output
+** use transfer.sh: https://transfer.sh                            :noexport:
+** off-page SEO
+- twitter
+
+- find twitter users to @
+
+- reddit:
+
+- quora:
+
+- v2ex:
+** community discussion
+** similar pages
+linux backup config file before change
+http://stackoverflow.com/questions/3797660/linux-automatic-backup-on-save-of-changed-file
+https://ubuntu-mate.community/t/how-to-manually-backup-your-config-files/6370
+http://unix.stackexchange.com/questions/16917/best-practice-to-backup-config-files
+http://www.howtogeek.com/194342/how-to-back-up-and-migrate-your-linux-configuration-files/
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

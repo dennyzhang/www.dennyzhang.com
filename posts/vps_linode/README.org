@@ -1,0 +1,81 @@
+* Cheap VPS: Try Linode For Your Side Projects                    :BLOG:Tool:
+:PROPERTIES:
+:type:   DevOps,Shell,Recommend,Popular,Startup,Selling
+:END:
+---------------------------------------------------------------------
+DigitalOcean is inexpensive to AWS EC2. Surprisingly *Linode is even 30%-40% cheaper than Digtialocean*. Certainly Linode is much less matured to them both. But with reasonable compromise, Linode could be attracting to small business and individuals.
+
+Enclosed is a detail VPS comparison report, based on my hand-on experience.
+
+[[image-blog:VPS Comparison: Linode VS DigitalOcean][https://www.dennyzhang.com/wp-content/uploads/denny/linode_vps.png]]
+---------------------------------------------------------------------
+Notice: If you find this post useful, and decide to try *Linode*. Please kindly use [[https://www.linode.com/?r=e4825280de70fda18185c3cce1b92ca868bc5759][my Linode referral link]].
+
+Personally I have migrated my blog to Linode for 3 months. The overall experience is good. Since security model of Linode is pretty primitive, I highly recommend you to enforce this: [[https://www.dennyzhang.com/linux_security][9 Useful Tips For Linux Server Security.]]
+
+---------------------------------------------------------------------
+Warning: This comparison was done on Sep 2016. There might be *dramatic changes* as time going. For example, Linode has significantly lowered its price May 2016.
+
+We evaluate different VPS providers, in terms of Stability and Economy. Definitely try to keep *TCO* (total cost of ownership) as mininum as possible.
+
+To be short, I will use [[https://www.linode.com/?r=e4825280de70fda18185c3cce1b92ca868bc5759][Linode]] for non critical envs, [[https://m.do.co/t/dab249326995][DigitalOcean]] for critical envs.
+- DigitalOcean (DO) is much more advanced and stable for critical envs.
+- Linode(LN) is 30%-40% cheaper with similar machine flavor of DO. Certainly pricing is only one factor. But it really make a difference for SMB or non-critical test envs. If the consequence is good enough.
+- I've hosted a medium-hot wordpress website for 3 weeks in LN. So far no direct issues related to platform itself.
+** Linode VS DigitalOcean For Pricing
+- With the same cost, *LN provides 200% memory and CPU*, compared to DO. For example, with 0.06/hr, LN provides VM with Linode8192(8GB memory 4 CPU cores); With 0.06/hr, DO provides VMs with 4GB memory 2 CPU cores.
+
+- Linode gives more bandwidth with the same cost.
+
+LN Pricing on Sep, 2016:
+
+[[image-blog:Linode Pricing for Sep 2016][https://www.dennyzhang.com/wp-content/uploads/denny/Linode_price_201609.jpg]]
+
+DO Pricing on Sep, 2016:
+
+[[image-blog:DigtialOcean Pricing for Sep 2016][https://www.dennyzhang.com/wp-content/uploads/denny/DigitalOcean_price_201609.png]]
+** Linode VS DigitalOcean For Usability
+- LN GUI is a bit ugly and not user-friendly.
+- To start a desired VM, LN takes another 3~5 button clicks.
+- Compared to AWS and DO, LN is missing lots of advanced features.[1]
+** Linode VS DigitalOcean For Stability
+Though LN provide same SLA(99.99%[2]) as DO, it's far less stable and insecure:
+- LN suffers much more DDoS attack
+- LN has more disk storage issues
+- Infrastructure security is less guaranteed. e.g, it lead people to ssh with root password by default.
+
+If Linode is a good fit for you, [[https://www.linode.com/?r=e4825280de70fda18185c3cce1b92ca868bc5759][register in linode]] and give it a try. Frankly speaking, for critical envs in cloud, I will stick to [[https://m.do.co/t/dab249326995][DigitalOcean]] or even AWS EC2.
+
+More Reading: [[https://www.dennyzhang.com/linux_security][9 Useful Tips For Linux Server Security]].
+
+[1] http://goo.gl/dxuCKH
+[2] http://www.itekhost.net/digitalocean-vs-linode/
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/vps_linode"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/vps_linode
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
