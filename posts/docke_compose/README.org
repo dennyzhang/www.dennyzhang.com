@@ -168,7 +168,21 @@ Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
 [1] https://fralef.me/docker-and-iptables.html
 [2] https://uptimerobot.com
 [3] https://github.com/docker/compose/issues/3140
-** ---------------------------------------------------------------------
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+* misc                                                             :noexport:
 ** #  --8<-------------------------- separator ------------------------>8--
 ** BYPASS docker-compose mount volume and change file ownership or file mode: change underline folder priviledge in docker host
    CLOSED: [2017-05-11 Thu 23:49]
@@ -541,3 +555,4 @@ http://docs.master.dockerproject.org/compose/compose-file/#/external-1
 https://serverfault.com/questions/827962/how-external-links-in-docker-compose-works
 
 docker network ls
+

@@ -292,7 +292,21 @@ In the future posts, I will introduce more docker security tools. Open source or
 
 Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
 [display-posts tag="docker" posts_per_page="20"]
-** ---------------------------------------------------------------------
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+* misc                                                             :noexport:
 ** #  --8<-------------------------- separator ------------------------>8--
 ** off-page SEO                                                    :noexport:
 - find twitter users to @
@@ -499,3 +513,4 @@ Initializing Sun Nov  6 01:48:59 UTC 2016
 [INFO] 6.5 - Avoid container sprawl
 [INFO]      * There are currently a total of 9 containers, with 3 of them currently running
 #+END_EXAMPLE
+
