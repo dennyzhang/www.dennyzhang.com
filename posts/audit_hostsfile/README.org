@@ -1,0 +1,73 @@
+* Examine Unexpected Changes In Your /etc/hosts File              :BLOG:Tool:
+:PROPERTIES:
+:type:     DevOps,Linux,Audit
+:END:
+---------------------------------------------------------------------
+Updating hosts file is super easy! Any sed, echo, vim command will work.
+
+You're perfectly safe, if all changes only come from the *automation*. And your code is *bug-free*.
+
+But in the reality, you might have surprises. Especially when people might change it manually.
+
+My Suggestion? Before making any changes, confirm all customizations are expected. If not, abort the changes with proper alerting.
+
+[[image-blog:Update /etc/hosts With Everything Expected][https://cdn.dennyzhang.com/images/blog/python_hosts_file.png]]
+---------------------------------------------------------------------
+Firstly try your best to avoid hacking /etc/hosts. If you have to, make sure all changes are designed and expected.
+
+Well, I understand, we are not living in a perfect world. We get surprises occassionally.
+
+Here are the typical ones:
+1. Wrong bindings will result in unexpected behaviors.
+- Duplicated bindings are useless. 
+- Unexpected bindings may bit you later.
+
+[[image-blog:Update /etc/hosts With Everything Expected][https://cdn.dennyzhang.com/images/blog/hosts_sample.png]]
+
+Now we know all sorts of unexpected bindings. *But How To Detect Them Easily?*
+
+Here comes [[url-external:https://github.com/dennyzhang/python-hosts-tool][python-hosts-tool.py]] in GitHub.
+
+The tool asks a whitelist file as an input. Then it examines if any unexpected bindings are found. (Note: duplicated and conflict bindings also count.)
+
+[[image-github:https://github.com/dennyzhang/python-hosts-tool][https://cdn.dennyzhang.com/images/blog/github_audit_hostsfile.png]]
+
+So do you feel this way is safer than a reckless sed or echo command?
+
+Even better, you can create a hourly Jenkins job to run perodical checks, if necessary.
+
+Give it a try now. And let me know what you think.
+
+More Reading:
+- [[https://www.dennyzhang.com/check_process][Check Linux Process Deeply With Common Sense]]
+- [[https://www.dennyzhang.com/linux_security][9 Useful Tips For Linux Server Security]]
+- [[https://www.dennyzhang.com/process_execution][Linux Measure Process Execution Time]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/audit_hostsfile"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/audit_hostsfile
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

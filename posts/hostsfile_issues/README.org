@@ -1,0 +1,286 @@
+* 5 Common Issues Of /etc/hosts In Your Servers                :BLOG:General:
+:PROPERTIES:
+:type:   DevOps,Deployment,Maintenance,Linux
+:END:
+---------------------------------------------------------------------
+Don't make manual changes to the hosts file in your servers.
+*It would be hard to maintain*. If you have to, here are 5 common issues I'd like you to know. And also some tips and free tools included in this post.
+
+Check it out! And share it with your friends, if you find it useful.
+
+[[image-blog:5 Common Issues Of /etc/hosts In Your Servers][https://www.dennyzhang.com/wp-content/uploads/denny/hosts_5_issues.png]]
+---------------------------------------------------------------------
+Normally people don't need to hack /etc/hosts. Occasionally they may have to. For example, simulate some tests without touching the official DNS; enable nodes talking by hostnames with the absence of an internal DNS, etc.
+
+Find yourself in the same situations, my friend? Here are 5 common issues I'd like you to know.
+*Issue1: Duplicate binding*
+
+Multiple entries with the same ip/hostname binding. This would be the most harmless case. Still it's better we avoid it. Just to prevent confusion.
+*Issue2: Conflict binding*
+It makes sense that one ip address points to multiple different hostnames.
+
+But what if one hostname points to multiple ip addresses? Having difficulty understanding that, right? I'm with you!
+
+Question. With below bindings in /etc/hosts, which ip the requests will hit if we open https://www.dennyzhang.com?
+
+#+BEGIN_EXAMPLE
+45.33.87.74 www.dennyzhang.com
+104.237.153.157 www.dennyzhang.com
+#+END_EXAMPLE
+
+The answer is the first match, 45.33.87.74. Order matters in name resolving.[1]
+
+Yes, the conflict binding will work, but it introduces potential misunderstandings and surprises.
+
+We need to detect this issue and fix. Super easy for you, right? But can you automate the check with minimum effort? Just keep reading, my friend.
+*Issue3: Obsoleted binding*
+
+You have hacked hosts file previously. But as time goes, you just forget about the changes.
+
+The impact? With the obsoleted bindings, something may not be working in the way it's supposed to be. With lots of frustration, you finally find out the root cause. How stupid it is! Feel embarrassing to update the details with your boss and colleagues? You're not alone.
+
+We need to find out a why to detect the obsoleted changes. Any thoughts, DevOps Ninjas?
+*Issue4: Missing binding*
+
+You may want nodes to talk by hostnames. For humans, hostnames are more meaningful than ip addresses. If applications/servers communicate with hostnames, we may have fewer issues when we have to replace some servers.
+
+But you just don't have the luxury to host an internal DNS in your cluster. So what would you do? Hack hosts file in each node.
+
+While you keep adding or removing nodes in your cluster, how you can guarantee hosts files in all nodes are up-to-date with all necessary bindings? Surely you will have standard procedure, guides or tools. But mistakes happen.
+
+It's better we find a way to detect the issues of missing bindings.
+*Issue5: Design Flaw of /etc/hosts*
+
+Evaluating issue#3(obsoleted bindings) and issue#4(missing bindings), it's all about customization for the hosts file. Isn't it?
+
+The problem is that OS only read one file to load the bindings. /etc/hosts.
+
+So our customization has to be in the same file as default section. Naturally it's easy to mix up.
+
+[[color:#c7254e][I strongly insist: Instead of one single hosts file, it's better to be / etc/hosts.d/]].
+
+Think about /etc/profile.d/*.sh.
+
+Would it be wonderful, if we can divide the changes of hosts file into different files? Like below.
+#+BEGIN_EXAMPLE
+root@dennyzhang$ tree /etc/hosts.d/
+etc/hosts.d/
+|---- change1.conf
+|---- change2.conf
+
+0 directories, 2 files
+#+END_EXAMPLE
+
+Well, back to the earth. In the near future, we will still have one hostsfile only.
+
+To examine the quality of hosts file, here comes examine_hosts_file.py in [[https://github.com/dennyzhang/devops_public/blob/tag_v6/python/hosts_file/examine_hosts_file.py][Github]].
+[[github:DennyZhang][GitHub]]
+
+With --extra_host_file option, we can specify all the customization. If anything unexpected is captured in your hosts file, this script will fail.
+
+I usually create a Jenkins job to enforce daily check of /etc/hosts, if necessary. Maybe you can give it a try as well.
+
+[[image-github:https://github.com/dennyzhang/python-hosts-tool][https://www.dennyzhang.com/wp-content/uploads/denny/github_examine_hosts_file.png]]
+
+Now we can easily automate the examing process. How about the fix process? Yeah, we can automate it as well.
+
+Here is one example: [[https://github.com/dennyzhang/devops_public/blob/tag_v6/python/hosts_file/update_hosts_file.py][update_hosts_file.py]].
+
+More Reading:
+- [[https://www.dennyzhang.com/process_execution][Linux Measure Process Execution Time, When Already Started]]
+- [[https://www.dennyzhang.com/linux_security][9 Useful Tips For Linux Server Security]]
+- [[https://www.dennyzhang.com/monitor_filechange][Oops! My Config Files Have Been Changed]]
+
+[1] https://linux-audit.com/is-your-etc-hosts-file-healthy/
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/hostsfile_issues"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/hostsfile_issues
+* misc                                                             :noexport:
+** Issue1: Duplicate binding: binding with the same ip and hostsname
+https://apple.stackexchange.com/questions/111267/can-entry-duplicates-or-multiples-in-etc-hosts-do-any-damage
+https://groups.google.com/forum/#!topic/comp.unix.questions/MjUoz7yJkZA
+http://stackoverflow.com/questions/16265809/please-help-me-check-for-duplicates-in-hosts-file-using-linux-terminal
+https://serverfault.com/questions/429839/assign-multiple-ips-to-1-entry-in-hosts-file
+
+No, having duplicates is not a problem. Since the file is read in
+order, the first matching result is read, and the rest of the file is
+ignored. Having exact duplicates has no effect.
+** TODO Blog: For DigitalOcean, Persist Local Changes Of /etc/hosts Against Cloud-Init
+https://www.digitalocean.com/community/questions/why-the-system-ubuntu-14-04-is-configured-manage_etc_hosts-as-true-by-default
+
+https://www.digitalocean.com/community/tutorials/how-to-use-cloud-config-for-your-initial-server-setup
+
+http://bematech-do-jenkins.carol.ai:18080/job/FixHostsFileOnServers/
+
+vim /etc/cloud/templates/hosts.debian.tmpl
+
+#+BEGIN_SRC sh
+#!/bin/bash -e
+host_tmpl_file="/etc/cloud/templates/hosts.debian.tmpl"
+should_change=false
+
+if [ ! -f "$host_tmpl_file" ]; then
+    echo "File $host_tmpl_file doesn't exist"
+    should_change=true
+fi
+
+if [ "$(cksum /etc/hosts | awk '{print $1}')" != \
+    "$(cksum $host_tmpl_file | awk '{print $1}')" ]; then
+    echo "cksum of $host_tmpl_file and /etc/hosts are different"
+    should_change=true
+fi
+
+if $should_change; then
+  echo "Should change. diff $host_tmpl_file /etc/hosts"
+  diff $host_tmpl_file /etc/hosts
+  echo "cp /etc/hosts $host_tmpl_file"
+  cp /etc/hosts $host_tmpl_file
+  exit 1
+else
+  echo "Nothing need to be changed"
+fi
+#+END_SRC
+*** Chef code to update
+*** How to verify?
+*** Keep change up-to-date
+** #  --8<-------------------------- separator ------------------------>8--
+** DONE prod env: /etc/hosts duplicate entries of prod-es-1: http://prodjenkins.fluigdata.com:18080/job/RunCommandOnServers/155/console
+   CLOSED: [2017-05-01 Mon 12:42]
+cp /etc/hosts /etc/hosts.20161221
+cat /etc/hosts | uniq > /tmp/hosts
+cp /tmp/hosts /etc/hosts
+
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+
+ssh -p 2702 root@45.55.1.180 cat /etc/hosts
+#+BEGIN_EXAMPLE
+Warning: Permanently added '[45.55.1.180]:2702' (RSA) to the list of known hosts.
+# Your system has configured 'manage_etc_hosts' as True.
+# As a result, if you wish for changes to this file to persist
+# then you will need to either
+# a.) make changes to the master file in /etc/cloud/templates/hosts.tmpl
+# b.) change or remove the value of 'manage_etc_hosts' in
+#     /etc/cloud/cloud.cfg or cloud-config from user-data
+45.55.1.180    prod-app-5
+127.0.0.1 localhost
+
+# The following lines are desirable for IPv6 capable hosts
+::1 ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts
+104.236.129.147    prod-cb-6
+159.203.216.25    prod-es-1
+45.55.9.157    prod-app-6
+159.203.234.164    prod-app-1
+159.203.202.27    prod-app-2
+159.203.198.98    prod-app-3
+162.243.155.164    prod-app-4
+138.68.4.184    prod-cb-backup
+159.203.198.129    prod-cb-1
+45.55.1.132    prod-cb-2
+104.236.179.76    prod-cb-3
+159.203.247.196    prod-cb-4
+104.236.148.126    prod-cb-5
+107.170.212.76    prod-es-2
+192.241.211.99    prod-es-3
+159.203.219.53    prod-es-4
+159.203.211.150    prod-es-5
+159.203.192.146    prod-es-6
+107.170.237.239    prod-es-7
+192.241.203.166    prod-es-8
+198.199.95.111    prod-es-9
+159.203.216.25    prod-es-1
+159.203.198.171    prod-lb-1
+159.203.202.250    prod-lb-2
+45.55.6.34    prod-nagios-jenkins-1
+138.68.4.184    prod-cb-backup
+159.203.198.129    prod-cb-1
+45.55.1.132    prod-cb-2
+104.236.179.76    prod-cb-3
+159.203.247.196    prod-cb-4
+104.236.148.126    prod-cb-5
+104.236.129.147    prod-cb-6
+192.241.225.40    prod-cb-7
+159.203.216.25    prod-es-1
+107.170.212.76    prod-es-2
+192.241.211.99    prod-es-3
+159.203.219.53    prod-es-4
+159.203.211.150    prod-es-5
+159.203.192.146    prod-es-6
+107.170.237.239    prod-es-7
+192.241.203.166    prod-es-8
+198.199.95.111    prod-es-9
+159.203.216.25    prod-es-1
+159.203.234.164    prod-app-1
+159.203.202.27    prod-app-2
+159.203.198.98    prod-app-3
+162.243.155.164    prod-app-4
+45.55.1.180    prod-app-5
+45.55.9.157    prod-app-6
+159.203.198.171    prod-lb-1
+159.203.202.250    prod-lb-2
+45.55.6.34    prod-nagios-jenkins-1
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+159.203.216.25    prod-es-1
+104.236.187.173    prod-es-10
+107.170.252.123    prod-es-11
+192.241.228.149    prod-es-12
+192.241.206.113    prod-es-13
+107.170.216.152    prod-es-14
+#+END_EXAMPLE
+** #  --8<-------------------------- separator ------------------------>8--
+** useful link
+https://linux-audit.com/is-your-etc-hosts-file-healthy/
+** misc
+https://trello.com/c/eWN69SAd
+
+> /tmp/examine_hosts_file.py && vim /tmp/examine_hosts_file.py
+python /tmp/examine_hosts_file.py
+
+Nodes within the same cluster want to talk by hostname, instead of ip address.
+
+Here comes the chanllege. Since cluster will keep scaling up and down, nodes change constantly. How to keep /etc/hosts in each node up-to-date?
+
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

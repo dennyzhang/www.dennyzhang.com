@@ -1,0 +1,190 @@
+* Free And Temporary VPN For China                                :BLOG:Tool:
+:PROPERTIES:
+:type:   DevOps,Service,Recommend,Popular
+:END:
+---------------------------------------------------------------------
+If you are in China or temporarily visit China, it's hard to open webistes like Google, Gmail, Youtube. Even Slideshare! Internet Censorship is fine. But... I strongly insist developers should have the rights to access. To do a better job.
+*Here I provide a free VPN service*. The password will be rotated *monthly*. Also I've added an extra *400 ms* latency, in case too much YouTube watching. Sorry poor [[https://www.dennyzhang.com/vps_linode][Linode VM]] can't afford it. It should be good for temporary use. Right?
+
+You can setup your own service easily. Just rent a VM, and follow the easy instruction in below.
+
+[[image-blog:Free And Temporary VPN For China][https://www.dennyzhang.com/wp-content/uploads/denny/vpn_bypass.jpg]]
+---------------------------------------------------------------------
+** How To Use The Service
+I've started a public VM in [[https://www.linode.com/?r=e4825280de70fda18185c3cce1b92ca868bc5759][Linode]], which should be able to support visit almost all websites. 
+(No video watching, please!)
+
+It serves as a http proxy server, running a private VPN protocol[1]. Unlike normal VPN protocols, this one is more reliable and resilient by design.
+
+How to have a try?
+*1. Download and install VPN client*: Here is the [[https://shadowsocks.org/en/download/clients.html][Official link]]. Frankly speaking, I'm not surprised that you may fail to open the link, when you're in China.
+
+[[image-blog:Free And Temporary VPN For China][https://www.dennyzhang.com/wp-content/uploads/denny/ss_download.png]]
+
+If you can't open the official link, you can try this GitHub:
+
+https://github.com/dennyzhang/file-sharing
+
+#+BEGIN_SRC sh
+# mac OSx
+pip install shadowsocks
+brew install shadowsocks-libev
+
+# Linux
+pip install shadowsocks
+apt-get install shadowsocks-libev
+#+END_SRC
+*2. Get the credential*: server ip, port and password.
+As we may guess, there might be many users trying the free service. I have to update the password periodically. *_To the extreme case, it will be changed monthly_*.
+
+Please contact me via contact[@]dennyzhang.com, in order to get the credential. Don't worry, it's totally free. I just want to reduce the risk of security issues.
+
+Even better, if you can subscribe my mailing list. Thus you can always get latest credential via email automatically, with no extra communication.
+
+[mc4wp_form id='3792']
+
+Certainly you can unsubscribe any time.
+*3. Enable client and activate the server*. Once it's done, you should be fine to open https://www.google.com. Finally!
+[[image-blog:Free And Temporary VPN For China][https://www.dennyzhang.com/wp-content/uploads/denny/ss_config.png]]
+
+[[image-blog:Free And Temporary VPN For China][https://www.dennyzhang.com/wp-content/uploads/denny/ss_activate_server.jpg]]
+** How to setup my own server by docker
+1. *Rent a public VM*. Here I suggest: [[https://m.do.co/t/dab249326995][DigitalOcean]] or [[https://www.linode.com/?r=e4825280de70fda18185c3cce1b92ca868bc5759][Linode]] with the plan of $5-$10/month.
+- Install docker daemon and [[https://www.dennyzhang.com/docke_compose][docker-compose]].
+- Run docker-compose up -d. Then you're all set.
+
+Dockerfile can be found in [[https://github.com/dennyzhang/devops_docker_image/blob/tag_v6/shadowsock][Github]]. [[github:DennyZhang][GitHub]]
+#+BEGIN_EXAMPLE
+# Get the code, especially docker image
+git clone https://github.com/dennyzhang/devops_docker_image.git
+
+cd devops_docker_image/shadowsock
+
+docker-compose up -d
+
+# Make sure iptables allow the traffic
+ufw allow 6187/tcp
+#+END_EXAMPLE
+
+By default, the server port is 6187, and password is DamnGFW.
+
+(You can customize it in shadowsocks.json, under the same folder of docker-compose.yml).
+
+[[image-blog:Free And Temporary VPN For China][https://www.dennyzhang.com/wp-content/uploads/denny/ss_json.jpg]]
+
+[1] https://shadowsocks.org/en/index.html
+
+More Reading: [[https://www.dennyzhang.com/export_mac_laptop][Reverse SSH Tunnel: Export Your Mac Laptop To The Internet]].
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/free_vpn"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/free_vpn
+* misc                                                             :noexport:
+** TODO shadowsock: block websites like youtube
+** TODO Access Google through hacking /etc/hosts
+** TODO shadowsocks: only allow visit google, add whitelist
+** #  --8<-------------------------- separator ------------------------>8--
+** DONE shadowsocks create multiple credential
+  CLOSED: [2017-07-29 Sat 23:40]
+https://github.com/shadowsocks/shadowsocks/wiki/Configure-Multiple-Users
+#+BEGIN_EXAMPLE
+{
+    "server": "0.0.0.0",
+    "port_password": {
+        "8381": "foobar1",
+        "8382": "foobar2",
+        "8383": "foobar3",
+        "8384": "foobar4"
+    },
+    "timeout": 300,
+    "method": "aes-256-cfb"
+}
+#+END_EXAMPLE
+** #  --8<-------------------------- separator ------------------------>8--
+** [#A] Online service: VPN service Customer Support
+#+BEGIN_EXAMPLE
+tc qdisc del dev br-24cf872c7dff root netem
+tc qdisc add dev br-24cf872c7dff root netem delay 500ms
+tc qdisc
+#+END_EXAMPLE
+Justine <justinleisure@163.com>, Bin <shoopman@qq.com>, JJmanuel <mjeusomjerie@gmail.com>
+
+Sherwin <cz_ysy@163.com>
+
+微信.老鼎 948118402@qq.com
+
+hi {name}
+
+- Internal
+| Name                   | Summary            |
+|------------------------+--------------------|
+| justinleisure@163.com  | 李俊炜, Justin Lee |
+| shoopman@qq.com        | 梁彬               |
+| mjeusomjerie@gmail.com | JJmanuel           | 
+
+- External
+| Name                  | Summary         |
+|-----------------------+-----------------|
+| ecampanajr@gmail.com  | Ernesto Campana |
+| qnqtknguyen@gmail.com | Quang Nguyen    |
+
+Credential for VPN
+
+#+BEGIN_EXAMPLE
+Hi XX
+
+Here is Shadowsocks Credential:
+
+https://www.dennyzhang.com/free_vpn
+
+,-----------
+| Server: vpn.dennyzhang.com
+| Port: 6188
+| Password: CrackGFWDenny456
+`-----------
+
+(No Video Watching please.)
+
+We also have a slack channel to better support this.
+
+Join: https://www.dennyzhang.com/slack, and ping @dennyzhang
+It's perfect fine, if you choose to ignore. 
+
+(Just I'm more available in slack, compared to email)
+
+Enjoy!
+-- 
+Denny Zhang(张巍)
+Email: contact@dennyzhang.com
+Website: https://www.dennyzhang.com
+LinkedIn: https://linkedin.com/in/dennyzhang001
+
+Do what you value. Value what you do. Why do anything else?
+
+( ´͈ ᗨ `͈ )◞
+#+END_EXAMPLE
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

@@ -1,0 +1,66 @@
+* Interesting Facts About DevOps Concepts                      :BLOG:General:
+:PROPERTIES:
+:type:   DevOps
+:END:
+---------------------------------------------------------------------
+Too many concepts, new words, and tools in DevOps world.
+
+Here I try to dig deeper for some interesting facts.
+
+You have more puzzles or related knowledge? Please share with me by adding comments.
+---------------------------------------------------------------------
+Q: What does [[color:#c7254e][Canary]] means in *Canary Release*?
+
+In Canary Release, we do partial deployment to a subnet of nodes. Thus we can rollback or stop deploying more nodes, if something unexpected has happened.
+
+But why this idea is called "Canary Release"?
+
+"Canary" was chosen because canaries were once used in coal mines to alert miners when toxic gases reached dangerous levels. In other words, if dangerous gases such as carbon monoxide collected in the mine, the gases would kill the canary before killing the miners, thus providing a warning to exit the tunnels immediately.  As long as the bird kept singing, the miners knew their air supply was safe. A dead canary signaled an immediate evacuation.
+---------------------------------------------------------------------
+Q: What does [[color:#c7254e][Kanban]] means in *Kanban board*?
+
+Kanban Boards show how work moves from left to right. This helps team to visualize the work, thus better help people in sync. Especially for the overall status.
+
+Popular tools of Kanban board are Trello, Jira, Asana, etc. You might notice this concept in the book of [[color:#c7254e][The Phonenix Project]].
+
+But have you ever wonder what does "Kanban" mean here?
+
+#+BEGIN_HTML
+<div>
+<iframe style="width: 120px; height: 240px;" src="//ws-na.amazon-adsystem.com/widgets/q?ServiceVersion=20070822&amp;OneJS=1&amp;Operation=GetAdHtml&amp;MarketPlace=US&amp;source=ac&amp;ref=qf_sp_asin_til&amp;ad_type=product_link&amp;tracking_id=dennyzhang-20&amp;marketplace=amazon&amp;region=US&amp;placement=0988262509&amp;asins=0988262509&amp;linkId=71878608a6bfd8fe98ca2cc56a10031a&amp;show_border=false&amp;link_opens_in_new_window=false&amp;price_color=333333&amp;title_color=0066c0&amp;bg_color=ffffff" width="300" height="150" frameborder="0" marginwidth="0" marginheight="0" scrolling="no">
+</iframe>
+#+END_HTML
+*Kanban, also spelt "kamban" in Japanese, translates to "Billboard" ("signboard" in Chinese).*
+
+[[image-blog:Interesting Facts About DevOps Concepts][https://raw.githubusercontent.com/DennyZhang/images/master/blog/kbanba.png]]
+Images credits to: [[url-external:https://blogs.vmware.com/accelerate/2015/11/kanban-it-operations.html][link]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/devops-facts"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/devops-facts
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

@@ -1,0 +1,318 @@
+* Use Jenkins To Run Remote SSH Commands                          :BLOG:Tool:
+:PROPERTIES:
+:type:   DevOps,Jenkins,Operate
+:END:
+---------------------------------------------------------------------
+Occasionally I need to run some ssh commands on multiple servers. 
+
+Sometimes sequentially, sometimes parallelly. People in the team may also want to run it by themselves. 
+
+So here comes one solution in [[url-external:https://github.com/dennyzhang/remote-commands-servers][Github]] Yeah, sort of [[color:#c7254e][VisualOps]].
+
+[[image-blog:Use Jenkins To Run Remote SSH Commands][https://www.dennyzhang.com/wp-content/uploads/denny/jenkins_parallel_command.png]]
+---------------------------------------------------------------------
+Firstly I have to admit one thing.
+*We Should Avoid SSH As Much As Possible*. Everytime we ssh, it's an improvement opportunity for our automation.
+
+Well, as a compensate of automation defects, people might still need to ssh. Sometimes.
+1. Check server status for real quick
+- Run some query commands
+- Stop/start/restart services on-demand
+- etc
+*We May Want To Do It Sequentially*. e.g, when restart services in multiple nodes, we want to minimize the downtime. Thus it's better to restart one-by-one. If some has failed, abort the whole process immediately.
+*We May Want To Do It Parallelly*. e.g, check cpu load for all nodes as fast as possible. "grep log", "check status", or whatever.
+
+If you're with AWS, you're in luck. It has already provided [[url-external:https://aws.amazon.com/blogs/aws/new-ec2-run-command-remote-instance-management-at-scale/][a nice solution]].
+[[image-blog:Use Jenkins To Run Remote SSH Commands][https://www.dennyzhang.com/wp-content/uploads/denny/aws_run_remote_command.png]]
+
+Otherwise, you're on your own.
+
+Yeah, I guess lots of people may already have some handy scripts like below.
+#+BEGIN_SRC sh
+for server in $server_list; do
+    ssh -i $ssh_key_file \
+        -o StrictHostKeyChecking=no \
+        -p $ssh_port root@$server
+done
+#+END_SRC
+
+Unfortunately it doesn't solve the problem. Remember we also need to run it in parallel? And the error handling?
+
+We need solutions more graceful. Here I choose Python. (Read more: [[https://www.dennyzhang.com/shell_to_python][GoodBye Shell, Hello Python!]])
+
+After some research in Github, I failed to find an existing Python repo for these requirements.
+
+Thus I have created one: [[url-external:https://github.com/dennyzhang/remote-commands-servers][remote-commands-servers]].
+
+[[github:DennyZhang][GitHub]]
+
+[[image-github:https://github.com/dennyzhang/remote-commands-servers][https://www.dennyzhang.com/wp-content/uploads/denny/github_remote_command_server.jpg]]
+
+Based on this python script, we can create a Jenkins job. (See job configuration in [[url-external:https://github.com/dennyzhang/remote-commands-servers/tree/tag_v1/jenkins_job][Github]]).
+[[image-blog:Use Jenkins To Run Remote SSH Commands][https://www.dennyzhang.com/wp-content/uploads/denny/jenkins_parallel_command.png]]
+
+Now people to run it easily from Jenkins GUI. Also check check the history. 
+
+What's better, enable slack Jenkins plugin. Be notified for job failures.
+
+If you need to be more secured, you can:
+- Enforce the Jenkins security, so that only a few people can run the job
+- Add pre-check logic for *command_list*. e.g, no "rm -rf" is allowed.
+
+Also I would suggest you integrate Jenkins with slack notification.
+
+Like we have mentioned in the beginning, this is only a compensate for your automation facilities.
+
+Hope you find this solution useful or inspiring.
+
+Discuss with me in [[url-external:https://www.linkedin.com/in/dennyzhang001][LinkedIn]] or [[url-external:https://www.dennyzhang.com/slack][Slack]].
+
+---------------------------------------------------------------------
+More Reading:
+
+- [[https://www.dennyzhang.com/jenkins_benefits][5 Reasons Why Jenkins Is So Useful And Popular]]
+- [[https://www.dennyzhang.com/ssh_passphrase][Manage SSH Key File With Passphrase]]
+- [[https://www.dennyzhang.com/ssh_fail][4 Reasons Why SSH Connection Fails]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/jenkins_run_ssh"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/jenkins_run_ssh
+* misc                                                             :noexport:
+** misc                                                            :noexport:
+http://www.ameir.net/blog/archives/380-run-multiple-ssh-commands-in-parallel-with-gnu-parallel.html
+
+#+BEGIN_EXAMPLE
+Every true sysadmin has been in this predicament - "I need to run this command on a bunch of machines." The typical approach is to create a for loop, and run the command serially. This works well, but if a) you have tons of hosts, or b) the command takes a while to run on each machine, you may be looking for something a bit more efficient.
+
+Here's an example that gets a list of hosts using aws-cli, and restarts httpd on them. In your case, update the command and key path as needed.
+
+Shell
+
+HOSTS=`aws ec2 describe-instances --filters "Name=tag:env,Values=production" "Name=tag:Name,Values=web-frontend" --query "Reservations[].Instances[].PublicDnsName" --region "us-east-1" | jq -r .[]`
+echo -n $HOSTS | parallel -vv --gnu -j +3 -d " " -I HOST "ssh -i ~/my-key.pem -l root HOST 'service httpd restart'"
+
+#+END_EXAMPLE
+** web page: Ansible: Post-Install Setup                           :noexport:
+https://devopsu.com/guides/ansible-post-install.html
+*** webcontent                                                     :noexport:
+#+begin_example
+Location: https://devopsu.com/guides/ansible-post-install.html
+  * {{ DevOpsU }}
+  * How-To Guides
+  * Books
+  * Blog
+  * Newsletters
+  * About
+
+Ansible: Post-Install Setup
+
+Inventory hosts file
+
+After you've installed Ansible, then you'll want Ansible to know which servers to connect to and
+manage.
+
+Ansible's inventory hosts file is used to list and group your servers. Its default location is /etc
+/ansible/hosts.
+
+If you want to have your Ansible hosts file in another location, then you can set this environment
+variable:
+
+> export ANSIBLE_HOSTS=/root/ansible_hosts
+
+Or you can specify the Ansible hosts location when running commands with the --inventory-file= (or
+-i) flag:
+
+> ansible all --inventory-file=/root/ansible_hosts -m ping
+
+For more on the inventory hosts file, see: http://docs.ansible.com/intro_inventory.html
+
+Set up connectivity to the servers
+
+For this example, I'll assume you have servers with the hostnames child1.dev and child2.dev. When
+doing your own install, replace those hostnames with your own.
+
+Your /etc/ansible/hosts file would look like this:
+
+child1.dev
+child2.dev
+
+You want to be able to connect to your servers without having to enter a password every time. If
+you don't already have ssh key authentication set up to your children nodes, then do the
+following...
+
+Generate the ssh key on the master node:
+
+root@master:~# ssh-keygen -t rsa -C "name@example.org"
+
+Then copy your public key to the servers with ssh-copy-id:
+
+root@master:~# ssh-copy-id user@child1.dev
+root@master:~# ssh-copy-id user@child2.dev
+
+Now you can test the connectivity:
+
+root@master:~# ansible all -m ping
+child1.dev | success >> {
+    "changed": false,
+    "ping": "pong"
+}
+
+child2.dev | success >> {
+    "changed": false,
+    "ping": "pong"
+}
+
+Next...
+
+Now you're ready to actually manage your servers with Ansible's playbooks:
+http://docs.ansible.com/playbooks_intro.html
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
+                  New Edition Released! "Taste Test: Puppet, Chef, Salt, Ansible"
+
+Get the latest tips and training in your inbox:
+
+[arrow]
+                                             Subscribe
+                           ~2 per month, spam-free, instant unsubscribe
+by Matt Jaynes  |  matt@devopsu.com
+
+#+end_example
+** [#A] good example: https://github.com/oinume/tomahawk
+** discussion2
+#+BEGIN_EXAMPLE
+dennyzhang [3:53 PM]
+Question: Run remote ssh commands in a list of servers. Any tool to recommend?
+
+Supported scenarios:
+1. Run sequentially node-by-node
+2. Run sequentially node-by-node, if any has failed quit immediately.
+3. Run in parallel
+4. Run in parallel, if any has failed quit immediately.
+
+I know I can wrap up a python script via paramiko module. Is my requirement too unique?
+
+
+nocode [3:54 PM]
+you basically described ansible
+
+
+
+pmartindev [3:58 PM]
+@dennyzhang If your servers are cloud hosted, most providers have a way to execute arbitrary commands on a server list. Ex. aws ec2 run command: https://aws.amazon.com/blogs/aws/new-ec2-run-command-remote-instance-management-at-scale/ (edited)
+
+
+dennyzhang [4:05 PM]
+Not in EC2. :disappointed:
+
+
+[4:06]
+Looks like ansible and rundeck is capable for the job
+
+
+dennyzhang [4:13 PM]
+I like its definition of the interface.
+
+
+dennyzhang [4:14 PM]
+uploaded this image: AWS_EC2_Command
+Add Comment
+
+
+
+while1malloc0 [4:25 PM]
+If your use case is complex enough that you're going to be scripting it with python, my guess is that you'll end up rewriting large parts of ansible's functionality on top of ec2 run-command's API. Ansible has built-in support for using EC2 hosts including filtering by tags: http://docs.ansible.com/ansible/latest/ec2_facts_module.html, and supports all of the concurrent scenarios that you described.
+#+END_EXAMPLE
+** discussion1
+#+BEGIN_EXAMPLE
+dennyzhang
+[3:53 PM]
+Question: Run remote ssh commands in a list of servers. Any tool to recommend?
+
+Supported scenarios:
+1. Run sequentially node-by-node
+2. Run sequentially node-by-node, if any has failed quit immediately.
+3. Run in parallel
+4. Run in parallel, if any has failed quit immediately.
+
+I know I can wrap up a python script via paramiko module. Is my requirement too unique?
+
+
+ruan [3:55 PM]
+im using asyncssh (http://asyncssh.readthedocs.io) I enjoyed working with it
+
+
+dennyzhang
+[3:57 PM]
+Cool. Sounds like a more elegant module than paramiko.
+
+
+[3:58]
+I was expecting some CLI without coding.
+
+
+juliet [3:58 PM]
+http://rundeck.org/
+Rundeck.org
+Job Scheduler and Runbook Automation
+Rundeck - Job Scheduler and Runbook Automation (19kB)
+
+
+
+ruan [3:58 PM]
+the advantage that is asynchronous
+
+
+dennyzhang
+[4:02 PM]
+Something we want it to be synchronous.
+
+For example, restart all services node-by-node.
+
+If node1 has failed, we want to skip the restart of node2.
+
+
+[4:02]
+Thanks, @juliet & @ruan
+
+Let me give a try with those two. Also ansible looks like capable for this. (Not sure whether it's over-killing)
+#+END_EXAMPLE
+** good example: https://www.npmjs.com/package/flightplan
+** useful link
+https://aws.amazon.com/blogs/aws/new-ec2-run-command-remote-instance-management-at-scale/
+https://github.com/dennyzhang/remote-commands-servers
+
+https://trello.com/c/fe5v5PBs
+
+https://aws.amazon.com/blogs/aws/new-ec2-run-command-remote-instance-management-at-scale/
+
+https://stackoverflow.com/questions/31822984/running-sequential-commands-through-ssh-on-multiple-servers
+GNU Parallel
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

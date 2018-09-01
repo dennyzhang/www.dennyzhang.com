@@ -1,0 +1,179 @@
+* Common Mistakes In REST API Design                            :BLOG:Design:
+:PROPERTIES:
+:type: design
+:END:
+---------------------------------------------------------------------
+I was thinking API design is pretty easy and intuitive. But actually it's not.
+
+Just like the famous difficulty of naming things(functions, variables, modules). 
+
+Designing clean and just-enough API takes experience and efforts.
+
+Your experiences? [[color:#c7254e][Leave Me Comments.]]
+
+[[image-blog:How To Design REST API][https://raw.githubusercontent.com/DennyZhang/images/master/design/basic_rest_example.png]]
+
+---------------------------------------------------------------------
+Similar Posts:
+- Tag: [[https://brain.dennyzhang.com/tag/designconcept][#designconcept]], [[https://brain.dennyzhang.com/tag/systemdesign][#systemdesign]]
+---------------------------------------------------------------------
+[[color:#c7254e][Good Examples/Resources:]]
+- Examples: [[url-external:https://developer.github.com/v3/][GitHub API]], [[url-external:https://developers.digitalocean.com/documentation/v2/][DigitalOcean API]]
+- API Framework: [[url-external:https://swagger.io/][Swagger]], [[url-external:https://www.getpostman.com/][Postman]]
+- Debuging REST API: [[url-external:https://www.soapui.org/][SoapUI]], [[url-external:https://www.telerik.com/fiddler][fiddler]], curl
+- [[url-external:https://developer.mozilla.org/en-US/docs/Web/HTTP/Status][HTTP response status codes]]
+- [[url-external:https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask][Designing a RESTful API with Python and Flask]]
+
+[[image-blog:How To Design REST API][https://raw.githubusercontent.com/DennyZhang/images/master/design/basic_rest_example.png]]
+---------------------------------------------------------------------
+[[color:#c7254e][Common Mistakes:]]
+- In GET requests, add parameters inside the body, instead of in URL
+- Use lengthy names, while we have better choices
+#+BEGIN_EXAMPLE
+project_id -> id
+project_name -> name
+err_msg -> message
+#+END_EXAMPLE
+- Define our own error code and error message. Try to re-use HTTP protocal first.
+#+BEGIN_EXAMPLE
+curl -i https://api.github.com -u foo:bar
+HTTP/1.1 401 Unauthorized
+{
+  "message": "Bad credentials",
+  "documentation_url": "https://developer.github.com/v3"
+}
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+curl -i https://api.github.com -u valid_username:valid_password
+HTTP/1.1 403 Forbidden
+{
+  "message": "Maximum number of login attempts exceeded. Please try again later.",
+  "documentation_url": "https://developer.github.com/v3"
+}
+#+END_EXAMPLE
+- Better use dash(-), instead of underline("_")
+#+BEGIN_EXAMPLE
+From:
+http://api.dennyzhang.com/books/my_first_post
+
+To:
+http://api.dennyzhang.com/books/my-first-post
+#+END_EXAMPLE
+- Missing API protocal version in the URI. It would be hard to manage, when we have API breaking changes.
+#+BEGIN_EXAMPLE
+From:
+> GET /projects
+
+To:
+> GET /v1/projects
+#+END_EXAMPLE
+- No authentication to protect system from malicious requests.
+
+See example from [[url-external:https://developer.github.com/v3/][GitHu]]b.
+
+#+BEGIN_EXAMPLE
+There are three ways to authenticate through REST API.
+
+Requests that require authentication will return 404 Not Found, instead of 403 Forbidden.
+This is to prevent the accidental leakage of private repositories to unauthorized users.
+
+1. Basic authentication
+curl -u "username" https://api.github.com
+
+2. OAuth2 token (sent in a header)
+curl -H "Authorization: token OAUTH-TOKEN" https://api.github.com
+
+3. OAuth2 token (sent as a parameter)
+curl https://api.github.com/?access_token=OAUTH-TOKEN
+#+END_EXAMPLE
+- Unnecessary or useless parameters in the BODY of request or response
+- Make sure the APIs are logically correct
+- Remember to support pagination, if too much data involved
+#+BEGIN_EXAMPLE
+GET /v1/projects?page=${page}&per_page=${per_page}
+
+# page: page numbering is 1-based
+
+# per_page: How many bid counts we want to see for each page
+  Sorted in ascending order.
+  The default is 30. The valid range is [1, 400] (inclusive)
+#+END_EXAMPLE
+
+
+#+BEGIN_EXAMPLE
+HTTP/1.1 200 OK
+{
+  "count": 2,
+  "projects":[
+    {
+      "id": int,
+      "summary": string,
+      "description": string
+    },
+    {
+      "id": int,
+      "summary": string,
+      "description": string
+    }
+  ]
+}
+#+END_EXAMPLE
+
+- Response a json with a embeded list. Make sure it's a valid json.
+#+BEGIN_EXAMPLE
+HTTP/1.1 200 OK
+{
+  "project_id": int,
+  "name": string,
+  "description": string,
+  "budget": float,
+  "deadline": timestamp,
+  "item_list": [
+      id1: int,
+      id2: int,
+      id3: int
+     ]
+}
+#+END_EXAMPLE
+---------------------------------------------------------------------
+- Sample: startMachine
+#+BEGIN_EXAMPLE
+curl -X POST -H "Content-Type: application/json" \
+     -H "Authorization: Bearer b7d03a6947b217efb6f3ec3bd3504582" \
+     -d '{"type":"reboot"}' "https://api.digitalocean.com/v2/droplets/3164450/actions"
+
+This is how digitalocean deals with it.
+
+Resource is actions. HTTP method is POST.
+#+END_EXAMPLE
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/design-rest-api"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/design-rest-api
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

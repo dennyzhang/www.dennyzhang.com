@@ -1,0 +1,520 @@
+* Backup Elasticsearch Indices By NFS                               :BLOG:DB:
+  :PROPERTIES:
+  :type:     DevOps,Tool,DataBase,Elasticsearch
+  :END:
+---------------------------------------------------------------------
+Suppose you have a critical Elasticsearch cluster. You have to know how to backup it. *Correctly and quickly*.
+
+It's not too difficult. But there are something you'd better know. And those are quite common in most DB backup.
+
+Check it out, *before it bits you*.
+
+[[image-blog:Backup Elasticsearch Indices By NFS][https://www.dennyzhang.com/wp-content/uploads/denny/elasticsearch_backup_nfs.png]]
+---------------------------------------------------------------------
+** [[color:#c7254e][Highlights]]
+- You need a shared folder for *all ES nodes*. One typical setup is NFS. 
+#+BEGIN_EXAMPLE
+1. In one ES node, setup a NFS server with a big volume. 
+2. From all other ES nodes, mount it as NFS client. 
+3. Create ES repository
+4. Create ES snapshot for selective indices or all
+#+END_EXAMPLE
+
+- Umount NFS immediately, if you don't need it. NFS service is troublesome. It might introduce unreasonable high CPU load to all nodes. Let me repeat it again: unreasonable high!
+
+- Always check return code, before running the following procedure. Without this principle, any automation would be dangerous.
+
+- Full backup VS Incremental backup. rsync VS scp.
+
+Previously I need to migrate a big system from one data center to another. *One major challenge is how to migrate 3TB ES cluster(10TB data) with minimum downtime?*
+
+Here is what I have done:
+#+BEGIN_EXAMPLE
+1. Perform first round of backup and restore. No downtime for this.
+2. Run second round of backup. As an incremental backup, it's fast.
+3. Use rsync to copy over TB data across WAN. Not scp. 
+4. Rsync from N nodes to M nodes, is faster than 1 to 1.
+5. Run second round of restore in cluster2. It's relatively fast.
+#+END_EXAMPLE
+
+- Record time performance, for future reference. How large original data and backupset, how long each critical step(backup/copy/restore) takes.
+#+BEGIN_EXAMPLE
+# wrap curl with time command
+time curl ...
+
+# wrap rsync with time command
+time rsync ...
+#+END_EXAMPLE
+** [[color:#c7254e][Preparation]]
+1. Make sure *path.repo* is configured in /etc/elasticsearch/elasticsearch.yml for *all nodes*. Otherwise you won't be able to create ES filesystem repository. [1]
+2. Prepare a volume. It should be big enough to hold your snapshots. Nowadays all modern cloud providers provide block storage service. Much better than before.
+** [[color:#c7254e][Procedure]]
+*** 1.1 Prepare env
+#+BEGIN_EXAMPLE
+# Customize the values for your env.
+# NFS mount folder, which is also where we put the snapshot
+export es_fs_mnt="/usr/share/elasticsearch/repo"
+# The ip of ES node, which will host the NFS server
+export nfs_server="138.168.244.34"
+#+END_EXAMPLE
+
+- Verify elasticsearch.yml is configured correctly in all nodes.
+
+If not, update elasticsearch.yml. *And restart the ES instance.*
+#+BEGIN_EXAMPLE
+grep "path.repo.*${es_fs_mnt}" /etc/elasticsearch/elasticsearch.yml
+#+END_EXAMPLE
+*** 1.2 Create A Volume, And Mount To One ES VM
+#+BEGIN_EXAMPLE
+# Customize this: the volume folder might be different for different cloud provider.
+export volume_folder="/dev/disk/by-id/*volume*"
+
+echo "$volume_folder"
+sudo mkfs.ext4 -F "$volume_folder"
+
+sudo mkdir -p "$es_fs_mnt"; 
+sudo mount -o discard,defaults "$volume_folder" "$es_fs_mnt"; 
+
+fstab_command="$volume_folder $es_fs_mnt ext4 defaults,nofail,discard 0 0"
+echo "$fstab_command" | sudo tee -a /etc/fstab
+
+cat /etc/fstab
+
+chown elasticsearch:elasticsearch "$es_fs_mnt"
+
+# Create a dummy file
+touch "$es_fs_mnt/helloworld.txt"
+
+ls -lth "$es_fs_mnt"
+#+END_EXAMPLE
+*** 1.3 Setup NFS Server In That VM
+#+BEGIN_EXAMPLE
+# Install NFS server
+apt-get install -y nfs-kernel-server
+
+# Create NFS share folder
+cat > /etc/exports <<EOF
+$es_fs_mnt *(rw,sync,crossmnt,no_subtree_check,no_root_squash)
+EOF
+
+cat /etc/exports
+
+# start nfs service
+service nfs-kernel-server start
+service nfs-kernel-server status
+#+END_EXAMPLE
+*** 2.1 Setup NFS Client In All ES VMs
+#+BEGIN_EXAMPLE
+apt-get install -y nfs-common
+
+mkdir -p "$es_fs_mnt"
+chown elasticsearch:elasticsearch "$es_fs_mnt"
+ls -lt $es_fs_mnt
+#+END_EXAMPLE
+*** 3.1 Mount NFS Client
+#+BEGIN_EXAMPLE
+mount -t nfs "$nfs_server:$es_fs_mnt" "$es_fs_mnt"
+
+# Here we shall see hellworld.txt
+ls -lt $es_fs_mnt
+#+END_EXAMPLE
+*** 3.2 Create ES Filesystem Repository In One Node
+#+BEGIN_EXAMPLE
+# Customize this
+export es_ip="138.168.244.34"
+# Customize this
+export es_port="9200"
+# Customize this
+export repo_name="my_backup"
+
+curl -X PUT "http://$es_ip:$es_port/_snapshot/$repo_name" -d "{
+    \"type\": \"fs\",
+    \"settings\": {
+        \"location\": \"$es_fs_mnt\",
+        \"compress\": true,
+        \"chunk_size\": \"10m\"
+    }
+}"
+
+# List repo
+curl -XGET "http://$es_ip:$es_port/_snapshot/_all"
+#+END_EXAMPLE
+*** 3.3 Create ES Snapshot In Previous Node
+We can backup and restore snapshot for selective indices.[2]
+#+BEGIN_EXAMPLE
+# Customize this
+export snapshot_name="snapshot_20170726"
+# Customize this to backup selective indices
+export es_index_list="my-index-123,my-index-234"
+
+# create snapshot
+# Here we use time to get status. 
+# Run it in a blocking way, with wait_for_completion=true
+time curl -XPUT "http://$es_ip:$es_port/_snapshot/$repo_name/${snapshot_name}?wait_for_completion=true" -d "{
+    \"indices\": \"$es_index_list\",
+    \"ignore_unavailable\": true,
+    \"include_global_state\": false
+}"
+
+ls -lth $es_fs_mnt
+
+# keep watching status
+watch "du -h -d 1 $es_fs_mnt"
+
+# List snapshot
+curl -XGET "http://$es_ip:$es_port/_snapshot/$repo_name/_all"
+#+END_EXAMPLE
+*** 4.1 Umount All NFS Client
+#+BEGIN_EXAMPLE
+es_fs_mnt="/usr/share/elasticsearch/repo"
+umount "$es_fs_mnt"
+ls -lth "$es_fs_mnt"
+#+END_EXAMPLE
+** [[color:#c7254e][Command CheatSheet]]
+*** List Repository And Snapshot
+#+BEGIN_EXAMPLE
+curl -XGET "http://$es_ip:$es_port/_snapshot/_all"
+curl -XGET "http://$es_ip:$es_port/_snapshot/$repo_name/_all"
+#+END_EXAMPLE
+*** Checkt Snapshot Status
+Backup could take hours. Check the snapshot status.[3]
+#+BEGIN_EXAMPLE
+curl -XGET "http://$es_ip:$es_port/_snapshot/$repo_name/$snapshot_name/_status"
+#+END_EXAMPLE
+*** Restore Snapshot
+Need to close the index in target ES cluster, before restore
+#+BEGIN_EXAMPLE
+curl -XPOST "http://$es_ip:$es_port/$index_name/_close"
+curl $es_ip:$es_port/_cat/indices?v
+#+END_EXAMPLE
+
+Restore from snapshot
+#+BEGIN_EXAMPLE
+# Customize this
+export snapshot_name="snapshot_20170726"
+# Customize this to backup selective indices
+export es_index_list="my-index-123,my-index-234"
+
+time curl -XPOST "http://$es_ip:$es_port/_snapshot/$repo_name/$snapshot_name/_restore?wait_for_completion=true" -d "{
+    "indices": "$es_index_list",
+    "ignore_unavailable": true,
+    "include_global_state": false
+}'"
+
+# list indices and shards
+curl $es_ip:$es_port/_cat/indices?v
+curl $es_ip:$es_port/_cat/shards?v | grep " p "
+#+END_EXAMPLE
+*** Restore Snapshot With Replica Changed
+#+BEGIN_EXAMPLE
+# Customize this
+export snapshot_name="snapshot_20170726"
+# Customize this to backup selective indices
+export es_index_list="my-index-123,my-index-234"
+
+time curl -XPOST "http://$es_ip:$es_port/_snapshot/$repo_name/${snapshot_name}/_restore?wait_for_completion=true" -d "{
+    "index_settings": {
+    "index.number_of_replicas": 2
+    },
+    "indices": "$es_index_list",
+    "ignore_unavailable": true,
+    "include_global_state": false
+}'
+
+curl $es_ip:$es_port/_cat/shards?v
+#+END_EXAMPLE
+*** Delete ES Snapshot And Repository
+#+BEGIN_EXAMPLE
+curl -XDELETE "$es_ip:$es_port/_snapshot/$repo_name/$snapshot_name"
+curl -XDELETE "$es_ip:$es_port/_snapshot/$repo_name"
+#+END_EXAMPLE
+
+Posts: [[https://www.dennyzhang.com/tag/Elasticsearch][Tag #Elasticsearch]]
+[display-posts tag="Elasticsearch" posts_per_page="20"]
+
+[1] https://goo.gl/xFodff
+[2] https://goo.gl/7AasNt
+[3] https://goo.gl/8QSXwi
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/backup_elasticsearch"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/backup_elasticsearch
+* misc                                                             :noexport:
+** chat history
+#+BEGIN_EXAMPLE
+From bematech-do-es-7(138.197.208.58:2702)
+
+```16:09:36 [2017-07-25 22:59:38,010][DEBUG][action.index             ] [bematech-do-es-7] failed to execute [index {[staging-abae8b30ac9b11e692000401f8d88101][6d0aa170b6c311e69eed0401f8d88501_aiproduct_plus][_refresh], source[_na_]}] on [[staging-index-abae8b30ac9b11e692000401f8d88101-new3][3]]
+16:09:36 MapperParsingException[failed to parse, document is empty]
+16:09:36     at org.elasticsearch.index.mapper.DocumentParser.parseDocument(DocumentParser.java:151)
+16:09:36     at org.elasticsearch.index.mapper.DocumentMapper.parse(DocumentMapper.java:309)
+16:09:36     at org.elasticsearch.index.shard.IndexShard.prepareIndex(IndexShard.java:580)
+16:09:36     at org.elasticsearch.index.shard.IndexShard.prepareIndexOnPrimary(IndexShard.java:559)
+16:09:36     at org.elasticsearch.action.index.TransportIndexAction.prepareIndexOperationOnPrimary(TransportIndexAction.java:212)
+16:09:36     at org.elasticsearch.action.index.TransportIndexAction.executeIndexRequestOnPrimary(TransportIndexAction.java:224)
+16:09:36     at org.elasticsearch.action.index.TransportIndexAction.shardOperationOnPrimary(TransportIndexAction.java:158)
+16:09:36     at org.elasticsearch.action.index.TransportIndexAction.shardOperationOnPrimary(TransportIndexAction.java:66)
+16:09:36     at org.elasticsearch.action.support.replication.TransportReplicationAction$PrimaryPhase.doRun(TransportReplicationAction.java:639)
+16:09:36     at org.elasticsearch.common.util.concurrent.AbstractRunnable.run(AbstractRunnable.java:37)
+16:09:36     at org.elasticsearch.action.support.replication.TransportReplicationAction$PrimaryOperationTransportHandler.messageReceived(TransportReplicationAction.java:279)
+```
+
+
+Bruno Volpato
+[6:33 PM]
+interesting
+
+
+[6:34]
+@kungwang
+
+
+[6:34]
+it looks like it failed in Replication
+
+
+[6:34]
+ ```16:09:36     at org.elasticsearch.action.support.replication.TransportReplicationAction$PrimaryOperationTransportHandler.messageReceived(TransportReplicationAction.java:279)```
+
+
+Kung Wang
+[6:39 PM]
+@denny.zhang , if this is a elasticsearch bug, maybe it can be fixed in newer version?
+
+
+[6:39]
+the newest one is:
+https://www.elastic.co/downloads/past-releases
+
+which is 2.4.5
+
+
+[6:42]
+we are running 2.3.3 now
+
+
+Kung Wang
+[6:50 PM]
+let me test 2.4.5 locally for database created by 2.3.3
+
+
+Denny Zhang
+[6:52 PM]
+Thanks! As we know, ES may have incompatible issues for different versions.
+
+Let's be cautious with enough tests.
+
+Once you have a proposed version, please let me know.
+
+Thus I can do some fresh deployment tests and in-place upgrade tests. (edited)
+
+
+Kung Wang
+[7:03 PM]
+I have no problem bring up mdm using 2.4.5 elasticsearch server
+
+
+[7:03]
+and the server is using the data created by 2.3.3
+
+
+[7:04]
+no update client version on mdm side
+
+
+Denny Zhang
+[7:09 PM]
+Are you saying we only update ES client library, Kung?
+
+
+Kung Wang [7:16 PM]
+I create another branch in 1.69 to try out new client library, also the new server, but old database
+
+
+[7:17]
+@bruno , since the ES cluster is out of sync(it's bug on ES side not on our side), you can get consistent result using this extra query parameter: ?preference=_primary_first
+```http://localhost:19200/staging-abae8b30ac9b11e692000401f8d88101/6d0aa170b6c311e69eed0401f8d88501_aiproduct_plus/_search?preference=_primary_first
+```
+
+
+[7:18]
+this way, you always get result back consistently, but without this parameter, sometimes, it returns empty result as it may hit replicas
+
+
+[7:19]
+it also proves our theory that ES is out of sync, because from the query result, it is obvious primary shard has the record, but some replicas has not.
+
+
+Kung Wang
+[7:29 PM]
+```get count:
+
+primary first: (always return count 2)
+http://localhost:19200/staging-abae8b30ac9b11e692000401f8d88101/6d0aa170b6c311e69eed0401f8d88501_aiproduct_plus/_count?preference=_primary_first
+
+replica first: (sometimes 0, sometimes 2)
+http://localhost:19200/staging-abae8b30ac9b11e692000401f8d88101/6d0aa170b6c311e69eed0401f8d88501_aiproduct_plus/_count?preference=_replica_first
+```
+
+
+[7:33]
+the issue of ES out of sync may related to mapping error in this issue:
+```https://github.com/elastic/elasticsearch/issues/2354
+```
+
+
+[7:34]
+the fix I see people are talking about is to:
+
+``` force shards to be re-replicated by
+using the update setting API[1] to temporarily set the number of replicas
+to 0 (this will deallocate replicas) and then back to the original value
+(which will cause replicas to be bulk-copied from the primaries).
+```
+
+
+[7:34]
+http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/indices-update-settings.html#indices-update-settings
+Elastic
+Update Indices Settings         | Elasticsearch Reference [5.5]       | Elastic
+Get started with the documentation for Elasticsearch, Kibana, Logstash, Beats, X-Pack, Elastic Cloud, Elasticsearch for Apache Hadoop, and our language clients.
+
+
+
+[7:36]
+so, @denny.zhang , for this index out of sync problem. The only way we can fix it now is to set the # of replicas to 0, force invalidating the replicas for the index, then set to 2 again, and force it to create replicas from primary.
+
+
+[7:37]
+let's see if @bruno would also agree, and see if we can safely doing this without also lost primary
+
+
+Denny Zhang
+[7:40 PM]
+Agree
+
+
+[7:41]
+We can do backup for that index, before we try this.
+
+
+Kung Wang
+[8:03 PM]
+yes
+
+
+Kung Wang
+[8:32 PM]
+@denny.zhang , can you help initial the backup just for that index?
+
+
+[8:32]
+let's get it prepared
+
+
+Denny Zhang
+[8:42 PM]
+Sure. Will do it early tomorrow morning.
+
+We need to create volume and setup NFS service across the whole ES cluster first.
+#+END_EXAMPLE
+** useful link
+https://discuss.elastic.co/t/unable-to-make-snapshots-to-nfs-filesystem/19997/4
+https://bitsofinfo.wordpress.com/2015/05/29/aggregate-backup-elasticsearch-fs-snapshots-across-a-widely-distributed-cluster/
+http://elasticsearch-users.115913.n3.nabble.com/Snapshot-to-Network-File-System-td4057942.html
+** DONE Cannot register snapshot repository in Elasticsearch: Failed to create directory
+   CLOSED: [2015-12-16 Wed 17:22]
+https://groups.google.com/forum/#!msg/elasticsearch/ZbDSa0WwsXo/fHNmZ3TxuQwJ
+
+mkdir -p /mount/backups/my_backup
+chmod 777 /mount/backups/my_backup
+#+BEGIN_EXAMPLE
+
+This is what I run:
+
+curl -XPUT 'http://localhost:9200/_snapshot/my_backup' -d '{
+    "type": "fs",
+    "settings": {
+        "location": "/mount/backups/my_backup",
+        "compress": true
+    }
+}'
+
+The Error I get every time: (for info, just in case i restarted ES...)
+
+{"error":"RepositoryException[[my_backup] failed to create repository]; nested: CreationException[Guice creation errors:\n\n1) Error injecting constructor, org.elasticsearch.common.blobstore.BlobStoreException: Failed to create directory at [/mount/backups/my_backup]\n  at org.elasticsearch.repositories.fs.FsRepository.<init>(Unknown Source)\n  while locating org.elasticsearch.repositories.fs.FsRepository\n  while locating org.elasticsearch.repositories.Repository\n\n1 error]; nested: BlobStoreException[Failed to create directory at [/mount/backups/my_backup]]; ","status":500}
+#+END_EXAMPLE
+** DONE fail to create es repository: folder doesn't exist
+   CLOSED: [2017-02-02 Thu 10:28]
+root@all-in-one-DigitalOceanDeployCookbooks-25:~/restore# curl -XPUT "http://$es_ip:9200/_snapshot/mdm_backup" -d '{
+>     "type": "fs",
+>     "settings": {
+>         "location": "/data/elasticsearch/repo/mdm_backup",
+>         "compress": true
+>     }
+> }'
+{"error":{"root_cause":[{"type":"repository_exception","reason":"[mdm_backup] failed to create repository"}],"type":"repository_exception","reason":"[mdm_backup] failed to create repository","caused_by":{"type":"creation_exception","reason":"Guice creation errors:\n\n1) Error injecting constructor, RepositoryException[[mdm_backup] location [/data/elasticsearch/repo/mdm_backup] doesn't match any of the locations specified by path.repo]\n  at org.elasticsearch.repositories.fs.FsRepository.<init>(Unknown Source)\n  while locating org.elasticsearch.repositories.fs.FsRepository\n  while locating org.elasticsearch.repositories.Repository\n\n1 error","caused_by":{"type":"repository_exception","reason":"[mdm_backup] location [/data/elasticsearch/repo/mdm_backup] doesn't match any of the locations specified by path.repo"}}},"status":500}root@all-in-one-DigitalOceanDeployCookbooks-25:~/restore#
+** DONE fail to create es repository: symbol link doesn't work
+   CLOSED: [2017-02-07 Tue 09:47]
+https://discuss.elastic.co/t/elasticsearch-create-a-snapshot-repository-error/60830/2
+https://github.com/elastic/elasticsearch/issues/20541
+
+elasticsearch@prod-es-25:/data/elasticsearch/repo$ curl -XPUT "http://$es_ip:9200/_snapshot/mdm_backup" -d '{
+>     "type": "fs",
+>     "settings": {
+>         "location": "/data/elasticsearch/repo/mdm_backup",
+>         "compress": true
+>     }
+> }'
+{"error":{"root_cause":[{"type":"repository_verification_exception","reason":"[mdm_backup] [ZpzLJVZzQbSnCKu15BhnFw, 'RemoteTransportException[[prod-es-25][138.197.217.168:9300][internal:admin/repository/verify]]; nested: RepositoryMissingException[[mdm_backup] missing];']]"}],"type":"repository_verification_exception","reason":"[mdm_backup] [ZpzLJVZzQbSnCKu15BhnFw, 'RemoteTransportException[[prod-es-25][138.197.217.168:9300][internal:admin/repository/verify]]; nested: RepositoryMissingException[[mdm_backup] missing];']]"},"status":500}
+** BYPASS [#A] ES snapshot restore: doesn't seem to be able to recognize the snapshot: doesn't matter if not listed in snapshot list api
+   CLOSED: [2017-02-06 Mon 16:06]
+** DONE Elasticsearch create repository warning: symbol link doesn't work
+   CLOSED: [2017-02-09 Thu 10:47]
+#+BEGIN_EXAMPLE
+root@prod-es-19:/data/elasticsearch# curl -XPUT "http://$es_ip:9200/_snapshot/mdm_backup" -d '{
+>     "type": "fs",
+>     "settings": {
+>         "location": "/data/elasticsearch/repo/mdm_backup",
+>         "compress": true
+>     }
+> }'
+{"error":{"root_cause":[{"type":"repository_verification_exception","reason":"[mdm_backup] [ZpzLJVZzQbSnCKu15BhnFw, 'RemoteTransportException[[prod-es-25][138.197.217.168:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-25}{ZpzLJVZzQbSnCKu15BhnFw}{138.197.217.168}{prod-es-25/138.197.217.168:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [4_loTd8OSYacuACn2hD9Pw, 'RemoteTransportException[[prod-es-19][138.68.44.102:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-19}{4_loTd8OSYacuACn2hD9Pw}{138.68.44.102}{prod-es-19/138.68.44.102:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [EL2wij22TT6IeFXFBXcttQ, 'RemoteTransportException[[prod-es-21][138.197.193.202:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-21}{EL2wij22TT6IeFXFBXcttQ}{138.197.193.202}{prod-es-21/138.197.193.202:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and themaster node or that permissions on the store don't allow reading files written by the master node];'], [V_4QjsfLSRi2AhKzfS-x0w, 'RemoteTransportException[[prod-es-18][138.197.217.98:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-18}{V_4QjsfLSRi2AhKzfS-x0w}{138.197.217.98}{prod-es-18/138.197.217.98:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [1MrKLMdIShC-vKG23dBPJw, 'RemoteTransportException[[prod-es-20][138.68.46.207:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-20}{1MrKLMdIShC-vKG23dBPJw}{138.68.46.207}{prod-es-20/138.68.46.207:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [xWtciE7AQGOz7YZKOpmrkg, 'RemoteTransportException[[prod-es-16][138.68.3.169:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-16}{xWtciE7AQGOz7YZKOpmrkg}{138.68.3.169}{prod-es-16/138.68.3.169:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and themaster node or that permissions on the store don't allow reading files written by the master node];'], [AATDvt0RRc6LXeJZX3nwCg, 'RemoteTransportException[[prod-es-24][138.197.217.103:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-24}{AATDvt0RRc6LXeJZX3nwCg}{138.197.217.103}{prod-es-24/138.197.217.103:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [W_oornAwQI-h43HxFCfAvA, 'RemoteTransportException[[prod-es-22][138.197.198.250:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-22}{W_oornAwQI-h43HxFCfAvA}{138.197.198.250}{prod-es-22/138.197.198.250:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [6QnWikDHR_uBNuP2B33lRw, 'RemoteTransportException[[prod-es-23][138.197.202.167:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-23}{6QnWikDHR_uBNuP2B33lRw}{138.197.202.167}{prod-es-23/138.197.202.167:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared betweenthis node and the master node or that permissions on the store don't allow reading files written by the master node];']]"}],"type":"repository_verification_exception","reason":"[mdm_backup] [ZpzLJVZzQbSnCKu15BhnFw, 'RemoteTransportException[[prod-es-25][138.197.217.168:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-25}{ZpzLJVZzQbSnCKu15BhnFw}{138.197.217.168}{prod-es-25/138.197.217.168:9300}{max_local_storage_nodes=1}]. This might indicatethat the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [4_loTd8OSYacuACn2hD9Pw, 'RemoteTransportException[[prod-es-19][138.68.44.102:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-19}{4_loTd8OSYacuACn2hD9Pw}{138.68.44.102}{prod-es-19/138.68.44.102:9300}{max_local_storage_nodes=1}]. This might indicatethat the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [EL2wij22TT6IeFXFBXcttQ, 'RemoteTransportException[[prod-es-21][138.197.193.202:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-21}{EL2wij22TT6IeFXFBXcttQ}{138.197.193.202}{prod-es-21/138.197.193.202:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [V_4QjsfLSRi2AhKzfS-x0w, 'RemoteTransportException[[prod-es-18][138.197.217.98:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-18}{V_4QjsfLSRi2AhKzfS-x0w}{138.197.217.98}{prod-es-18/138.197.217.98:9300}{max_local_storage_nodes=1}]. This mightindicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [1MrKLMdIShC-vKG23dBPJw, 'RemoteTransportException[[prod-es-20][138.68.46.207:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master tothe store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-20}{1MrKLMdIShC-vKG23dBPJw}{138.68.46.207}{prod-es-20/138.68.46.207:9300}{max_local_storage_nodes=1}]. This mightindicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [xWtciE7AQGOz7YZKOpmrkg, 'RemoteTransportException[[prod-es-16][138.68.3.169:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-16}{xWtciE7AQGOz7YZKOpmrkg}{138.68.3.169}{prod-es-16/138.68.3.169:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [AATDvt0RRc6LXeJZX3nwCg, 'RemoteTransportException[[prod-es-24][138.197.217.103:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-24}{AATDvt0RRc6LXeJZX3nwCg}{138.197.217.103}{prod-es-24/138.197.217.103:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [W_oornAwQI-h43HxFCfAvA, 'RemoteTransportException[[prod-es-22][138.197.198.250:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-22}{W_oornAwQI-h43HxFCfAvA}{138.197.198.250}{prod-es-22/138.197.198.250:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [6QnWikDHR_uBNuP2B33lRw, 'RemoteTransportException[[prod-es-23][138.197.202.167:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-23}{6QnWikDHR_uBNuP2B33lRw}{138.197.202.167}{prod-es-23/138.197.202.167:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow
+#+END_EXAMPLE
+*** DONE Elasticsearch create repository warning: symbol link doesn't work
+    CLOSED: [2017-02-09 Thu 10:47]
+#+BEGIN_EXAMPLE
+root@prod-es-19:/data/elasticsearch# curl -XPUT "http://$es_ip:9200/_snapshot/mdm_backup" -d '{
+>     "type": "fs",
+>     "settings": {
+>         "location": "/data/elasticsearch/repo/mdm_backup",
+>         "compress": true
+>     }
+> }'
+{"error":{"root_cause":[{"type":"repository_verification_exception","reason":"[mdm_backup] [ZpzLJVZzQbSnCKu15BhnFw, 'RemoteTransportException[[prod-es-25][138.197.217.168:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-25}{ZpzLJVZzQbSnCKu15BhnFw}{138.197.217.168}{prod-es-25/138.197.217.168:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [4_loTd8OSYacuACn2hD9Pw, 'RemoteTransportException[[prod-es-19][138.68.44.102:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-19}{4_loTd8OSYacuACn2hD9Pw}{138.68.44.102}{prod-es-19/138.68.44.102:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [EL2wij22TT6IeFXFBXcttQ, 'RemoteTransportException[[prod-es-21][138.197.193.202:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-21}{EL2wij22TT6IeFXFBXcttQ}{138.197.193.202}{prod-es-21/138.197.193.202:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and themaster node or that permissions on the store don't allow reading files written by the master node];'], [V_4QjsfLSRi2AhKzfS-x0w, 'RemoteTransportException[[prod-es-18][138.197.217.98:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-18}{V_4QjsfLSRi2AhKzfS-x0w}{138.197.217.98}{prod-es-18/138.197.217.98:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [1MrKLMdIShC-vKG23dBPJw, 'RemoteTransportException[[prod-es-20][138.68.46.207:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-20}{1MrKLMdIShC-vKG23dBPJw}{138.68.46.207}{prod-es-20/138.68.46.207:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [xWtciE7AQGOz7YZKOpmrkg, 'RemoteTransportException[[prod-es-16][138.68.3.169:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-16}{xWtciE7AQGOz7YZKOpmrkg}{138.68.3.169}{prod-es-16/138.68.3.169:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and themaster node or that permissions on the store don't allow reading files written by the master node];'], [AATDvt0RRc6LXeJZX3nwCg, 'RemoteTransportException[[prod-es-24][138.197.217.103:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-24}{AATDvt0RRc6LXeJZX3nwCg}{138.197.217.103}{prod-es-24/138.197.217.103:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [W_oornAwQI-h43HxFCfAvA, 'RemoteTransportException[[prod-es-22][138.197.198.250:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-22}{W_oornAwQI-h43HxFCfAvA}{138.197.198.250}{prod-es-22/138.197.198.250:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [6QnWikDHR_uBNuP2B33lRw, 'RemoteTransportException[[prod-es-23][138.197.202.167:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-23}{6QnWikDHR_uBNuP2B33lRw}{138.197.202.167}{prod-es-23/138.197.202.167:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared betweenthis node and the master node or that permissions on the store don't allow reading files written by the master node];']]"}],"type":"repository_verification_exception","reason":"[mdm_backup] [ZpzLJVZzQbSnCKu15BhnFw, 'RemoteTransportException[[prod-es-25][138.197.217.168:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-25}{ZpzLJVZzQbSnCKu15BhnFw}{138.197.217.168}{prod-es-25/138.197.217.168:9300}{max_local_storage_nodes=1}]. This might indicatethat the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [4_loTd8OSYacuACn2hD9Pw, 'RemoteTransportException[[prod-es-19][138.68.44.102:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-19}{4_loTd8OSYacuACn2hD9Pw}{138.68.44.102}{prod-es-19/138.68.44.102:9300}{max_local_storage_nodes=1}]. This might indicatethat the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [EL2wij22TT6IeFXFBXcttQ, 'RemoteTransportException[[prod-es-21][138.197.193.202:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-21}{EL2wij22TT6IeFXFBXcttQ}{138.197.193.202}{prod-es-21/138.197.193.202:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [V_4QjsfLSRi2AhKzfS-x0w, 'RemoteTransportException[[prod-es-18][138.197.217.98:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-18}{V_4QjsfLSRi2AhKzfS-x0w}{138.197.217.98}{prod-es-18/138.197.217.98:9300}{max_local_storage_nodes=1}]. This mightindicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [1MrKLMdIShC-vKG23dBPJw, 'RemoteTransportException[[prod-es-20][138.68.46.207:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master tothe store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-20}{1MrKLMdIShC-vKG23dBPJw}{138.68.46.207}{prod-es-20/138.68.46.207:9300}{max_local_storage_nodes=1}]. This mightindicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [xWtciE7AQGOz7YZKOpmrkg, 'RemoteTransportException[[prod-es-16][138.68.3.169:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-16}{xWtciE7AQGOz7YZKOpmrkg}{138.68.3.169}{prod-es-16/138.68.3.169:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [AATDvt0RRc6LXeJZX3nwCg, 'RemoteTransportException[[prod-es-24][138.197.217.103:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-24}{AATDvt0RRc6LXeJZX3nwCg}{138.197.217.103}{prod-es-24/138.197.217.103:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [W_oornAwQI-h43HxFCfAvA, 'RemoteTransportException[[prod-es-22][138.197.198.250:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-22}{W_oornAwQI-h43HxFCfAvA}{138.197.198.250}{prod-es-22/138.197.198.250:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow reading files written by the master node];'], [6QnWikDHR_uBNuP2B33lRw, 'RemoteTransportException[[prod-es-23][138.197.202.167:9300][internal:admin/repository/verify]]; nested: RepositoryVerificationException[[mdm_backup] a file written by master to the store [/data/elasticsearch/repo/mdm_backup] cannot be accessed on the node [{prod-es-23}{6QnWikDHR_uBNuP2B33lRw}{138.197.202.167}{prod-es-23/138.197.202.167:9300}{max_local_storage_nodes=1}]. This might indicate that the store [/data/elasticsearch/repo/mdm_backup] is not shared between this node and the master node or that permissions on the store don't allow
+#+END_EXAMPLE
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

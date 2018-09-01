@@ -1,0 +1,101 @@
+* Examine Your Elasticsearch Shards                               :BLOG:Tool:
+  :PROPERTIES:
+  :type:     DevOps,DataBase,Elasticsearch
+  :END:
+
+---------------------------------------------------------------------
+People may start their elasticsearch cluster with very few shards. Or even start with 1 somehow.
+
+[[color:#c7254e][WATCH OUT! You might be in big troubles, when your data grows much bigger.]]
+
+Like slow query performance. Endless service crash with out-of-memory issues. Even worse, adding more VMs won't help!
+
+And the cure? You have to *re-index* them. But it comes with a cost, which you wish not to pay. Trust me, it hurts. Badly.
+
+[[image-blog:Examine Your Elasticsearch Shards][https://www.dennyzhang.com/wp-content/uploads/denny/check_elasticsearch_shard.png]]
+
+---------------------------------------------------------------------
+Note: There are tons of best practice about ES. In this post, we just focus on shard count.
+
+Quite natural, you don't have or don't expect too much data at the very beginning. So you just want to start with very few resource and save the cost.
+
+Let's say you start 3 VMs and create the indices with 2 replicas. This means all data will have 3 copies. Even if one or two VMs crash, you're still safe. Very reliable. And about the shards, you may think to start with a small number as well. Quite reasonable, right?
+*But wait, think again!*
+
+When your indices grow, you can change replica count to a bigger number. After adding more VMs, ES cluster will automatically get more copies of your data. It works like a charm.
+*However you can not change the shard count of existing indices to a bigger number*. (Note: you can't restore from a backup with modified shard count neither).
+
+As your indices grow, your shards keep growing. Very soon, you will get [[color:#c7254e][giant shards]].
+
+In our case, we have started with 5 shards and 2 replicas. And months later one of our indices has grown to 1TB. So each primary shard is as big as 200GB. And our ES VMs has around 28GB RAM with 25 ES VMs in total.
+*So what's the impact of giant shards*?
+
+1. We see more than 3 OOM(Out-Of-Memory) incidences every single day. Pretty scaring. Each shard has 200GB data, but the VMs have only 28GB RAM with 14GB allocated to ES heap. The shard is simply too big for the VMs.
+
+- Adding more VMs won't help. In our example, we have 15 shards(primary+replica) in total. Let's say each shard has already distributed to one dedicated VM. So only 15 VMs can help for this index. And any more VMs than 15 is helpless.
+
+- Query performance is bad, as we can know only 15 VMs can serve the giant index. What's worse, this index still keeps growing.
+
+- Any maintenance of the giant shards takes hours or even days. Just for your reference. Re-indexing[1] this 1TB giant index took us ~17 hours. Force-merge[2] 1TB index took ~25 hours.
+
+As a general best practice, it's better to keep ES shards no bigger than 30GB.[3]
+
+Note: Both giant shards and giant indices should be avoided. Your application might have strong requirements, which can't avoid giant indices. Here we just talk about giant shards.
+
+But how many shards you should choose at the very beginning? Well it depends largely on how much data your index will hold eventually. And what types of queries your applications might perform.
+
+And what I can say is we definitely wish we had started with 50 shards, instead of 5. This would have saved us lots of time and effort. Not to mention the pressure!
+
+Even though I know few about your situations, probably below suggestions will help:
+
+1. Keep watching the size of shard. Whenever any shard grows bigger than 60GB, send out alerts.
+- Check the shard count for existing and new indices. Raise alerts if some indices have too few shards.
+
+From our practice, we have noticed some indices have only 1 shard mysteriously. This is definitely not good, probably some bugs somewhere.
+
+I'm sure you can do better than me, my friend. And you might not run into this unexpected issue. But extra check won't hurt. You can't guarantee this won't happen to your env, specially you have teammates. So it's better to automate the check.
+
+Here comes [[https://github.com/dennyzhang/devops_public/blob/tag_v4/python/check_elasticsearch/check_elasticsearch_shard.py][check_elasticsearch_shard.py]]. [[github:DennyZhang][GitHub]]
+
+[[image-github:https://github.com/dennyzhang/elasticsearch-cli-tool][https://www.dennyzhang.com/wp-content/uploads/denny/github_check_elasticsearch_shard_py.png]]
+
+Hope you can find more peace with your ES shards by reading this blog post.
+
+Please share it, if you find it useful!
+
+Posts: [[https://www.dennyzhang.com/tag/Elasticsearch][Tag #Elasticsearch]]
+[display-posts tag="Elasticsearch" posts_per_page="20"]
+
+[1] www.elastic.co/guide/en/elasticsearch/reference/2.3/docs-reindex.html
+[2] www.elastic.co/guide/en/elasticsearch/reference/2.3/indices-forcemerge.html
+[3] https://qbox.io/blog/optimizing-elasticsearch-how-many-shards-per-index
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/es_shard"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/es_shard
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
