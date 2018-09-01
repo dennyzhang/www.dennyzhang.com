@@ -39,9 +39,7 @@ File me [[https://github.com/DennyZhang/www.dennyzhang.com/issues][Issues]] or s
 #+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
 #+LINK_UP:   
 #+LINK_HOME: 
-* TODO export challenges-kubernetes to blog                        :noexport:
-* TODO [#A] review www.dennyzhang.com and change them into dedicated org file under posts folder
+* TODO misc                                                        :noexport:
 ** TODO github: One command to test your code
-
 ** TODO move book-reading-cloud to www.dennyzhang.com github repo; add a category of Reading
 ** TODO export github Write local memo: today-learning
