@@ -1,0 +1,66 @@
+* Compare Difference Of Two Envs                              :BLOG:Mindset:
+:PROPERTIES:
+:type:   DevOps,Jenkins,Operate
+:END:
+---------------------------------------------------------------------
+Why it's working in my server, but fails in yours? The question is quite common. After careful check and side-by-side test, we may or may not find out the difference. The root cause may be packages conflict, mismatched versions, corrupted files, or something magic.
+
+How we can quickly detect the noticeable differences between two servers?
+
+[[image-blog:Compare Env Difference][https://www.dennyzhang.com/wp-content/uploads/denny/compare_env_difference.jpg]]
+
+---------------------------------------------------------------------
+Let's examine the common differences:
+1. **OS flavor**. OS version may be different. Say the system may work on Ubuntu 14.04 64 bits, but fail on Ubuntu 12.04 32 bits. The server may have less memory than we expect, etc.
+- **Software Packages**. Missing packages, extra packages installed which cause conflict, wrong version is installed, etc.
+- **Libraries**. Wrong JDK version, some jar libraries are missing, etc.
+- **Config files**. Incorrect setting in config files.
+*Luckily all those information can be achieved by multiple existing commands**. For example, we can get all OS details by probing /proc filesystem or commands like free/df/lscpu, etc. All softwares installed after OS installation can be found like [[https://www.dennyzhang.com/list_packages_install][this]]. Jar libraries usually are placed under the folder of $CLASSPATH, etc.
+
+Apparently it demands a lot of learning and experience to get familiar with all these tools. Furthermore human is slow and error-prone.
+*What if we design a common line tool, to automate the check and compare process?**
+- Dump detail info into txt files
+- Different checks are categorized into typical scenario, like OS, Java, Python, etc.
+- Diff the generated list by category.
+
+Here comes list_os_packages cli tool in [[https://github.com/dennyzhang/devops_public/tree/tag_v6/bash/list_os_packages][Github]]. [[github:DennyZhang][GitHub]]
+
+[[image-blog:Compare Env Difference][https://www.dennyzhang.com/wp-content/uploads/denny/compare_machine_different.png]]
+
+For better user experience, we can wrap up it as a Jenkins job: [[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/CompareMachinesAuditReport][CompareMachinesAuditReport]]
+
+[[color:#c7254e][Notice]]: You can find a live demo [[https://www.dennyzhang.com/demo_jenkins][here]].
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_compare_machine_report1.png]]
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_compare_machine_report2.png]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/compare_envs"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/compare_envs
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

@@ -1,0 +1,94 @@
+* Detect Suspicious Linux Processes                          :BLOG:Security:
+:PROPERTIES:
+:type:   DevOps,Security,Linux,Operate
+:END:
+---------------------------------------------------------------------
+Ever bothered by suspicious processes running in your servers? No doubt how dangerous they might be: valuable data leaked, CPU/memory wasted, or DDoS attack other victims, etc.
+
+How to *easily capture those annoying troublemakers*? Even better, get alerted without extra human effort.
+
+[[image-blog:Suspicious Linux Processes][https://www.dennyzhang.com/wp-content/uploads/denny/suspicious_linux_processes.jpg]]
+---------------------------------------------------------------------
+** List all non-kernel processes.
+Usually kernel processes are safe and clean. For kernel processes, either PID(process id) is 2 or PPID(parent process id) is 2. Here is how to get all non-kernel processes.
+#+BEGIN_EXAMPLE
+# rss(resident set size): real RAM usage
+# -deselect: rule out matched processes
+root@denny:~# ps --ppid 2 -p 2 -p 1 \
+   --deselect -o uid,pid,rss,%cpu,command
+UID   PID   RSS %CPU COMMAND
+   0   411  1848  0.0 /lib/systemd/systemd-
+   0   572  2904  0.0 dhclient -1 -v -pf /r
+ 102   902  1244  0.0 dbus-daemon --system
+   0   912  1948  0.0 /lib/systemd/systemd-
+   0  5869   388  0.0 upstart-socket-bridge
+ 200  1953   904  0.0 /usr/sbin/apache2 -k
+ 200  3463  3700  0.0 /usr/sbin/apache2 -k
+  ...  ...
+  ...  ...
+   0  5098  4224  0.0 sshd: ubuntu [priv]
+   0  5139  1748  0.0 /usr/bin/python /usr/
+ 200  5140  3484  0.0 /usr/bin/python /usr/
+ 200  5176  1904  0.0 sshd: ubuntu@pts/3
+ 200  5177  3860  0.0 -bash
+ 200  5193  1200  0.0 tmux attach -t denny
+   0  5297  4224  0.0 sshd: ubuntu [priv]
+  ...  ...
+  ...  ...
+#+END_EXAMPLE
+** Rule out trusted procsses.
+We may have many processes running, which are expected and trusted. e.g apache2, tomcat7, mysqld, etc. To avoid distraction, build a white list especial for your project.
+** Sort processes by memory and cpu
+We're more concerned about suspicious processes using noticeable resource.
+#+BEGIN_SRC sh
+# Sort by memory first, then cpu
+ps --ppid 2 -p 2 -p 1 --deselect \
+  -o uid,pid,rss,%cpu,command, \
+  --sort -rss,-cpu
+#+END_SRC
+** Automate Detection Process and Get Alerts
+Here comes a python script in Github ([[url-external:https://github.com/dennyzhang/detect_suspicious_process/blob/tag_v1/detect_suspicious_process.py][detect_suspicious_process.py]]). 
+
+You can use it to capture all unknown process. 
+
+1. Create a crontab or scheduled jenkins job to check the count of suspicous processes.
+- Raise alert, if the count is not 0 or it changes.
+
+It might take a while to build a suitable white list. Once it's done, your servers are always more secured and managed!
+
+[[image-github:https://github.com/dennyzhang/detect_suspicious_process][https://www.dennyzhang.com/wp-content/uploads/denny/github-detect-suspicious-process.jpg]]
+
+More Reading: 
+- [[https://www.dennyzhang.com/nmap_port_scan][Automate Insecure Ports Check By Nmap]]
+- [[https://www.dennyzhang.com/linux_security][9 Useful Tips For Linux Server Security]]
+- [[https://www.dennyzhang.com/docker_bench_security][docker-bench-security: Audit Well-Known Docker Vulnerabilities]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/suspicious_process"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/suspicious_process
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

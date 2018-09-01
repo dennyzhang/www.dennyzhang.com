@@ -1,0 +1,61 @@
+* List The Slowest Steps In Deployment                        :BLOG:Mindset:
+:PROPERTIES:
+:type:   DevOps,Metric,Deployment
+:END:
+---------------------------------------------------------------------
+System deployment and upgrade usually need to perform many actions. If we can detect and improve time-consuming steps, we shall get a better customer satisfaction or a shorter maintenance time window. **However tons of steps are involved, how we can easily examine and figure out the bottleneck?**
+
+[[image-blog:Performance Troubleshooting][https://www.dennyzhang.com/wp-content/uploads/denny/slow_steps.png]]
+---------------------------------------------------------------------
+You may think, if we can make sure all critical actions log messages with same timestamp format, we could get the time elapsed for each step.
+*The answer is Yes and No**. Usually deployment may run automation scripts of several components or modules. e.g some are in bash, some in Chef/Puppet/Ansbile, or even some in Python, etc. It's hard to enforce the practice, especially for the timestamp format convention. The good thing is that every professional tool/engineer will do effective logging for all critical actions, if not all. So the missing part here is how to attach the unified timestamp.
+
+Fortunately Jenkins has a useful plugin called [[https://wiki.jenkins-ci.org/display/JENKINS/Timestamper][Timestamper]]. It can add timestamps to the Console Output of Jenkins jobs.
+
+[[image-blog:Jenkins Timestamper Plugin][https://www.dennyzhang.com/wp-content/uploads/denny/jenkins_timestamper_plugin.png]]
+
+Here is the idea:
+1. Automate deployment procedure as a bash script. And run it as a Jenkins job.
+- Enable Jenkins Timestamper plugin properly for this Jenkins job.
+- Caculate time performance of each steps by parsing Jenkins Console Output line by line.
+- Sort steps by time performance with a descending order.
+
+For better user experience, I've defined a Jenkins job: [[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/DiagnosticJenkinsJobSlow][DiagnosticJenkinsJobSlow]]. [[github:DennyZhang][GitHub]]
+
+Below is a real example for how it works.
+
+[[color:#c7254e][Notice]]: You can find a live demo [[https://www.dennyzhang.com/demo_jenkins][here]].
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_DiagnosticJenkinsJobSlow1.jpg]]
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_DiagnosticJenkinsJobSlow2.jpg]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/list_slowest_steps"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/list_slowest_steps
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

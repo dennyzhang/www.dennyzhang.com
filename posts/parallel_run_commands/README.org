@@ -1,0 +1,184 @@
+* Parallel Run Commands On Multiple Servers                      :BLOG:Tool:
+:PROPERTIES:
+:type:   DevOps,Jenkins,Operate
+:END:
+---------------------------------------------------------------------
+If maintaining servers is one of your routine jobs, occasionally you will need to run commands on multiple servers. Say restart service, update firewall rules, grep files, etc.
+
+It's a bit boring and inefficient to manually ssh and run commands one by one.
+
+[[image-blog:Parallel Commands][https://www.dennyzhang.com/wp-content/uploads/denny/parallel_command.jpg]]
+---------------------------------------------------------------------
+Update Per Audience Feedback:
+- Thanks to [[https://www.dennyzhang.com/parallel_run_commands/?replytocom=15391#respond][Madhu Nagaraju C]]: Create Jenkins job from config.xml
+---------------------------------------------------------------------
+Manual steps are slow. If you have multiple servers, you will complain. If your network to servers is doggy, you will complain more. To automate this, people usually write a tiny bash script running a loop on the servers.
+#+BEGIN_SRC sh
+for server in $server_list; do
+    ssh -i $ssh_key_file \
+        -o StrictHostKeyChecking=no \
+        -p $ssh_port root@$server
+done
+#+END_SRC
+
+It works nicely. From my working experience, I do see two major improvement points:
+1. It can be faster, if we can run remote commands **parallelly not sequentially**. The more servers involved, the bigger difference it would be. In certain scenarios, it even means less downtime or faster response.
+- **Track command history and console output**. This will be helpful for trouble shooting, since it enables us to better [[https://www.dennyzhang.com/track_change_history][audit servers' change history]],
+
+Using ansible, we can easily fix point #1 like below.
+#+BEGIN_SRC sh
+# install package
+sudo pip install ansible
+
+# define a list of hosts to manage
+cat > my_hosts <<EOF
+104.131.134.190
+107.170.211.46
+107.170.242.31
+EOF
+
+# parallel run remote ssh commands
+ansible all -i my_hosts \
+--private-key=$ssh_key_file \
+-u root -m script -a "test.sh"
+#+END_SRC
+
+For the audit purpose in point #2, we can wrap up above ansible command as a Jenkins job: [[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/RunCommandOnServers][RunCommandOnServers]].
+[[github:DennyZhang][GitHub]]
+
+[[image-github:https://github.com/dennyzhang/remote-commands-servers][https://www.dennyzhang.com/wp-content/uploads/denny/github_run_command_server1.png]]
+
+[[image-github:https://github.com/dennyzhang/remote-commands-servers][https://www.dennyzhang.com/wp-content/uploads/denny/github_run_command_server2.jpg]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/parallel_run_commands"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/parallel_run_commands
+* misc                                                             :noexport:
+http://www.ameir.net/blog/archives/380-run-multiple-ssh-commands-in-parallel-with-gnu-parallel.html
+
+#+BEGIN_EXAMPLE
+Every true sysadmin has been in this predicament - "I need to run this command on a bunch of machines." The typical approach is to create a for loop, and run the command serially. This works well, but if a) you have tons of hosts, or b) the command takes a while to run on each machine, you may be looking for something a bit more efficient.
+
+Here's an example that gets a list of hosts using aws-cli, and restarts httpd on them. In your case, update the command and key path as needed.
+
+Shell
+
+HOSTS=`aws ec2 describe-instances --filters "Name=tag:env,Values=production" "Name=tag:Name,Values=web-frontend" --query "Reservations[].Instances[].PublicDnsName" --region "us-east-1" | jq -r .[]`
+echo -n $HOSTS | parallel -vv --gnu -j +3 -d " " -I HOST "ssh -i ~/my-key.pem -l root HOST 'service httpd restart'"
+
+#+END_EXAMPLE
+** web page: Ansible: Post-Install Setup                          :noexport:
+https://devopsu.com/guides/ansible-post-install.html
+*** webcontent                                                    :noexport:
+#+begin_example
+Location: https://devopsu.com/guides/ansible-post-install.html
+  * {{ DevOpsU }}
+  * How-To Guides
+  * Books
+  * Blog
+  * Newsletters
+  * About
+
+Ansible: Post-Install Setup
+
+Inventory hosts file
+
+After you've installed Ansible, then you'll want Ansible to know which servers to connect to and
+manage.
+
+Ansible's inventory hosts file is used to list and group your servers. Its default location is /etc
+/ansible/hosts.
+
+If you want to have your Ansible hosts file in another location, then you can set this environment
+variable:
+
+> export ANSIBLE_HOSTS=/root/ansible_hosts
+
+Or you can specify the Ansible hosts location when running commands with the --inventory-file= (or
+-i) flag:
+
+> ansible all --inventory-file=/root/ansible_hosts -m ping
+
+For more on the inventory hosts file, see: http://docs.ansible.com/intro_inventory.html
+
+Set up connectivity to the servers
+
+For this example, I'll assume you have servers with the hostnames child1.dev and child2.dev. When
+doing your own install, replace those hostnames with your own.
+
+Your /etc/ansible/hosts file would look like this:
+
+child1.dev
+child2.dev
+
+You want to be able to connect to your servers without having to enter a password every time. If
+you don't already have ssh key authentication set up to your children nodes, then do the
+following...
+
+Generate the ssh key on the master node:
+
+root@master:~# ssh-keygen -t rsa -C "name@example.org"
+
+Then copy your public key to the servers with ssh-copy-id:
+
+root@master:~# ssh-copy-id user@child1.dev
+root@master:~# ssh-copy-id user@child2.dev
+
+Now you can test the connectivity:
+
+root@master:~# ansible all -m ping
+child1.dev | success >> {
+    "changed": false,
+    "ping": "pong"
+}
+
+child2.dev | success >> {
+    "changed": false,
+    "ping": "pong"
+}
+
+Next...
+
+Now you're ready to actually manage your servers with Ansible's playbooks:
+http://docs.ansible.com/playbooks_intro.html
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
+                  New Edition Released! "Taste Test: Puppet, Chef, Salt, Ansible"
+
+Get the latest tips and training in your inbox:
+
+[arrow]
+                                             Subscribe
+                           ~2 per month, spam-free, instant unsubscribe
+by Matt Jaynes  |  matt@devopsu.com
+
+#+end_example
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

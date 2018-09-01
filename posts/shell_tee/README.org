@@ -1,0 +1,250 @@
+* Shell Redirect Output To File, And Still Have It On Screen    :BLOG:Linux:
+:PROPERTIES:
+:type:   DevOps,Shell
+:END:
+---------------------------------------------------------------------
+Ever need to check the output of shell functions/scripts? If no fatal/error messages found, resume normal procedure. Otherwise, go to error handling.
+
+Usually people solve this, by redirecting stdout/stderr to grep command. *But What About Time-consuming Functions/Scripts?* Say several minutes. During this period, end users are blinded with nothing printed. It could be confusing and scaring to them.
+
+[[image-blog:Linux Tee Command][https://www.dennyzhang.com/wp-content/uploads/denny/linux_tee.png]]
+---------------------------------------------------------------------
+** Problem Explained
+Let's examine below code snippet.
+- L10, call a user defined function, which might be time-consuming and error-prone.
+- L11-L17, run logic conditionally, according to my_fun output.
+
+People may be stucked at L10 for quite a while, and nowhere to check what's going on. This is definitely not good.
+#+BEGIN_SRC sh -n
+#!/bin/bash -e
+function my_fun() {
+    set -e
+    echo "Run function"
+    # Simulate time-consuming steps
+    # And they might fail as well
+    sleep 3
+    echo "Action done: my_fun"
+}
+output=$(my_fun)
+if echo "$output" | grep "Action done" \
+               1>/dev/null 2>&1; then
+   echo "Do something..."
+else
+   echo "Error. msg: $output"
+   exit 1
+fi
+
+echo "Action Done"
+#+END_SRC
+** Use Linux tee Command.
+[[https://en.wikipedia.org/wiki/Tee_(command)][tee]] is a command using standard streams which reads standard input and writes it to both standard output and one or more files, effectively duplicating its input.
+
+Unlike usual pipe redirection, tee can do two redirections. Using tee, users can see *detail progress* now.
+#+BEGIN_SRC sh
+...
+
+$my_fun 2>&1 | tee -a /tmp/test.log
+
+if grep "Action done" /tmp/test.log \
+             1>/dev/null 2>&1; then
+  ...
+else
+  ...
+fi
+#+END_SRC
+** Don't Get Fooled By Exit Code.
+What $? would be, after running below commands? $? is 0, zero! _Surprising, isn't it?_
+
+#+BEGIN_SRC sh
+ls /DIR_WONTEXST | tee -a test.log
+echo $?
+#+END_SRC
+
+This is a tricky part of shell scripting. Running a list of commands in one line, we get the exit code of the last command. If you want to fail this line whenever any command fails, run *set -o pipefail*. See more discussion in [[http://stackoverflow.com/questions/1221833/bash-pipe-output-and-capture-exit-status][StackOverflow]].
+** Put It All Together
+1. Redirect output to both terminal and log file by _tee_ command
+2. Use _set -o pipefail_, to detect possible failures.
+
+Updated version:
+#+BEGIN_SRC sh
+#!/bin/bash -e
+function my_fun() {
+    set -e
+    echo "Run function"
+    # Simulate time-consuming steps
+    # And they might fail as well
+    sleep 3
+    echo "Action done: my_fun"
+}
+
+set -o pipefail
+tmp_log_file=/tmp/my_fun.log
+
+my_fun 2>&1 | tee -a "$tmp_log_file"
+if grep "Action done" "$tmp_log_file" \
+               1>/dev/null 2>&1; then
+   echo "Do something..."
+else
+   echo "Error. msg: $output"
+   exit 1
+fi
+
+echo "Action Done"
+#+END_SRC
+
+More Reading: [[https://www.dennyzhang.com/shellcheck][Challenge Your Shell Scripts By ShellCheck]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/shell_tee"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/shell_tee
+* misc                                                             :noexport:
+** _Sponsored Ads_                                                :noexport:
+_Sponsored Ads_*:
+#+BEGIN_HTML
+Use windows based virtual PCs to run multiple virtual machines & operating systems on the cloud with 99.9% uptime guarantee & free migration support from <a href=http://www.clouddesktoponline.com/ title="Citrix Virtual Desktop">www.CloudDesktopOnline.com</a>. Visit <a href=http://www.apps4rent.com/ title="Apps4Rent - Exchange, SharePoint, Desktop Hosting">Apps4Rent.com</a> today to explore more about clouds products for your enterprise.
+#+END_HTML
+
+** misc
+Logging command output: ls -l | tee ls.log
+*** TODO [#A] bash doesn't return exit code correctly
+http://stackoverflow.com/questions/1221833/bash-pipe-output-and-capture-exit-status
+
+#+BEGIN_SRC sh
+#!/bin/bash
+ls /tmpabab_WONTEXIST | tee -a /tmp/test.log
+echo $?
+#+END_SRC
+**** grep
+Denny-mac:~ mac$ cat -n ./test.sh
+     1	#!/bin/bash
+     2	ls /tmpabab_WONTEXIST | grep something
+     3	echo $?
+Denny-mac:~ mac$ bash ./test.sh
+ls: /tmpabab_WONTEXIST: No such file or directory
+1
+**** tee
+Denny-mac:~ mac$ cat -n ./test.sh
+     1	#!/bin/bash
+     2	ls /tmpabab_WONTEXIST | tee -a /tmp/test.log
+     3	echo $?
+Denny-mac:~ mac$ bash ./test.sh
+ls: /tmpabab_WONTEXIST: No such file or directory
+0
+*** DONE [#A] get detail output for update_docker.sh
+   CLOSED: [2016-09-10 Sat 12:04]
+# Run chef update inside docker
+execute "Update docker by chef, check /var/log/chef/update_docker.log for detail" do
+  command "ssh mdmdocker.totvs.com /root/mdmdevops/misc/update_docker.sh"
+  timeout 3600 # timeout for 60 min
+  action :run
+end
+
+#+BEGIN_EXAMPLE
+#!/bin/bash -e
+##-------------------------------------------------------------------
+## File : update_docker.sh
+## Author : Denny <denny.zhang001@gmail.com>
+## Description :
+## --
+## Created : <2015-03-10>
+## Updated: Time-stamp: <2015-03-20 10:25:45>
+##-------------------------------------------------------------------
+. /etc/profile
+force_update=${1:-"no"}
+chef_recipe=${2:-"jenkins-mdm"}
+
+function log() {
+    local msg=${1?}
+    echo -ne `date +['%Y-%m-%d %H:%M:%S']`" $msg\n"
+
+    if [ -n "$LOG_FILE" ]; then
+        echo -ne `date +['%Y-%m-%d %H:%M:%S']`" $msg\n" >> $LOG_FILE
+    fi
+}
+
+LOG_FILE="/var/log/chef/update_docker.log"
+[ -d /var/log/chef ] || mkdir -p /var/log/chef
+
+log "Run update_docker.sh, check $LOG_FILE for detail"
+# Checkout code to run chef update
+cd /root/mdmdevops/cookbooks/jenkins-mdm
+
+output=$(git pull)
+if echo $output | grep 'Already up-to-date.'; then
+    if [ "$force_update" = "no" ]; then
+        log "no code change, skip update"
+        exit 0
+    fi
+fi
+
+log "Run berks install, retry multiple times"
+berks install || berks install || berks install
+
+log "copy cookbooks by tripping version number"
+for f in `ls -1 /root/.berkshelf/cookbooks`;do
+ mkdir -p /root/mdmdevops/cookbooks/${f%-*}/;
+ cp -r /root/.berkshelf/cookbooks/$f/* /root/mdmdevops/cookbooks/${f%-*}/;
+done
+
+# Perform chef update
+echo "cookbook_path '/root/mdmdevops/cookbooks'" > /root/docker.rb
+echo "{\"run_list\": [\"recipe[$chef_recipe]\"]}" > /root/docker.json
+chef-solo --config /root/docker.rb -j /root/docker.json -L $LOG_FILE
+################################################################################
+## File : current.org ends
+#+END_EXAMPLE
+*** DONE [#A] shell: when run echo in function, dump to stdout
+   CLOSED: [2016-09-10 Sat 12:04]
+#+BEGIN_SRC sh
+function add_instance() {
+    set -e
+    master_cfg_file=${1?}
+    slavenode_name=${2?}
+    slave_cfg_file=${3?}
+    driver=${4?}
+
+    masternode_ip=$(get_ip $master_cfg_file $driver)
+    if [ -z "$masternode_ip" ]; then
+        echo "ERROR: add_instance fail to get master node ip"
+        exit 1
+    fi
+
+    create_couchbase_slave_node $slavenode_name $slave_cfg_file $driver
+    slavenode_ip=$(get_ip $slave_cfg_file $driver)
+
+    if [ -z "$slavenode_ip" ]; then
+        echo "ERROR: fail to create slavenode"
+        exit 1
+    fi
+    add_slave_to_cluster $masternode_ip $slavenode_ip $slavenode_name $slave_cfg_file $driver
+}
+#+END_SRC
+*** useful link
+http://www.monblocnotes.com/node/1942
+
+https://www.reddit.com/r/devops/comments/502mqd/let_scripts_dump_logs_to_both_file_and_terminal/
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

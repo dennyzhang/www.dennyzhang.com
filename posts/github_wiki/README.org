@@ -1,0 +1,523 @@
+* Effective Technical Writing In GitHub                         :BLOG:GitHub:
+  :PROPERTIES:
+  :type:     DevOps, Git
+  :END:
+---------------------------------------------------------------------
+Delivering short and precise documents quickly is a key asset for DevOps. Nowdays, hosting code in GitHub is not only fancy but also overwhelming. Consequently more and more documentation effort goes to GitHub.
+
+As a late fanboy of Atlassian Confluence, I also make my preference in GitHub wiki now. Enclosed are tips for **how to do effective documentation in GitHub**.
+
+[[image-blog:GitHub WIKI][https://www.dennyzhang.com/wp-content/uploads/denny/github_wiki.png]]
+---------------------------------------------------------------------
+Tons of discussions for "wiki VS Confluence" are ongoing in the Internet. Here we just assume you're in favor of wiki, which GitHub is using. Bitbucket and GitHub are very similar. Experience illustrated in this article should apply to them both nicely.
+** Tips: Manage GitHub wiki in a GIT way.
+[[image-blog:GitHub clone WIKI][https://www.dennyzhang.com/wp-content/uploads/denny/github_clone_wiki.png]]
+
+Usually we edit wiki in GitHub website. The most charming point of GitHub wiki is everything is stored in a git repo. We can git clone all pages, *do the editing offline* and push the change later. You get everything locally as plain text. As a GNUS guy or even an emacs user, you certainly know the difference and value. Right? Furthermore, compared to Atlassian Confluence, data backup is much easier and it's 100% free and reliable!
+** Tips: Insert table of contents for lengthy pages.
+[[image-blog:WIKI Table Of Content][https://www.dennyzhang.com/wp-content/uploads/denny/wiki_toc.jpg]]
+
+For large pages with many sections and bullet points, we'd better insert TOC (Table Of Contents). Currently GitHub doesn't have built-in support. It can be done easily by a third part tool, [[https://github.com/ekalinin/github-markdown-toc][gh-md-toc]].
+#+BEGIN_SRC sh
+wget -O /tmp/gh-md-toc \
+https://raw.githubusercontent.com/ekalinin/github-markdown-toc/master/gh-md-toc
+
+chmod 755 /tmp/gh-md-toc
+
+# generate TOC for a wiki page
+bash /tmp/gh-md-toc ./test.md
+#+END_SRC
+** Tips: Generate link for a block of code.
+Linus Torvalds said: Talk is cheap, show me the code. One step further, show me the code link.
+
+[[https://github.com/dennyzhang/devops_public/blob/tag_v6/common_library/paramater_helper.sh#L62-L73][https://github.com/.../.../paramater_helper.sh#L62-L73]]
+
+Compose your link nex time, when you need to refer a code block to your colleagues.
+** Tips: Generate link for the comparison of two revision.
+Revision comparison can be done easily in GitHub GUI. Example: [[https://github.com/dennyzhang/devops_public/compare/d20afb57e5ab7c8c5d3b7dcd2d2bcccd34a857c8...de45e8fbf9c2f1edc086ac1edf38e4992cc5fdfd][https://github.com/.../.../compare/sha1...sha2]].
+
+Comparison between branches and tags are also supported like [[https://github.com/dennyzhang/devops_public/compare][this]].
+
+[[image-blog:GitHub comparison][https://www.dennyzhang.com/wp-content/uploads/denny/github_comparison.png]]
+** Tips: Resize image in wiki pages.
+Resize big images to better fit wiki pages. Paste below lines to your wiki, you will see the difference.
+#+BEGIN_EXAMPLE
+# full size
+![](https://www.dennyzhang.com/wp-content/uploads/denny/wiki_toc.jpg)
+
+# resize image to smaller
+<img src="https://www.dennyzhang.com/wp-content/uploads/denny/wiki_toc.jpg" width="100">
+#+END_EXAMPLE
+** Tips: Export Github Wiki To PDF.
+You may want to export one private wiki to a user-friendly PDF. Try [[http://pandoc.org][pandoc]], a universal document converter.
+#+BEGIN_SRC sh
+# Install pandoc
+sudo apt-get install -y pandoc
+
+# brew install pandoc
+
+# Sample Conversion
+pandoc -f markdown_github -o output.pdf ./input.md
+#+END_SRC
+
+More Reading: [[https://www.dennyzhang.com/avoid_toi_communication][Avoid Unnecessary Communication Of TOI]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/github_wiki"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/github_wiki
+* github                                                  :noexport:Personal:
+** send out github pull request
+https://github.com/urbandecoder/couchbase/pull/37
+- fork to my local repo
+- create pull request
+** DONE [#A] github generate code review request                  :IMPORTANT:
+   CLOSED: [2014-07-17 Thu 16:39]
+https://github.com/dennyzhang/server-check/compare/master...env172
+
+There are 2 main work flows when dealing with pull requests:
+
+Pull Request from a forked repository
+Pull Request from a branch within a repository
+
+git branch denny
+git push origin denny
+git checkout denny
+
+git commit -am "avoid logfile truncated when service start"
+git push origin denny
+
+https://github.com/TOTVS/chef/pull/1/files
+*** web page: Pull Request Tutorial by yangsu
+http://yangsu.github.io/pull-request-tutorial/
+**** webcontent                                                    :noexport:
+#+begin_example
+Location: http://yangsu.github.io/pull-request-tutorial/
+Pull Request Tutorial
+
+A Visual Guide to Pull Requests
+
+Download .zip Download .tar.gz View on GitHub
+---------------------------------------------------------------------------------------------------
+
+Pull Request Tutorial
+
+What is a Pull Request?
+
+From Github's Using Pull Requests Page
+
+    Pull requests let you tell others about changes you've pushed to a GitHub repository. Once a
+    pull request is sent, interested parties can review the set of changes, discuss potential
+    modifications, and even push follow-up commits if necessary.
+
+Pull Requests are commonly used by teams and organizations collaborating using the Shared
+Repository Model, where everyone shares a single repository and topic branches are used to develop
+features and isolate changes. Many open source projects on Github use pull requests to manage
+changes from contributors as they are useful in providing a way to notify project maintainers about
+changes one has made and in initiating code review and general discussion about a set of changes
+before being merged into the main branch.
+
+Here's an example pull request from jQuery's github repo.
+
+Creating a Pull Request
+
+There are 2 main work flows when dealing with pull requests:
+
+ 1. Pull Request from a forked repository
+ 2. Pull Request from a branch within a repository
+
+Here we are going to focus on 2.
+
+Creating a Topical Branch
+
+First, we will need to create a branch from the latest commit on master. Make sure your repository
+is up to date first using
+
+git pull origin master
+
+Note: git pull does a git fetch followed by a git merge to update the local repo with the remote
+repo. For a more detailed explanation, see this stackoverflow post.
+
+To create a branch, use git checkout -b <new-branch-name> [<base-branch-name>], where
+base-branch-name is optional and defaults to master. I'm going to create a new branch called
+pull-request-demo from the master branch and push it to github.
+
+git checkout -b pull-request-demo
+git push origin pull-request-demo
+
+Creating a Pull Request
+
+To create a pull request, you must have changes committed to the your new branch.
+
+Go to the repository page on github. And click on "Pull Request" button in the repo header.
+
+Pull Request Button
+
+Pick the branch you wish to have merged using the "Head branch" dropdown. You should leave the rest
+of the fields as is, unless you are working from a remote branch. In that case, just make sure that
+the base repo and base branch are set correctly.
+
+Head Branch Dropdown
+
+Enter a title and description for your pull request. Remember you can use Github Flavored Markdown
+in the description and comments
+
+Title and Description
+
+Finally, click on the green "Send pull request" button to finish creating the pull request.
+
+Send Pull Request
+
+You should now see an open pull request.
+
+Open Pull Request
+
+Using a Pull Request
+
+You can write comments related to a pull request,
+
+Writing a comment
+
+view all the commits by all contained by a pull request under the commits tab,
+
+Commits tab
+
+or see all the file changes from the pull request across all the commits under the "Files Changed"
+tab.
+
+Files Changed
+
+You can event leave a comment on particular lines in the code change simply by hovering to the left
+of a line and clicking on the blue note icon.
+
+Comment in line
+
+Merging a Pull Request
+
+Once you and your collaborators are happy with the changes, you start to merge the changes back to
+master. There are a few ways to do this.
+
+First, you can use github's "Merge pull request" button at the bottom of your pull request to merge
+your changes. This is only available when github can detect that there will be no merge conflicts
+with the base branch. If all goes well, you just have to add a commit message and click on "Confirm
+Merge" to merge the changes.
+
+Merge pull request buttonConfirm Merge
+
+Merging Locally
+
+If the pull request cannot be merged online due to merge conflicts, or you wish to test things
+locally before sending the merge to the repo on Github, you can perform the merge locally instead.
+
+You can find the instruction to do so by clicking the (i) icon on the merge bar.
+
+Merging Instructions
+
+However, there's an alternative that may be better for long standing branches.
+
+Squash, Rebase, and Cherry Pick
+
+In long standing branches, merging can often cause lots problems when updating if changes in a
+given branch conflict with changes recently merged into the master branch. If there are many
+commits to the same file, git merge may force you to fix the same merge conflicts over and over
+again, causing a real headache. While there are many ways to mitigate this issue, such as enabling
+git rerere to reuse recorded resolution of conflict merges, squashing a series of related changes
+into 1 commit and cherry-picking it into the master is a great solution, especially for topic
+branches and isolated features.
+
+There are several advantages of performing merges this way. First, you only have to deal with merge
+conflicts once, since all commits are compressed into 1. Second, each commit represents an entire
+set of changes required for a feature or task, which makes it easy to pin point bugs and other
+problems when they arise and to remove a change set when it's no longer necessary.
+
+There are also disadvantages of squashing commits. First, you will lose the details and information
+for each change, as all changes squashed are compressed together. So the net effect is the same.
+Second, it can be dangerous and problematic if used incorrectly, such as squashing commits that
+have been pushed to the remote server and others depend on for their work. Because squashing is
+changing the git history, you can cause many conflicts that way. However, if you are using this
+locally or you are the only person working on your branch and you know exactly what you are doing.
+
+To perform this, use the following command
+
+git rebase -i HEAD~10
+
+-i stands for interactive mode and HEAD~10 means to examine the 10 latest commits.
+
+If you see an fatal: Needed a single revision error, this usually means that there are not that
+many commits left. Try a lower number.
+
+This will open up an editor with git commit messages that looks something like this:
+
+Git Rebase
+
+There are many options available at this stage. These are detailed in this github help page. Here,
+I'm going to simply squash all changes in this pull request into one. Save and close the editor.
+
+Squashing commits
+
+The next screen will pop up asking you to edit your commit messages. You can choose to edit them or
+simply continue. Save and close the editor.
+
+Squash Result
+
+Once your squash completes, you can push it to the remote repo. In this case, these squashed
+commits have been pushed to the server. However, I'm the only user of this branch and can safely
+force push the commit to update the git repo.
+
+git push origin pull-request-demo -f
+
+To merge the commit, we will use git cherry-pick.
+
+Cherry Picking
+
+You are done! Github should detect the changes and update the pull request. You can then marked the
+pull request as merged and optionally delete the branch.
+
+Closing a Pull Request
+
+You can simply click on the "Close" button on the pull request to close it. Optionally, you can
+delete the branch directly using the "Delete this branch" button.
+
+Closing a Pull Request
+
+Pull Request Tutorial is maintained by yangsu
+This page was generated by GitHub Pages. Tactile theme by Jason Long.
+
+#+end_example
+** DONE github code block
+   CLOSED: [2014-07-15 Tue 17:59]
+https://help.github.com/articles/github-flavored-markdown
+Fenced code blocks
+
+Standard Markdown converts text with four spaces at the beginning of each line into a code block; GFM also supports fenced blocks. Just wrap your code in ``` (as shown below) and you won't need to indent it by four spaces. Note that although fenced code blocks don't have to be preceded by a blank line-unlike indented code blocks-we recommend placing a blank line before them to make the raw Markdown easier to read.
+
+Here's an example:
+
+```
+function test() {
+  console.log("notice the blank line before this function?");
+}
+```
+** # --8<-------------------------- separator ------------------------>8--
+** DONE github的readme.md链接其它文件: [prop_collector](./prop_collector)
+   CLOSED: [2014-01-03 Fri 20:50]
+http://stackoverflow.com/questions/7653483/github-relative-link-in-markdown-file
+https://github.com/dennyzhang/prop_analysis/blob/denny/README.md
+[prop_collector](./prop_collector)
+** markdown add table
+#+begin_example
+| Name                                   | Comment                                                                      |
+|:----------------------------------------|------------------------------------------------------------------------------|
+| Checkout github                        | https://github.com/dennyzhang/xiaozibao                                       |
+| Install mysql-server                   |                                                                              |
+| Install mysql-client libmysqlclient-dev|                                                                              |
+| Install erlang                         | sudo apt-get install erlang / yum install erlang / brew install erlang
+| Install rabbitmq-server                |                                                                              |
+#+end_example
+** markdown link picture, image
+#+begin_example
+![](misc/design.jpg)
+![](misc/pic1.png)  ![](misc/pic2.png)
+#+end_example
+** DONE github markdown add a block of pre text
+   CLOSED: [2014-06-15 Sun 13:58]
+
+> Blockquotes are very handy in email to emulate reply text.
+> This line is part of the same quote.
+
+https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#blockquotes
+#+begin_example
+Blockquotes
+
+> Blockquotes are very handy in email to emulate reply text.
+> This line is part of the same quote.
+
+Quote break.
+
+> This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can *put* **Markdown** into a blockquote.
+Blockquotes are very handy in email to emulate reply text. This line is part of the same quote.
+Quote break.
+
+This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can put Markdown into a blockquote.
+#+end_example
+** DONE github markdown bold text
+   CLOSED: [2014-06-15 Sun 14:07]
+https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#blockquotes
+#+begin_example
+Emphasis
+
+Emphasis, aka italics, with *asterisks* or _underscores_.
+
+Strong emphasis, aka bold, with **asterisks** or __underscores__.
+
+Combined emphasis with **asterisks and _underscores_**.
+
+Strikethrough uses two tildes. ~~Scratch this.~~
+#+end_example
+** markdown hyperlink
+https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#links
+#+begin_example
+Links
+
+There are two ways to create links.
+
+[I'm an inline-style link](https://www.google.com)
+
+[I'm an inline-style link with title](https://www.google.com "Google's Homepage")
+
+[I'm a reference-style link][Arbitrary case-insensitive reference text]
+
+[I'm a relative reference to a repository file](../blob/master/LICENSE)
+
+[You can use numbers for reference-style link definitions][1]
+
+Or leave it empty and use the [link text itself]
+
+Some text to show that the reference links can follow later.
+
+#+end_example
+** DONE latex http link
+   CLOSED: [2014-01-04 Sat 18:02]
+  #+LaTeX:\href{http://www.linkedin.com/pub/denny-zhang/23/584/873}{linkedin:DennyZhang}
+** DONE github invalid-email-address
+   CLOSED: [2014-09-27 Sat 18:18]
+git config user.name "filebat.mark@gmail.com"
+git config user.email "<filebat.mark@gmail.com>"
+http://linux.goeszen.com/git-push-a-local-commit-to-github-with-your-github-username.html
+http://stackoverflow.com/questions/6942196/hggit-invalid-email-address-at-github>
+#+begin_example
+root@localhost:/home/denny/chef/cookbooks/build-iso/files/default/fluig_build_iso# git config --list
+core.repositoryformatversion=0
+core.filemode=true
+core.bare=false
+core.logallrefupdates=true
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+remote.origin.url=git@github.com:TOTVS/chef.git
+branch.master.remote=origin
+branch.master.merge=refs/heads/master
+branch.chef-2.0.remote=origin
+branch.chef-2.0.merge=refs/heads/chef-2.0
+#+end_example
+** TODO github wiki: embeded wiki to reduce code duplication
+** TODO github wiki word wrap
+https://github.com/TOTVS/mdmdevops/wiki/How-To-Deploy-a-High-Availability-MDM-Cluster-Env
+** TODO markdown set table width
+** #  --8<-------------------------- separator ------------------------>8--
+** DONE backup wiki
+   CLOSED: [2016-09-01 Thu 08:08]
+** DONE GitHub wiki: image size issue
+   CLOSED: [2016-08-31 Wed 16:03]
+https://github.com/TOTVS/mdmdevops/wiki/DB-Backup-In-Prod-Env
+http://stackoverflow.com/questions/14675913/how-to-change-image-size-markdown
+
+<img src="https://github.com/favicon.ico" width="48">
+http://stackoverflow.com/questions/24383700/resize-image-in-the-wiki-of-github-using-markdown
+** DONE GitHub wiki: Insert table of contents TOC
+   CLOSED: [2016-05-31 Tue 08:00]
+gh-md-toc test.md
+
+https://github.com/isaacs/github/issues/215
+https://github.com/ekalinin/github-markdown-toc
+
+https://github.com/TOTVS/mdmdevops/wiki/How-To-Deploy-a-High-Availability-MDM-Cluster-Env
+
+#+BEGIN_EXAMPLE
+Table of contents
+=================
+
+  * [gh-md-toc](#gh-md-toc)
+  * [Table of contents](#table-of-contents)
+  * [Installation](#installation)
+  * [Usage](#usage)
+    * [STDIN](#stdin)
+    * [Local files](#local-files)
+    * [Remote files](#remote-files)
+    * [Multiple files](#multiple-files)
+    * [Combo](#combo)
+  * [Tests](#tests)
+  * [Dependency](#dependency)
+#+END_EXAMPLE
+** DONE GitHub compare two revision: https://github.com/TOTVS/mdm/compare/d401bcfb3e0f4f31a0780a87f8d665665456fcff...449255ced289769c7d7215f85bdafc7fceed6811
+   CLOSED: [2016-06-02 Thu 10:05]
+** DONE GitHub Links to a block of Code
+   CLOSED: [2014-07-17 Thu 16:39]
+https://github.com/garethr/booky/blob/08615163198a2b51353aeba07f25ec9ed477d60c/src/booky/lib/builder.py#L17-24
+** #  --8<-------------------------- separator ------------------------>8--
+** TODO GitHub wiki: don't re-number bullet points
+https://github.com/TOTVS/mdmdevops/wiki/DB-Backup-In-Prod-Env#deploy-all-in-one-mdm-env-and-resize-couchbase
+https://github.com/TOTVS/mdmdevops/wiki/Advanced-Questions-About-Deployment#question-how-to-add-more-nodes-to-existing-cluster
+** TODO GitHub wiki: block width
+https://github.com/TOTVS/mdmdevops/wiki/DB-Backup-In-Prod-Env#fire-drill-for-prod-env-backuprestore
+DigitalOcean Download backupset:11 min
+** DONE github: export github wiki to pdf: pandoc
+   CLOSED: [2016-09-01 Thu 21:01]
+http://pandoc.org
+
+http://www.markdowntopdf.com
+https://atom.io/packages/markdown-pdf
+** DONE Fail to add github deploy key: Key is already in use: one deploy key for one repository
+   CLOSED: [2016-10-06 Thu 10:26]
+https://help.github.com/articles/error-key-already-in-use/
+http://stackoverflow.com/questions/11656134/github-deploy-keys-how-do-i-authorize-more-than-one-repository-for-a-single-mac
+
+Once a key has been attached to one repository as a deploy key, it cannot be used on another repository.
+** DONE checkout two github repos using different ssh key
+   CLOSED: [2016-10-06 Thu 10:31]
+http://stackoverflow.com/questions/11656134/github-deploy-keys-how-do-i-authorize-more-than-one-repository-for-a-single-mac
+
+vim /root/.ssh/config
+
+Host fake-hostname-foo.github.com
+    Hostname github.com
+    IdentityFile ~/.ssh/id_rsa-foo
+
+git clone git@fake-hostname-foo.github.com
+** github add color
+- ![#f03c15](http://placehold.it/15/f03c15/000000?text=+) `#f03c15`
+** CANCELED github wiki table numbering auto incre: https://github.com/TOTVS/mdmdevops/wiki/MDM-Explore-Env-In-Linode
+   CLOSED: [2016-12-22 Thu 10:34]
+# Machine List In Linode For Explore env
+| Linode         | Coordinator |              IP | Machine Flavor                           | Hostname            |
+| :------------- | ----------- |      ---------- | ----------------------------             | ---------           |
+| linode2437394  | Chinwei     |     45.33.104.7 | 2 Cores / 4G RAM / 48G Disk / 3TB XFER   | explorejenkins      |
+| linode2437391  | Chinwei     |    45.56.88.250 | 2 Cores / 4G RAM / 48G Disk / 3TB XFER   | exploreloadbalancer |
+| linode2437172  | Chinwei     |    45.56.95.149 | 6 Cores / 12G RAM / 192G Disk / 8TB XFER | exploreapp          |
+| linode2437241  | Chinwei     |   50.116.11.120 | 6 Cores / 12G RAM / 192G Disk / 8TB XFER | exploreworker       |
+| linode2478848  | Chinwei     |    23.92.24.214 | 6 Cores / 12G RAM / 192G Disk / 8TB XFER | exploreworker2      |
+| linode2478849  | Chinwei     |    23.239.4.218 | 6 Cores / 12G RAM / 192G Disk / 8TB XFER | exploreworker3      |
+| linode2437228  | Chinwei     |  173.230.144.20 | 6 Cores / 12G RAM / 192G Disk / 8TB XFER | explorecb1          |
+| linode2437229  | Chinwei     | 173.230.152.155 | 6 Cores / 12G RAM / 192G Disk / 8TB XFER | explorecb2          |
+** TODO github search with exact pattern
+** DONE github cross out lines: Use ~~tildes around the words~~.
+   CLOSED: [2017-01-11 Wed 16:10]
+** DONE Transfer issues from one repo to other: Export or import issue data
+   CLOSED: [2017-02-09 Thu 16:06]
+https://confluence.atlassian.com/bitbucket/export-or-import-issue-data-330797432.html
+https://confluence.atlassian.com/bitbucket/export-or-import-issue-data-330797432.html
+
+https://bitbucket.org/site/master/issues/8043/transfer-issues-from-one-repo-to-other
+** TODO bitbucket hyperlink doesn't work
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
