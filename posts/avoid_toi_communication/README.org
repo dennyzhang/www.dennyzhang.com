@@ -38,7 +38,7 @@ Here is a Jenkins job for this requirement: [[https://github.com/dennyzhang/devo
 
 Any more improvement like this? Share your thoughts and thinking with us!
 
-#+BEGIN_EXPORT HTML
+#+BEGIN_HTML
 <a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/avoid_toi_communication"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 
 <div id="the whole thing" style="overflow: hidden;">
@@ -49,7 +49,7 @@ Any more improvement like this? Share your thoughts and thinking with us!
 
 <br/><br/>
 <a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
-#+END_EXPORT
+#+END_HTML
 
 Blog URL: https://www.dennyzhang.com/avoid_toi_communication
 
