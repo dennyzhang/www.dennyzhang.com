@@ -1,0 +1,88 @@
+* 6 False Negatives In Daily Deployment Test                  :BLOG:General:
+:PROPERTIES:
+:type:   DevOps,Deployment,Jenkins
+:END:
+---------------------------------------------------------------------
+After a lot of effort and communication, finally the system deployment works! To guarantee a smooth deployment anytime, we enforce daily deployment test as a next step.
+*Surprisingly daily deployment doesn't always succeed like we expect, even if no major changes**. More interesting, many failed tests are kinds of false negatives. So what are the obstacles? And how we can avoid them?
+
+[[image-blog:False Alarm][https://www.dennyzhang.com/wp-content/uploads/denny/false-alarm.jpg]]
+---------------------------------------------------------------------
+*What Does False Negative Mean?** Ideally each test failure should be an improvement opportunity. But if you tend to do a repetitive blind retry for a certain failure, we can say it's a false negative. Why? It indicates either you don't care about this failure or you have no other way to improve it. Furthermore false negatives come out with two bad consequences: it takes time to check and retry; it breaks or populates normal tests.
+*The success of basic deployment logic is only the beginning.**  Besides constant changes initiated from Dev team,there are multiple things you need to pay close attention, if you're ambitious to deliver a reliable and smooth deployment.
+
+Here are several typical False Negatives, from my first-hand experience.
+** 1 Outage Of External Services
+   We download files from external websites, however they're in maintenance mode. We pull source code from Github/Bitbucket for build and deployment, but it's temporarily down or unreachable. When code build, nodejs need to fetch community packages, java code need to download jar modules from a public nexus server, however the external servers flip from time to time.
+
+   It's always a good practice to replicate and serve files in servers under our own control, instead of 3rd websites. [[https://www.dennyzhang.com/monitor_outbound_traffic][How to detect all outbound traffic in deployment]]. Another improvement allows no hidden dependency and to make dependencies crystal clear.
+** 2 Always Download Latest Version
+  You may be familiar with actions in below.
+#+BEGIN_SRC ruby
+  # Install Package
+  package XXX do
+    action :install
+  end
+
+  # Download raw file from Github
+  remote_file '/opt/devops/bin/backup_dir.sh' do
+    source 'https://raw.githubusercontent.com/' \
+           'XXX/backup_dir/master/backup_dir.sh'
+    mode '0755'
+    retries 3
+    action :create_if_missing
+  end
+#+END_SRC
+  Quite often changes of latest version bring incompatible issues. This gives us surprise for our deployment test or issues hard to detect and diagnose.
+
+  It's better using a stable tag/branch/version, instead of head revision. For our own code, that's easy to enforce this. However for the community/open source code, the story is different.
+** 3 Low Hardware Resource
+   To better utilize test machines, we may keep running lots of simultaneous test jobs all the time. The machine may run into low free memory or CPU. And this will fail our test, with no blame on our code.
+
+   Even worse, OS may run into OOM issue (Out of Memory). This may crash our critical services like Jenkins/DB, which demands human intervine. Or it runs into kernel panic, which blocks us to ssh, and machine reboot is our final resort.
+
+   To avoid this, we can add precheck logic before running new test jobs. When OS runs into low hardware resource, stop launching any more test jobs.
+** 4 Resource Conflict
+   Two parallel jobs may fail, when they both want to get exclusive access for the same resources. Typically there are two major conflicts of deployment test jobs. 1. Run the same job parallelly 2. Run different jobs with shared resource.
+
+   Common shared resource are:
+   - Global Environments, like JDK version or global variables
+   - Docker specific resources: container name, mounted volume, NAT TCP ports
+   - ssh private key file of different Jenkins Jobs
+   - etc.
+** 5 Run Test On Unclean Envs
+   Deployment test will be invalid and trouble shooting effort will be wasted, if the test env is not clean. For example, if "apt-get update" fail, "apt-get install" is doomed to fail. If people has deliberately removed some files or packages in advance, deployment may fail as well.
+
+   It's better we perform test on envs with a fresh start.
+** 6 Slow Service Start
+   Application may takes several minutes to start, while performing system initialization or waiting db cluster up and running. We need to wait and check our assumption, before testing. Otherwise we will get false alarm again. [[https://www.dennyzhang.com/blind_wait][Tips: How To Avoid Blind Wait]].
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/false_negative"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/false_negative
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

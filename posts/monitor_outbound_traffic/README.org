@@ -1,0 +1,107 @@
+* Monitor Outbound Traffic In Deployment                      :BLOG:Mindset:
+:PROPERTIES:
+:type:   DevOps,Jenkins,Network,Monitoring
+:END:
+---------------------------------------------------------------------
+Deployment process may explicitly or implicitly run commands like apt-get, wget, etc. It's quite natural and common. However if you want a smooth and stable deployment, you have to watch out all these outbound traffic. Why? And How?
+
+[[image-blog:Outbound Traffic][https://www.dennyzhang.com/wp-content/uploads/denny/outbound_traffic.jpg]]
+
+---------------------------------------------------------------------
+Every outbound traffic is *a potential failure point for deployment process*.
+
+1. When the target external servers are slow or down, deployment will stuck or fail.
+- Download may run into HTTP 404 ERROR, since the site maintainer may have moved the files or upgraded the version.
+- *The most unpleasant thing* is that you may result in installing packages with version you don't expect. e.g. apt-get install package from 3rd repo server. You will run into a dilemma. If you don't specify the version, it will always fetch latest version, which means surprise or incompatible issue. If you use fixed version, the given version may have been obsoleted and removed.
+
+_So it is better that we get a list of all outgoing traffic of deployment_. This is especially true, if you're demanded to do an on-premise deployment with limited or no internet.
+
+Justniffer[1] is a useful CLI tool, to track all http requests.
+#+BEGIN_SRC sh
+# Install justniffer
+sudo add-apt-repository ppa:oreste-notelli/ppa
+sudo apt-get update
+sudo apt-get install justniffer
+
+# Record http requests
+nohup /usr/bin/justniffer -i eth0 \
+-l "%request.timestamp(%T %D) - \
+%request.header.host - %response.code \
+- %response.time" >> \
+ /root/justniffer.log &
+
+# Check process
+ps -ef | grep justniffer
+
+# Launch sample test
+for((i=0; i< 10; i++)); do
+  curl -I https://www.dennyzhang.com ;
+done
+
+# Check output
+tail /root/justniffer.log
+# root@8da56a3dfeb4:/# tail /tmp/test.log
+# 14:50:00 06/28/16 - www.dennyzhang.com - 200 - 0.303702
+# 14:50:00 06/28/16 - www.dennyzhang.com - 200 - 0.194938
+# 14:50:01 06/28/16 - www.dennyzhang.com - 200 - 0.218942
+# 14:50:01 06/28/16 - www.dennyzhang.com - 200 - 0.196959
+# 14:50:01 06/28/16 - www.dennyzhang.com - 200 - 0.196293
+# 14:50:02 06/28/16 - www.dennyzhang.com - 200 - 0.200633
+# 14:50:02 06/28/16 - www.dennyzhang.com - 200 - 0.199476
+# 14:50:03 06/28/16 - www.dennyzhang.com - 200 - 0.192262
+# 14:50:03 06/28/16 - www.dennyzhang.com - 200 - 0.193594
+#+END_SRC
+
+- How to figure out all requests for a fresh deployment?
+If you're using Chef for your deployment, you are in luck. I've released a [[https://supermarket.chef.io/cookbooks/justniffer][Chef: justniffer]] for this.
+
+For other automation tools, should be easy to wrap up this logic in a similar way.
+
+#+BEGIN_SRC ruby
+# install package
+inclue_recipe 'justniffer::default'
+# start process
+inclue_recipe 'justniffer::start'
+#+END_SRC
+
+After the deployment, find request list in /root/justniffer.log
+
+- How to figure out requests for running servers
+
+We can wrap up it as a Jenkins job: [[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/ListHTTPTraffic][ListHTTPTraffic]]. [[github:DennyZhang][GitHub]]
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_jenkins_listhttptraffic1.png]]
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_jenkins_listhttptraffic2.png]]
+
+[1] http://justniffer.sourceforge.net
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/monitor_outbound_traffic"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/monitor_outbound_traffic
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

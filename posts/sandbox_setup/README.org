@@ -1,0 +1,82 @@
+* Easy and Reliable Sandbox Setup Matters                     :BLOG:Mindset:
+:PROPERTIES:
+:type:   DevOps,Deployment,Docker
+:END:
+---------------------------------------------------------------------
+Sandbox indicates *an isolated and autonomous play-yard*, where anyone can do their own code build, deployment and debugging locally. *It won't effect anything outside. Ideally it should not be effected by outer world either*. This is especially useful for new member on-board, daily development, QA cycle, etc.
+
+How to get an easy and reliable sandbox for your projects? Check it out.
+
+[[image-blog:Setup Sandbox][https://www.dennyzhang.com/wp-content/uploads/denny/sandbox_setup.jpg]]
+---------------------------------------------------------------------
+Use Cases & Painpoints:
+
+1. *Use Case: New member on-board*. New hires usually need several days to setup a test env, before any real contribution. Mostly it would be an unpleasant experience. The document is always out-of-date; No surprise how many hidden implications we have. Once the env is up, they will ask to make some tentative changes for study.
+- *Use Case: Daily Development*. Code change and debugging happen all day long for everyone. If real tests can only be done in shared envs, it would be a scaring nightmare. People will be busy with the communication and env cleanup quite frequently. What's worse, someones' tasks will constantly be blocked by others.
+- *Use Case: QA Test*. QA find and report bugs to DEV, DEV check and fix, then ask QA to verify again. If it still fails, which is likely to happen, we will have to run the loop again. Usually it takes QA colleagues quite a lot of effort to clearly describe the issue and provide problematic envs. On the other side of Dev, communication overhead is huge and inefficient. Both sides are demanding a shorter feedback loop.
+
+Proposal & Solution:
+So our idea starts from supporting everyone to get a sandbox env, which they can easily *create, test, hack and destroy locally*. People may argue for big and complex projects with multi-nodes deployment, it's unrealistic to run all features on our laptops. That's right. However we can have a reasonable trade-off to maintain a local all-in-one deployment. That means we deploy major and necessary services in a single node, with heavy-weight services customized to use less hardware resource.
+
+The good news is most developers' computers should be able to do that. Following 20/80 Rule, AIO deployment can serve perfectly as our sandbox env in most cases.
+
+Design principles for sandbox solution:
+1. *Easy To Use*. Apparently people should be able to setup the whole thing easily with minimum knowledge. What's more challenging is when the env corrupts or suffers from bugs of any modules. The procedure of correction should be common and simple. Otherwise you will end up supporting and helping the team everyday.
+
+- *Avoid SSH Directly*. Since people of different roles might use the sandbox, not everyone possess skillsets to ssh and run complex linux commands. And if they can ssh, a lot of security issues may come out. Furthermore manual changes will incur unexpected impact, which indicates issues and cost.
+
+- *Fast To Setup And Update*. People will be using your sandbox solution everyday. LET ME WARN YOU AGAIN, IT workers are clever and impatient. You'd better make any performance improvement which you can.
+
+[[image-blog:Sandbox Design][https://www.dennyzhang.com/wp-content/uploads/denny/sandbox_design.png]]
+Here is our implementation of sandbox:
+- Boostrap one VM with 2 docker containers. One for Jenkins, one for AIO.
+- All major actions are done by Jenkins jobs: Build, Deploy, Check, etc.
+- Deployment is triggered from Jenkins, which eventually run Chef code.
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_sandbox_jobs.png]]
+We need to enforce a high level of continous integration*. Sandbox setup takes time. When it fails, you will see a lot of people will reach you and complain with you. Another benefit of sandbox CI helps us detect various issues in normal software development.
+Typically we need to verify below 3 scenarios:
+- SandboxActiveSprint: Sandbox deployment of current active sprint. This helps to identify issues of current sprint easily.
+- SandboxPreviousActiveSprint: Sandbox deployment of previous active sprint. People may cherry-pick change to previous release. This change may bring regression issues.
+- SandboxUpgradeLegacyEnv:Sandbox deployment of previous active sprint, then upgrade to current active sprint. Continous upgrade may have issues. If we fail to detect that, people's sandbox will fail.
+
+[[image-blog:Sandbox CI][https://www.dennyzhang.com/wp-content/uploads/denny/sandbox_ci.png]]
+
+Feedbacks & Future Improvements:
+
+We have been using above sandbox solution for 1~2 years in our project. Generally speaking, people are quite happy with it. Things we need to harden:
+- Services runs into OOM (Out of Memory) issues from time to time. Currently it takes 6GB memory, which is huge. Need to customize services to use fewer resource, or move heavy-weight services (especially DB services) out of the solution.
+- Only support linux and Windows is totally a second-class citizen.
+- Exporting TCP ports with less limitations. We use docker NAT to do 1-1 mapping for TCP ports. People usually have misunderstanding and confusion for the network setting.
+
+More Reading: [[https://www.dennyzhang.com/false_negative][6 False Negatives In Daily Deployment Test]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/sandbox_setup"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/sandbox_setup
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

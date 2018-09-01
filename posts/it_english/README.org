@@ -1,0 +1,135 @@
+* IT English: Sentences Grouped By Scenarios                     :BLOG:Life:
+:PROPERTIES:
+:type:   life
+:END:
+
+---------------------------------------------------------------------
+As non native English speakers, foreign IT wokrers may have problems to communicate and express their ideas clearly and convincingly. This is especially true for critical discussions and meetings.
+
+Check out below sentence patterns and pratice them in your daily work!
+
+[[image-blog:IT english][https://www.dennyzhang.com/wp-content/uploads/denny/it_english.jpg]]
+
+---------------------------------------------------------------------
+** Praise & Agree
+- She brought a whole new level of professionalism to our organization.
+- Congratulations, Bill. You've done what none of your predecessors have been able to do.
+- I wholeheartedly approved and applauded this approach.
+- It's really making a difference
+- I look forward to this being the first of many great decisions this team will make.
+- Keep up the great work
+- Quite frankly, he's been right enough times that I trust him, even if I have no freaking idea why.
+** Negative feedback & Blame
+- We don't want to screw this up and turn prospective customers into haters.
+- I really appreciate how hard you've been working on the new project. However, I think the project can be even better if you let Mary help you out a bit more.
+- We only got three days to get this done, so we don't have much time.
+- This is important and urgent. If you can't work within that arrangement, I will need you immediate resignation.
+- Mark my words, folks.
+- But based on what we've heard, I think it's incredibly premature to deploy.
+- It's a crappy way to run a company. It demoralizes my team, and my top performers are quitting in droves
+** Hard Work
+- Trust me, if there was anything I could do, I would.
+- We all stay up all night because something went really wrong.
+- There are some issues that come up, but Maggie says her team is willing to work all night to make it happen.
+- The Marketing team burned the midnight oil over the weekend and we were able to do a test campaign to one percent of our customers.
+** Coddle & Sympathy
+- I completely understand your frustration. You have any ideas on how to fix it?
+- Struggle to prioritize all the commitments
+** Confirmation
+- Ready to discuss your IdM project at your convenience.
+- Sounds like a good plan. Mike, is there any reason why we shouldn't do this?
+** Meeting
+- Good morning, Erik. I've just had a remarkable meeting with Dick. Do you have some time to help me think this through?
+- Are you available later today to meet? Let's see if we can connect all these dots.
+- We are not leaving this room until we've created a plan to get there. Understand?
+- uncomfortable silence
+- Well, I can see that we're not ready to have this discussion, until you gain a better understanding of what work is, any conversation we have about controlling work will be totally lost on you.
+** Proposal
+- Steve, I have an idea. But please let me finish telling you the entire idea before you react.
+** Argument
+- Improving something anywhere not at the constraint is an illusion.
+- So what can I do for you? I have a commitment at 8:30, so let's not waste time.
+- What's this meeting tomorrow with Dick about, and why are you dragging me into it?
+- We're about out of time. Are there any other challenges or impediments that we can help with?
+- Just tell me straight
+- I know all these diverse skills are vital if we want to succeed. The challenge is how to pull all of us together, so that we're working toward the same goal.
+- Look, my goal isn't to blame anyone or say that we're doing a crappy job. I'm merely trying to get down on paper exactly what we're doing and get some objective measures of each step.
+- Guys, I understand the desire to get Phoenix into production as quick as possible.
+- Look. I appreciate this, but I really don't think this is going to work in the long run.
+- Even one small mistake can take everything down.
+- Look, I'm not blaming you, Chris. I'm just stating a well-known fact.
+- Look, let's put this aside for now.
+- Look, I know this is important, but can't this wait until Monday? You would not believe the day I'm having.
+- To refresh your memory, last week there were twelve tasks in the critical path of Phoenix Phase 1.
+- I don't take that responsibility lightly, and you shouldn't either.
+- I need you to help create the solution. Otherwise, you're part of the problem. Can I count on you?
+- And it's always IT Operations who still has to stay up all night, rebooting servers hourly to compensate for crappy code.
+- I have no interest to fight the corporate bureaucracy
+- There is no reason why all the responsibility should rest on our shoulders.
+- I'm sure you guys will do fine without me.
+- Sorry, I'm in the middle of something important. I can't talk for very long.
+** Describe Status
+- No one has ever seen anything like this before
+- Thanks for taking the time to meet with us on such short notice.
+- In order to control this system, we need to reduce the number of moving parts.
+- Let me make myself clear.
+- We're hardening and securing both the applications and production infrastructure in a meaningful and systematic way.
+- It has been a rough day.
+- But, as you know, things didn't quite go as planned.
+- We've started to inventory everything we're being asked to do, regardless of how big or small
+- I know I should probably put an end to this madness.
+- You look concerned - anything you want to share?
+- At this point, we might not be fixing the problem, but at least we'll be getting some data.
+- Please grab a seat. Everyone, let's get started again.
+- Incident and break-fix work, preventive maintenance
+** Trouble Shooting
+- Because we don't have enough tie to rerun all tests, we're going to have to take shortcuts
+- What made you conclude that the SAN upgrade caused the payroll run failure?
+- Holy crap
+- We're short of time
+- Thank you. We won't detain you any further.
+** Pattern Of Rejection
+- Unfortunately, I have a lot on my plate as well.
+- Instead of turning down a colleague's request for help, you can offer to take a specific piece of the task, and then request someone else take the rest.
+- To boss: I know getting this project done and implementing the new software are your priorities, so which of these two tasks do you want me to tackle to help you the most?
+- Honestly, I'm still trying to get some sutiational awareness. Mostly, I'm being whiplashed from one emergency to other.
+- Instead of offering up a "No" right away, go with a "Yes, and."
+- I wish I could, but as a rule of DevOps, ...
+- Change the subject. "You know, your comment about the boss reminds me of something. There's an office party coming up, right? Are you bringing anyone?"
+** Judgment & Comment
+- I'm a skeptical guy by nature, but I really think Unicorn project is going to work.
+- I know that you and your teams have been working incredibly long hours over the last weeks.
+- I'm sure we can make something work short-term and figure out a long-term strategy as we go.
+- Don't let it get to you. He says similar things to me. I'm exhausted and I'm going home. I suggest you do the same.
+- The outsourcer may have made big changes to the code base that we don't know about, which would slow down the development schedule. But my personal belief is that this risk is minimal. Based on their behavior, I don't think they made any significant changes to functionality.
+- Now I want to see you grow and learn, and build new skills to best help all of the company. If you're up to it, I'm prepared to invest in you. I want to put you on a fast track, two-year plan.
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/it_english"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/it_english
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

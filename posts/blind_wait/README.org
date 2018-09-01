@@ -1,0 +1,97 @@
+* Avoid Blind Wait In DevOps Code                             :BLOG:General:
+:PROPERTIES:
+:type:   DevOps,Tool
+:END:
+---------------------------------------------------------------------
+Occasionally DevOps code needs to check and wait status, before running further steps. For example, wait for service A to be up, then start service B; confirm TCP port is listening, then launch requests; etc.
+
+For simplicity or time pressure, people usually use *a blind wait* like "sleep 10" to fix this. This is certainly not good enough. How we can improve this with affordable cost?
+
+[[image-blog:Blind Wait][https://www.dennyzhang.com/wp-content/uploads/denny/blind_wait.jpg]]
+---------------------------------------------------------------------
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/DennyZhang/devops_public/master/frontend/org-mode-blog.css" />
+Let's examine below automation requirement, which is quite common in daily life of DevOps. You're asked to start service1, then service2. However you can only start service2, after service1 is up and running well. If not, service2 may fail to start or run into unexpected behaviors.
+** Solution v1.0: blind wait
+#+BEGIN_SRC sh
+service service1 start
+sleep 10
+service service2 start
+#+END_SRC
+
+Here we wait for a while (10 seconds) in between. The good news is it may work in most cases. However this implementation has two drawbacks:
+- *No Guarantee Of Assumption*. Even after waiting for 10 seconds, we can't be sure service1 is up. Service2 start may still fail. Furthermore running following steps with this false assumption may result in unexpected situation.
+- *Waste Of Time*. Let's say service1 start usually takes less than 4 seconds. This means we always waste over 6 seconds doing the blind wait.
+
+To improve this, we can keep polling the status of service1. Though it's usually not easy to claim whether service is 100% healthy, we can make a safe trade-off. If "service XXX status" reports running or the TCP port is listening, we can say the service is probably OK.
+** Solution v2.0: wait with bash loop
+#+BEGIN_SRC sh
+service service1 start
+
+# Wait and poll status with timeout mechanism
+tcp_port=8080
+timeout_seconds=10
+check_pass=false
+for((i=0; i<timeout_seconds; i++)); do
+    if lsof -i tcp:$tcp_port | grep -i listen; then
+        echo "$tcp_port is listening"
+        check_pass=true
+        break
+    fi
+    sleep 1
+done
+
+if $check_pass; then
+    echo "check pass"
+else
+    echo "check fail"
+fi
+service service2 start
+#+END_SRC
+
+With around 20 extra code lines, we solve the problem beautifully. So is it good enough now? Not really! We can see this requirement is very common, which indicates a lot of code duplication.
+
+What we need is a common wait mechanism. If the condition meets, it reports OK. If it fails or timeout, it reports ERROR. 
+
+Here comes a general tool: [[https://github.com/dennyzhang/devops_public/tree/tag_v6/bash/wait_for][wait_for.sh]]. [[github:DennyZhang][GitHub]]
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_wait_for.png]]
+** Solution v3.0: wait in a simple and clever way
+#+BEGIN_SRC sh
+service service1 start
+wait_for.sh "nc -z -v -w 5 127.0.0.1 8080" 10
+service service2 start
+#+END_SRC
+
+Simply and Easy. Isn't it?
+
+More Reading: [[https://www.dennyzhang.com/parallel_run_commands][Parallel Run Commands On Multiple Servers]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/blind_wait"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/blind_wait
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

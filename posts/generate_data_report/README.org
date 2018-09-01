@@ -1,0 +1,65 @@
+* Generate Common DB Data Report By ELK                            :BLOG:DB:
+:PROPERTIES:
+:type:   DevOps,Tool,Metric,DataBase
+:END:
+---------------------------------------------------------------------
+Usually critical data is stored in DB. We can periodically poll and combine key metrics from DB into a data report, such as how many tables/collections in DB, how many items in each critical table, etc. **Data report enables people to visualize the history and trend of key metrics**.
+
+Furthermore if the basic data report can be generated automatically, people can easily add more metrics, which may make more business sense. The most exciting part is that we can get a general solution which applies to different projects! So how we can get this idea started?
+
+[[image-blog:DB History Report][https://www.dennyzhang.com/wp-content/uploads/denny/db_report.png]]
+---------------------------------------------------------------------
+** Step 1: Define key metrics to collect and display.
+Here are metrics I've been actively using.
+1. **TOTAL_ITEM_COUNT**: The sum for item count in all critical tables/collections. This gives us a rough understanding for how much data we have in general.
+2. **TABLE_ITEM_COUNT**: Item count for each major table/collection and its history. It shows how fast the data grows from day to day.
+3. **TOTAL_DISK_OCCUPIED**: Total occupied disk capacity. The physical measurement of our data helps us to do a better capacity planning.
+
+All metrics above give project owners a general estimation for current status and some sort of prediction.
+
+People might have problems to define suitable metrics to fit their projects in the beginning. Don't worry. Once we've finished the basic version, we can revisit it and add more fancy metrics later.
+** Step 2: Collect metric from DB.
+The management tools (CLI/API) of different database may be different. The way how we caculate each metric may be different as well. The good thing is that we can always **unify different metrics into below format**.
+#+BEGIN_EXAMPLE
+[Date, ItemName, PropName, PropValue]
+
+# Sample:
+# 2016-07-11 14:15:20 my_table1 MYSQLItemNum 2000
+# 2016-07-11 15:15:18 es_index1 ESItemNum 500
+#+END_EXAMPLE
+** Step 3: Feed data to ELK and draw useful diagrams.
+
+[[image-blog:Design For DB Report][https://www.dennyzhang.com/wp-content/uploads/denny/data_report_design.png]]
+
+To combine all pieces together, here is a sample report. In below example, the system uses CouchBase and Elasticsearch as Key DB stores.
+
+[[image-blog:DB Sample Report][https://www.dennyzhang.com/wp-content/uploads/denny/db_report_sample.png]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/generate_data_report"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/generate_data_report
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

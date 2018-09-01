@@ -1,0 +1,258 @@
+* Improvements For Code Build                                 :BLOG:General:
+:PROPERTIES:
+:type:   Jenkins
+:END:
+
+---------------------------------------------------------------------
+How to do code build? What things we need to pay special attentions to? Here are my thoughts and sharing.
+
+[[image-blog:Code build Jenkins][https://www.dennyzhang.com/wp-content/uploads/denny/code_build.png]]
+
+---------------------------------------------------------------------
+What counts for a good code build system?
+
+- Build toolkit can be setup easily and automatically, to avoid unexpected failures.
+  All the necessary packages, dependencies and SDK shall be able to be installed easily. And the version should be the exact version which it should be. One good practice is setup by automation tool (like Chef/Puppet) or creating docker images.
+
+- **People should be able to check env version, after code deployment.**
+  To achieve it, we can ask code build process to generate this info to a version file. When code deployment, push the version file as well.
+  Here is an example:
+#+BEGIN_EXAMPLE
+root@e3aab3fd9ae8:~# my_status_all.sh
+========= Check services ============
+ * couchbase-server is running
+ * elasticsearch 1.5.0 running with PID 23520
+ * myapp master running with PID 22881
+=========== About Code ==============
+ Build From master branch of mdm repo.
+ Revision: ec1a6a716b7ba49e7c12de6490aa213b541e7d95
+ Build Time: 2015-06-08 13:34:51
+ Jenkins Job: BuildCodeRepo:#603 on 104.236.159.226
+#+END_EXAMPLE
+- Leave the build logic to dev team, by hosting build command in SCM repo
+  The whole build process would be install build toolkit, checkout code and run a given command or a given bash script. **Build commands may change from time to time. And dev team actually drives the changes.** Ideally we can ask dev team to provide the build command. If dev team are too busy for this task as always, devops can define one and storage it in somewhether both dev and devops can check and change.
+
+- Keep latest old built packages
+  People may want to try to deploy old build, when regression issues happens. Since each build will generate new packages, it will eat up your disk. Thus we need some data retention logic for old built packages.
+
+- **Conditional build**: Skip build, if no code change since last build.
+  Build process takes minutes to hours. If no code change, rebuilt is just a waste of time. This is especially true, if you have enabled hourly build.
+  When you have enabled this, make sure you give people a way to force a clean build. This means even if no code change, I want to do the code rebuild anyway.
+
+Sample Jenkins job in Github: [[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/BuildAllCode][BuildAllCode]]. [[github:DennyZhang][GitHub]]
+
+[[color:#c7254e][Notice]]: You can find a live demo [[https://www.dennyzhang.com/demo_jenkins][here]].
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_jenkins_code_build.png]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/improve_code_build"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/improve_code_build
+* web page: A Maturity Model for Build Automation                  :noexport:
+http://ariya.ofilabs.com/2014/01/a-maturity-model-for-build-automation.html
+** webcontent                                                      :noexport:
+#+begin_example
+Location: http://ariya.ofilabs.com/2014/01/a-maturity-model-for-build-automation.html
+don't code today what you can't debug tomorrow
+
+  * About
+  * Highlights
+  * Projects
+  * Talks
+
+A Maturity Model for Build Automation
+
+January 17, 2014.
+
+Tags: coding craftsmanship
+
+maturity
+
+How does your engineering organization build and deliver products to its customers? Similar to the
+well-known capability maturity model, the maturity level of a build automation system falls into
+one of the following: chaotic, repeatable, defined, managed, or optimized.
+
+Let's take a look at the differences in these levels for a popular project, PhantomJS. At the start
+of the project, it was tricky to build PhantomJS unless you were a seasoned C++ developer. But over
+time, more things were automated, and eventually engineers without C++ backgrounds could run the
+build as well. At some point, a Vagrant-based setup was introduced and building deployable binaries
+became trivial. The virtualized build workflow is both predictable and consistent.
+
+The first level, chaotic, is familiar to all new hires in a growing organization. You arrive in the
+new office and on that first day, an IT guy hands you a laptop. Now it is up to you to figure out
+all the necessary bits and pieces to start becoming productive. Commonly it takes several days to
+set up your environment – that's several days before you can get any work done. Of course, it is
+still a disaster if the build process itself can be initiated in one step.
+
+This process is painful and eventually someone will step up and write documentation on how to do
+it. Sometimes it is a grassroots, organic activity in the best interest of all. Effectively, this
+makes the process much more repeatable; the chance of going down the wrong path is reduced.
+
+Just like any other type of document, build setup documentation can be out of sync without people
+realizing it. A new module may be added last week, which suddenly implies a new dependency. An
+important configuration file has changed and therefore simply following the outdated wiki leads to
+a mysterious failure.
+
+To overcome this problem, consistency must be mandated by a defined process. In many cases, this is
+as simple as a standardized bootstrap script which resolves and pulls the dependency automatically
+(make deps, bundle install, npm install, etc). Any differences in the initial environment are
+normalized by that script. You do not need to remember all the yum-based setup when running CentOS
+and recall the apt-get counterparts when handling an Ubuntu box. At this level, product delivery
+via continuous deployment and integration becomes possible. No human interaction is necessary to
+prepare the build machine to start producing the artifacts.
+
+In this wonderful and heterogenous environment it is unfortunately challenging to track delivery
+consistency. Upgrading the OS can trigger a completely different build. A test which fails on a
+RHEL-based is not reproducible on the engineer's MacBook. We are lucky that virtualization
+(VirtualBox) or containment (Docker) can be leveraged to ensure a managed build environment. There
+is no need to install, provision, and babysit a virtualized build machine (even on Windows, thanks
+to PowerShell and especially Chocolatey). Anyone in the world can get a brand-new computer running
+a fresh operating system, get the bootstrap script, and start kicking the build right away.
+
+There are two more benefits of this managed automation level. Firstly, a multi-platform application
+is easier to build since the process of creating and provisioning the virtual machine happens
+automatically. Secondly, it enables every engineer to check the testing/staging environment in
+isolation, i.e. without changing their own development setup. Point of fact, tools like Vagrant are
+quickly becoming popular because they give engineers and devops such power.
+
+The last level is the continuous optimizing state. As the name implies, this step refers to ongoing
+workflow refinements. For example, this could involve speeding up the overall build process which
+is pretty important in a large software project. Other types of polishes concern the environment
+itself, whether creating the virtual machine from the .ISO image (Packer) or distributing the build
+jobs to a cloud-based array of EC2/GCE boxes.
+
+My experience with automated build refinement may be described like this:
+
+  * Chaotic: hunt the build dependencies by hand
+  * Repeatable: follow the step-by-step instructions from a wiki page
+  * Defined: have the environment differences normalized by a bootstrapping script
+  * Managed: use Vagrant to create and provision a consistent virtualized environment
+  * Optimizing: let Packer prepare the VM from scratch
+
+How is your personal experience through these different maturity levels?
+
+Note: Special thanks to Ann Robson for reviewing and proofreading the draft of this blog post.
+
+Related Posts:
+
+  * Continuous Integration for Node.js Projects with TeamCity
+  * Docker and Phoenix: How to Make Your Continuous Integration More Awesome
+  * Easy TeamCity Installation with Docker
+  * Build Agent: Template vs Provisioning
+  * Docker on OS X
+  * Cross-Reference: Commit Message and Issue Tracker
+  * Software Project and House Rules
+
+  * Phil Strong
+
+    Ah the build process! A necessary evil. I'd say we're currently at Managed here at Sencha;
+    specifically Architect. Go for Optimizations!
+
+  * Guest
+
+    Nice Tips!
+    But I'm really interested in hearing you about how the platform specific code is managed in
+    PhantomJS. Actually I'm about starting a new C based project and I dont want multi code bases.
+    so I stumbled and found that the build process should do the job. but i dont really know how to
+    manage the issues in the source code and how to start over this. Also I appreciate some good
+    resources about such stuff.
+
+Search for: [                    ]  Search
+whoami
+
+My name is Ariya Hidayat. These days, I promote software craftsmanship, JavaScript, HTML5, CSS3,
+and general web technologies. I write blog posts regularly and speak at developer events from time
+to time.
+
+I am a big believer in sharing and openness. I have been involved with FOSS (free/open-source
+software), contributing code to projects such as KDE, Qt, and WebKit. In my little spare time, I
+also run projects such as PhantomJS (browser automation) and Esprima (JavaScript parser).
+
+Recent Posts
+
+  * C++ Multiple Return Values
+  * Continuous Integration for Node.js Projects with TeamCity
+  * Towards ECMAScript 6 with Esprima 2
+  * SMTP Bar Joke and EHLO
+  * C++ Class and Preventing Object Copy
+  * Docker and Phoenix: How to Make Your Continuous Integration More Awesome
+  * Shells: bash, dash, and fish
+  * Chicago, jQuery, and Web Revolution
+  * CPU Feature Detection
+  * Autumn 2014 Conferences
+
+RSS Feed RSS - Posts
+
+Notice
+
+This blog is my personal space. Unless otherwise noted, I don't discuss activities related to my
+professional work. All opinions expressed in this blog are my own and do not necessarily represent
+the official view of my employer.
+
+    January 2014
+M  T  W  T  F  S  S
+« Dec      Feb »
+      1  2  3  4  5
+6  7  8  9  10 11 12
+13 14 15 16 17 18 19
+20 21 22 23 24 25 26
+27 28 29 30 31
+
+---------------------------------------------------------------------------------------------------
+
+Recent Posts
+
+  * C++ Multiple Return Values
+  * Continuous Integration for Node.js Projects with TeamCity
+  * Towards ECMAScript 6 with Esprima 2
+  * SMTP Bar Joke and EHLO
+  * C++ Class and Preventing Object Copy
+
+Imprint
+
+Certain links, including hypertext links, in my blog will take you outside my blog. Links are
+provided for your convenience and inclusion of any link does not imply endorsement or approval of
+the linked site, its operator or its content. I am not responsible for the content of any website
+outside of my blog.
+
+Subscribe
+
+Enter your email address to subscribe to this blog and receive notifications of new posts by email.
+
+Email Address
+
+ Subscribe
+
+320press
+
+© 2005-2014 Ariya Hidayat
+
+[beacon]
+
+#+end_example
+
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

@@ -1,0 +1,3860 @@
+* Linux Pratice Tests                                         :BLOG:General:
+:PROPERTIES:
+:type:   Linux,Quiz
+:END:
+
+---------------------------------------------------------------------
+In-depth linux experience is one fundamental part of DevOps work. Let's test our linux skills by questions.
+
+[[image-blog:linux questions][https://www.dennyzhang.com/wp-content/uploads/denny/linux_questions.jpg]]
+
+---------------------------------------------------------------------
+Questions about Linux:
+- http://kaivanov.blogspot.com/2010/12/lpi-101-certification-practice-test.html
+  A question list generated 2010, quite useful. With years' experience, I think I'm familiar with lots of linux tools. However I still have problems answering its questions about command lines, like cut, ps, paste, sed, etc.
+
+- http://www.journalsquared.com/2014/09/29/favorite-interview-questions/
+  Interview Questions for Linux and DevOps Engineers
+
+- https://github.com/chassing/linux-sysadmin-interview-questions
+  Linux System Administrator/DevOps Interview Questions
+
+- http://pegmanm.tumblr.com/post/12554219615/the-limoncelli-test-32-questions-for-your
+  The Limoncelli Test: 32 Questions for Your Sysadmin Team
+
+More Reading: [[https://www.dennyzhang.com/devops_hiring][15 Open Questions For DevOps Interview]].
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/linux_pratice_tests"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/linux_pratice_tests
+* misc                                                             :noexport:
+** web page: Linux Administration: Linux Practice Test            :noexport:
+http://kaivanov.blogspot.com/2010/12/lpi-101-certification-practice-test.html
+*** webcontent                                                    :noexport:
+#+begin_example
+Location: http://kaivanov.blogspot.com/2010/12/lpi-101-certification-practice-test.html
+Linux Administration
+
+Learning by example
+
+Pages
+
+  * Home
+  * All Articles
+  * Linux Professional Institute Practice Test
+  * Linux Interview Questions
+  * About Me
+
+#
+
+Linux Practice Test
+
++---------------------------------------------------+
+|1.3/1/1|multiple alphabetic|[SELECT FOR ANSWER   ] |
++---------------------------------------------------+
+Suppose that you have an application whose behavior depends on the environment variable BAR. Which
+of the following command lines may be used in a bash shell to configure the application?
+
+  * A. export $BAR=baz; echo $BAR
+
+  * B. set BAR=baz
+
+  * C. BAR=baz ; export BAR
+
+  * D. echo $BAR=baz
+
+  * E. declare -x BAR=baz
+
+  * F. echo BAR=baz
+
++------------------------------------------+
+|1.3/1/2|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Which of the following commands can be used to assure that a file 'myfile' exists?
+
+  * A. cp myfile /dev/null
+
+  * B. touch myfile
+
+  * C. create myfile
+
+  * D. mkfile myfile
+
++------------------------------------------+
+|1.3/2/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Which of the following command lines can be used to convert a file containing DOS-style CR-LF line
+endings into Unix-style LF line endings? Assume for this question that the DOS-style file is called
+'dosfile', and we want the modified contents in 'unixfile'
+
+  * A. sed 's/\r//' dosfile > unixfile
+
+  * B. tr -d '\r' < dosfile > unixfile
+
+  * C. dos2unix dosfile unixfile
+
+  * D. strip '\r' < dosfile > unixfile
+
++------------------------------------------+
+|1.3/2/2|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Suppose for this question that you have a file called 'wordlist' that contains a number of words,
+one per line. You would like to produce an ad-hoc report that contains a numbered list of the first
+five words, according to alphabetical order. Which of the following command lines can be used to
+produce this report to the console?
+
+  * A. sort wordlist | nl | head -5
+
+  * B. split -1 wordlist ; cat xa? | head -5
+
+  * C. nl wordlist | sort | sed '/^     [^12345]/d'
+
+  * D. nl wordlist | sort | head -5
+
++------------------------------------------+
+|1.3/2/3|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+The command 'ps -A' displays an ordered list of all running processes, with the right-justifed
+process ID in the first space-separated field. Suppose you would like to display to screen a list
+of the five most recently launched processes (those with the highest process IDs). Which of the
+following
+commands will display the desired items?
+
+  * A. ps -A | tail -5 | cut -f 1 -d " "
+
+  * B. ps -A | tail -5 | sed 's/[ ]*[0-9]*//'
+
+  * C. ps -A | head -5 | nl
+
+  * D. ps -A | tac | head -5 | cut -b 0-5
+
++------------------------------------------+
+|1.3/2/4|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Suppose that a file 'names' contains a list of names in the form, "firstname lastname", one per
+line. These names are unsorted, and you would like them sorted by lastname; however, the format of
+names on each line should remain the same. Which ONE of the following commands will NOT output an
+appropriately sorted list of names to the console?
+
+  * A. cut -f 2 -d " " names | paste names - | sort -k 3 | cut -f 1
+
+  * B. sort -k 2 names
+
+  * C. sed 's/\(\w*\) \(\w*\)/\2\1\2/' names | sort | cut -f2-3 -d" "
+
+  * D. cut -f 2 -d " " names | sort
+
+  * E. cut -f 2 -d " " names | paste - names | sort | cut -f 2
+
++------------------------------------------+
+|1.3/3/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Assume that your current working directory is '/tmp' and your home directory is '/home/jane'. Which
+of the below commands will copy all the content of '/tmp/test/' to a 'test' subdirectory of your
+home directory?
+
+  * A. cp -r test/* /home/jane
+
+  * B. cp -r ./test ~
+
+  * C. cp -r ~/test .
+
+  * D. cp -r /tmp/test /home/jane/test
+
++---------------------------------------------------+
+|1.3/4/1|multiple alphabetic|[SELECT FOR ANSWER   ] |
++---------------------------------------------------+
+Suppose that you have several files matching the filename pattern 'file[0-9]'. You would like to
+visually compare the contents of all such files, in a side-by-side fashion. Which of the following
+commands would let you view the desired adhoc report?
+
+  * A. ls file[0-9] | xargs paste | less
+
+  * B. paste `ls file[0-9]` > report ; vi report ; rm report
+
+  * C. cat file[0-9] | paste - | more | less
+
+  * D. ls file[0-9] | tee fnames | paste `cat fnames`
+
+  * E. ls file[0-9] | tee fnames | xargs paste | more
+
+  * F. ls *word* > fnames ; paste < xargs `cat fnames` | vi
+
++------------------------------------------+
+|1.3/5/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Which of the following Linux utilities does NOT include the capability to list the process IDs of
+running applications?
+
+  * A. jobs
+
+  * B. ps
+
+  * C. nice
+
+  * D. top
+
++------------------------------------------+
+|1.3/5/2|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+
+# jobs -l
+    [1]   5110 Running                 kedit &
+    [2]-  5382 Stopped (signal)        pine
+    [3]+  5457 Stopped (tty output)    vi
+
+Given the 'jobs' display in the exhibit, which command could you use to switch display focus to the
+application 'vi'?
+
+  * A. bg %3
+
+  * B. fg %3
+
+  * C. top -p 5457
+
+  * D. switch %5457
+
++------------------------------------------+
+|1.3/5/3|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+
+# jobs -l
+    [1]   5110 Running                 kedit &
+    [2]-  5382 Stopped (signal)        pine
+    [3]+  5457 Stopped (tty output)    vi
+
+Given the 'jobs' display in the exhibit, which command could you use to terminate the application
+'vi'?
+
+  * A. bg %3
+
+  * B. kill -9 5457
+
+  * C. term -i %3
+
+  * D. fg 5457
+
++------------------------------------------+
+|1.3/6/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Suppose you have a running program called 'myprog', that is a child of the current shell. You would
+like to decrease the CPU usage of this program. Which of the following command lines can you use to
+make 'myprog' yield more CPU resources?
+
+  * A. nice +1 myprog
+
+  * B. ps h -o pid -C myprog | xargs nice +1 -
+
+  * C. renice +1 -u `whoami` myprog
+
+  * D. renice +1 -p `ps -a | grep myprog | cut -b 1-6`
+
++------------------------------------------+
+|1.3/7/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+
+int double(int n)
+    { /* int arg, int return */
+       return n*2;
+    }
+    char hello(int n)
+    { /* int arg, char return */
+       printf("hello % i\n", n);
+    }
+    int five()
+    { /* no args, int return */
+       return 5;
+    }
+    int        triple(int n, int other, char nonsense)
+    { /* int arg, int return */
+       return n*3;
+    }
+
+Correctly parsing a C source file requires a full-fledged parser (such as that built into a C
+compiler). Nonetheless, regular expressions can be used to provide a pretty good approximate
+descriptions of many program constructs. Which of the following searches will locate at least most
+of the C functions that accept an int as a first argument, and return an int (and will not produce
+false positives very often). The exhibit contains a fragment of C code with several annotated
+matching and non-matching functions (for non-C programmers).
+
+  * A. grep -E "int[ \t]+\w+[ \t]*\([ \t]*int" *.c
+
+  * B. grep -E "^int\w+[A-Za-z_]+\w*\(\w*int" *.c
+
+  * C. grep -E "int.+\([ \t]+int.*\) " *.c
+
+  * D. grep -E "int[ \t]+[A-Za-z_][ \t]+\(int" *.c
+
++------------------------------------------+
+|1.3/7/2|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Some tools that use regular expressions support so-called "extended" regular expressions. For
+example, GNU 'grep' with the '-E' option uses extended regular expressions. Other tools like 'sed'
+only support "basic" regular expressions. As a consequence, one must be careful in selecting the
+right regular expression syntax. Which of the following characters have a special meaning in
+extended regular expressions, but not in basic regular expressions. That is, which of the following
+is an extended regular expression "meta-character", but only a regular character in basic regular
+expressions?
+
+  * A. ^
+
+  * B. [
+
+  * C. +
+
+  * D. *
+
++---------------------------------------------------+
+|2.4/1/1|multiple alphabetic|[SELECT FOR ANSWER   ] |
++---------------------------------------------------+
+Based on Linux' partition naming system, which of the following device names point to "logical"
+partitions (assuming the corresponding partitions exist at all on the system in question)?
+
+  * A. /dev/sda3
+
+  * B. /dev/fd0
+
+  * C. /dev/hdb7
+
+  * D. /dev/hda4
+
+  * E. /dev/fd7
+
+  * F. /dev/sdc11
+
++------------------------------------------+
+|2.4/1/2|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Which of the following command lines can (possibly) be used to format a partition? Assume required
+partitions exist, and also that logical partitioning is used on each hard-disk.
+
+  * A. mkfs -t msdos /dev/sda1
+
+  * B. mkfs.ext2 /dev/null
+
+  * C. mkfs -t ext2 /dev/hda4
+
+  * D. mkfs --type=ext2 /dev/hdb7
+
++------------------------------------------+
+|2.4/2/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Which Linux command can be used to repair improperly shutdown, or otherwise potentially corrupt
+partitions?
+
+  * A. chkdsk
+
+  * B. scandisk
+
+  * C. fsck
+
+  * D. fdisk
+
++------------------------------------------+
+|2.4/2/2|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Which of the following command lines will produce an ad hoc report on the total disk space used
+personally by the current user?
+
+  * A. fsck ~
+
+  * B. df ~/.
+
+  * C. quota --used
+
+  * D. du -hs ~
+
++------------------------------------------+
+|2.4/2/3|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Which Linux command can be used to determine the available space on local hard-disk partitions?
+
+  * A. free
+
+  * B. df
+
+  * C. du
+
+  * D. fdisk
+
++------------------------------------------+
+|2.4/3/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Please examine the exhibit for this question which displays the actual '/etc/fstab' file for the
+system on which this exam was created. Which of the following lines in the file causes a fixed and
+user-writeable partition to be mounted?
+
+  * A. Line 5
+
+  * B. Line 11
+
+  * C. Line 9
+
+  * D. Line 7
+
++------------------------------------------+
+|2.4/4/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Which Linux command can be used to limit the disk space usage allowance of a particular user?
+Assume for this question that quotas are enabled for the filesystem(s) in use on the system in
+question.
+
+  * A. edquota
+
+  * B. setquota
+
+  * C. quotaon
+
+  * D. repquota
+
++------------------------------------------+
+|2.4/5/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Suppose you have created a new application 'myapp', and copied it to the directory '/usr/local/
+bin'. You would like all the users of the system to be able to run your application. Which of the
+following command lines would allow the appropriate access?
+
+  * A. chmod o+x /usr/local/bin/myapp
+
+  * B. chgrp bin /usr/local/bin/myapp
+
+  * C. umask 0022 /usr/local/bin/myapp
+
+  * D. chown 755 /usr/local/bin/myapp
+
++------------------------------------------+
+|2.4/5/2|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Proper file security is particularly important for CGI applications invoked over the web, given the
+diversity of users. Which of the command lines setup reasonable file permissions for a CGI
+applications? Even though particular web servers may require slightly different configurations, you
+should be able to rule out all the wrong answers below.
+
+  * A. chmod a-x ~/www/cgi-bin/myapp.cgi
+
+  * B. chmod 075 ~/www/cgi-bin/myapp.cgi
+
+  * C. chmod 711 ~/www/cgi-bin/myapp.cgi
+
+  * D. chmod o+w ~/www/cgi-bin/myapp.cgi
+
++------------------------------------------+
+|2.4/6/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Which Linux command is used to assign privileges over a particular file to a designated user
+
+  * A. chroot
+
+  * B. chown
+
+  * C. assign
+
+  * D. chgrp
+
++------------------------------------------+
+|2.4/7/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+One advantage of hard links over symbolic links is:
+
+  * A. A hard link can span different filesystems
+
+  * B. A hard link does not become disconnected from the
+           underlying file if the file is moved.
+
+  * C. You can determine the inode used by a hard link, but not
+           for a symbolic link.
+
+  * D. A hard link allows you to change the permissions on the
+           underlying file.
+
++------------------------------------------+
+|2.4/8/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+According to the Linux filesystem hierarchy standard, which of the following directories would be
+an appropriate location for a user to install a shared application to?
+
+  * A. /sbin
+
+  * B. /dev/user/bin
+
+  * C. /usr/local/bin
+
+  * D. /etc/bin
+
++------------------------------------------+
+|2.6/1/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Which of the following Linux command lines can be used to examine kernel bootup messages after boot
+time?
+
+  * A. dmesg | less
+
+  * B. less /proc/kmsg
+
+  * C. bootlog -v
+
+  * D. vi /var/log/messages
+
++------------------------------------------+
+|2.6/1/2|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+
+boot=/dev/hda
+    map=/boot/map
+    install=/boot/boot.b
+    vga=791
+    default=redhat
+    keytable=/boot/us.klt
+    lba32
+    prompt
+    timeout=200
+    message=/boot/message
+    menu-scheme=wb:bw:wb:bw
+    image=/boot/vmlinuz
+            label=failsafe
+            root=/dev/hda10
+            initrd=/boot/initrd.img
+            append=" devfs=mount failsafe"
+            read-only
+    image=/boot/vmlinuz-2.4.16
+            label=redhat
+            alias=redhat-2.4.16
+            root=/dev/hda9
+            read-only
+    image=/boot/vmlinuz-2.4.8-26mdk
+            label=mandrake81
+            root=/dev/hda10
+            initrd=/boot/initrd.img
+            append=" devfs=mount"
+            read-only
+    other=/dev/hda2
+            label=eComStation
+            table=/dev/hda
+    other=/dev/fd0
+            label=floppy
+            unsafe
+
+Please examine the exhibit for this question which displays the file '/etc/lilo.conf'. Assume that
+the 'lilo' command has been run while this configuration file is as listed. Which of the following
+statements correctly describes what happens when this machine boots up?
+
+  * A. The system boots after a 20 second delay, and absent user
+           intervention the root filesystem is on /dev/hda10.
+
+  * B. The system boots after a 20 second delay, and absent user
+           intervention the root filesystem is on /dev/hda9.
+
+  * C. The system boots after 2 seconds delay, and absent user
+           intervention the root filesystem is on /dev/hda9.
+
+  * D. The system boots after a 200 second delay, and absent user
+           intervention the floppy disk is a fallback boot device.
+
++------------------------------------------+
+|2.6/2/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Which command line can be used to restart a running Linux system immediately?
+
+  * A. restart --delay=0
+
+  * B. reboot -w
+
+  * C. halt -p
+
+  * D. shutdown -r now
+
++------------------------------------------+
+|1.8/1/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Suppose that you know that a task deals with the general concept "floozflam", but you are not
+certain what Linux command(s) are available for working with floozflams. Which of the following
+Linux command lines would be the BEST first step in finding out about available tools?
+
+  * A. man floozflam
+
+  * B. locate floozflam
+
+  * C. apropos floozflam
+
+  * D. whatis floozflam
+
++------------------------------------------+
+|1.8/1/2|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Suppose you know that an application 'someapp' is installed on the current system. You have already
+examine the man and info pages for 'someapp', but are trying to find additional information about
+'someapp'. Which of the following directories is the BEST first place to look for further
+documentation files?
+
+  * A. /usr/local/doc/someapp-2.37
+
+  * B. /usr/share/doc/someapp-2.37
+
+  * C. /etc/someapp-2.37/doc
+
+  * D. /etc/doc/someapp-2.37
+
++------------------------------------------+
+|1.8/1/3|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Which of the following Linux commands are you likely to use to display hypertextual documentation
+on a command?
+
+  * A. info
+
+  * B. man
+
+  * C. whatis
+
+  * D. locate
+
++------------------------------------------+
+|1.8/2/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Which of the following URLs is a BEST first internet site to go to for information about how to
+perform an unfamiliar Linux task?
+
+  * A. http://www.linuxman.com/
+
+  * B. http://www.linuxhowto.net/
+
+  * C. http://www.linuxtoday.com/
+
+  * D. http://www.linuxdoc.org/
+
++------------------------------------------+
+|1.8/3/1|alphabetic|[SELECT FOR ANSWER   ] |
++------------------------------------------+
+Suppose you have created an application that you wish to distribute to other users and system. Your
+application archive already contains the necessary executables, source code, and configuration
+files. But you would like to provide user with a quick explanation of the purpose and requirements
+of your application. Which of the following filenames BEST matches users' expectations about where
+first to look for application documentation
+
+  * A. START
+
+  * B. README
+
+  * C. FIRST
+
+  * D. MAKEFILE
+
++-------------------------------------------+
+|2.11/1/1|alphabetic|[SELECT FOR ANSWER   ] |
++-------------------------------------------+
+Which of the following Linux commands can be used to set an expiration date for a user's password?
+
+  * A. chage
+
+  * B. vipw
+
+  * C. passwd
+
+  * D. usermod
+
++-------------------------------------------+
+|2.11/1/2|alphabetic|[SELECT FOR ANSWER   ] |
++-------------------------------------------+
+
+jdoe:x:502:1000:John Doe:/home/jdoe:/bin/bash
+
+The exhibit for this question contains a line from the file '/etc/passwd'. Which of the following
+statements is true, based on the information in the exhibit?
+
+  * A. User John Doe belongs to the group with groupID 502.
+
+  * B. Shadow passwords are used on the current system.
+
+  * C. The username 'jdoe' belongs to the group 'jdoe'.
+
+  * D. Members of groupID 1000 can read directory /home/jdoe.
+
++-------------------------------------------+
+|2.11/1/3|alphabetic|[SELECT FOR ANSWER   ] |
++-------------------------------------------+
+Which Linux command can be used to create a new user account?
+
+  * A. newuser
+
+  * B. useradd
+
+  * C. mkuser
+
+  * D. usercfg
+
++---------------------------------------------------+
+|2.11/1/4|multiple alphabetic|[SELECT FOR ANSWER   ]|
++---------------------------------------------------+
+Which Linux command(s) can be used to modify the list of groups a user belongs to?
+
+  * A. usermod
+
+  * B. groupadd
+
+  * C. groups
+
+  * D. gpasswd
+
+  * E. chgrp
+
+  * F. userinfo
+
++-------------------------------------------+
+|2.11/2/1|alphabetic|[SELECT FOR ANSWER   ] |
++-------------------------------------------+
+Which Linux file can be used to configure the default bash shell behavior for EVERY users on a
+system?
+
+  * A. /etc/skel/.bashrc
+
+  * B. /home/.bash_profile
+
+  * C. /etc/profile
+
+  * D. /etc/passwd
+
++-------------------------------------------+
+|2.11/2/2|alphabetic|[SELECT FOR ANSWER   ] |
++-------------------------------------------+
+Which of the following BEST describes the purpose of the '/etc/skel' directory?
+
+  * A. The contents of the directory control the initialization of
+           the shell environment during each login.
+
+  * B. The contents of the directory determine the actions
+           performed during the system boot process.
+
+  * C. The contents of the directory provide a default
+           environment for newly created users.
+
+  * D. The contents of the directory list the background
+           processes that run during a user's session.
+
++-------------------------------------------+
+|2.11/3/1|alphabetic|[SELECT FOR ANSWER   ] |
++-------------------------------------------+
+Which of the following command lines would allow you to examine how many times remote users have
+opened secure shells into the current system?
+
+  * A. dmesg | less
+
+  * B. less /proc/kmsg
+
+  * C. sshd --log | more
+
+  * D. vi /var/log/messages
+
++-------------------------------------------+
+|2.11/4/1|alphabetic|[SELECT FOR ANSWER   ] |
++-------------------------------------------+
+
+SHELL=/bin/bash
+    PATH=/sbin:/bin:/usr/sbin:/usr/bin
+    MAILTO=root
+    HOME=/
+    # run-parts
+    01 * * * * root run-parts /etc/cron.hourly
+    02 4 * * * root run-parts /etc/cron.daily
+    22 4 * * 0 root run-parts /etc/cron.weekly
+    42 4 1 * * root run-parts /etc/cron.monthly
+    23 4 * 1,6 1 root run-parts /etc/cron.special
+
+Refer to the '/etc/crontab' file listed in the exhibit for this question. Which of the following
+statements is true?
+
+  * A. The script file '/etc/cron.special is run once a week, on
+           Mondays.
+
+  * B. The contents of the '/etc/cron.special directory are run
+           during January and June.
+
+  * C. During some parts of the year '/etc/cron.special' is run
+           one minute after '/etc/cron.weekly'.
+
+  * D. During the month of March, '/etc/cron.special' is run on
+           Mondays.
+
++-------------------------------------------+
+|2.11/4/2|alphabetic|[SELECT FOR ANSWER   ] |
++-------------------------------------------+
+
+# cat /etc/cron.daily/slocate.cron
+    #!/bin/sh
+    renice +19 -p $$ >/dev/null 2>&1
+    /usr/bin/updatedb -f "nfs,smbfs,ncpfs,proc,devpts" -e "/tmp,/var/tmp,/usr/tmp"
+
+Based on the what the exhibit shows, which of the following statements is the BEST assumption?
+
+  * A. When cron runs updatedb, confirmations are logged to the
+           root console.
+
+  * B. The /etc/crontab file is configured to automatically index
+           remote filesystems.
+
+  * C. cron runs updatedb at a high processor priority in
+           order to complete it quickly.
+
+  * D. The locate database is automatically refreshed on a daily
+           basis.
+
++-------------------------------------------+
+|2.11/5/1|alphabetic|[SELECT FOR ANSWER   ] |
++-------------------------------------------+
+Which of the following Linux commands can be used to create backups of filesystems and directories?
+
+  * A. backup
+
+  * B. gzip
+
+  * C. tar
+
+  * D. archive
+
++------------------------------------------+
+|1.1/1/1|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+Suppose that after installing a serial multi-port card on a system, the mouse connected to a serial
+port on your motherboard stops functioning. Which of the following commands is MOST likely to be
+useful in diagnosing this problem?
+
+  * A. setserial /dev/com1 -v auto_irq
+
+  * B. cat /dev/mouse > serial-info.dump
+
+  * C. setserial -a /dev/cua0
+
+  * D. ioaddr /dev/ttyS1
+
++------------------------------------------+
+|1.1/2/1|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+To determine what SCSI devices are attached to and recognized on either of the two SCSI channels by
+the currently running system, which command line would be BEST to run?
+
+  * A. cat /proc/scsi/scsi
+
+  * B. ls -l -i /dev/sd*
+
+  * C. stinit -v /dev/sda /dev/sdb
+
+  * D. scsiinfo --all --probe
+
++------------------------------------------+
+|1.1/2/2|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+Which of the following command lines would provide the most useful information in diagnosing a
+suspected hardware address conflict between an an EISA ethernet NIC card and a video controller?
+
+  * A. cat /proc/irq
+
+  * B. cat /proc/meminfo
+
+  * C. cat /proc/iomem
+
+  * D. cat /proc/modules
+
++------------------------------------------+
+|1.1/3/1|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+Whick of the following Linux utilities is MOST useful in determining what sort of motherboard audio
+support exists on the current system?
+
+  * A. less -f /dev/audio
+
+  * B. pnpdetect
+
+  * C. modprobe
+
+  * D. sndconfig
+
++------------------------------------------+
+|2.2/1/1|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+Which Linux utility would provide BEST guidance to determining the relative performance
+characteristics of the several local hard-disks installed on a system?
+
+  * A. nfsstone
+
+  * B. hdparm
+
+  * C. fdisk
+
+  * D. modprobe
+
++---------------------------------------------------+
+|2.2/2/1|multiple alphabetic|[ SELECT FOR ANSWER  ] |
++---------------------------------------------------+
+
+boot=/dev/hda
+    map=/boot/map
+    install=/boot/boot.b
+    vga=791
+    default=redhat
+    keytable=/boot/us.klt
+    lba32
+    prompt
+    timeout=200
+    message=/boot/message
+    menu-scheme=wb:bw:wb:bw
+    image=/boot/vmlinuz-2.4.7-10
+     label=redhat-2.4.7
+     root=/dev/hda9
+     read-only
+    image=/boot/vmlinuz-2.4.16
+        label=redhat
+     alias=redhat-2.4.16
+     root=/dev/hda9
+     read-only
+    image=/boot/vmlinuz-2.4.8-26mdk
+     label=mandrake81
+     root=/dev/hda10
+     initrd=/boot/initrd.img
+     append=" devfs=mount"
+     read-only
+    image=/boot/vmlinuz-2.2.15-4mdk
+     label=mandrake71
+     root=/dev/hda7
+     read-only
+    other=/dev/hda2
+     label=eComStation
+     table=/dev/hda
+    other=/dev/fd0
+     label=floppy
+     unsafe
+
+Please examine the '/etc/lilo.conf' file listed in the exhibit. Assume for purposes of this
+question that this configuration accurately matches the partitioning of the current system, and
+also that 'lilo' has been run while this configuration file is as listed. Which of the following
+statements do you know to be true?
+
+  * A. lilo is installed to the master boot record of the first
+           IDE hard-disk.
+
+  * B. lilo is installed on the partition '/dev/hda9' where there is
+           a kernel image called '/boot/vmlinuz-2.4.7-10' on that
+           partition.
+
+  * C. Exactly three partitions on '/dev/hda' contain separate
+           Linux installation.
+
+  * D. The default boot kernel image is in a file named
+           'vmlinuz-2.4.16'.
+
+  * E. The kernel image /boot/vmlinuz-2.4.8-26mdk is stored on
+           the partition '/dev/hda10'.
+
+  * F. The current system contains exactly one IDE hard-disk.
+
++---------------------------------------------------+
+|2.2/3/1|mutliple alphabetic|[ SELECT FOR ANSWER  ] |
++---------------------------------------------------+
+Suppose that you have just downloaded the application 'someapp' in the form of the file
+'someapp-1.3.7.src.tar.bz2'. You have placed this file in your '~/tmp' directory. Which of the
+following command lines would be a reasonable first step for installation of the application
+
+  * A. rpm Uvh someapp-1.3.7.src.tar.bz2
+
+  * B. tar xvfj someapp-*
+
+  * C. bunzip2 someapp-1.3.7.src.tar.bz2 | tar tvf -
+
+  * D. cat someapp-1.3.7* | tar xvfz -
+
+  * E. dbkg -L someapp-1.3.7.src.tar.bz2 | less
+
+  * F. make --all someapp-1.3.7.src.tar.bz2
+
++------------------------------------------+
+|2.2/3/2|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+Which of the following commands is frequently run first when compiling an unpacked Linux
+application from C source code?
+
+  * A. rpm Uvh *
+
+  * B. make install
+
+  * C. setup -c
+
+  * D. configure
+
++------------------------------------------+
+|2.2/4/1|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+Which of the following command lines would be MOST useful in determining a list of the shared
+libraries loaded with the application '/usr/local/bin/someapp'?
+
+  * A. cat /etc/ld.so.conf | grep someapp
+
+  * B. ldd -v /usr/local/bin/someapp
+
+  * C. ldconfig -l /usr/local/bin/someapp
+
+  * D. readlink /usr/local/bin/someapp
+
++------------------------------------------+
+|2.2/5/1|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+Assume you are maintaining a Debian-based Linux system. You wish to install the application
+'someapp'. Which of the following command lines would be the most common way to install the
+application?
+
+  * A. dselect someapp
+
+  * B. apt-setup someapp
+
+  * C. dpkg --install someapp
+
+  * D. apt-get install someapp
+
++------------------------------------------+
+|2.2/5/2|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+Assume you are maintaining a Debian-based Linux system. You find a file on your system called '/usr
+/local/bin/curious', and are unsure why the file is present. Which of the following commands would
+provide you with information about the Debian package from which the file was installed?
+
+  * A. dpkg -s /usr/local/bin/curious
+
+  * B. dpkg -L /usr/local/bin/curious
+
+  * C. dpkg -S /usr/local/bin/curious
+
+  * D. dpkg -l /usr/local/bin/curious
+
++------------------------------------------+
+|2.2/6/1|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+Assume you are maintaining a RPM-based Linux sysem. Which of the following command lines would be a
+likely choice for installing a precompiled distribution of the application 'someapp'
+
+  * A. rpm -i someapp-1.3.7.src.rpm
+
+  * B. rpm -Uvh someapp-1.3.7.i586.rpm
+
+  * C. tar xvfz someapp-1.3.7.i386.tgz | rpm -qpl
+
+  * D. rpm -Kv someapp-1.3.7.i386.rpm
+
++---------------------------------------------------+
+|2.2/6/2|multiple alphabetic|[ SELECT FOR ANSWER  ] |
++---------------------------------------------------+
+Assume you are maintaining a RPM-based Linux sysem. Which of the following applications can be used
+(if present on your system) for interactive management of installed packages?
+
+  * A. dselect
+
+  * B. kpackage
+
+  * C. gpackage
+
+  * D. xrpm
+
+  * E. rpmfind
+
+  * F. gnorpm
+
++------------------------------------------+
+|2.2/6/3|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+Which of the following command lines would you use to verify that a Red Hat Package for 'someapp'
+that you wish to install has not become corrupted, or been tampered with?
+
+  * A. rpm -Kv someapp-1.3.7.i586.rpm | tee someapp-1.3.7.md5
+
+  * B. md5sum someapp-1.3.7.i586.rpm | diff - someapp-1.3.7.md5
+
+  * C. gpg --verify someapp-1.3.7.i586.rpm
+
+  * D. checkrpm someapp-1.3.7.i586.rpm
+
++---------------------------------------------------+
+|1.5/1/1|multiple alphabetic|[ SELECT FOR ANSWER  ] |
++---------------------------------------------------+
+Which of the following utilities can be used to load driver support for an additional hardware
+device at runtime?
+
+  * A. modprobe
+
+  * B. lsmod
+
+  * C. insmod
+
+  * D. chmod
+
+  * E. modules
+
+  * F. modinfo
+
++---------------------------------------------------+
+|1.5/2/1|multiple alphabetic|[ SELECT FOR ANSWER  ] |
++---------------------------------------------------+
+
+boot=/dev/hda
+    map=/boot/map
+    install=/boot/boot.b
+    vga=791
+    default=redhat
+    keytable=/boot/us.klt
+    lba32
+    prompt
+    timeout=200
+    message=/boot/message
+    menu-scheme=wb:bw:wb:bw
+    image=/boot/vmlinuz-2.4.7-10
+     label=redhat-2.4.7
+     root=/dev/hda9
+     read-only
+    image=/boot/vmlinuz-2.4.16
+        label=redhat
+     alias=redhat-2.4.16
+     root=/dev/hda9
+     read-only
+    image=/boot/vmlinuz-2.4.8-26mdk
+     label=mandrake81
+     root=/dev/hda10
+     initrd=/boot/initrd.img
+     append=" devfs=mount"
+     read-only
+    image=/boot/vmlinuz-2.2.15-4mdk
+     label=mandrake71
+     root=/dev/hda7
+     read-only
+    other=/dev/hda2
+     label=eComStation
+     table=/dev/hda
+    other=/dev/fd0
+     label=floppy
+     unsafe
+
+The exhibit for this question is one screen of the kernel config utility at '/usr/src/linux-2.4.17/
+scripts/Menuconfig'. Based on this screen which of the following statements describe the kernel
+that would be created after saving the listed options?
+
+  * A. Multi-IO card drivers are contained in loadable modules
+           rather than in the base kernel.
+
+  * B. The compiled system supports parallel ports at a hardware
+           level, but we cannot determine whether parallel printer
+           support is installed.
+
+  * C. IEEE 1284 (enhanced parallel) mode drivers are contained
+           in loadable modules rather than in the base kernel.
+
+  * D. PCMCIA management drivers are contained in loadable
+           modules rather than in the base kernel.
+
+  * E. Kernel support for SuperIO chipsets is included in this
+           base kernel.
+
+  * F. IEEE 1284 (enhanced parallel) mode drivers are compiled
+           directly into this base kernel.
+
++------------------------------------------+
+|1.5/2/2|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+Which of the following command lines can NOT be used to configure the compilation of a new Linux
+kernel and kernel modules?
+
+  * A. make xconfig
+
+  * B. make menuconfig
+
+  * C. make kernconfig
+
+  * D. make config
+
++------------------------------------------+
+|1.7/1/1|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+Which of the following key sequences will save changes made during a 'vi' editing session, and end
+the application?
+
+  * A. <esc>:qw
+
+  * B. <esc>:sx
+
+  * C. <esc>:wq
+
+  * D. <esc>:xs
+
++------------------------------------------+
+|1.7/2/1|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+Which of the following utilities can be used to terminate a spooled print job without printing it?
+
+  * A. lpr
+
+  * B. lpc
+
+  * C. lpd
+
+  * D. lpq
+
++---------------------------------------------------+
+|1.7/3/1|multiple alphabetic|[ SELECT FOR ANSWER  ] |
++---------------------------------------------------+
+Which of the following Linux comand lines will convert a plain text file 'file.txt' to postscript
+for later (prettified) printing or viewing? Assume for this question that any mentioned utilities
+are actually installed to the system in question.
+
+  * A. enscript -p - file.txt > file.ps
+
+  * B. a2ps -o file.ps file.txt
+
+  * C. text2ps < file.txt > file.ps
+
+  * D. cat file.txt | lpr -P file.ps
+
+  * E. ps2ascii file.ps file.txt
+
+  * F. gs --source=file.txt --output=file.ps
+
++------------------------------------------+
+|1.7/4/1|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+There have been a number of print-spooling systems developed for Linux, often offering a different
+range of capabilities such as format conversions and job-control tools. Which ONE of the following
+is NOT a widely used print-spooling system?
+
+  * A. CUPS
+
+  * B. GPR
+
+  * C. PDQ
+
+  * D. LPD
+
++------------------------------------------+
+|1.7/4/2|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+There have been a number of document-type filtering systems developed for Linux, and working in
+cooperation with print-spooling daemons. Which ONE of the following is NOT a widely used filtering
+tool?
+
+  * A. Apsfilter
+
+  * B. Magicfilter
+
+  * C. printfilter
+
+  * D. doctype-filter
+
++------------------------------------------+
+|1.9/1/1|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+
+# head -2 /home/jdoe/.bashrc
+    PS1='From .bashrc --* '
+    export PS1
+    # head -2 /home/jdoe/.bash_login
+    PS1='From .bash_login --* '
+    export PS1
+    # head -2 .bash_profile
+    PS1='From .bash_profile --* '
+    export PS1
+    # grep 'PS1=' /etc/bashrc
+    [ "$PS1" = "\\s-\\v\\\$ " ] && PS1="[\u@\h \W]\\$ "
+
+The exhibit for this question shows several shell configuration files. Assume for this exercise
+that the PS1 environment variable is not modified elsewhere in the (partially) displayed files, nor
+is it set anywhere else. If user 'jdoe' opens a secure shell connection to this system (named
+'fury') from a remote location, what will his bash prompt display?
+
+  * A. From .bashrc --*
+
+  * B. From .bash_login --*
+
+  * C. From .bash_profile --*
+
+  * D. [jdoe@fury jdoe]$
+
++------------------------------------------+
+|1.9/1/2|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+
+# head -2 /home/jdoe/.bashrc
+    PS1='From .bashrc --* '
+    export PS1
+    # head -2 /home/jdoe/.bash_login
+    PS1='From .bash_login --* '
+    export PS1
+    # head -2 .bash_profile
+    PS1='From .bash_profile --* '
+    export PS1
+    # grep 'PS1=' /etc/bashrc
+    [ "$PS1" = "\\s-\\v\\\$ " ] && PS1="[\u@\h \W]\\$ "
+
+The exhibit for this question shows several shell configuration files on machine 'fury'. Assume for
+this exercise that the PS1 environment variable is not modified elsewhere in the (partially)
+displayed files, nor is it set anywhere else. If the root user issues a 'su jdoe' command, what
+will her bash prompt display?
+
+  * A. From .bashrc --*
+
+  * B. From .bash_login --*
+
+  * C. From .bash_profile --*
+
+  * D. [jdoe@fury root]$
+
++------------------------------------------+
+|1.9/2/1|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+Which of the following bash command lines could be used to "run every executable file in the
+current directory"?
+
+  * A. for i in * ; do { case [ -x $i ] ; { ./$i; } esac } done
+
+  * B. while i in * ; do { if [ -x $i ] ; then { ./$i; } fi } done
+
+  * C. foreach i in * ; do { if [ -x $i ] ; then { ./$i; } done }
+
+  * D. for i in * ; do { if [ -x $i ] ; then { ./$i; } fi } done
+
++------------------------------------------+
+|1.9/2/2|alphabetic|[ SELECT FOR ANSWER  ] |
++------------------------------------------+
+What special line is normally placed at the top of a custom bash shell script?
+
+  * A. #/usr/local/bin/bash
+
+  * B. #!/bin/bash
+
+  * C. #!/usr/env bash
+
+  * D. #!/bash
+
++---------------------------------------------------+
+|2.10/1/1|multiple alphabetic|[ SELECT FOR ANSWER  ]|
++---------------------------------------------------+
+Which of the following utilities are commonly available on a Linux system, and have the capability
+to detect chipset details and installed memory on local video cards (useful for configuring
+XFree86)?
+
+  * A. XF86Config
+
+  * B. SuperProbe
+
+  * C. scanpci
+
+  * D. XConfigurator
+
+  * E. X11Setup
+
+  * F. scanvideo
+
++-------------------------------------------+
+|2.10/1/2|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+The file '/etc/X11XF86Config' contains configuration information about the local X server. Where
+within this file can you specify the video resolutions available when using the Ctrl-Alt-(Plus/
+Minus) toggles?
+
+  * A. Section "Device" / Subsection "Resolutions"
+
+  * B. Section "Screen" / Subsection "Display"
+
+  * C. Section "Monitor" /Subsection "Mode"
+
+  * D. Section "Video" / Subsection "ModeLine"
+
++-------------------------------------------+
+|2.10/2/1|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Which of the following XFree86 tools is used to configure access to remote X11 clients?
+
+  * A. xf86config
+
+  * B. xeyes
+
+  * C. xaccess
+
+  * D. xdm
+
++-------------------------------------------+
+|2.10/3/1|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Unfortunately, not all X11 applications are well behaved. In particular, some applications are
+notorious for leaving behind phantom processes when an X session is exited. Which command line
+below might you use to make sure the application 'Xsomeapp' is terminated?
+
+  * A. ps h -o pid -C Xsomeapp | xargs kill -9
+
+  * B. kill -1 -C Xsomeapp
+
+  * C. terminate `top -n Xsomeapp`
+
+  * D. proc -kill Xsomeapp
+
++-------------------------------------------+
+|2.10/4/1|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Suppose that you would like to allow the current system to act as an X client for SOME remote X
+servers. Also assume that the current system is configured to recognize the alias TRUSTED for a
+corresponding IP address. Which of the following command lines would allow the machine TRUSTED to
+run an X11 application that lives on the current system?
+
+  * A. xallow -a TRUSTED
+
+  * B. addremote TRUSTED
+
+  * C. xhost +TRUSTED
+
+  * D. Xclient --allow TRUSTED
+
++-------------------------------------------+
+|2.10/4/2|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Which of the following environment variables is used to determine which workstation--local or
+remote--a launched X11 application will display on?
+
+  * A. XTERM
+
+  * A. CLIENT
+
+  * A. SERVER
+
+  * D. DISPLAY
+
++-------------------------------------------+
+|1.12/1/1|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+RFC 1700 defines a set of standard port numbers for TCP/IP services. Some of these ports are fairly
+obscure, while a number are used on a daily basis by a Linux systems administrator for diagnosis of
+network issues. Which three services are mapped to the TCP/IP ports 80, 110 and 21 (in the listed
+order)?
+
+  * A. http, telnet, ssh
+
+  * B. http, pop3, ftp
+
+  * C. kerberos, smtp, ftp
+
+  * D. whois, telnet, pop3
+
++-------------------------------------------+
+|1.12/1/2|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Which of the following files is used to define aliases for IP addresses, especially within a local
+TCP/IP network?
+
+  * A. /etc/hosts
+
+  * B. /etc/services
+
+  * C. /etc/aliases
+
+  * D. /etc/networks
+
++-------------------------------------------+
+|1.12/3/1|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Which of the following statements BEST describes a reason why you would want to run a DHCP server
+on an internal company LAN network?
+
+  * A. To serve as a gateway between the external internet and an
+           internal network, and to provide IP address translation of
+           packets.
+
+  * B. To filter network packets that may contain unauthorized or
+           malicious contents, such as "hacker" portscans or overly
+           large email attachments.
+
+  * C. To allow in-company machines to access a central
+           "web-services" application that is utilized in common by
+           various employees.
+
+  * D. To avoid confict between assigned IP addresses on various
+           in-company machines, especially where machines such as
+           laptops may between different ethernet hubs.
+
++-------------------------------------------+
+|1.12/3/2|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Which of the following TCP/IP network utilities is the BEST tool to use to establish if a given IP
+address is reachable under the current network configuration?
+
+  * A. ping
+
+  * B. finger
+
+  * C. route
+
+  * D. host
+
++-------------------------------------------+
+|1.12/3/3|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Which of the following TCP/IP network utilities is BEST used to determine the hardware ethernet
+address of the card(s) installed in the current machine?
+
+  * A. netstat
+
+  * B. ifconfig
+
+  * C. ethers
+
+  * D. arpwatch
+
++-------------------------------------------+
+|1.12/3/4|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Which of the following TCP/IP network utilities is the BEST tool to use in identifying bottlenecks
+between remote machines on the network? Specifically, assume a goal in this debugging is to
+determine the paths travelled in the forwarding of network packets, and identify intermediate
+routers that may be dropping packets.
+
+  * A. route
+
+  * B. netstat
+
+  * C. ping
+
+  * D. traceroute
+
++---------------------------------------------------+
+|1.12/3/5|multiple alphabetic|[ SELECT FOR ANSWER  ]|
++---------------------------------------------------+
+Suppose that you find that your ISPs DNS service is slow or unreliable, and you would like to
+configure aliases for a few frequently targetted sites directly on the machines of users of the
+company internal network you maintain. Which of the following TCP/IP network utilities could you
+use to determine the IP address assigned to symbolic domain names (e.g. "www.somehostsite.com")?
+
+  * A. hostname
+
+  * B. whois
+
+  * C. host
+
+  * D. nslookup
+
+  * E. netstat
+
+  * F. ping
+
++-------------------------------------------+
+|1.12/4/1|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Which of the following commands is NOT a widely used Linux utility for initiating and configuring
+PPP connections?
+
+  * A. KPPP
+
+  * B. WvDial
+
+  * C. netconf
+
+  * D. netppp
+
++-------------------------------------------+
+|1.13/1/1|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Which of the following utilities is often used in conjunction with inetd to log and filter incoming
+connection requests?
+
+  * A. tcpd
+
+  * B. logwatch
+
+  * C. ipfilt
+
+  * D. xinetd
+
++-------------------------------------------+
+|1.13/1/2|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+
+# description: the floozflam server handles
+# flamflooz client connections
+    service floozflam
+    {
+            disable         = yes
+            flags           = NORETRY
+            socket_type     = stream
+            wait            = yes
+            user            = root
+            server          = /usr/sbin/in.floozflamd
+            log_on_failure  += USERID
+    }
+
+The exhibit for this question shows the content of a hypothetical '/etc/xinetd.d/floozflam'
+configuration file. Assume that '/etc/xinetd.conf' includes the line "includedir /etc/xinetd.d",
+and that xinetd is used on the current system. Which of the following statements can you deduce
+from the provided information?
+
+  * A. The floozflam service is carried over the UDP protocol.
+
+  * B. Multiple floozflam servers will be forked if multiple
+           incoming requests are received.
+
+  * C. The floozflam service in not activated on the current
+           system.
+
+  * D. If a floozflam connection fails, the IP address of the
+           requesting client is logged.
+
++-------------------------------------------+
+|1.13/2/1|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Suppose that the 'sendmail' application is used on the current system as a mail transport agent.
+What file may user 'jdoe' modify in order to cause mail sent to him to be temporarily directed to
+an address outside the system's domain?
+
+  * A. /etc/sendmail/jdoe/forward
+
+  * B. /home/jdoe/aliases
+
+  * C. /etc/mail/aliases
+
+  * D. /home/jdoe/.forward
+
++-------------------------------------------+
+|1.13/2/2|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Suppose that the 'sendmail' application is used on the current system as a mail transport agent. If
+the file '/etc/aliases' has been manually updated, what command needs to be run in order to cause
+the changes to take effect?
+
+  * A. sendmail -bh
+
+  * B. sendmail -ba
+
+  * C. sendmail -bi
+
+  * D. sendmail -bp
+
++-------------------------------------------+
+|1.13/3/1|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Which of the following command lines can be used to determine the list of modules that have been
+compiled into the Apache web server?
+
+  * A. ls /etc/httpd/modules/
+
+  * B. httpd -l
+
+  * C. apache --modules
+
+  * D. less /etc/httpd/conf/modules.conf
+
++-------------------------------------------+
+|1.13/4/1|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Which of the following files or directories is used to configure the local directories that are
+made available remotely by an Network File System server?
+
+  * A. /etc/fstab
+
+  * B. /mnt/nfs
+
+  * C. /etc/smb.conf
+
+  * D. /etc/exports
+
++-------------------------------------------+
+|1.13/4/2|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Which of the following protocols/tools is MOST likely to be used in integrating a Linux system into
+a Windows network, and for accessing Windows files?
+
+  * A. NFS
+
+  * B. SAMBA
+
+  * C. FTP
+
+  * D. SCP
+
++-------------------------------------------+
+|1.13/5/1|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Suppose that you have configured one Linux system on an internal LAN to run a DNS server. Which of
+the following files need to be updated on each DNS client on the LAN to get them to utilize the DNS
+service?
+
+  * A. /etc/hosts
+
+  * B. /etc/exports
+
+  * C. /etc/resolv.conf
+
+  * D. /etc/dns.conf
+
++-------------------------------------------+
+|1.14/1/1|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+In performing a security audit on a Linux system, one well-known security issue is applications
+that are configured to run as root (or from other high-permission accounts) that may be subject to
+call vulnerabilities such as buffer overruns. Which of the following command lines can be used for
+an initial sweep in analyzing this issue?
+
+  * A. suid --list /*
+
+  * B. chmod -R u-s ./*
+
+  * C. find / -perm +4000 -user root
+
+  * D. chgrp root `find / -suid`
+
++-------------------------------------------+
+|1.14/1/2|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Which of the following protocols or tools is BEST used to batch copy files between networked
+machines in a manner that protects their contents from an intruder using a packet sniffer?
+
+  * A. ssh/scp
+
+  * B. httpd/SSL
+
+  * C. gpg/snmp
+
+  * D. nfs/md5sum
+
++-------------------------------------------+
+|1.14/2/1|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+Which of the following Linux utilities is used to update the user passwords stored in '/etc/passwd'
+to utilize the more secure "shadow password" style.
+
+  * A. passwd -s
+
+  * B. mkshadow
+
+  * C. shadowpw
+
+  * D. pwconv
+
++---------------------------------------------------+
+|1.14/2/2|multiple alphabetic|[ SELECT FOR ANSWER  ]|
++---------------------------------------------------+
+Which of the following websites are well-known and important resources for monitoring known
+security problems in Linux distributions, and for obtaining patches and updates for vulnerable
+applications and components?
+
+  * A. http://www.securityfocus.com/
+
+  * B. http://www.bugtraq.com/
+
+  * C. http://www.securityupdate.net/
+
+  * D. http://www.cert.org/
+
+  * E. http://www.linux-bugwatch.gov/
+
+  * F. http://www.linuxsecurity.com
+
++-------------------------------------------+
+|1.14/3/1|alphabetic|[ SELECT FOR ANSWER  ] |
++-------------------------------------------+
+One danger of a poorly written (or malicious) CGI application is that it can fork overly many child
+processes, eventually swamping the host system. Which of the following steps could BEST be used to
+control this specific danger?
+
+  * A. Include the line 'ulimit -u 512'  in the file
+           /etc/profile.
+
+  * B. For each CGI user, run the command 'edquota username', and
+           set blocks to 2048 (or other appropriate value).
+
+  * C. If a user is discovered to have an errant CGI application,
+           run the command line 'ps hU username -o pid |xargs kill -9'
+           to terminate their stray processes.
+
+  * D. Edit the file /etc/limits to include a line similar to
+           'CGI 512 2048 0 0 -' (or other appropriate values).
+
+---------------------------------------------------------------------------------------------------
+# #
+Email ThisBlogThis!Share to TwitterShare to FacebookShare to Pinterest
+
+3 comments:
+
+ 1. [b36-rounde]
+    lalitMay 6, 2013 at 9:20 AM
+
+    Very Good Help full site,Thanks Dear
+
+    ReplyDelete
+ 2. [photo]
+    Thomas SternaskyNovember 20, 2014 at 11:44 PM
+
+    good..
+
+    ReplyDelete
+ 3. [anon36]
+    AnonymousJanuary 16, 2015 at 12:53 PM
+
+    test looks very familiar haha, nevertheless :)
+
+    ReplyDelete
+
+Add comment
+Load more...
+
+Newer Post Older Post Home
+Subscribe to: Post Comments (Atom)
+[linux]
+#
+
+Latest Articles
+
+  * Block device encryption with cryptsetup and LUKS
+  * Keepalived using unicast, track and notify scripts
+  * Deploying Highly Available MySQL with MHA and HAProxy
+  * Deploying HAProxy 1.5 from source
+  * Metrics visualisation and collection with Graphite, Grafana and python
+  * Deploying Highly Available NFS Server with DRBD and Heartbeat on Debian
+  * Injecting kernel modules in initrd.gz for the Debian Installer
+  * Creating an official Debian mirror with apt-mirror
+  * Creating secure LXC containers with virt-sandbox-service
+  * DROP versus REJECT a packet
+  * Diagnosing High CPU utilization and memory leaks
+  * Deploying OpenVZ Containers
+  * Connecting KVM or LXC to Open vSwitch
+
+List of All Articles
+#
+
+www.linux-admins.net. Simple template. Powered by Blogger.
+#
+
+#+end_example
+** web page: chassing/linux-sysadmin-interview-questions · GitHub :noexport:
+https://github.com/chassing/linux-sysadmin-interview-questions
+*** webcontent                                                    :noexport:
+#+begin_example
+Location: https://github.com/chassing/linux-sysadmin-interview-questions
+Skip to content
+
+Sign up Sign in
+[                    ]
+This repository
+  * Explore
+  * Features
+  * Enterprise
+  * Blog
+
+  * Watch 48
+  * Star 264
+  * Fork 65
+
+chassing/linux-sysadmin-interview-questions #
+
+  * Code #
+  * Issues #
+  * Pull requests #
+
+  * Pulse #
+  * Graphs #
+
+HTTPS clone URL
+
+[https://github.com/c]
+
+Subversion checkout URL
+
+[https://github.com/c]
+
+You can clone with HTTPS or Subversion.
+
+Download ZIP
+Collection of linux sysadmin/devop interview questions
+
+  * 50 commits
+  * 1 branch
+  * 0 releases
+  * 10 contributors
+
+branch: master
+Switch branches/tags
+[                    ]
+
+  * Branches
+  * Tags
+
+master
+Nothing to show
+Nothing to show
+linux-sysadmin-interview-questions/
+
+add ben to contributors; move links to bottom
+
+latest commit ce695491b8
+@chassing chassing authored Apr 21, 2015
+Permalink
+
+  Failed to load latest commit information.
+# LICENSE   Initial commit                                Feb 11, 2014
+# README.md add ben to contributors; move links to bottom Apr 21, 2015
+
+README.md
+
+ Linux System Administrator/DevOps Interview Questions
+
+A collection of linux sysadmin/devops interview questions. Feel free to contribute via pull
+requests, issues or email messages.
+
+ Table of Contents
+
+ 1. Contributors
+ 2. General Questions
+ 3. Simple Linux Questions
+ 4. Medium Linux Questions
+ 5. Hard Linux Questions
+ 6. Expert Linux Questions
+ 7. Networking Questions
+ 8. MySQL Questions
+ 9. DevOps Questions
+10. Fun Questions
+11. Demo Time
+12. Other Great References
+
+ [⬆] Contributors:
+
+  * moregeek
+  * typhonius
+  * martin
+  * negesti
+  * peter
+  * andreashappe
+  * quatrix
+  * biyanisuraj
+  * pedroguima
+  * Ben
+
+ [⬆] General Questions:
+
+  * What did you learn yesterday/this week?
+  * Talk about your preferred development/administration environment. (OS, Editor, Browsers, Tools
+    etc.)
+  * Tell me about the last major Linux project you finished.
+  * Tell me about the biggest mistake you've made in [some recent time period] and how you would do
+    it differently today. What did you learn from this experience?
+  * Why we must choose you?
+  * What function does DNS play on a network?
+  * What is HTTP?
+  * What is an HTTP proxy and how does it work?
+  * Describe briefly how HTTPS works.
+  * What is SMTP? Give the basic scenario of how a mail message is delivered via SMTP.
+  * What is RAID? What is RAID0, RAID1, RAID5, RAID10?
+  * What is a level 0 backup? What is an incremental backup?
+  * Describe the general file system hierarchy of a Linux system.
+
+ [⬆] Simple Linux Questions:
+
+  * What is the name and the UID of the administrator user?
+  * How to list all files, including hidden one, in a directory?
+  * What is the Unix/Linux command to remove a directory and its contents?
+  * Which command will show you free/used memory? Does free memory exist on Linux?
+  * How to search for the string "my konfi is the best" in files of a directory recursively?
+  * How to connect to a remote server or what is SSH?
+  * How to get all environment variables and how can you use them?
+  * I get "command not found" when I run ifconfig -a. What can be wrong?
+  * What happens if I type TAB-TAB?
+  * What command will show the available disk space on the Unix/Linux system?
+  * What commands do you know that can be used to check DNS records?
+  * What Unix/Linux commands will alter a files ownership, files permissions?
+  * What does chmod +x FILENAMEdo?
+  * What does the permission 0750 on a file mean?
+  * What does the permission 0750 on a directory mean?
+  * How to add a new system user without login permissions?
+  * How to add/remove a group from a user?
+  * What is a bash alias?
+  * How do you set the mail address of the root/a user?
+  * What does CTRL-c do?
+  * What is in /etc/services?
+  * How to redirect STDOUT and STDERR in bash? (> /dev/null 2>&1)
+  * What is the difference between UNIX and Linux.
+  * What is the difference between Telnet and SSH?
+  * Explain the three load averages and what do they indicate.
+
+ [⬆] Medium Linux Questions:
+
+  * What do the following commands do?
+      + tee
+      + awk
+      + tr
+      + cut
+      + tac
+      + curl
+      + wget
+      + watch
+      + tail
+  * What does a & after a command do?
+  * What does & disown after a command do?
+  * What is a packet filter and how does it work?
+  * What is Virtual Memory?
+  * What is swap and what is it used for?
+  * What is an A record, an NS record, a PTR record, a CNAME record, an MX record?
+  * Are there any other RRs and what are they used for?
+  * What is a Split-Horizon DNS?
+  * What is the sticky bit?
+  * What does the immutable bit to a file?
+  * What is the difference between hardlinks and symlinks? What happens when you remove the source
+    to a symlink/hardlink?
+  * What is an inode and what fields are stored in an inode?
+  * Howto force/trigger a file system check on next reboot?
+  * What is SNMP and what is it used for?
+  * What is a runlevel and how to get the current runlevel?
+  * What is SSH port forwarding?
+  * What is the difference between local and remote port forwarding?
+  * What are the steps to add a user to a system without using useradd/adduser?
+  * What is MAJOR and MINOR numbers of special files?
+  * Describe a scenario when you get a "filesystem is full" error, but 'df' shows there is free
+    space.
+  * Describe a scenario when deleting a file, but 'df' not showing the space being freed.
+  * Describe how 'ps' works.
+  * What happens to a child process that dies and has no parent process to wait for it and what's
+    bad about this?
+  * Explain briefly each one of the process states.
+  * How to know which process listens on a specific port?
+  * You run a bash script and you want to see its output on your terminal and save it to a file at
+    the same time. How could you do it?
+  * Explain what echo "1" > /proc/sys/net/ipv4/ip_forward does.
+  * Describe briefly the steps you need to take in order to create and install a valid certificate
+    for the site https://foo.example.com.
+  * Can you have several HTTPS virtual hosts sharing the same IP?
+  * What is a wildcard certificate?
+  * Which Linux file types to you know?
+  * What is the difference between a process and a thread? And parent and child processes after a
+    fork system call?
+  * What is the difference between exec and fork?
+  * What is "nohup" used for?
+  * What is the difference between these two commands?
+      + myvar=hello
+      + export myvar=hello
+  * How many NTP servers would you configure in your local ntp.conf?
+  * What does the column 'reach' mean in ntpq -p output?
+
+ [⬆] Hard Linux Questions:
+
+  * What is the difference between processes and threads?
+  * What is a tunnel and how you can bypass a http proxy?
+  * What is the difference between IDS and IPS?
+  * What shortcuts do you use on a regular basis?
+  * What is the Linux Standard Base?
+  * What is an atomic operation?
+  * Your freshly configured http server is not running after a restart, what can you do?
+  * What kind of keys are in ~/.ssh/authorized_keys and what it is this file used for?
+  * I've added my public ssh key into authorized_keys but I'm still getting a password prompt, what
+    can be wrong?
+  * Did you ever create RPM's, DEB's or solaris pkg's?
+  * What does :(){ :|:& };: do on your system?
+  * How do you catch a Linux signal on a script?
+  * Can you catch a SIGKILL?
+  * What's happening when the Linux kernel is starting the OOM killer and how does it choose which
+    process to kill first?
+  * Describe the linux boot process with as much detail as possible, starting from when the system
+    is powered on and ending when you get a prompt.
+  * What's a chroot jail?
+  * When trying to umount a directory it says it's busy, how to find out which PID holds the
+    directory?
+  * What's LD_PRELOAD and when it's used?
+  * You ran a binary and nothing happened. How would you debug this?
+  * What are cgroups? Can you specify a scenario where you could use them?
+
+ [⬆] Expert Linux Questions:
+
+  * A running process gets EAGAIN: Resource temporarily unavailable on reading a socket. How can
+    you close this bad socket/file descriptor without killing the process?
+
+ [⬆] Networking Questions:
+
+  * What is localhost and why would ping localhost fail?
+  * What is the similarity between "ping" & "traceroute" ? How is traceroute able to find the hops.
+  * What is the command used to show all open ports and/or socket connections on a machine?
+  * Is 300.168.0.123 a valid IPv4 address?
+  * Which IP ranges/subnets are "private" or "non-routable" (RFC 1918)?
+  * What is a VLAN?
+  * What is ARP and what is it used for?
+  * What is the difference between TCP and UDP?
+  * What is the purpose of a default gateway?
+  * What is command used to show the routing table on a Linux box?
+  * A TCP connection on a network can be uniquely defined by 4 things. What are those things?
+  * When a client running a web browser connects to a web server, what is the source port and what
+    is the destination port of the connection?
+  * How do you add an IPv6 address to a specific interface?
+  * You have added an IPv4 and IPv6 address to interface eth0. A ping to the v4 address is working
+    but a ping to the v6 address gives yout the response sendmsg: operation not permitted. What
+    could be wrong?
+  * What is SNAT and when should be used?
+  * Explain how could you ssh login into a Linux system that DROPs all new incomming packets using
+    a SSH tunnel.
+  * How do you stop a DDoS?
+
+ [⬆] MySQL questions:
+
+  * How do you create a user?
+  * How do you provide privileges to a user?
+  * What is the difference between a "left" and a "right" join?
+  * Explain briefly the differences between InnoDB and MyISAM.
+  * Describe briefly the steps you need to follow in order to create a simple master/slave cluster.
+  * Why should you run "mysql_secure_installation" after installing MySQL?
+  * How do you check which jobs are running?
+
+ [⬆] DevOps Questions:
+
+  * Can you describe your workflow when you create a script?
+  * What is GIT?
+  * What is a dynamically/statically linked file?
+  * What does "configure && make && make install"?
+  * What is puppet/chef/ansible used for?
+  * How do you create a new mysql user?
+  * How do you create a new postgres user?
+  * What is a virtual IP address? What is a cluster?
+  * How print the strings of printable characters in files?
+  * How look shared library dependencies?
+  * What is Automake and Autoconf?
+  * ./configure shows an error that libfoobar is missing on your system, how could you fix this,
+    what could be wrong?
+  * Advantages/disadvantages of script vs compiled program.
+  * What's the relationship between continuous delivery and DevOps?
+  * What are the important aspects of a system of continous integration and deployment?
+
+ [⬆] Fun Questions:
+
+  * A careless sysadmin executes the following command: chmod 444 /bin/chmod - what do you do to
+    fix this?
+  * I've lost my root password, what can I do?
+  * I've rebooted a remote server but after 10 minutes I'm still not able to ssh into it, what can
+    be wrong?
+  * If you were stuck on a desert island with only 5 command-line utilities, which would you
+    choose?
+  * You come across a random computer and it appears to be a command console for the universe. What
+    is the first thing you type?
+  * Tell me about a creative way that you've used SSH?
+  * You have deleted by error a running script, what could you do to restore it?
+
+ [⬆] Demo Time:
+
+  * Unpack test.tar.gz without man pages or google.
+  * Remove all "*.pyc" files from testdir recursively?
+  * Search for "my konfu is the best" in all *.py files.
+  * Replace the occurrence of "my konfu is the best" with "I'm a linux jedi master" in all *.txt
+    files.
+  * Test if port 443 on a machine with IP address X.X.X.X is reachable.
+  * Get http://myinternal.webserver.local/test.html via telnet.
+  * How to send an email without a mail client, just on the command line?
+  * Write a get_prim method in python/perl/bash/pseudo.
+  * Find all files which have been accessed within the last 30 days.
+  * Explain the following command (date ; ps -ef | awk '{print $1}' | sort | uniq | wc -l ) >>
+    Activity.log
+  * Write a script to list all the differences between two directories.
+  * In a log file with contents as <TIME> : [MESSAGE] : [ERROR_NO] - Human readable text display
+    summary/count of specific error numbers that occured every hour or a specific hour.
+
+ [⬆] Other Great References:
+
+Some questions are 'borrowed' from other great references like:
+
+  * https://github.com/darcyclarke/Front-end-Developer-Interview-Questions
+  * https://github.com/kylejohnson/linux-sysadmin-interview-questions/blob/master/test.md
+  * https://github.com/gurmeet1109/docgurmeet/tree/master/InterviewQuestionsSamples
+  * http://slideshare.net/kavyasri790693/linux-admin-interview-questions
+  * https://github.com/gurmeet1109/docgurmeet/tree/master/InterviewQuestionsSamples
+  * https://github.com/kylejohnson/linux-sysadmin-interview-questions/blob/master/test.md
+
+  * Status
+  * API
+  * Training
+  * Shop
+  * Blog
+  * About
+
+  * © 2015 GitHub, Inc.
+  * Terms
+  * Privacy
+  * Security
+  * Contact
+
+[                    ]
+
+Something went wrong with that request. Please try again.
+
+#+end_example
+** web page: Interview Questions for Linux Systems Engineers and DevOps Engineers - Part One . JournalSquared :noexport:
+http://www.journalsquared.com/2014/09/29/favorite-interview-questions/
+*** webcontent                                                    :noexport:
+#+begin_example
+Location: http://www.journalsquared.com/2014/09/29/favorite-interview-questions/
+JournalSquared An increasingly inaptly named technology blog.
+
+Interview Questions for Linux Systems Engineers and DevOps Engineers - Part One
+
+29 Sep 2014
+Having been on both ends of the interview process for Linux DevOps and systems engineers, I have a
+pretty good idea of the process, what's expected, and the pitfalls involved both for the
+interviewee and the interviewer. This is not a boilerplate cheat sheet for interviews. Sure, there
+are a few common questions in here, but any good interviewer will know how to dig deeper to test a
+candidate. These are just a few of my favorites.
+
+Pitfalls, Traps, Hints and Tips
+
+  * Pitfalls and Traps will be called out in bold in the examples below.
+  * Hints and Tips will be italicized in the examples below..
+  * Any special terms, like RHEL and CFQ will also be called out.
+
+Interview Questions for Linux Systems Engineers and DevOps Engineers - Part One
+
+Whether you are a brand new DevOps Engineer or a hardened Sys Admin, chances are you will or have
+encountered some variation on the following questions in your career as an interview candidate. And
+as an interviewer, you are more than likely always trying to find a new tough question to stump
+potential job seekers and see how they work their way through a problem.
+
+Here are a few of my favorites, with a few tips and tricks thrown in.
+
+1. What is a RAID? Name at least four RAID levels.
+
+Candidate Hint: This is a finite answer - you either know it or you don't.
+
+A RAID is a data storage technology that allows you to combine multiple disk drives into a single
+virtual volume. This gives you more data redundancy than a single physical volume, or better
+performance than a single physical volume, or a little bit of both. We express different RAID types
+in terms of RAID levels, and all may be managed via either software or via hardware RAID
+controllers.
+
+Here are some commonly used RAID levels:
+
+RAID 0 - A striped RAID. Better read/write performance, but no data redundancy. The failure of a
+single disk can cause the loss of the entire array.
+
+RAID 1 - A mirrored RAID. Better data redundancy as data is written to two or more disks, but write
+performance can be impacted negatively. The array will function as long as a single drive is good.
+
+RAID 5 - A striped RAID with a parity stripe across all disks. Excellent fault tolerance and good
+read performance, write performance suffers because the parity stripe must be recalculated and
+written on each operation.
+
+RAID 10 - Also written RAID 1+0, this combines a striped array with a mirrored array to improve
+performance while giving the benefit of data redundancy.
+
+For more information, see: Which RAID Level is Right for Me?
+
+Interviewer Tip: A good follow up is to ask when different RAID levels should be used, and why.
+
+2. How many IPv4 addresses are in a /23 network?
+
+This question is directly related to the CIDR method of allocating IPv4 and IPv6 addresses. It is a
+short-hand notation for writing out an IP address and its routing prefix.
+
+Without going too deep into the rabbit hole, an IPv4 address is a 32-bit address, divided into four
+sections, where each section is potentially a number between 0 and 255. We can express any IPv4
+address with a network mask of 255.255.255.255 - for instance, a typical home router with a default
+IP address of 192.168.1.1 - as 192.168.1.1/32. This will always refer to the IP address itself, a
+single host, as there are no IP addresses between itself and the last IP address in its routing
+prefix or block of addresses.
+
+A simple formula you can use is:
+
+2^(32-x) = total number of hosts, where x is the /x network
+
+Therefore, a /23 network has a total of 512 addresses (two of which are not usable, FYI).
+
+Candidate Pitfall: Be concise.
+
+There is a massive rabbit hole you can accidentally fall into here if you are unfamiliar with
+networking and your interviewer wants to test you. As soon as you mention CIDR, your interviewer
+may ask you what that means, and everything that comes with it. As soon as you begin talking about
+anything in your answer, it's fair game.
+
+If you don't fully understand a concept, that's okay too. Just be honest and explain that you get
+the general idea, but not the particulars. If you are not interviewing for a network engineering
+position, you can't be expected to know everything a network engineer knows. Don't panic!
+
+For more information, see: Classless Inter-Domain Routing
+
+3. Name the seven network layers in the OSI Model.
+
+Candidate Hint: Be prepared to expand on your answer. What does knowing this help you do?
+
+Here are the seven layers of the OSI model:
+
+ 1. Physical layer - This layer consists of networking hardware at the lowest level of the model.
+    Some related protocols include Bluetooth, USB, Ethernet, DSL, 802.11 Wi-Fi, or cellular
+    protocols like GSM.
+ 2. Data link layer - This layer acts to transfer requests from the network layer to the physical
+    layer. It is divided into two sublayers: MAC and LLC, and is also involved in error checking.
+    Some related protocols include ARP, Ethernet, PPP, and Token Ring.
+ 3. Network layer - This layer is responsible for packet forwarding and routing. Related protocols
+    include IPv4/IPv6, ICMP, IPSec, and ARP.
+ 4. Transport layer - This layer exists to deliver data to application processes running on hosts.
+    Related protocols include TCP, UDP, and FCP.
+ 5. Session layer - This layer manages sessions opened between application processes, including
+    protocols like NetBIOS and SOCKS.
+ 6. Presentation layer - This layer is the syntax or data translation layer.
+ 7. Application layer - This layer represents the user interface between the underlying session and
+    presentation layer and the users themselves. It includes everything from FTP, HTTP, SSH, DNS,
+    SNMP, and SMTP to things like Bitcoin and BitTorrent.
+
+Candidate Pitfall: Avoid information overload.
+
+As you use and become more familiar with certain aspects of the information above, you will
+remember more of it. You will be expected to be familiar with many of the protocols mentioned above
+and elsewhere, but unless you actually have, you are not generally expected to have invented them.
+
+Candidate Hint: There is another model
+
+Interviewers may ask about a second model, the TCP/IP model, which conceptualizes only four layers:
+Link, Internet, Transport, and Application.
+
+4. Name four I/O Schedulers in Red Hat Linux.
+
+Candidate Pitfall: This one is very specific, and stumps many junior candidates. Some candidates
+think it's a bullshit question... here's why it isn't.
+
+This question is directly related to performance tuning on RHEL environments, and you will likely
+not encounter this question if the position requires working with distributions such as Ubuntu or
+even CentOS, since honestly, many people don't bother unless the performance gain is significant.
+
+I/O scheduling or disk scheduling is a performance tuning setting that tells the kernel how to
+order and submit block I/O operations to a storage device.
+
+As of RHEL 6.5, you can set this like so:
+
+$ echo { cfq, deadline, noop, anticipatory } > /sys/block/{ device }/queue/scheduler
+
+Per above example, here are four of the most commonly used I/O Schedulers:
+
+  * CFQ
+  * Deadline
+  * Noop
+  * Anticipatory
+
+Here's why this is not a bullshit question: let's say you have a database server. You may have a
+large queue of I/O requests related to database queries, and one of them is a horrendously long,
+slow query with lots of joins and writes. Setting a deadline or noop scheduler as opposed to CFQ
+will greatly improve performance.
+
+For more information, see: RHEL Configuration
+
+5. What is CPU load?
+
+Here's one that at its simplest is a very easy analogy, but at its most complex is very complex
+indeed.
+
+The CPU of any system manages requests from processes for system resources to perform operations or
+execute programs, and consists of a control unit and an arithmetic/logic unit. As a request comes
+in, the CPU must fetch objects or instructions from memory, decode the instructions, move the data
+from memory to the arithmetic/logic unit, execute the instructions, then store the output to a
+register or to memory.
+
+The CPU has an internal clock that creates electrical pulses at a given rate to sychronize all the
+instructions. Each CPU is a single-core entity, but modern processors are often multi-core
+processors, with two or more independent CPUs working together. Each CPU can only handle a single
+set of instructions at once, and therefore uses a queue to manage the order in which operations are
+performed.
+
+Linux CPU load, then, is the number of processes actively using CPU time, waiting to use CPU time,
+or in an uninteruptible sleep state, such as waiting for an I/O response from disk, at any given
+time. A load average is expressed as a weighted average of the load number over a given period of
+time, usually expressed in 1-minute, 5-minute and 15-minute intervals.
+
+On a single core processor, a load average of 1.0 would mean that the CPU was operating at full
+capacity for that interval, while on a quad core processor, we could say that the entire processor
+was operating at 25% capacity for the same interval.
+
+The tunnel analogy
+
+Others have used a bridge analogy but I prefer to tweak it just a bit after an experience I had
+driving through Iceland.
+
+In northern Iceland, there is a tunnel carved under a mountain near a fjord that runs about 4-5km
+long. There is 2-way traffic on the road. The tunnel has only a single lane,
+
+Much like our single core CPU, only cars traveling in a single direction can ever safely transit
+the tunnel in the 15 minutes it takes to pass through it. Of course this sounds like a recipe for
+disaster, so engineers carved out areas in the rock periodically where vehicles can pull off to the
+side within the tunnel, but only one car at a time per carved out area.
+
+Like our single-core CPU, we can say the load average of this tunnel is 1.0 when exactly the right
+number of cars traveling in either direction can pass through the tunnel safely, utilizing the
+areas carved out in order to pull over and let another car pass in the opposite direction. Still
+terrifying! And a 15-minute load average of 1.0 on a single-core processor should be a cause for
+concern - ideally it would be much less.
+
+In our tunnel, any more cars than that and you will have some serious traffic jams as drivers who
+missed the pull off area become blocked by drivers attemtping to go in the opposite direction, and
+meet head on in the tunnel, forcing one or the other to slowly back up and let the other pass.
+
+Multi-core processors are like larger, less nerve-wracking, multi-lane tunnels - but speaking as
+someone who has also tried to drive through the four-lane Holland Tunnel in from Manhattan to New
+Jersey during evening rush hour traffic, even this can become overloaded, with a load average
+comparable to 6.0 or more, with car traffic snarled attempting to merge and enter.
+
+6. Describe what happens in the Linux boot process from when you press the power button to the
+moment you log in.
+
+This is by far my favorite question, both as a candidate and as an interviewer, because it gives
+the candidate an opportunity to really show that they understand a system thoroughly.
+
+The Classic Linux Boot Process
+
+  * Hardware
+
+You press the power button on your basic desktop Linux rig. The power button starts the computer by
+physically switching the power supply on for the motherboard of the computer. Next, the
+motherboard's BIOS will run a POST to do a number of internal checks, including memory and and
+hardware connections, before booting.
+
+You can often troubleshoot hardware boot problems at this time by the number of simple beeps
+generated by the POST, if the problem is hardware related. The motherboard will then read the first
+sector on a selected disk drive, known as the boot sector or master boot record, whether the hard
+disk, USB, optical/CD ROM, or floppy drive. Unless an alternate boot option is selected, this is
+usually the first sector on the first hard disk drive or volume.
+
+  * The boot loader
+
+The code in the master boot record will read the partition table, find the active bootable
+partition on the disk drive or volume, and read the boot sector, starting the code there by loading
+it into memory. The code is known as the boot loader, such as GRUB. The boot loader will read and
+boot the Linux kernel.
+
+Sometimes, more than one kernel may be present on a system, so boot loaders often give an option to
+select the desired kernel. If a system is dual booted for multiple operating systems, such as
+Windows and Linux, you will generally see options for this here as well since GRUB can pass off
+control to a Windows boot loader, but Windows has no functionality to do the same for GRUB.
+
+  * The Linux kernel
+
+The Linux kernel, once loaded, is still compressed as an image, so it will uncompress itself using
+a program at the beginning of the kernel image. A video mode may be selected at this time on older
+kernels where this is not preset. The kernel will then perform its own check of hardware, and will
+configure its drivers based on that, and will also do a check of existing storage partitions. The
+kernel will then try to mount the root filesystem, autodetecting the filesystem type.
+
+If mounting the root filesystem fails for any reason, the boot process will fail with a kernel
+panic and the system will halt. The root filesystem is typically mounted read-only so that a
+filesystem check (or fsck) can be performed later at boot.
+
+The kernel will then start the program init, located at /sbin/init, in the background as PID number
+1. If it can't find init, it will attempt to start a shell by launching /bin/sh and if that fails,
+the system boot process will fail.
+
+  * Init
+
+Once started, init goes about a number of tasks. These include checking the filesystem, removing
+files from /tmp, starting getty for terminal sessions, and on a running system, init also adopts
+orphaned processes. The details can be viewed and configured in the /etc/inittab file.
+
+Init will also set a run level, which set what system services are running at any given time.
+
+Run levels:
+
++-------------------------------------------------+
+|0|System halt                                    |
+|-+-----------------------------------------------|
+|1|Single-user mode                               |
+|-+-----------------------------------------------|
+|2|Local multi-user with networking, NFS disabled |
+|-+-----------------------------------------------|
+|3|Full multi-user with networking                |
+|-+-----------------------------------------------|
+|4|Not used, user defined                         |
+|-+-----------------------------------------------|
+|5|Full multi-user with networking and GUI        |
+|-+-----------------------------------------------|
+|6|System reboot                                  |
++-------------------------------------------------+
+
+One of the programs init kicks off - getty - will then launch the login command, which will handle
+any users attempting to access the system, applying restrictions, and checking against credentials
+and user accounts stored in /etc/passwd or /etc/shadow, or hand authentication off to something
+else, as with ssh key authentication.
+
+Candidate Pitfall: There are different daemons that do the job of init
+
+The above describes the old school init boot process initiated by SysV init, but other contenders
+are in use, with systemd looking to replace SysV init permanently: SysV init, systemd, and Upstart.
+Despite criticism, most newer Linux distributions have or are moving toward the adoption of systemd
+as the default, but production systems in practice often still use SysV init. Upstart was developed
+at Canonical, and as such only saw widespread adoption by Ubuntu, where it is set to be replaced by
+systemd.
+
+The controversy centers around a number of significant changes in how services are managed and
+launched, which services init handles, and the overall philosophy driving the need for any
+replacement. In SysV init, shell scripts located in /etc/init.d are used to launch services, and
+init generally has a limited role beyond essential tasks: it takes to heart the core Unix philsophy
+of "do one thing and do it well," while allowing systems adminstrators far greater flexibility by
+managing custom service scripts.
+
+The adoption of systemd has already inspired efforts to boycott it. One of the main criticisms is
+mission creep: that systemd is trying to do too much, like power management, or task scheduling,
+and is architected more like a Microsoft program than a Unix compatible daemon, making it a single
+point of failure for any Linux system. The changes also affect how services are controlled and
+managed.
+
+For instance, under SysV init, the command service can be used to start, stop, restart, reload or
+check the status of a process, and the command chkconfig can be used to set which services
+automatically boot at run time. In systemd, the command systemctl is intended as a native
+replacement for both, although the service and chkconfig commands should still work. Rather than
+shell scripts, services in systemd are managed via declarative configuration files with limited
+customization options.
+
+The parameter setting which daemon to use for init comes at boot time, and can be overridden if the
+associated daemon is installed and configured.
+
+SysV init:
+
+init=/sbin/init
+
+systemd:
+
+init=/usr/lib/systemd/systemd
+
+or
+
+init=/bin/systemd
+
+7. What is an inode?
+
+Candidate Hint: This is another straight forward question with certain inevitable follow up
+questions.
+
+An inode is a data structure that identifies all the information about a file or object with the
+exception of the filename, acting as a pointer not just to the associated metadata of an object,
+but also to its location on the filesystem. Inode numbers are unique are reference a specific file
+or object. Metadata described in an inode includes file size, the user ID and group ID associated
+with an object, the object's permissions or mode, associated timestamps, a count of all the links
+pointed at the inode, and its location on the storage volume or disk.
+
+Because an inode references the location of an object on a specific disk block of the filesystem,
+it is possible to run out of inodes on a system with lots and lots of very small files, without
+actually running out of storage space, and this is a common question. You can remedy this in
+several ways, including consolidating small files, archiving them, transferring them to other
+storage, deleting files, or reformatting the filesystem. All of these will free up inodes on the
+system. Other proactive remedies include tuning the filesystem when it is created to specify the
+bytes-to-inode ratio,
+
+Trick Question: Is it possible to increase the number of inodes on a system?
+
+I once had an interviewer swear that it was possible to add inodes to an existing ext3/ext4
+filesystem without reformatting it. It is not.
+
+You may adjust what is called the bytes to inode ratio when formatting, which can allow for more
+inodes. The bytes to inode ratio defaults at roughly 16384.
+
+To change this on filesystem creation, you might run something such as:
+
+$ mkfs.ext4 -i 8192 /dev/mydumbvol
+
+ReiserFS avoids this issue by not using an inode table, instead storing the same metadata in a
+combined B+ tree, but the advantages of ext3/ext4 filesystems tend to prevail and the trade-off is
+considered worth it, if only to avoid using a filesystem designed by a convicted murderer #FunFact.
+
+8. Someone created a file named '^+$#%$ ^??#$@#' and I can't seem to remove it. Why can't I
+remove it? How do I remove it?
+
+This is often a follow up question to any discussion regarding inodes since the solution involves
+deleting the file by its inode number.
+
+Consider someone doing the following:
+
+$ touch "^+$#%$  ^??#$@#"
+
+This creates a file using several reserved metacharacters, such as the plus sign, or using illegal
+filename characters, such as whitespaces.
+
+To delete by inode number, first, find the inode number within the file's directory:
+
+$ ls -il
+
+Next, use the find command to remove the file:
+
+$ find . -inum 3283176 -exec rm -i {} \;
+
+Candidate Pitfall: The interviewer is probably asking you this to make sure you understand inodes.
+
+It's often possible to remove this file without deleting by inode, by using tab-complete or
+escaping characters.
+
+osx:foo $ touch "^+$#%$  ^??#$@#"
+osx:foo $ ls
+^+0%$  ^??##
+osx:foo $ rm ^+0%$  ^??##
+rm: ^+0%$: No such file or directory
+rm: ^??##: No such file or directory
+
+Using tab-complete to automatically escape the characters:
+
+osx:foo $ rm \^+0%\$\ \ \^%\^\?\?##
+osx:foo $ ls
+osx:foo $
+
+9. What is the difference between a hub, a switch, and a router?
+
+Another common question, the answer is relatively easy.
+
+A hub is a "dumb" network device in that it simply forwards packets from one host to another. They
+typically share bandwidth across all ports. Once upon a time, hubs were referred to as bridges.
+
+A switch is a network device that records the IP and MAC addresses of the hosts connected to it. It
+then reads that information to determine if that host is connected to it, and if it is, only
+forwards packets to the specified host. If the switch does not recognize the destination host, it
+forwards the packet to all hosts and lets them sort it out.
+
+A router is a "smart" network device that not only records all IP and MAC addresses connected to
+it, but also the address of the next closest router in the network. Routers can also decide what to
+do with packets by looking at a source address. If it finds a packet addressed to a host not
+connected to it, it can just drop the packet. In this way, you can set rules on a router telling it
+to allow or deny traffic based on source and destination address or port.
+
+Candidate Pitfall: There are also intelligent hubs and switches that act as routers, but this
+covers the basics.
+
+10. Explain what happens when I execute mv * on an empty directory containing empty sub-directories
+labelled a through z.
+
+Another favorite, this stumps many people, but is a great way to walk through how a shell
+interprets input.
+
+Here I am in my home directory, where I have inexplicably created 26 separate subdirectories
+labelled a - z:
+
+$ pwd
+/home/bodothepeasant
+$ ls
+a c e g i k m o q s u w y
+b d f h j l n p r t v x z
+
+If I execute the command mv *, what happens?
+
+First, what am I even doing when I type the command mv?
+
+The shell interpreter (/bin/sh or /bin/bash usually) is a command that can either take commands
+from the terminal or from a file, interpret and then execute them.
+
+When I type a command at the terminal prompt, I am telling my shell interpreter to take what I
+typed, see what it is, and execute it. In this case, I am telling it to execute the command /bin/mv
+with my present working directory. So what happens after that?
+
+The mv command accepts arguments that are passed through to it. I can move files from one directory
+or another, or rename them by telling them to "move" from filename1 to filename2 by using mv
+filename1 filename2, with the first as the source and the second as the target.
+
+But I have not specified any files, or have I?
+
+The man page for mv specifically has the solution to this, but first we need to know what else we
+did. We did not specify anything except a wildcard metacharacter, *.
+
+Expansion on metacharacters is performed specifically by the shell interpreter. We can also see
+this in Pathname Expansion when I listed the contents of my present working directory above, by
+typing ls in the shell. My shell interpreter expanded the ls command and listed the total contents
+of the present working directory.
+
+So when I tell my shell interpreter to mv * it expands my catch-all wildcard to include everything
+under my present working directory, which, as the mv man page states, if the last argument in a
+series of arguments passed is a directory, then everything gets moved into that directory by
+default, like so:
+
+$ ls
+z
+$ ls z
+a c e g i k m o q s u w y
+b d f h j l n p r t v x
+
+I have now moved all of my directories from a to x into my directory z.
+
+---------------------------------------------------------------------------------------------------
+
+That's all for now!
+
+In part two, I'll go into questions related to...
+
+  * The importance of idempotence in configuration management...
+  * How you would go about implementing zero-downtime deployments...
+  * Commonly used open-source tools used for configuration management...
+  * Open file limits and how they can impact database replication...
+  * Systems infrastructure for high availability...
+  * The Linux filesystem hierarchy...
+  * What is a filesystem?
+  * The difference between a SAN, NAS and NFS...
+  * Editing files concurrently across servers using scripting, system orchestration or
+    configuration management...
+  * Writing regular expressions...
+
+---------------------------------------------------------------------------------------------------
+
+Related Posts
+
+  * Interview Questions for Linux Systems Engineers and DevOps Engineers - Part Two 27 Oct 2014
+
+  * Command Line Cookbook 31 Aug 2014
+
+© 2014. All rights reserved.
+
+#+end_example
+** web page: The Limoncelli Test: 32 Questions for Your...        :noexport:
+http://pegmanm.tumblr.com/post/12554219615/the-limoncelli-test-32-questions-for-your
+*** webcontent                                                    :noexport:
+#+begin_example
+Location: http://pegmanm.tumblr.com/post/12554219615/the-limoncelli-test-32-questions-for-your
+  * Home
+  * Ask me anything
+  * Submit
+  * Mobile
+  * RSS
+
+[                    ]  Search
+The rantings of a guy in Internet Operations
+
+Text
+
+The Limoncelli Test: 32 Questions for Your Sysadmin Team
+
+People often ask me how they can improve their sysadmin team. It takes only a brief discussion to
+find fundamental gaps that, when filled, will improve the teams's productivity and the quality of
+the service being provided.
+
+Such a gap doesn't just create many problems, it creates many categories of problems.
+
+For example: Having a request tracking system (or "ticket system") is a fundamental technology. It
+supports your team in many obvious and non-obvious ways. Without one you risk having multiple
+categories of problems: The problems that come from forgetting requests, the problems that come
+from users interrupting you for each request, the problems that come from management not knowing
+what your team does, the problems that come from not being able to spot trends, the problems that
+come from a team unable to hand-off tasks effectively.
+
+Fixing fundamental gaps seems like a lot of work but leaving them unfixed makes even more work for
+you.
+
+Joel Spolsky brilliantly created "The Joel Test: 12 Steps to Better Code, a 12-question "highly
+irresponsible, sloppy test to rate the quality of a software team". I've come up with my own test
+for system administrators. It is 32 yes/no questions. It is equally sloppy and irresponsible.
+
+This test should make it easier to make a basic evaluation of a team. It is useful for team
+managers, leaders, and members alike. It is also a way to evaluate a job offer: Not wanting to join
+a ship of fools, you might quiz a perspective employer as to whether or not they use these
+practices. The score doesn't matter as much as attitude: an unwillingness or inability to change is
+a red flag.
+
+The obvious problem with this test is that it is 3.2 times longer than Joel's. He is brilliant
+enough to narrow it down to 10 items. In my defense, the original list was 40 items.
+
+The items marked with a "*" are the most fundamental. They are the "must haves" in my opinion. The
+rest are important but might not be appropriate for very small sites.
+
+What's your score?
+
+---------------------------------------------------------------------------------------------------
+
+The Limoncelli Test: 32 Questions for Your Sysadmin Team
+
+Updated: 2011-11-06
+
+  * A. Public facing practices:
+      + *1. Are user requests tracked via a ticket system?
+      + *2. Are "the 3 empowering policies" defined and published?
+      + 3. Does the team record monthly metrics?
+  * B. Modern team practices:
+      + *4. Do you have a "policy and procedure" wiki?
+      + 5. Do you have a password safe?
+      + 6. Is your team's code kept in a source code control system?
+      + 7. Does your team use a bug-tracking system for their own code?
+      + 8. In your bugs/tickets, does stability have a higher priority than new features?
+      + 9. Does your team write "design docs"?
+      + 10. Do you have a "post-mortem" process?
+  * C. Operational practices:
+      + *11. Does each service have an OpsDoc?
+      + *12. Does each service have appropriate monitoring?
+      + 13. Do you have a pager rotation schedule?
+      + 14. Do you have separate development, QA, and production systems?
+      + 15. Do roll-outs to many machines have a "canary process"?
+  * D. Automation practices:
+      + 16. Do you use configuration management tools like cfengine/puppet/chef?
+      + 17. Do automated administration tasks run under role accounts?
+      + 18. Do automated processes that generate email only do so when they have something to say?
+  * E. Fleet management practices:
+      + *19. Is there a database of all machines?
+      + 20. Is OS installation automated?
+      + *21. Can you automatically patch software across your entire fleet?
+      + 22. Do you have a PC refresh policy?
+  * F. "We acknowledge that hardware breaks" practices:
+      + *23. Can your servers keep operating even if 1 disk dies?
+      + 24. Is the network core N+1?
+      + *25. Are your backups automated?
+      + *26. Are your disaster recovery plans tested periodically?
+      + 27. Do machines in your data center have remote power / console access?
+  * G. Security practices:
+      + *28. Do desktops/laptops/servers run self-updating, silent, anti-malware software?
+      + *29. Do you have a written security policy?
+      + 30. Do you submit to periodic security audits?
+      + 31. Can a user's account be disabled on all systems in 1 hour?
+      + 32. Can you change all privileged (root) passwords in 1 hour?
+
+---------------------------------------------------------------------------------------------------
+
+A. Public facing practices:
+
+---------------------------------------------------------------------------------------------------
+1. Are user requests tracked via a ticket system?
+
+This is so basic it pains me that I have to explain it.
+
+Humans can't remember as well as computers. Expecting sysadmins to remember all user requests is
+the direct route to dropping requests.
+
+Keeping requests in a database improves sharing within the team. It prevents two people from
+working on the same issue at the same time. It enables sysadmins to divide work amongst themselves.
+It enables passing a task from one person to another without losing history. It lets a sysadmin
+back-fill for one that is out, unavailable or on vacation.
+
+It adds transparency to what your team does. Users can see who is working on a request, what the
+status is, and when it is done. It lets the requester and sysadmin ask follow-up questions and
+track the answers.
+
+It enables better time management. Every interruption a sysadmin receives sets his or her work back
+7 minutes. A ticket system prevents interruptions from users that want to make requests or ask for
+status of requests. It lets sysadmins prioritize their work instead of responding to the loudest
+complainer.
+
+It lets managers be better managers. Stalled requests become visible so that managers can
+intervene. It reveals trends and frequent requests so that they may be eliminated via new
+automation or process improvements. Micro-managers can get the information they want via software
+rather than bothering their sysadmins. It replaces "user whining" with evidence-based discussions:
+If a request really has taken too long the manager can properly address the issue; if the user only
+perceives the issue is taking a long time the evidence will shut them down. If they claim "it's
+been a problem for months but I only opened the ticket yesterday" then the manager has an...
+opportunity to educate the user about the non-existence of time-travel, mind-reading, and other
+supernatural powers.
+
+It helps you identify systemic problems. I once had a boss query the ticket system and discover
+that 3 out of our 1,000 users opened 10% of all tickets. A little investigation and we were able to
+solve the fundamental issues causing this.
+
+It helps users help themselves. Frequently when a user writes down what their problem is they
+realize what the solution is and no ticket is opened. When this doesn't happen, it helps them think
+through the problem so they can communicate it more clearly, which makes the actual transaction
+more efficient.
+
+I spent the 1990s being the "radical" encouraging people to set up ticket systems. I spend the
+200xs pleased to see it become accepted practice. We are well into the third decade. If you don't
+have a way to track user requests at this point shame on you.
+
+---------------------------------------------------------------------------------------------------
+2. Are "the 3 empowering policies" defined and published?
+
+There are three public-facing policies you must have if a sysadmin team is going to be able to get
+any work done. This is as much about serving customers as it is enabling team efficiency.
+
+If you are a manager that feels your team has bad time management skills, maybe it is your fault
+for not having or not enforcing these policies:
+
+ 1. The acceptable methods for users to request help.
+ 2. The definition of "an emergency".
+ 3. The scope of service: Who, what and where.
+
+One document can explain all three things in less than a page. This should be made available on the
+department's website or posters on the wall so that it is clearly communicated. This policy must
+also be backed up by management. That means they are willing to tell a user "no" when they ask for
+an exception. The exception process should not be a speed-bump, it should be a solid wall.
+
+How to get help:
+
+An official protocol for how users are to request help enables all the benefits of the ticket
+system mentioned in the previous section. Without it all those benefits evaporate as users will go
+directly to the sysadmins who will, trying to be helpful, become interrupt-driven and ineffective.
+
+A sysadmin must have the ability to tell users to go away when the user is not following the
+protocol. Without the ability to point to this policy sysadmins will either work on low priority,
+squeaky wheel tasks all day long, or each sysadmin will apply a different policy making the team
+look inconsistent, or sysadmins will communicate their frustration in unhealthy ways. Specifically,
+ways that are unhealthy for the user.
+
+What is an emergency:
+
+An official definition of an emergency enables a sysadmin to set priorities. Without this
+everything becomes an emergency and sysadmins become interrupt-driven and ineffective.
+
+The policy is one way management communicates priorities to sysadmins. Otherwise sysadmins will
+guess and be wrong and be unfairly punished for their incorrect guesses; managers will be
+confounded by the "disconnect"; and users will see inconsistencies and assume favoritism, neglect,
+and incompetence.
+
+This policy sets users' expectations. Those that call everything an emergency can be corrected of
+their illusion.
+
+Every organization should have a definition of an emergency or a "code red". A newspaper's code red
+is anything preventing tomorrow's edition from being printed and loaded onto the 4am trucks. A
+factory's code red is anything stalling the assembly line. A payment service's code red is anything
+that stopping the payment pipeline. Educational technology teams know that a class can't simply be
+rescheduled therefore an emergency is anything preventing the proper delivery of a lesson (possibly
+only if the technology center was warned ahead of time). A university defines a code red as
+anything preventing grant proposals from being submitted in time.
+
+A "code yellow" is anything that, if left unattended, would lead to a "code red". For example, the
+payment pipeline might be functioning but the capacity forecasting sub-system is down. It is risky
+to take on new customers without being able to properly forecast capacity. The last estimate
+indicated about 2 weeks of spare capacity. Risk of a melt-down increases daily until the code
+yellow is resolved.
+
+Anything else is "routine". Fancy sites may divide routine requests into high, medium and low
+priorities; new service creation, provisioning of existing services, and so on. But if you have
+none of that, start with defining what constitutes an emergency.
+
+What is supported:
+
+An official definition of what is supported enables sysadmins to say "no". It should define when,
+where, who, and what is supported. Do you provide support after 5pm? On weekends? Do you provide
+desk-side visits? Home visits? Do you support anyone off the street or just people in your
+division? What software and hardware are supported? Is there a support life-cycle or once something
+is supported are you fated to support it forever? Are new technologies supported automatically or
+only after an official request and an official positive reply?
+
+Without the ability to say "no", sysadmins will support everything. An eager, helpful, sysadmin
+will spend countless hours trying to get an unsupportable video card to work when it would have
+been cheaper to have gifted him or her a supported card out of your own budget. A sysadmin, assumed
+lost or dead, will magically reappear having spent the day at a user's house fixing their Internet
+connection. Alternatively a curmudgeonly sysadmin will tell people something isn't supported just
+because they're busy.
+
+---------------------------------------------------------------------------------------------------
+
+3. Does the team record monthly metrics?
+
+You need to be data-driven when you make decisions or sway upper levels of management.
+
+The best way to develop your metrics is to create one metric per sentence or clause of your
+charter.
+
+Example: The charter for a PC deployment team might be: To provide a high-end, standardized,
+computer to each employee starting their first day, refreshed on a 3-year cycle, at industry
+leading operational cost. The metrics might be: Number of weeks since the standard configuration
+was updated, cost of the current standard configuration, number of new employees this month,
+capital expenditures, operational expenditures. How many days new employees waited for their new
+machine ("buckets" for prior to arrival, first day, second day, 3rd, 4th 5th and more than 5th).
+Age of fleet ("buckets" for <1 year old, 1-2 years old, 2-3 years old, older than 3 years). Count
+of deployed machines that deviated from the standard.
+
+If you don't have a charter, talk with your manager about writing one. Alternatively here's some
+simple "starter metrics" you can adopt today:
+
+  * How many sysadmins do we have?
+  * How many users do we provide service to?
+  * How many machines do we manage?
+  * How much total disk space? RAM? CPU cores?
+  * How many "open" tickets are in our ticket system right now?
+  * How many new tickets were created since last month?
+  * Who (or what department) opened the most tickets this month?
+  * What was the tickets per sysadmin average last month?
+  * Pick 4-5 important SLAs and record how close you were to meeting them.
+  * How much Internet bandwidth was consumed last month?
+
+Record these on the first of every month. Put them in a spreadsheet. You'll be able to use this at
+budget time or during presentations when you want to explain what your group does.
+
+That's it. Really. Recording those once a month is the difference between starting a presentation
+with a simple graph showing the rate growth in the number of machines on your network versus
+saying, "Hi, I'm Joe and we manage... umm... a lot of machines." At budget time being able to answer
+these basic questions is the foundation for other questions such as "How much does the average
+ticket cost?" (last year's budget total / last year's total ticket quantity). If we had 100 users,
+how much new disk will we need? (total disk space / number of users * 100).
+
+Ultimately collecting these metrics should be automated. Until then, generate email to yourself on
+the first of each month with a reminder to do it manually.
+
+---------------------------------------------------------------------------------------------------
+
+B. Modern team practices:
+
+---------------------------------------------------------------------------------------------------
+4. Do you have a "policy and procedure" wiki?
+
+Your team needs a wiki. On it you can document all your policies (what should be done) and
+procedures (how it is done).
+
+Automation is great but before you can automate something you must be able to do it manually.
+Documenting the manual process for something is a precondition to automation. In the meantime it
+enables consistent operations across a team and it gains you the ability to delegate. If it is
+documented, someone other than you can do it.
+
+The table of contents for this wiki should include common, routine tasks. A good place to starat is
+the add/change/delete procedures that anyone on the team should be able to do, and the tasks you
+dislike doing and would delegate to an assistant if you had one.
+
+Procedure list:
+
+  * When a new employee starts.
+  * When an employee leaves the company.
+  * When an employee is terminated.
+  * When a new machine is installed.
+  * When a machine is decommissioned.
+  * How to add/delete a person to the VPN service.
+  * How to change a disk in the RAID system.
+  * How to change the root password on all machines.
+
+There are three categories here: Things that you want to be consistent, things that you do
+infrequently and don't want to have to spend time re-remembering the procedure, things you do when
+panicking and don't want to have to think on your feet.
+
+These things can all be documented with simple "step-by-step" checklists.
+
+Once documented, anyone on the team can do them. It also creates your training program for new
+employees. It can also be used to write the job description of that assistant you want the company
+to hire for you to do all your work.
+
+Even if you aren't on a team, or there are tasks that only you do, documenting has benefits. You
+have to think less when you do the task. Just like the adage that "we automate because we are
+lazy", it is also true that "we document because we are impatient".
+
+Many sysadamins dislike writing documentation but writing a "step-by-step" checklist isn't that
+bad. Keeping it on a wiki is important: anyone can correct it and anyone can improve it.
+
+For any task you might want to have separate "policy" and "procedure" documents. Policy is what
+management defines: All new users will receive a wireless mouse. Procedure is how the tasks get
+done: The wireless mouses are stored in the 3rd bin; charge it, and test it with the following
+steps, etc. Policy are only changed with management approval. Procedures are changed by the
+technicians, with change notifications sent to the author or other authority.
+
+---------------------------------------------------------------------------------------------------
+
+5. Do you have a password safe?
+
+This shows you have a mature way to manage passwords.
+
+There are many excellent software-based password "vaults" systems. Though an envelope in an actual
+locked box is often good enough.
+
+The problem is often verification. How do you know that an evil co-worker isn't putting the wrong
+password in those envelopes? If you are that paranoid have a different person verify any new
+passwords.
+
+---------------------------------------------------------------------------------------------------
+
+6. Is your team's code kept in a source code control system?
+
+    When installing a new machine is an API call, we're all programmers now.-Limoncelli, on cloud
+    computing, devops, and the importance of developer skills in system administration.
+
+We're all programmers now. Programmers use source code control.
+
+Things to put in your repository: Your scripts, programs, configuration files, documentation, and
+just about anything. If you aren't sure, the answer is "yes".
+
+Keeping your configuration files in source code control starts out feeling like a luxury and ends
+up becoming a lifesaver.
+
+Anything is better than nothing. Use what your developers use. No developers? Learn Git, Mercurial,
+or even Subversion. Desperate for a quick way to save configuration files history?
+http://www.nightcoder.com/code/xed (It is a wrapper that calls$EDITOR.)
+
+---------------------------------------------------------------------------------------------------
+
+7. Does your team use a bug-tracking system for their own code?
+
+Bug-tracking systems are different than ticket systems. If you have only occasional bugs (maybe
+your group doesn't write a lot of code) then filing help tickets for yourself is sufficient.
+
+However if your team is serious about writing code, start a separate bug-tracking system.
+Bug-tracking systems have a different workflow than request ticket systems. Ticket systems are a
+communication tool between you and your users. Bug-tracking systems track the bug lifecycle
+(report, verify, assign, fix, close, verify).
+
+---------------------------------------------------------------------------------------------------
+
+8. In your bugs/tickets, does stability have a higher priority than new features?
+
+Given my druthers I'd fix the easy bugs first, then add new awesome features, then do boring stuff
+like fixing bugs. Life is more fun that way.
+
+Sadly you can't be fun here.
+
+Mature teams prioritize bugs this way:
+
+  * security (highest)
+  * stability
+  * bugs
+  * performance
+  * new features (lowest)
+
+You have to fix stability before you add new features. Security issues are high priority stability
+issues.
+
+One of the principles promoted by Mark Burgess is "seek stability then new features". Some changes
+we make add features while others improve stability. The order should be feature, stability,
+feature, stability, feature, stability. Not feature, feature, feature, OMG!, stability, stability,
+stability. Make things stable before proceeding to the next awesome feature.
+
+Doctors understand this. In a hospital emergency room a patient is stabilized first. You don't help
+someone recover from the flu if they are bleeding to death.
+
+The priority of "performance bugs" is up for debate. In some places performance is the same as
+stability.
+
+---------------------------------------------------------------------------------------------------
+
+9. Does your team write "design docs"?
+
+Good sysadmin teams "think before they do." On a larger team it is important to communicate what
+you are about to do, or what you have done.
+
+A design doc is a standardized format for proposing new things or describing current things. It
+should be short, 1-2 pages, but can be very long when the need arises.
+
+Create a template and use it all over the place. The section headings might include: Overview,
+Goals, Non-Goals, Background, Proposed Solution, Alternatives Considered, Security, Disaster
+Recovery, Cost.
+
+This format can be used to write a 20-page plan for how to restructure your network when you want
+to get buy-in from many people. It can be a 5-page document of how a prototype was built so
+everyone can see your results and give feedback before you build the real thing. It can be used for
+a half-page memo that explains the names you plan on using for a new directory tree on the file
+server (in which case, you probably don't need most of the headings). Use it to document a system
+after it was built for use as a reference by others on your team. Heck, use it to describe the team
+cookout you are planning.
+
+The point is that your team has a mechanism for thinking before doing, a way to communicate plans
+beyond talking in hallways and chat-room, and a system that leaves behind artifacts that others can
+use to understand how or why something was done.
+
+This format works when seeking feedback whether you want serious critiques or just "warn me if this
+will conflict with something you are about to do."
+
+Your design doc format might have more headings or fewer, some may be optional others may be
+required. You must be flexible: if it only requires half a page of text, don't bloat it up just so
+that each of the headings has Having a standard template makes it easier to get started and avoids
+the "blank page syndrome".
+
+---------------------------------------------------------------------------------------------------
+
+10. Do you have a "post-mortem" process?
+
+After a failure do you write up what happened so you can learn from it or do you just hope nobody
+notices and that it will all go away?
+
+A good post-mortem (PM) includes a timeline of what happened, who was affected, what was done to
+fix it, how was business affected, and a list of proposed solutions to prevent this problem from
+happening again. Each proposal should be filed as a bug or ticket so they can be tracked to
+completion.
+
+Doing PMs consistently builds a more stable environment. After each outage come up with at least
+one preventative measure. Can your monitoring system detect the situation so you know about it
+before users do? Can you detect precursors to the problem? Often systems have a way to run a
+battery of tests on new configurations before they are adopted ("pre-submit scripts" in source code
+repositories, for example). Are there tests you can add that will detect the typo that created the
+outage?
+
+A port-mortem is not about blaming and shaming. In a good sysadmin culture you are comfortable with
+putting your name in the "what when wrong" section. You are taking a leadership role by educating
+people so they don't make the same mistake.
+
+If your management uses PMs to find who to punish, they don't understand that operations isn't
+about doing things perfectly; it is about doing things better and better every day. Any manager
+that fires a person because of a non-malicious outage is going to run their company into the
+ground.
+
+The PM should be published for all to see. You may be embarrassed and concerned that you are
+"airing your team's dirty laundry" but the truth is that if you consistently do this your users
+will respect you more. Transparency breeds trust.
+
+Of course, to really develop confidence all those bugs and tickets filed as a result need to
+actually get worked on.
+
+---------------------------------------------------------------------------------------------------
+
+C. Operational practices:
+
+---------------------------------------------------------------------------------------------------
+11. Does each service have an OpsDoc?
+
+Your DNS server dies. You rebuild it because you know how. Cool, right? You need to compile a
+newest version of BIND and install it, and you do it because you know how, right? When the
+monitoring system reports that error that happens now and then, you know how to fix it, right? You
+know how to do all this. Why write anything down?
+
+Here's why:
+
+Will you remember how to do these things 6 months from now? I find myself having to re-invent a
+process from scratch if I haven't done it in a few months (or sometimes just a few days!). Not only
+do I re-invent the process, I repeat all my old mistakes and learn from them again. What a waste of
+time.
+
+Will you remember how to do these things when the pressure is on? My memory works worse during an
+emergency.
+
+When What about when you aren't around? How can you take a relaxing vacation if you feel burdened?
+You can't complain to be over-worked and unable to share your work with others if you haven't
+created a way to share the workload.
+
+What about new people on the team? Should they learn how to do these things by watching you do it
+or can they learn on their own? If they can learn on their own and only bother you when they get
+stuck it saves you time and makes you look less like the information hording curmudgeon that you
+don't want to be. In fact, it makes people feel welcome and included if their new team has these
+kind of tasks documented.
+
+How can your manager promote you or put you on a new and more interesting project if you are the
+only person with certain knowledge?
+
+Each service should have certain things documented. If each service documents them the same way,
+people get used to it and can find what they need easier. I make a sub-wiki (or a mini-web site, or
+a Google Sites "Site") for each service:
+
+Each of these has the same 7 tabs: (some may be blank)
+
+1. Overview: Overview of the service: what is it, why do we have it, who are the primary contacts,
+how to report bugs, links to design docs and other relevant information.
+
+2. Build: How to build the software that makes the service. Where to download it from, where the
+source code repository is, steps for building and making a package or other distribution
+mechanisms. If it is software that you modify in any way (open source project you contribute to or
+a local project) include instructions for how a new developer gets started. Ideally the end result
+is a package that can be copied to other machines for installation.
+
+3. Deploy: How to deploy the software. How to build a server from scratch: RAM/disk requirements,
+OS version and configuration, what packages to install, and so on. If this is automated with a
+configuration management tool like cfengine/puppet/chef (and it should be), then say so.
+
+4. Common Tasks: Step-by-step instructions for common things like provisioning (add/change/delete),
+common problems and their solutions, and so on.
+
+5. Pager Playbook: A list of every alert your monitoring system may generate for this service and a
+step-by-step "what do to when..." for each of them.
+
+6. DR: Disaster Recovery Plans and procedure. If a service machine died how would you fail-over to
+the hot/cold spare?
+
+7. SLA: Service Level Agreement. The (social or real) contract you make with your customers.
+Typically things like Uptime Goal (how many 9s), RPO (Recovery Point Objective) and RTO (Recovery
+Time Objective).
+
+If this is something being developed in-house, the 8th tab would be information for the team: how
+to set up a development environment, how to do integration testing, how to do release engineering,
+and other tips that developers will need. For example one project I'm on has a page that describes
+the exact steps for adding a new RPC to the system.
+
+Be a hero and create the template for the rest of your team to use. Document a basic service like
+DNS to get started. Then do this for a bigger service. Create the skeleton so others can use it as
+a template and just fill in the missing pieces. Get in the habit of starting a new opsdoc any time
+you begin a new project.
+
+---------------------------------------------------------------------------------------------------
+12. Does each service have appropriate monitoring?
+
+    It isn't a service if it isn't monitored. If there is no monitoring then you're just running
+    software.-Limoncelli
+
+The monitoring should be based on the SLA from the OpsDoc. If you don't have an SLA, simple "up/
+down" alerting is the minimum.
+
+Don't forget to update the Pager Playbook.
+
+---------------------------------------------------------------------------------------------------
+
+13. Do you have a pager rotation schedule?
+
+Do you have a pager rotation schedule or are you a sucker that is simply on-call forever?
+
+An on-call rotation schedule documents who is "carrying the pager" (or responsible for alerts and
+emergencies) at which times.
+
+You might literally "pass the pager", handing it to the next person periodically, or everyone might
+have their own pager and your monitoring system consults a schedule to determine who to page. It is
+best to have a generic email address that goes to the current person so that customers don't need
+to know the schedule.
+
+A rotation schedule can be simple or complex. 1 week out of n(for a team of n people) makes sense
+if there are few alerts. For more complex situations splitting the day into three 8-hour shifts
+makes sense. "Follow the sun" support usually schedules those 8-hour shifts such that a global team
+always has a shift during daylight hours. You might take a week of 8-hour shifts each nweeks if
+your team has 3n people. The variations are endless.
+
+This schedule serves many people: You, your customers, management and HR.
+
+It serves you well because it lets you plan for a life outside of work. I put the highest priority
+on having a good work-life balance. If you don't have a good work-life balance, and you don't have
+a rotation schedule, physician heal thy self.
+
+The rotation improves service to customers because it takes the "chaotic panic of trying to find a
+sysadmin" and makes it easy and predictable.
+
+It serves management because it gives them confidence that the next emergency won't happen while
+everyone is "away".
+
+It serves HR since, of course, your company gives compensation time or pay as required by law. If
+your schedule is in machine-readable format, a simple script can read it to generate reports for
+the payroll department.
+
+If you think you don't have a schedule then it is "24x7x365" and you are a sucker. (But that
+doesn't mean you can answer "yes" for this question.)
+
+---------------------------------------------------------------------------------------------------
+
+14. Do you have separate development, QA, and production systems?
+
+Developers do their work on their development servers. When they think it is done packages are
+built and installed on the QA system. If QA and UAT (User Acceptance Testing) approves, the same
+packages are used to install the software on the production systems.
+
+This is Sysadmin 101, right?
+
+Then why do I constantly meet sysadmins whose management won't let them do this? If your management
+says "it costs too much to have a second machine" they're beyond hope. QA isn't expensive. You know
+what is expensive? Downtime.
+
+Experimental changes on the live server isn't just bad, in SOX environments it is illegal. Letting
+developers develop on the live servers is right out!
+
+The QA system need not be as expensive as their live counterpart. They don't have to be as powerful
+as the live system, they can have less RAM and disk and CPU horsepower. They can be virtual
+machines sharing one big physical machine.
+
+Obviously if scaling and response time are important it is more likely you'll need a QA system that
+more closely resembles the live system.
+
+---------------------------------------------------------------------------------------------------
+
+15. Do roll-outs to many machines have a "canary process"?
+
+Suppose you have to roll out a change to 500 machines. Maybe it is a new kernel. Maybe it is just a
+small bug-fix.
+
+Do you roll it out to all 500? No. You role it out to a small number of machines and test to see if
+there are problems. No problems? Roll out to more machines. Then more and more until you are done.
+
+These early machines are called "canaries".
+
+    The classic example of animals serving as sentinels is the canary in the coal mine. Well into
+    the 20th century, coal miners in the United Kingdom and the United States brought canaries into
+    coal mines as an early-warning signal for toxic gases including methane and carbon monoxide.
+    The birds, being more sensitive, would become sick before the miners, who would then have a
+    chance to escape or put on protective respirators.Source: Wikipedia
+
+Here are some canary techniques:
+
+One, Some, Many:
+    Do one machine (maybe your own desktop), do some machines (maybe your co-workers), do many
+    machines (larger and larger groups until done.) Any single failure means you stop the upgrade,
+    roll back the change, and don't continue until the problem is fixed.
+Cluster Canary:
+    Upgrade 1 machine, then 1% of all machines, then 1 machine per second until all machines are
+    done. (Typical at Google and sites with large clusters)
+
+This procedure can be done manually but if you use a configuration management system, the ability
+to do canaries should be "baked in" to the system.
+
+---------------------------------------------------------------------------------------------------
+
+D. Automation practices:
+
+---------------------------------------------------------------------------------------------------
+
+16. Do you use configuration management tools like cfengine/puppet/chef?
+
+Config Management (CM) software is a tool that coordinates the configuration of machines. It might
+control the OS, the software, the service provided, or all of the above.
+
+Before CM sysadmins manually made changes to machines. If you had to change 100 machines, you had
+100 manual tasks to do. Smarter sysadmins would automate such a change.
+
+Even smarter sysadmins realized that general tools for such automation would be even better. They
+invented automation frameworks with names like track, cfengine, bcfg2, Puppet, Chef and others.
+
+The hallmark of CM systems is that you describe what you want and the software figures out how to
+do it. What you want is specified in declarative statements like "hostA is a web server" and "web
+servers have the following packages and other attributes". The software turns that into commands
+that need to be executed. Another important attribute is that the declarations are generic
+("install the commands in foo.sh as a cron job") but the CM system does the right thing for that
+computer's operating system (Selecting "/etc/crontab" vs. "/var/spool/cron").
+
+With CM, instead of manual changes, you change a configuration file and let the CM system do the
+work.
+
+Local changes on a server are not ok. Any time you create a file like /etc/crontab.bak or /etc/
+hosts.[today's date] it is a red flag that you are doing it wrong.
+
+Configuration management is the ultimate automation. You go from being the The Sorcerer's
+Apprentice to the puppet master. That's no Mickey Mouse idea.
+
+---------------------------------------------------------------------------------------------------
+
+17. Do automated administration tasks run under role accounts?
+
+Often we set up automated procedures that run at predetermined times. For example, a script that
+validates a database once a night.
+
+At some sites these scripts run as one of the sysadmins. When the sysadmin leaves the company those
+automated processes die.
+
+Good sites run these scripts under some role account, often "root". However, it is safer to run
+them under an account with less privilege.
+
+---------------------------------------------------------------------------------------------------
+
+18. Do automated processes that generate email only do so when they have something to say?
+
+Do you know the story of "The Boy Who Cried Wolf"? What about: "The cron job that everyone ignored
+because it blasted everyone twice a day, and nobody noticed when it started to report problems."
+
+My rule is simple:
+
+  * If it needs human action now: Send a page/SMS.
+  * If it needs action in 24 hours: Create a ticket.
+  * If it is informational: Log to a file.
+  * Output nothing if there is no information.
+
+While sending a page and creating a ticket might be done via email, the point is that email is not
+a good mechanism for this. Either may CC: you, but email is not the primary mechanism.
+
+The worst case situation is a system that sends log messages to everyone on the sysadmin team via
+email. Your email system is not a good log archive.
+
+True story: A friend in NYC worked at a site where all automated processes sent their output as
+email to root@the-company-domain. "root" was a mailing list that went to all the sysadmins in the
+company. It was a constant flood of messages. Sysadmins at this company literally could not read
+email. No amount of filtering would be enough. As a result, the sysadmins for this company used
+their personal email accounts for all communication, even stuff that was work-related. What company
+was this? A major email provider that is no longer in business. (I wonder what other bad decisions
+helped put them out of business?)
+
+---------------------------------------------------------------------------------------------------
+
+E. Fleet management practices:
+
+---------------------------------------------------------------------------------------------------
+19. Is there a database of all machines?
+
+Every site should know what machines it has. The database should store at least some basic
+attributes: OS, RAM, disk size, IP address, owner/funder, who to notify about maintenance, and so
+on.
+
+Having a database of all machines enables automation across all your machines. Being able to run a
+command on precisely the machines with a certain configuration is key to many common procedures.
+
+This data should be automatically collected, though a very small site can make due with a
+spreadsheet or wiki page.
+
+Having an inventory like this lets you make decisions based on data and helps you prevent problems.
+
+I know a small university in New Jersey that could have prevented a major failure if they had
+better inventory: They tried to upgrade all of its PCs to the latest version of Microsoft Office.
+The executive council was excited that there would finally be a day when version incompatibilities
+didn't make every interaction an exercise in frustration. Plus look at all these new features! Oh,
+how enthusiasm turned into resentment as the project collapsed. It turned out that one third of the
+machines on campus didn't have enough RAM or disk space. Random segments of the university couldn't
+get any work done due to botched upgrades. The executive council was not only upset but is now very
+risk adverse. It will be a long time before any new upgrades will happen. All of this would have
+been prevented if a good asset management system was in place. A simple query would have produced a
+list of machines that needed upgrades. Budgeting and work estimates could have been provided as
+part of the upgrade program.
+
+---------------------------------------------------------------------------------------------------
+
+20. Is OS installation automated?
+
+Automated OS installations are faster, more consistent, and let the users do one more task so you
+don't have to.
+
+If OS installation is automated then all machines start out the same. Fighting entropy is difficult
+enough. If each machine is hand-crafted, it is impossible.
+
+If you install the OS manually, you are wasting your time twice: Once when doing the installation
+and again every time you debug an issue that would have been prevented by having consistently
+configured machines.
+
+If two people install OSs manually, half are wrong but you don't know which half. Both may claim
+they use the same procedure but I assure you they are not. Put each in a different room and have
+them write down their procedure. Now show each sysadmin the other person's list. There will be a
+fistfight.
+
+Users see inconsistency as incompetence. If new machines always arrive with a setting that isn't to
+their liking they know how to change that setting and are happy. If half the time that setting is
+one way and half the time it is another way, they lose confidence in the system administrators.
+What bozos are installing this stuff?
+
+If you can re-install the OS automatically, so can the users. Now you have one less thing to do.
+Automation that saves you time is great. Automation that lets other people do a task is even
+better.
+
+Not being able to easily wipe and reload a machine is a security issue. A machine should be wiped
+and reloaded when a "hand me down" computer moves from one user to another. If this process isn't
+"friction free" there is temptation to "save time" by not doing it.
+
+---------------------------------------------------------------------------------------------------
+21. Can you automatically patch software across your entire fleet?
+
+If OS installation is automated then all machines start out the same. If patching is automated then
+all machines stay current. Consistency is a good thing.
+
+Security updates are very important because the reliability of your systems requires them.
+Non-security related updates are important because the reliability of your system requires them and
+because it brings new features to your customers. Withholding new patches is like a parent
+withholding love. Who raised you?
+
+Application patching is just as critical as patching OSs. Users don't make the distinction between
+"OS" and "application", especially if an application is installed widely. The bad guys that write
+malware don't make a distinction either.
+
+I wish banks had to publish their patching process so I could decide where to keep my money.
+
+The alternative to automation is visiting each machine one at a time. This annoys users, wastes
+their time, and it a stupid use of your time. With the proliferation of laptops it isn't even
+reasonable to think you can visit every machine.
+
+When possible, updates should happen silently. If they require a reboot or other interruptions,
+users should have the ability to delay the update. However, there should be a limit; maybe 2 weeks.
+However the deadline should be adjustable so that emergency security fixes can happen sooner.
+
+---------------------------------------------------------------------------------------------------
+
+22. Do you have a PC refresh policy?
+
+If you don't have a policy about when PC will be replaced, they'll never be replaced.
+
+[By "PC" I mean the laptop and desktops that people use, not the servers.]
+
+In the server room there is usually more thought about when each device gets replaced. Your PC
+environment generally needs some kind of repeatable, cyclic, process so that it stays fresh.
+Without it things get old and unsupportable, or people get upgrades as a status symbol and it
+becomes political. With a good policy things get better and more cost effective.
+
+A certain fraction of your fleet should be old; that's just economical. However, extremely old
+machines are more expensive to maintain than to replace. It is a waste of your time to produce a
+work-around so that new software works on underpowered machines. It is a waste of your users' time
+to wait for a slow computer. It is bad time management and bad for productivity to have seriously
+old machines.
+
+Companies often get into this situation. Sometimes they "save money" by not upgrading machines but
+it doesn't save money to have employees with tools that don't work well. Sometimes they just don't
+realize that computers don't last forever.
+
+If you don't have a policy, here's a simple one you can start with: All computers are on a 3-year
+depreciation schedule. Every year the budget will include funds to replace 1/3rd of all machines.
+On the first day of each quarter enough machines will be ordered to replace the 9 percent oldest
+machines in the fleet.
+
+CFOs like this because they like predictability. At one company the CFO was quite excited when I
+gave her control over which months the upgrades would happen. We agreed that ¼ of the upgrades
+would happen each quarter; and she could pick which month that happened. She could even split it
+into individual monthly batches.
+
+Instead of coming to the CFO to beg for new desktops now and then, it was a regular, scheduled
+activity. Less pain for everyone.
+
+ProTip: At some companies servers are on a different depreciation schedule: they are designed to
+last longer and are on a 4-year depreciation schedule. On the other hand, their cost is amortized
+over all their users and therefore you can justify a 2-year schedule.
+
+---------------------------------------------------------------------------------------------------
+
+F. "We acknowledge that hardware breaks" practices:
+
+---------------------------------------------------------------------------------------------------
+23. Can your servers keep operating even if 1 disk dies?
+
+It used to be that if there was one broken component in a computer, you had an outage. In fact, one
+component failure equaled one outage. One disk dies and you spend the day replacing it and
+restoring data from the backup tapes. Too bad if you had hoped to get some work done, too bad if
+you planned to be at the company picnic that day. One failed disk ruins your whole day; just like
+nuclear war.
+
+Today things are different. We build "survivable systems". If a disk is part of a mirrored pair
+then one of those disks can fail and there is no outage. There is only an outage if it's mirrored
+partner also breaks. Statistically that gives you hours, possibly days, to replace the broken disk
+before a user-visible outage would happen. Rushing to replace a disk is a better use of your time
+than spending a day restoring data from tape.
+
+When you do this you have decoupled "component failure" from "outage". Life is better.
+
+RAID used to be expensive and rare. A luxury for the rich. Now it is common, inexpensive, and often
+free (when done in software). Did I say common? I meant mandatory. Spending a day restoring data
+off tape isn't just a sign of bad planning, it's bad time management. It is a waste of your time to
+spend the day consoling a distraught user who has lost years, months, or even just hours, of work.
+It isn't heroic. It is bad system administration. Let's not forget the bigger waste of time for
+your users, possibly hundreds of them, waiting for their data to be restored off a backup tape.
+Disk failures are not rare. Why did you build a system that assumed they are?
+
+The MTBF of a typical server drive is 1.5 million hours. If you have 1,000 disks, expect a failure
+every 2 months. If you hae 10,000 disks expect a failure every week. Are you really planning to
+spend an entire day restoring data from tape that often?
+
+My rule of thumb is simple: For small servers the boot disk should be mirrrored and any disk with
+user data should be RAID1 or higher.
+
+Boot disk: I recommend mirroring the boot disk of every server because it is usually impossible to
+rebuild from scratch. Server boot disks tend to accumulate "stuff". Over the years many software
+packages may be installed. New drivers, patches and kludges may exist that aren't documented. The
+configuration is more a history of the company than some well-planned design. In a perfect world
+none of this would be true. Every machine should be reproducible though an automated system. Alas,
+that is the goal but we aren't there yet. The primary exception is clusters of homogenous machines
+like HPC environments or Google or Yahoo!. Alas, dear reader, I bet that isn't your situation. In
+fact, I bet that even at Google and Yahoo! the Windows server that runs keycard system that lets
+people in and out of the buildings is exactly the worst-case scenario that needs a mirrored boot
+disk.
+
+Yes, you could probably rebuild such a server in a day if you are lucky, but a RAID1 controler is
+less than that in salary if you work minimum wage.
+
+User data: I recommend RAID1 or higher for user data just because it is so inexpensive that not
+doing it is embarrassing. By the way... you do know that RAID6 is the minimum for 2T disks and
+larger, right? It is professionally negligent to use RAID5 on such disks. RAID6 or RAID10 is the
+minimum; at leastfor now, but I digress.
+
+The exceptions to all this is any place where the service can keep running if individual components
+die whether the redundency is at the disk level, the machine level, or the data center level. Also,
+data that can be reconstructed from scratch within the SLA. Here are some examples:
+
+ 1. The use of a fancy redundant file systems like the Google File System (GFS). GFS stores all
+    data in at least 3 places. IBM's GPFS Native RAID (GNR) does something similar.
+ 2. "Scratch and temp space" where users know it could go away at any time.
+ 3. Video or other read-only data that could, if lost, be re-read from media.
+ 4. The data is a read-only copy of data found elsewhere. Though if you are replicating for speed,
+    RAID5 might give you a performance boost because it uses more spindles.
+ 5. Disposable machines. For example, a static image web server or a DNS "secondary and cache"-only
+    server that can be rebuilt quickly and automatically. If you have hundreds of them the savings
+    from not buying RAID cards can be dramatic.
+
+---------------------------------------------------------------------------------------------------
+
+24. Is the network core N+1?
+
+An outage for one person is a shame. An outage of many people is unacceptable. Just like redundant
+disks is now a minimum, duplicate network connectivity is, too.
+
+Yes, it is still expected that there is one link from a workstation to the first switch, but after
+that everything should be N+1 redundant. At a minimum, all trunks are dual-homed. At best, any one
+uplink, any one card, or any one network router/switch/hub can die and packets still get through.
+
+LANs are generally designed as follows: The laptops/desktops in an office plug into the wall jack.
+Those connect to "access switches" which have many ports. Those access switches have "trunks" that
+connect to a hierarchy of "core switches" that scoot packets to the right place, possibly to
+egresses (the connections to other buildings or the Internet).
+
+My rule is simple: The core has got to be redundant. It used to be a pricey luxury for the rich.
+Now it is a minimum requirement.
+
+If your site isn't configured that way, you are living in the days when computers were useful
+without a network.
+
+Exception: Sites small enough that they don't have a core. Even then all trunks should be redundant
+and a "spares kit" should exist for each kind of hardware device.
+
+---------------------------------------------------------------------------------------------------
+25. Are your backups automated?
+
+This question assumes you are doing backups. You are doing backups, right?
+
+You need backups for 4 reasons: (1) Oops, I deleted a file. (2) Ooops, the hardware died. (3) Oh
+no, the building burned down. (4) Archives. Each of these may require different backups
+methodologies.
+
+Situation (1) is solved by snapshots in the short-term but not in the long term. Sometimes a file
+is deleted and needs to be restored much later. Simple snapshots will not help. RAID does not help
+in this situation. RAID is not a backup mechanism. If someone deletes a file by mistake, RAID will
+dutifully replicate that mistake to all mirrors. You will have a Redundant Array of Incorrect Data.
+
+Situation (2) sounds like RAID will help, but remember that a double-disk failure can mean you've
+lost the entire RAID1 mirror or RAID5 set. RAID10 and RAID6 lose all data in a triple-disk failure.
+These things happen. You are one clumsy electrician away from having all disks blow up at once.
+Really.
+
+Situation (3) is often called "disaster recovery". Off-site backups, whether on tape or disk, are
+your only hope there.
+
+Situation (4) is often for compliance reasons. The technology to make the backup is often the same
+as Situation 3 but the retention time is usually different. If some other department is requiring
+these for compliance, they should pay for the media.
+
+For any of these reasons the process must be automated. As the building burns down you don't want
+to have to inform management that the data is lost because "I was on vacation" or "I forgot".
+
+Lastly, automation is important because a mega tape library is cheaper than you. Yes, you could
+hire a clerk to change tapes all day. You can also purchase a tape library with enough capacity to
+hold all backups needed for a month. The library will be cheaper. The library should be able to
+hold enough tapes for twice as long as any vacation you'd like to take.
+
+---------------------------------------------------------------------------------------------------
+26. Are your disaster recovery plans tested periodically?
+
+The last section was a bit of a lie. There aren't 4 reasons to do backups. There are 4 reasons to
+do restores.
+
+Nobody cares about backups. People only care about restores. If you can figure out how to do
+restores without needing to do backups first I will lobby the Nobel committee to create a prize for
+sysadmins just so that you can be the first to receive it.
+
+You don't know if backups are valid until you test them. Faith-based backup systems are not good.
+Hope sustains us but it is not an IT "strategy".
+
+A full test involves simulating a total failure and doing a 'full restore'.
+
+You won't know the real amount of time a restore takes until you try it. Restores from tape often
+take 10x longer than doing the backup. If you can do a full backup of your payroll server in 8
+hours, then you have to be prepared to not cut paychecks for 80 hours in the event of a restore
+from scratch. That's more than 3 days.
+
+If you are doing absolutely no tests then a little testing is better than nothing. Write a small
+script that randomly picks a server, then randomly picks a disk on that server, then randomly picks
+a file on that disk. The script should then create a ticket asking for that file to be restored (to
+a scratch location) as it existed 6 weeks ago. Have the script run automatically every week. This
+has a good chance of finding a server or disk that wasn't added to the backup schedule. Also, if
+you think doing these restores will be a lot of work for you, here's a secret: it won't use any of
+your time if your coworkers end up doing the ticket. Generate the ticket with enough random text
+that they don't know it is a drill.
+
+To take this one step further, plan a "game day" where the disaster recovery plans are really put
+to the test. Pretend that certain people are dead and make sure the remaining people know how to
+fail-over services. Write scripts that document what tests will be performed. Either actually cause
+outages (disconnect the power or network cable) or play-act the scene: the "dead" person can
+proctor the test. "Ok, now lets suppose you got paged with this message. Tell me the commands you
+type and the actions you take." Another method is to permit your CEO to walk into the data center
+and unplug any cable of his or her choosing.
+
+---------------------------------------------------------------------------------------------------
+
+27. Do machines in your data center have remote power / console access?
+
+This needs little explanation. Remote consoles (IP-based KVM switches) are inexpensive; good
+servers have them built in. Remote power control isn't a luxury if the computer is more than a few
+miles away.
+
+The exception to this rule is grid computing systems with hundreds or thousands of identical
+machines. If one fails another can take its place.
+
+---------------------------------------------------------------------------------------------------
+
+G. Security practices:
+
+---------------------------------------------------------------------------------------------------
+28. Do desktops/laptops/servers run self-updating, silent, anti-malware software?
+
+Viruses and malware are a fact of life. If you think bad things don't happen to good people then we
+all must be bad people. Every machine needs anti-malware software now.
+
+Every malware attack means work for you: cleaning up a failed machine, recovering data, consoling
+users over the loss of their data. It is a waste of time for you, an inexcusable disruption to your
+users. It is bad time management.
+
+Anti-malware software needs to periodically update itself. Some anti-malware software pops up a big
+window that says, "There's a new update! Would you like me to install it?" This is an important
+window because the software's logo appears in it. If users know the brand of anti-malware being
+used, they can recommend it to friends. It helps the vendor's stock price if everyone knows their
+name. It doesn't matter that 9 times out of 10 the user clicks "no". Software that silently updates
+itself with no animated "update" notification does not have this benefit. How irresponsible of the
+company to not benefit their shareholders.
+
+If you aren't sure, I'm being sarcastic.
+
+There are many anti-malware products. The one you install should silently update itself.
+
+It is your job to enforce the security policy and downloading updates is part of that policy.
+Delegating that responsibility to a user is wrong and possibly unethical. You don't ask a
+pedestrian, "Should I press the brakes and not run you over?" and you don't ask a user for
+permission to be less secure. Yes, we used to have 300 baud modems and downloading a virus
+definition file would take 30 minutes. You weren't even born then. You can't use that excuse. If
+you were around back then (like I was) then you are old enough to know better.
+
+For similar reasons the anti-malware software should not be easily disabled by the user. Users will
+disable it for the most preposterous reasons. It is common for users to disable it in an attempt to
+speed up their computer. I once had a user that disabled it because "it attracts viruses to my
+machine". You see, he explained, when it was enabled it kept popping up windows warning of viruses.
+When he disabled it there were no warnings. Yes, people with such a gross misunderstanding of cause
+and effect do exist.
+
+Anti-malware software used to be "would be nice" but now it is a requirement. These are my personal
+rules:
+
+1) Anti-malware scanners must run on all machines including any server that contains
+user-controlled data: home directories, "file shares", web site contents, FTP servers, and so on.
+
+2) Scanners must update automatically and silently. No user confirmation.
+
+3) There must be a mechanism that lets you detect it has been disabled. They should "check in" with
+a central server so you can see which machines are no longer being updated.
+
+4) Email must be scanned on the server, not on the client (or in addition to the client). Messages
+with malware must be dropped; messages with spam should be quarantined. You can't trust each
+individual machine to have the same, high-quality, up-to-date filter as you can maintain on your
+server. Stop the problem before it gets to the client.
+
+---------------------------------------------------------------------------------------------------
+29. Do you have a written security policy?
+
+Looking at existing policies is a good way to get ideas. SANS has a library of samples:
+
+http://www.sans.org/security-resources/policies/
+
+It is critical to have a written security policy before you implement it.
+
+---------------------------------------------------------------------------------------------------
+
+30. Do you submit to periodic security audits?
+
+This needs little explanation. If you aren't testing your security, you don't know how vulnerable
+you are.
+
+---------------------------------------------------------------------------------------------------
+
+31. Can a user's account be disabled on all systems in 1 hour?
+
+This indicates a lot more about your team and the environment you run than just whether or not you
+can disable an account. It indicates the use of a global unified account system.
+
+Having a single authentication database that all systems rely on is no longer a "would be nice". It
+is a "must have". If you think you don't need it until you are larger, you will find that you don't
+have time to install it when you are busy growing.
+
+The best practice is to employ user account life-cycle management systems. With such a system user
+accounts are created, managed and controlled from pre-employment through life changes to
+termination and beyond. What if a user's name changes? What if someone rejoins the company? What if
+they rejoin the company and their name has changed? There are a lot of "edge cases" they must be
+able to handle.
+
+---------------------------------------------------------------------------------------------------
+
+32. Can you change all privileged (root) passwords in 1 hour?
+
+This also indicates a lot more than what the question specifically asks. It indicates if your
+administrative access is well managed.
+
+If you do not have this ability, create a checklist of everywhere it must be changed on a wiki
+page. Change the password globally by following the list, adding to it as you remember other
+devices. For obscure systems, document the exact command or process to change the password.
+
+If you do have this ability, create a wiki page that documents how to activate the process (and
+then list all the exceptions that are still manual).
+
+Tags: sysadmin devops best practise
+November 09, 2011
+11 notes
+Posted by pegmanm
+∞ Short URL
+
+ 1. [pyramid_cl]sa-talk reblogged this from pegmanm
+ 2. [avatar_7c9]bikertux reblogged this from pegmanm
+ 3. [avatar_7c9]bikertux likes this
+ 4. [octahedron]mkylemueller reblogged this from pegmanm
+ 5. [avatar_0ef]theexcellencehabit likes this
+ 6. [avatar_2d5]fawkes-barretta likes this
+ 7. [avatar_eaf]pegmanm posted this
+
+Powered by Rackspace Cloud Computing
+© The rantings of a guy in Internet Operations. All Rights Reserved.
+Powered by Tumblr. Lightweight Theme by Artur Kim
+[impixu][impixu]
+
+#+end_example
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

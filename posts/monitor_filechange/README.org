@@ -1,0 +1,89 @@
+* Oops! My Config Files Have Been Changed.                    :BLOG:Mindset:
+:PROPERTIES:
+:type:   Operate,DevOps,Linux
+:END:
+
+---------------------------------------------------------------------
+Critical Config files in prod env may encounter authorized changes or unauthorized changes from time to time. Would it be better, if we can get alerted whenever they have been changed? Then we can audit those changes.
+
+[[image-blog:My Config Files Have Been Changed][https://www.dennyzhang.com/wp-content/uploads/denny/whoops.jpg]]
+
+---------------------------------------------------------------------
+Apparently changes of config files are critical and sensitive. For example, change of authorized_keys file probably indicates more people can ssh to your servers now. When _*.yml_ or _*.conf_ has been changed, the behavior of your application may change a lot, which may even result in data loss. And this happens typically when dev team are helping to do trouble shooting or hotfix the prod env.
+
+As Ops/DevOps, I know you want to have all these changes to be certified and authorized through automation scripts. What's better, the change is verified in integration test. Yes, that will put things under good control and we're more confident about the system's behavior. But let's face it, business requires us to be lean and adpative to changes. So you will have surprise. It's better we think about the next topic: *How Do We Detect And Audit All These Changes?*
+
+As end users, here is my requirements:
+1. *Monitor a list of conf files in critical envs.* Be notified, when they have been changed automatically.
+- *The impact to my envs should be as minimal as possible.* The setup and configuration should be simple and fast. The resource overhead should be small.
+
+To achieve this, we may have different methods. 1. We can subscribe to linux file modification events by inotify. 2. Place config files into a local git repo. 3. Peridocially do the files/folder comparison and copy. Here we choose method one, since it's easier and more powerful.
+
+We can use inotify to monitor a list of files/folders. Once they are changed, we can get notified.
+
+#+BEGIN_SRC sh
+# Install package
+sudo apt-get install -y inotify-tools
+# CentOS: yum install inotify-tools
+
+# Monitor a list of files
+/usr/bin/inotifywait -d -m -e modify \
+--timefmt '%Y-%m-%d %H:%M:%S' --format '%T %w %e %f' \
+-r /etc/apt/sources.list.d /root/.ssh/authorized_keys /etc/hosts \
+--outfile /root/monitor_server_filechanges.log
+
+# Confirm process
+ps -ef | grep inotify
+
+# Run basic test
+echo "# test" >> /root/.ssh/authorized_keys
+tail /root/monitor_server_filechanges.log
+# Sample output:
+#     root@denny-laptop:~# tail /root/monitor_server_filechanges.log
+#     2016-06-25 11:31:34 /root/.ssh/authorized_keys MODIFY
+#     2016-06-25 11:31:39 /root/.ssh/authorized_keys MODIFY
+#+END_SRC
+
+From above example, we can easily record critical info of the change: *Changed file list* and *Timestamp*. If we have backup of previous version, we can run diff command to get the detail change of each file. It's a pity that linux doesn't export *pid* of the change, so inotify can't tell us which process has changed our interested files. That's fine for us in most cases.
+
+To enable people easily to use it, I wrap up everything as a Jenkins job. Thus you only need to do basic setting and one button click. Now you're on top of those critical changes!
+
+Detail implementation can be found in Github: [[https://github.com/dennyzhang/devops_public/blob/tag_v6/jenkins_scripts/monitor/monitor_server_filechanges.sh][monitor_server_filechanges.sh]] and [[https://github.com/dennyzhang/devops_jenkins/blob/tag_v6/MonitorServerFileChangesAudit/config.xml][MonitorServerFileChangesAudit Jenkins Job]]
+
+[[github:DennyZhang][GitHub]]
+
+[[color:#c7254e][Notice]]: You can find a live demo [[https://www.dennyzhang.com/demo_jenkins][here]].
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_monitor_server_file_changes1.jpg]]
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_monitor_server_file_changes2.jpg]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/monitor_filechange"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/monitor_filechange
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

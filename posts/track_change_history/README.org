@@ -1,0 +1,69 @@
+* Automatically Track All Change History                      :BLOG:Mindset:
+:PROPERTIES:
+:type:   DevOps,Jenkins,Testing
+:END:
+---------------------------------------------------------------------
+Quite often, people will upgrade, patch critical envs or even run manual commands by ssh. As we know, changes bring instability. Some may even cause frustrating issues or strange behaviors. If we can have a detail list of all previous changes, the trouble shooting might be easier. But how we can achieve that?
+
+[[image-blog:Track history][https://www.dennyzhang.com/wp-content/uploads/denny/track_history.png]]
+
+---------------------------------------------------------------------
+Changes happen in below typical ways:
+1. By **infrastructure code**, such as chef, puppet. Provisioning a new env, or push latest update, etc.
+- **SSH commands**. People may login and change directly.
+- Through **application's GUI dashboard**.
+
+We can maintain a document and ask everyone to update it whenever he/she makes any changes to prod env. Yes, it is possible. However most likely, we will only get a misleading and outdated list.
+
+Let's divide and conquer the problem case by case.
+
+For **case #1**, we usually use a configuration management tool to manage envs. The tool will help us to automatically check the status and make proper changes. So the tool should be aware of all the changes it makes. Fortunately modern tools like Chef, puppet provide us this facility.
+
+Take Chef for example. We can use [[https://github.com/dennyzhang/chef_community_cookbooks/tree/tag_v6/cookbooks/chef_changereport_handler][a chef handler]] to track the change list simply by adding below code.
+[[github:DennyZhang][GitHub]]
+
+#+BEGIN_SRC ruby
+include_recipe 'chef_changereport_handler'
+#+END_SRC
+
+Then we can find the update history and detail change list in /root/chef_update/*.txt
+
+For **case #2**, people run commands directly in servers: 1. check service status. 2. stop/start service 3. edit config files 4. install/remove packages. This is certainly not recommended, since it's hard for us to track and audit the changes. However it will keep happening in the near future, since old habits die hard. And it's usually faster, for urgent issues.
+
+Though we can't forbide people to take this short cut, it doesn't mean we can't do anything. For example, we can provide a shell runner with a wrapper. Then ask people to use this tool, whenever they want to run commands. Personally I think it's a bit over-killing and hard to enforce. So I choose another method. [[https://www.dennyzhang.com/parallel_run_commands][Enable people to run shell commands from Jenkins Jobs]]. From Jenkins history in GUI, we can easily dig out what commands people have issued and input/output of the commands. Meanwhile we can gradually revoke ssh priviledge from the team.
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_jenkins_track_history.png]]
+
+For **case #3**, currently I don't have good solutions, just expecting the application will write critical audit log messges.
+
+As a conclusion, we'd better use automation tools like **case 1** as much as possible. Thus we can track all changes automatically without extra effort. Definitely it's hard to keep all unexpected changes under control. And it will be a long battle. What is your experience and thinking, my friend?
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/track_change_history"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/track_change_history
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
