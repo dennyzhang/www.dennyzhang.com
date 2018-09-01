@@ -1,0 +1,75 @@
+* Create Local VM With Fixed IP Address                       :BLOG:General:
+:PROPERTIES:
+:type:   Tool
+:END:
+
+---------------------------------------------------------------------
+People are using VMs for local test more and more. The VMs are usually accessed by IP. Most likely laptops running the VM will be carried to different places, whether home, office or starbucks. Hence the wifi changes all the time. So the IPs of latop and VM change as well.
+
+Quite natural we want the VM to have a fixed IP, thus we don't need to change current ip of the VM all the time. So how to achieve that?
+
+[[image-blog:Create Local VM With Fixed IP Address][https://www.dennyzhang.com/wp-content/uploads/denny/hostonly_ip.png]]
+
+---------------------------------------------------------------------
+To be simply, we can set fixed IP for the VM by adding **a host-only network adapter** to the VM. If we use "Host-only Adatper", the VM will have outbound internet traffic but no inbound internet traffic. This is OK for most cases of local test.
+
+In below, we will mainly discuss about virtualbox, while other virtualizations like vmware, hyper-V should be similar.
+
+
+To use "Host-only Adapter", firstly we need to make sure we have created a Host-only Network and specify subnet CDIR, masks etc. In below example, we have created a Host-only Network called vboxnet2. And specified subnet as 192.168.58.0/24.
+
+[[image-blog:host only network][https://www.dennyzhang.com/wp-content/uploads/denny/hostonly_vboxnet2_1.png]]
+
+[[image-blog:host only network"][https://www.dennyzhang.com/wp-content/uploads/denny/hostonly_vboxnet2_2.png]]
+
+Then we configure the VM to use this network adatper. Thus the vm will get a fixed ip by dhcp like 192.168.58.XXX.
+
+[[image-blog:vm network adapter type][https://www.dennyzhang.com/wp-content/uploads/denny/vm_network_adapter_type.png]]
+
+- If you're using virtualbox, above configuration can be easily automated by vagrant script like below.
+#+BEGIN_EXAMPLE
+# -*- mode: ruby -*-
+Vagrant.configure(2) do |config|
+  # The OS is Ubuntu 14.04 64 bits
+  config.vm.box = "ubuntu/trusty64"
+  config.vm.hostname = "sandbox.test.com"
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "vagrant-sandbox"
+    # Customize the VM to use 2048 MB RAM and 3 cpu cores
+    vb.customize ["modifyvm", :id, "--memory", 2048,
+                  "--cpus", 3]
+  end
+  # host-only network
+  config.vm.network :private_network, ip: "192.168.58.11"
+end
+#+END_EXAMPLE
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/virtualbox_vm_fixed_ip"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/virtualbox_vm_fixed_ip
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

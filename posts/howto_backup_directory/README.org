@@ -1,0 +1,75 @@
+* How To Backup a Directory                                   :BLOG:General:
+:PROPERTIES:
+:type:   Linux,Tool
+:END:
+
+---------------------------------------------------------------------
+Backup a directory? Looks so easy, right? Let's find out.
+
+[[image-blog:How To Backup a Directory][https://www.dennyzhang.com/wp-content/uploads/denny/backup_files.jpg]]
+
+---------------------------------------------------------------------
+For data recovery or rollback incorrect change, a nice backup is always useful. And files/directories backup are frequently used, since it's easy and usually works.
+
+Here are some best practice of backup, according to my experience.
+
+- When backup process has some errors or failures, detect them and make them apparent.
+  If errors happen in the process, the backup set will be useless. This will lead us to a very bad situation, when we need them later.
+  To ensure it's properly handled, first we shall log messages not only to stdout, but also logfile. If using shell scripts, we need use "set -e" for both the script and shell function. Sometime unexpected error may happen, thus we'd better trap various interruption. Below is an example.
+#+BEGIN_SRC sh
+#!/bin/bash -e
+# capture an interrupt of SIGHUP SIGINT SIGTERM 0
+
+trap 'echo "Exit 0 signal detected..."' SIGHUP SIGINT SIGTERM 0
+# display something
+echo "This is a test"
+
+# exit shell script with 0 signal
+ls /directory_wont_exists
+#+END_SRC
+
+- Make sure the backup set are easy to understand and use.
+  Add timestamp to the file name of backup set. When backup files, persist the full filepath. Thus people can easily tell where it comes from.
+
+- Avoid old backup sets eat up your disk capacity.
+  Usually we define cron job to do daily backup. As you can see, each backup will generate a new backup set, which occupies more disk.
+
+  Compressing backupset will help to save disk. Furthermore we may not need very old backup sets. Thus proper data retention will help, with no need of human intervene.
+
+- Keep time window as short as possible.
+  In order to get a clean backup, sometime we may need to shutdown service. Shorten the backup process means miminize the service's downtime. We don't need to wait for data compression and data retention to finish, before we bring services up and running.
+  During the backup process, there may be multiple steps. If we can track how long each steps take, it will be helpful for us to tunning the process.
+
+Here comes the solution in [[https://github.com/dennyzhang/devops_public/tree/tag_v6/bash/backup_dir][Github]]. [[github:DennyZhang][GitHub]]
+
+[[image-blog:Backup directory][https://www.dennyzhang.com/wp-content/uploads/denny/backup_dir.png]]
+
+#+BEGIN_EXPORT HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/howto_backup_directory"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_EXPORT
+
+Blog URL: https://www.dennyzhang.com/howto_backup_directory
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

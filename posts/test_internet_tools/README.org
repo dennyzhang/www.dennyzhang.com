@@ -1,0 +1,63 @@
+* Useful Tools To Test Your Internet                             :BLOG:Tool:
+:PROPERTIES:
+:type:   Tool
+:END:
+
+---------------------------------------------------------------------
+Dig out your internet info with free and useful websites or tools. Check the post and bookmark it.
+
+[[image-blog:Useful Tools To Test Your Internet][https://www.dennyzhang.com/wp-content/uploads/denny/internet_tool.png]]
+
+---------------------------------------------------------------------
+- **Find out your public IP**
+  Open http://ipecho.net/plain in web browser. Or run "curl http://ipecho.net/plain" in command line.
+
+- **Check whether a website is blocked by GFW.**
+  GFW stands for Great Firewall Of China, a notorious internet censorship.
+  Test websites by [[https://www.vpnmentor.com/tools/test-the-great-china-firewall][vpnMentor]], [[http://www.greatfirewallofchina.org/index.php?siteurl=www.dennyzhang.com][GFW Test]] or [[http://www.websitepulse.com/help/testtools.china-test.html][WebSitePulse]].
+
+- **Convert domain name to ip**
+  [[http://ipinfo.info/html/ip_checker.php][IP & Domain Checker]], [[http://www.hcidata.info/host2ip.cgi][Convert Host/Domain Name to IP Address and vice versa]]
+
+- **Check owner of public IP**
+  Test By [[http://www.iplocation.net][iplocation.net]], [[http://www.iptrackeronline.com][iptrackeronline.com]], [[http://ip-lookup.net/index.php][ip-look up.net]].
+
+- **Test your internet speed**
+  Free website tools: [[http://www.att.com/speedtest/][ATT Speed Test]], [[http://www.bandwidthplace.com][Test By BANDWIDTH]], [[http://testmy.net][Test By testmy]]
+
+- **Test website speed**
+  [[http://www.webpagetest.org][Test By WebPagetest]], [[http://tools.pingdom.com/fpt/][Test By pingdom]]
+
+- **Check dns registration**
+  [[http://www.whois.com/whois/][Check by whois]]
+** ---------------------------------------------------------------------
+
+#+BEGIN_EXPORT HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/test_internet_tools"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_EXPORT
+
+Blog URL: https://www.dennyzhang.com/test_internet_tools
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

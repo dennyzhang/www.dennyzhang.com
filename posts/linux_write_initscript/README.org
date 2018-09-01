@@ -1,0 +1,181 @@
+* Write Initscript For Linux Daemon Service                   :BLOG:General:
+:PROPERTIES:
+:type:   Linux,Tool
+:END:
+---------------------------------------------------------------------
+*How to write a linux initscript?** You have implemented a daemon service. Now you may want everyone in the project can easily manage the service without extra communication. The standard way would be "service $service_name start/stop/status". Another thing, no one would enjoy starting service manually, when the machine is rebooted. Here are things you shall need to know or watch out to get above done.
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_initscript.png]]
+
+---------------------------------------------------------------------
+We can easily find many live initscript examples under /etc/init.d/. Good initscripts shall meet multiple requirements for problems of different scenarios.
+
+To impatient readers, please scroll the page down to the bottom. There you can find a full initscript example in github.
+*__About Start service__**
+ 1 Single instance. **Normally we only allow one single instance of the program to be up and running.** On way to do this is to maintain a pidfile. The content of the file is the process's pid. When the service is down or stopped, we shall remove the pidfile or empty the file. Another way is whenever we start the process, we use command like "ps -ef | grep $SomePattern". Thus if we found any process matching the pattern, the service refuses to start.
+
+  When service is up, it will mostly listen on one or multiple tcp ports. So we can check whether the tcp is already listening by "lsof -i tcp:$TCP_PORT". However this solution doesn't help for the case that two parallel service start are triggered at nearly the same time.
+
+ 2 Service slow start. **Service start takes time, which may varies from seconds to minutes**. Thus we shall need add wait mechanism. Keep checking TCP port would be a good idea.
+#+BEGIN_SRC sh
+# Wait for service up
+timeout=0
+while ! lsof -i tcp:$MONITOR_TCP_PORT | grep -i \
+          listen 2>/dev/null 1>2; do
+    echo -n '.'
+    (( timeout ++))
+    if [ $timeout -gt $MAX_START_TIMEOUT ]; then return; fi
+    sleep 1
+done
+
+echo -e " \e[32m[OK]\e[0m"
+#+END_SRC
+
+ 3 Detach from signal of stdin. **If we close the terminal which starts the process, we don't want the process die since its stdin is closed**. This can be done by nohup (like "nohup java -jar some.jar &") or "start-stop-daemon".
+
+Here is an example of start-stop-daemon. Suppose the original service start command is:
+#+BEGIN_EXAMPLE
+/usr/bin/java -jar /opt/test/service.jar server \
+    /opt/test/service.yml
+#+END_EXAMPLE
+
+We can wrap it by start-stop-daemon like below:
+#+BEGIN_EXAMPLE
+start-stop-daemon --start --background --quiet --make-pidfile \
+    --pidfile /usr/local/var/run/mdm.pid \
+    --background --exec /usr/bin/java -- -jar \
+    /opt/test/service.jar server /opt/test/service.yml
+#+END_EXAMPLE
+*__About Service stop__**
+1 Service slow stop. **Service stop takes time, which may varies from seconds to minutes**. When process die, OS will remove /proc/$pid automatically. Thus we can keep checking the existence of /proc/$pid to confirm the service is stopped indeed.
+#+BEGIN_SRC sh
+stop() {
+    if [[ -f $PIDFILE ]]; then
+      echo -n -e " * \033[1mStopping $SERVICE_NAME...\033[0m"
+
+      # REMOVE PIDFILE AND EXIT IF PROCESS NOT RUNNING
+      if [ -z "$CHECK_PID_RUNNING" ]; then
+        echo -e "PID file found, but no matching process running."
+        echo    "Removing PID file..."
+        rm $PIDFILE
+        exit 0
+      fi
+
+      # KILL PROCESS
+      pid=$(cat $PIDFILE)
+      kill $pid
+      r=$?
+
+      # Check for process
+      timeout=0
+      while [ -d /proc/$pid ]; do
+        echo -n '.'
+        (( timeout ++))
+        if [ $timeout -gt $MAX_STOP_TIMEOUT ]; then return; fi
+        sleep 1
+      done
+
+      if [ ! -d /proc/$pid ]; then
+          rm $PIDFILE
+      fi
+
+      echo;
+
+      return $r
+    else
+      echo -e "No PID file found -- $SERVICE_NAME not running?"
+    fi
+}
+#+END_SRC
+
+2 Service can't stop. **We can only use kill -9 as the last resort.** When we shutdown service, the process may want to do a clean shutdown to avoid data loss or change conflict. If so, we'd better wait until it finishes. Unfortunately sometime the process is just not responding and the only thing what we can do is to kill the process by force.
+*__About Service status__**
+*How to confirm whether service is really up and running**. Normally we check pidfile first. Then make sure process is running indeed. If we can do some light-weight healthcheck, it would be even better. Checking tcp port is one easy and pratical way.
+#+BEGIN_SRC sh
+status() {
+  # GOT PIDFILE?
+  [ -f $PIDFILE ] && pid=$(cat $PIDFILE)
+
+  # RUNNING
+  if [[ $pid && -d "/proc/$pid" ]]; then
+      if lsof -i tcp:$MONITOR_TCP_PORT | grep -i \
+              listen 2>/dev/null 1>2; then
+          echo -e " * ${SERVICE_NAME} running with PID $pid"
+          return 0
+      else
+          echo -e " * ${SERVICE_NAME} running with problem ($pid)"
+          exit 1
+      fi
+  fi
+
+  # NOT RUNNING
+  if [[ ! $pid || ! -d "/proc/$pid" ]]; then
+    echo -e " * \033[1;33;40m${SERVICE_NAME} not running\033[0m"
+    return 3
+  fi
+
+  # STALE PID FOUND
+  if [[ ! -d "/proc/$pid" && -f $PIDFILE ]]; then
+    echo -e " * \033[1;31;40m[!] Stale PID found in $PIDFILE\033[0m"
+    return 1
+  fi
+}
+#+END_SRC
+*__About logging during service start and stop__**
+Two common issues we need to avoid about logging: 1. Don't generate tons of output to stdout or log files. 2. When we do a service start or restart, the initscript shall never truncate logfile by mistake. This will make trouble shooting much harder.
+*__About service autostart, after machine reboot__**
+If we follow the standard of initscript, we can easily configure the service as autorun. Thus no need for manual intervene for machine/vm reboot.
+1. CentOS
+#+BEGIN_EXAMPLE
+  chkconfig $service_name on
+  chkconfig --list | grep $service_name
+#+END_EXAMPLE
+2. Ubuntu:
+#+BEGIN_EXAMPLE
+  update-rc.d $service_name defaults
+  update-rc.d $service_name enable
+  initctl list | grep $service_name
+#+END_EXAMPLE
+
+Here comes the solution: https://github.com/dennyzhang/devops_public/tree/tag_v6/bash/initscripts
+[[github:DennyZhang][GitHub]]
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_initscript.png]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/linux_write_initscript"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/linux_write_initscript
+* useful link                                                      :noexport:
+http://www.thegeekstuff.com/2012/03/lsbinit-script/
+http://big-elephants.com/2013-01/writing-your-own-init-scripts/
+https://forum.syncthing.net/t/keeping-syncthing-running-systemd-regular-etc-init-d/402
+http://stackoverflow.com/questions/8251933/how-can-i-log-the-stdout-of-a-process-started-by-start-stop-daemon
+http://serverfault.com/questions/162602/stdout-stderr-redirects-in-start-stop-daemon
+http://unix.stackexchange.com/questions/68753/starting-server-with-nohup-and-redirecting-input-output
+http://stackoverflow.com/questions/27239051/debian-start-stop-daemon-java-start-jar-file
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

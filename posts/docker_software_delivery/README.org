@@ -1,0 +1,102 @@
+* Docker: a breakthrough of software delivery                  :BLOG:Docker:
+:PROPERTIES:
+:type:   tool
+:END:
+
+---------------------------------------------------------------------
+Docker, is a very hot and fancy word in cloud computing these days. So what's Docker about? What's the mysterious behind the power of Docker? If you tackle with server problems quite often, check below.
+
+[[image-blog:Docker: a breakthrough of software delivery][https://www.dennyzhang.com/wp-content/uploads/denny/docker-icon.png]]
+
+---------------------------------------------------------------------
+In one word, *Docker can be considered a breakthrough of software delivery*.
+- *Docker provides boxes to store the pre-configured service.* For each service(say mongo, redis, LAMP, etc), we can install and configure it in a fresh OS. Then Docker provides a box(so-called container) for us to "put the OS" in it. Whenever we want to deploy the service in any other machine, we only need to copy and start, with nearly no extra configuration.
+- *Docker enables each service to run within its own box, without bother other services.* No longer worry about our services would be abnormal because mongodb consumes all the memory, or application gateway service run out of the CPU resource. Well, as you can image, bigger box can use more computer resource. Previously, we fight against: doggy network during installation, dependency compatible issue, misconfiguration problem, process resource segregation, etc. And now, with the box, we can deliver software services with far less uncertainties than ever.
+- *Docker is quite simple and super fast.* The concept of Docker is quite understandable to end users. Furthermore, operations on box usually only take seconds, rather than minutes or even hours, to start, stop or snapshot it.
+
+Actually Docker was started by Solomon Hykes as an internal project in dotCloud, [[http://docker.io][a PaaS company]]. Then it went to public as an open source project in March 2013. Another exciting thing is that Docker is implemented in Google Go.
+Quick start example: Deploy a mongodb instance in Docker.*
+Try docker is quite easy in linux environment. Here we take CentOS as an example. For more instructions, please check the documentation of docker.io: http://docs.docker.io/en/latest/ .
+
+Step1: Docker installation can be easily done by the [[http://docs.docker.io/en/latest/installation/rhel/][official docuemnts]].
+
+[[image-blog:Install Docker][https://www.dennyzhang.com/wp-content/uploads/denny/docker1.jpg]]
+
+The last command of "sudo docker run -i -t ubuntu /bin/bash", will start a new docker container from the ubuntu image in an interactive way. Since this is a fresh installation, there would be not a single docker image locally, the command will automatically fetch the required image first from https://index.docker.io .
+
+Wait for several minutes, we will be able to login to our first docker container. There we can try most linux commands. So it looks just like a normal ubuntu VM, right?
+
+[[image-blog:Run Docker Container][https://www.dennyzhang.com/wp-content/uploads/denny/docker2.png]]
+
+When the docker container of 670c20ec8de7 is running, we can also attach to this light-weight vm from another shell, by "docker attach -sig-proxy=false 670c20ec8de7"
+
+[[image-blog:docker attach][https://www.dennyzhang.com/wp-content/uploads/denny/docker3.png]]
+
+If we invoke "exit" in the container, the container will automatically shut down, and we will be logout. Run "docker ps -a", we can get all docker containers no matter alive or not.
+
+Step2: Build your own docker image for mongodb service
+While Docker container looks like the running vm instance, Docker image looks like the OS iso. We normally generate a customized Docker image with our own service deployed, according to a Dockerfile.
+
+Below we create the /root/docker/mongo/Dockerfile with [[http://docs.docker.io/en/latest/examples/mongodb/][below content]].
+
+[[image-blog:Dockerfile][https://www.dennyzhang.com/wp-content/uploads/denny/docker4.jpg]]
+
+Let's go through the Dockfile:
+- "FROM ubuntu:latest" -> the new image is based on another image of "ubuntu:latest"
+- "RUN ..." -> Define a sequence of shell commands.
+Whatever shell command fail, the build process will quit.
+- "EXPOSE 27017" -> Container's 27017 port will be listening.
+- "ENTRYPOINT ["/usr/bin/mongod"]" -> When the container is up, it will run /usr/bin/mongod
+
+Then run "sudo docker build -t denny/mongodb ." to build the new Docker image with the name of "denny/mongodb".
+
+Now is the time to start the container.
+
+[[image-blog:docker run][https://www.dennyzhang.com/wp-content/uploads/denny/docker5.jpg]]
+
+Some detail about above:
+- -p 27107 -> Container's 27017 port will be listening.
+The hosting OS will listen on port 49161, which incoming traffic redirect to the container's port 27017. This is achieved by DNAT of iptables.
+- -m="1g" -> Define each process of the container shall not use more than 1g memory.
+	And this can be confirmed by config.lxc
+- config.lxc -> Define LXC options for resource segregation.
+- denny/mongodb -> The image name where the container is start.
+- cofig.json ->  Define the containers setting
+Such as the hostname is e658d33a8a71, and the local IP is 172.17.0.130, etc.
+Try "docker run --help" for more information.
+As a conclusion, Docker is a kind of light-weight virtual machine*. It enables us automate software deployment in a secure and repeatable environment, support resource segregation easily.
+
+Though Docker container behaves like normal VM. But the backend is quite different. Even if you run thousands of Docker container of your hosting OS, there is actually not a single guest OS.
+The backend mysterious is Linux namespace(cpu, network, mount point, memory, etc), then above is LXC, Cgroup, AUFS, then Docker*.
+
+For further reading, check [[http://www.infoq.com/articles/docker-containers/][Zef Hemel's excellent summary about Docker]].
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/docker_software_delivery"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/docker_software_delivery
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

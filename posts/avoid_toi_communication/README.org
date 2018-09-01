@@ -1,0 +1,69 @@
+* Avoid Unnecessary Communication Of TOI                      :BLOG:Mindset:
+:PROPERTIES:
+:type:   DevOps,Jenkins,Communication
+:END:
+
+---------------------------------------------------------------------
+Effective and meaningful communications always lead to good results. However communication of TOI (transfer of information) should be avoided as much as possible. As a DevOps engineer, I used to get messages like this, "Hi Denny, I've changed XXX. Please check and make proper change on your side".
+
+Why it's not good to rely on human communication for TOI? Firstly people will forget, which means expected collaboration will be ignored. Secondly human intervene and communication really takes time for both sides. So How We Can Improve This?
+
+[[image-blog:Avoid Unnecessary Communication Of TOI][https://www.dennyzhang.com/wp-content/uploads/denny/messenger.jpg]]
+
+---------------------------------------------------------------------
+Sorry, my friend, I haven't found silver bullets yet. The good news is that one typical scenario can be automated.
+
+Software development usually have some team conventions, which indicate members of different roles should comply and cooperate. For example, When dev has done A, Ops needs to know and do B.
+
+Let's examine below two common cases in our daily life as DevOps.
+1. *How To Keep Config Files In Sync?* Usually dev team defines and updates the application's configuration. However we expects Ops/DevOps to update those config files properly in Prod env. Lots of communication happens to keep this in sync.
+- *How We Know Active Sprint Has Been Changed?* When a new sprint is made, active branch name for various CI tests and settings need to be updated accordingly.
+How we can reduce or avoid communication like this?*
+
+For case 1, config files are usually managed in repo of dev team, so that we have version controlled. Here DevOps just needs to know when these files are changed. Usually we expect dev notify us, once he/she has made the commit. But whether this is really needed? Commits to SCM can trigger webhooks, or we can keep polling latest changes periodically. So the answer is no!
+
+Here comes a Jenkins job in Github: [[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/MonitorGitFileChanges][MonitorGitFileChanges]].
+
+[[color:#c7254e][Notice]]: You can find a live demo [[https://www.dennyzhang.com/demo_jenkins][here]].
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_MonitorGitFileChanges.png]]
+
+For case 2, active sprint name is usually a branch name, following some naming convention. For example, sprint-12. So we can subscribe to branch created events or keep polling branch list, to detect whether a given branch has been created. Thus we can be automatically notified.
+
+Here is a Jenkins job for this requirement: [[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/MonitorGitFileChanges][MonitorNewActiveSprint]].
+
+[[github:DennyZhang][GitHub]]
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_MonitorNewActiveSprint.png]]
+
+Any more improvement like this? Share your thoughts and thinking with us!
+
+#+BEGIN_EXPORT HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/avoid_toi_communication"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_EXPORT
+
+Blog URL: https://www.dennyzhang.com/avoid_toi_communication
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

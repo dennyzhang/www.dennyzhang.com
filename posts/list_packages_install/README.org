@@ -1,0 +1,78 @@
+* What Packages Were Installed In My Server                   :BLOG:Mindset:
+:PROPERTIES:
+:type:   DevOps,Linux,Jenkins,Operate
+:END:
+
+---------------------------------------------------------------------
+As DevOps, we may run into below issues from time to time: 1. Required packages are not installed. 2. Wrong version is installed 3. Extra packages installed which lead to conflict issues, etc.
+
+Literally speaking, the effort of trouble shooting is to figure out what suspicious packages are installed. It's quite boring and fruitless. To avoid this, people tend to manage Envs by tools like Chef, Puppet. However in development cycle, we still see this issue happens again and again.
+
+[[image-blog:What Packages Were Installed In My Server][https://www.dennyzhang.com/wp-content/uploads/denny/debian_package.png]]
+
+---------------------------------------------------------------------
+Is there any way we can easily detect suspicious package actions?*
+
+1. If we can list all packages installation/removal actions, it shall be better.
+- Packages installed after OS installation are the ones we shall pay more attention.
+
+Fortunately, linux provides us this kind of facility. Take Ubuntu as an example.
+
+For Question 1: From /var/log/apt/history.log*, we can dig out history of package installation and removal like below.
+#+BEGIN_EXAMPLE
+Start-Date: 2016-06-13  05:39:02
+Commandline: aptdaemon role='role-commit-packages' sender=':1.166'
+Install: linux-headers-4.2.0-38-generic:amd64 (4.2.0-38.45~14.04.1), ...
+Upgrade: linux-generic-lts-wily:amd64 (4.2.0.36.29, 4.2.0.38.31), ...
+End-Date: 2016-06-13  05:44:24
+
+Start-Date: 2016-06-27  09:39:53
+Commandline: aptdaemon role='role-commit-packages' sender=':1.11575'
+Upgrade: grub-common:amd64 (2.02~beta2-9ubuntu1.7, 2.02~beta2-9ubuntu1.8), ...
+End-Date: 2016-06-27  09:40:44
+
+Start-Date: 2016-06-27  09:40:53
+Commandline: aptdaemon role='role-commit-packages' sender=':1.11575'
+Upgrade: dpkg:amd64 (1.17.5ubuntu5.6, 1.17.5ubuntu5.7), ...
+End-Date: 2016-06-27  09:41:03
+#+END_EXAMPLE
+
+For Question 2: we can list all installed packages running command of "dpkg -l". If we run this command just after OS installation, we know the default package list. If we we run it now, we know the current package list. Try to diff these two lists, we can tell what packages installed ever since OS installation.
+
+Here comes a Jenkins job in GitHub: [[https://github.com/dennyzhang/devops_jenkins/tree/tag_v6/OSPackageActionAuditReport][OSPackageActionAuditReport]]. [[github:DennyZhang][GitHub]]
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_OSPackageActionReport1.png]]
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_OSPackageActionReport2.png]]
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_OSPackageActionReport3.png]]
+
+#+BEGIN_EXPORT HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/list_packages_install"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_EXPORT
+
+Blog URL: https://www.dennyzhang.com/list_packages_install
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

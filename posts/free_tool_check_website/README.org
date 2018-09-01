@@ -1,0 +1,159 @@
+* 10 Free great tools to check your website                      :BLOG:Tool:
+:PROPERTIES:
+:type:   Tool
+:END:
+
+---------------------------------------------------------------------
+Nowadays, having a website is absolutely essential for any flourishing company.
+We need to get notified immediately if the website is down, slow or unprofessional.
+
+Here are some useful and free tools!
+
+[[image-blog:free great tools check website][https://www.dennyzhang.com/wp-content/uploads/denny/website-tool.png]]
+---------------------------------------------------------------------
+For impatient visitors, please check the _table in the bottom of the page_.
+** Check Site's Basic Info
+Alexa tells some fundamental metrics of a website*: [[http://www.alexa.com/siteinfo/dennyzhang.com][http://www.alexa.com/siteinfo]].
+ - Global Alexa ranking
+   Normally a well maintained personal website may rank within top 5,000,000.
+   Congratulation, if yours rank top 1,000,000.
+   Admire you, if yours rank top 100,000.
+ - Bounce Rate: How likely visitors tend to leave
+ - Daily Pageviews per Visitor
+ - Daily Time on Site
+Alexa's Traffic Ranks are based on the traffic data provided by users in Alexa's global toolbar panel over a rolling 3 month period.
+checkpagerank tells more metrics*: http://checkpagerank.net
+- Page rank in google
+- External Backlinks
+- Referring Domains
+- Domain age: How long the website is maintained.
+
+[[image-blog:check website page rank][https://www.dennyzhang.com/wp-content/uploads/denny/checkpagerank.png]]
+Google analytics is a must*: [[http://www.google.com/analytics/][http://www.google.com/analytics/]]
+It may takes an hour to setup for the first time, and it definitely pays for the effort. I have to admit that I consistently check Google analytics every two hours. And the favorite part is to see how many active users are visiting my website right now, at the right moment.
+whoishostingthis tells where it's hosted*: [[http://www.whoishostingthis.com/?q=www.dennyzhang.com][http://www.whoishostingthis.com]]
+** Check If Your Website is Down or Up
+It may look super easy. Here are problems you might ignore:
+- Caching of web browsers may mislead you.
+- It's possible some visitors can open your website, while some can't.
+- The website may _go down for hours or days_, before you notice it.
+Check it locally.*
+The most usually way is to start a web browser, and open the url. To get rid of the caching problem, you need to clean cache or simply restart the web browser first.
+
+Another fancy way would be using command line of *curl* or *wget*. If you're not that favor of cli, try http://www.isup.me.
+Check it automatically.* uptimerobot can check your website every 5 minutes for free: https://uptimerobot.com. All you need is to register by your email, and do the proper setting. Some alternatives of uptimerobot: [[http://www.monitor.us/en/website-monitoring][monitor.us]], [[http://www.internetseer.com/home/index.xtp;jsessionid=aKIlElMwjnQ7][internet seer]], [[http://www.montastic.com][montasic]], [[http://www.site24x7.com/index.html][site24x7]]
+Check it from different location.* hyperspin enable us to perform the test from over 30 different cities in the world. And it also tell how fast it take: http://www.hyperspin.com/en/index.php
+
+[[image-blog:test website from different location][https://www.dennyzhang.com/wp-content/uploads/denny/hyperspin-test.png]]
+** Test How Fast Your Website is
+The the average loading time of your website is crucial, especially for the landing page.
+If it is less than 3 seconds, you shall be happy; if over 10 seconds, you're doom.
+
+Usually loading a webpage takes below sequential stages:
+- Dns lookup
+- Initial connections: tcp connect
+- Receive data: such as css, js, images, etc
+- Render the page: build up html DOM elements
+- Async loading: ajax or some parallel download
+
+webpagetest is my favorite test tool: http://www.webpagetest.org
+Though it might look a bit ugly, it's powerful. It supports:
+- Choose test location
+- Choose user agent: simulate mobile visitors or computer ones, firefox or chrome, etc.
+- Detail breakdown for how time spends in different stages.
+- Performance review and tuning suggestions
+
+[[image-blog:test website performance][https://www.dennyzhang.com/wp-content/uploads/denny/webpage-test.png]]
+
+pingdom is a bit similar like webpagetest: http://tools.pingdom.com/fpt/
+It has a much better UI, while less powerful.
+Local test by GUI*: [[https://addons.mozilla.org/en-US/firefox/addon/yslow][Firefox Add-on YSlow from Yahoo]] should be a treasure for you.
+It not only show how time is spent, but also *detail suggestions* for how to improve.
+Local test by CLI*. Below are some command lines to get a rough performance statistics.
+#+begin_example
+wbench https://www.dennyzhang.com
+
+time wget -E -H -k -K -p https://www.dennyzhang.com
+
+ab -i -n 100 -c 5 https://www.dennyzhang.com
+#+end_example
+
+The most accurate tool above is wbench: https://github.com/desktoppr/wbench.
+[[https://github.com/desktoppr/wbench][wbench]] will automatically launch chrome multiple times, to figure out how time is spent.
+Note: chromedriver in CentOS6 or before is no longer supported by google.
+You may need some extra effort, if you want to try wbench in that kind of server.
+** Detect Link Problems
+You should prevent the link of your website runs into below http code:
+- 5XX: An error happens in server
+  No normal page is present to visitors but a scaring error.
+  What worse, visitors will judge you unreliable and unprofessional.
+- 404/403: Page not found/Access denied.
+  Slightly better than above. And it's definitely wrong.
+  When some links of your page is 4XX, it shall result in penalty of the page loading.
+- 302: Page redirect
+  Visitors may not notice this, but still penalty of loading, due to the extra redirect.
+Free services to check link problems*:
+- Site Valet: http://valet.htmlhelp.com
+- W3C Link Checker: http://validator.w3.org/checklink
+WordPress Plugin: Broken Link Checker*
+If your website is built by wordpress, you can try [[http://wordpress.org/plugins/broken-link-checker/][this plugin]]. It will automatically check the link problems in your posts. And send you alert emails, if it finds something wrong.
+
+For your reference, here is a table of links
+| Num | Summary                    | Link                                                  |
+|-----+----------------------------+-------------------------------------------------------|
+|   1 | Alex Ranking               | [[http://www.alexa.com/siteinfo/dennyzhang.com][http://www.alexa.com/siteinfo]]                         |
+|   2 | checkpagerank              | http://checkpagerank.net                              |
+|   3 | Google analytics           | [[http://www.google.com/analytics/][http://www.google.com/analytics/]]                      |
+|   4 | Availability test          | https://uptimerobot.com                               |
+|   5 | Availability test          | http://www.hyperspin.com/en/index.php                 |
+|   6 | Performance test           | http://www.webpagetest.org                            |
+|   7 | Performance test           | http://tools.pingdom.com/fpt/                         |
+|   8 | YSlow Add-on               | https://addons.mozilla.org/en-US/firefox/addon/yslow/ |
+|   9 | Detect link problems       | http://www.websitegoodies.com/tools/linkcheck.php     |
+|  10 | Broken Link Checker Plugin | http://wordpress.org/plugins/broken-link-checker/     |
+#+TBLFM: $1=@-1$1+1;N
+
+For wordpress users, below link might be useful to you: [[https://www.cloudliving.com/speed-up-wordpress/][Why WordPress Site Speed Matters]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/free_tool_check_website"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/free_tool_check_website
+* misc                                                             :noexport:
+** Provider: http://www.websitegoodies.com/tools/linkcheck.php    :noexport:
+** misc                                                           :noexport:
+*** Send a summary email when everything is OK
+*** Why intial connection for responsive.css takes 10 seconds
+http://www.webpagetest.org/result/140509_VT_T18/1/details/
+https://www.dennyzhang.com/all-posts
+*** Monitor daily users by google analytics
+** free service                                                   :noexport:
+curl http://www.alexa.com/siteinfo/www.dennyzhang.com  2>/dev/null | grep 'ranked number'
+*** Monitor whether the website works
+curl http://www.isup.me/www.dennyzhang.com 2>/dev/null | grep "It's just you"
+** TODO Check whether your link is follow or nofollow
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
