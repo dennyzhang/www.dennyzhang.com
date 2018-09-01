@@ -1,0 +1,174 @@
+* One Sentence Summary For AWS Services                           :BLOG:AWS:
+:PROPERTIES:
+:type:   AWS,DevOps
+:END:
+
+---------------------------------------------------------------------
+Reference card for the price of popular AWS products. Check more about AWS: [[https://www.dennyzhang.com/prepare_aws_certification][Prepare AWS Certification Exam]].
+
+[[image-blog:aws service summary][https://www.dennyzhang.com/wp-content/uploads/denny/aws_service_summary.png]]
+
+---------------------------------------------------------------------
+- Compute
+| Service               | Summary                          |
+|-----------------------+----------------------------------|
+| EC2                   | Virtual Servers in the Cloud     |
+| Lambda                | Run Code in Response to Events   |
+| EC2 Container Service | Run and Manage Docker Containers |
+
+- Storage & Content Delivery
+| Service         | Summary                                                   |
+|-----------------+-----------------------------------------------------------|
+| S3              | Scalable Storage in the Cloud                             |
+| Storage Gateway | Integrates On-Premises IT Environments with Cloud Storage |
+| Glacier         | Archive Storage in the Cloud                              |
+| CloudFront      | Global Content Delivery Network                           |
+
+- Database
+| Service     | Summary                                                |
+|-------------+--------------------------------------------------------|
+| RDS         | MySQL, Postgres, Oracle, SQL Server, and Amazon Aurora |
+| DynamoDB    | Predictable and Scalable NoSQL Data Store              |
+| ElastiCache | In-Memory Cache                                        |
+| Redshift    | Managed Petabyte-Scale Data Warehouse Service          |
+
+- Networking
+| Service        | Summary                                   |
+|----------------+-------------------------------------------|
+| VPC            | Isolated Cloud Resources                  |
+| Direct Connect | Dedicated Network Connection to AWS       |
+| Route 53       | Scalable DNS and Domain Name Registration |
+
+- Administration & Security
+| Service                      | Summary                               |
+|------------------------------+---------------------------------------|
+| Directory Service            | Managed Directories in the Cloud      |
+| Identity & Access Management | Access Control and Key Management     |
+| Trusted Advisor              | AWS Cloud Optimization Expert         |
+| CloudTrail                   | User Activity and Change Tracking     |
+| Config                       | Resource Configurations and Inventory |
+| CloudWatch                   | Resource and Application Monitoring   |
+
+- Deployment & Management
+| Service           | Summary                               |
+|-------------------+---------------------------------------|
+| Elastic Beanstalk | AWS Application Container             |
+| OpsWorks          | DevOps Application Management Service |
+| CloudFormation    | Templated AWS Resource Creation       |
+| CodeDeploy        | Automated Deployments                 |
+
+- Analytics
+| Service          | Summary                                     |
+|------------------+---------------------------------------------|
+| EMR              | Managed Hadoop Framework                    |
+| Kinesis          | Real-time Processing of Streaming Big Data  |
+| Data Pipeline    | Orchestration for Data-Driven Workflows     |
+| Machine Learning | Build Smart Applications Quickly and Easily |
+
+- Application Services
+| Service            | Summary                                                  |
+|--------------------+----------------------------------------------------------|
+| SQS                | Message Queue Service                                    |
+| SWF                | Workflow Service for Coordinating Application Components |
+| AppStream          | Low Latency Application Streaming                        |
+| Elastic Transcoder | Easy-to-use Scalable Media Transcoding                   |
+| SES                | Email Sending Service                                    |
+| CloudSearch        | Managed Search Service                                   |
+
+- Mobile Services
+| Service          | Summary                                    |
+|------------------+--------------------------------------------|
+| Cognito          | User Identity and App Data Synchronization |
+| Mobile Analytics | Understand App Usage Data at Scale         |
+| SNS              | Push Notification Service                  |
+
+- Enterprise Applications
+| Service    | Summary                                       |
+|------------+-----------------------------------------------|
+| WorkSpaces | Desktops in the Cloud                         |
+| WorkDocs   | Secure Enterprise Storage and Sharing Service |
+| WorkMail   | Secure Email and Calendaring Service          |
+
+More Reading: [[https://www.dennyzhang.com/prepare_aws_certification][Entrance Page For AWS Exam Preparation]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/aws_summary"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/aws_summary
+* misc                                                             :noexport:
+** EC2 instances pricing                                          :noexport:
+http://www.ec2instances.info
+
+| Name                                  | API Name    | Memory   | Compute Units (ECU) | Cores    | Linux cost    | Storage                   | Arch      | Network Performance | Windows cost  |
+|---------------------------------------+-------------+----------+---------------------+----------+---------------+---------------------------+-----------+---------------------+---------------|
+| T2 Micro                              | t2.micro    | 1.0 GB   | 1 units (Burstable) | 1 cores  | $0.013 hourly | 0 GB (EBS only)           | 32/64-bit | Low to Moderate     | $0.018 hourly |
+| T1 Micro                              | t1.micro    | 0.613 GB | 1 units (Burstable) | 1 cores  | $0.020 hourly | 0 GB (EBS only)           | 32/64-bit | Very Low            | $0.020 hourly |
+| T2 Small                              | t2.small    | 2.0 GB   | 1 units (Burstable) | 1 cores  | $0.026 hourly | 0 GB (EBS only)           | 32/64-bit | Low to Moderate     | $0.036 hourly |
+| M1 General Purpose Small              | m1.small    | 1.7 GB   | 1 units             | 1 cores  | $0.044 hourly | 160 GB                    | 32/64-bit | Low                 | $0.075 hourly |
+| T2 Medium                             | t2.medium   | 4.0 GB   | 2 units (Burstable) | 2 cores  | $0.052 hourly | 0 GB (EBS only)           | 64-bit    | Low to Moderate     | $0.072 hourly |
+| M3 General Purpose Medium             | m3.medium   | 3.75 GB  | 3 units             | 1 cores  | $0.070 hourly | 4 GB SSD                  | 64-bit    | Moderate            | $0.133 hourly |
+| M1 General Purpose Medium             | m1.medium   | 3.75 GB  | 2 units             | 1 cores  | $0.087 hourly | 410 GB                    | 32/64-bit | Moderate            | $0.149 hourly |
+| C3 High-CPU Large                     | c3.large    | 3.75 GB  | 7 units             | 2 cores  | $0.105 hourly | 32 GB (2 * 16 GB SSD)     | 64-bit    | Moderate            | $0.188 hourly |
+| C4 High-CPU Large                     | c4.large    | 3.75 GB  | 8 units             | 2 cores  | $0.116 hourly | 0 GB (EBS only)           | 64-bit    | Moderate            | $0.199 hourly |
+| C1 High-CPU Medium                    | c1.medium   | 1.7 GB   | 5 units             | 2 cores  | $0.130 hourly | 350 GB                    | 32/64-bit | Moderate            | $0.210 hourly |
+| M3 General Purpose Large              | m3.large    | 7.5 GB   | 6.5 units           | 2 cores  | $0.140 hourly | 32 GB SSD                 | 64-bit    | Moderate            | $0.266 hourly |
+| M1 General Purpose Large              | m1.large    | 7.5 GB   | 4 units             | 2 cores  | $0.175 hourly | 840 GB (2 * 420 GB)       | 64-bit    | Moderate            | $0.299 hourly |
+| R3 High-Memory Large                  | r3.large    | 15.25 GB | 6.5 units           | 2 cores  | $0.175 hourly | 32 GB SSD                 | 64-bit    | Moderate            | $0.300 hourly |
+| C3 High-CPU Extra Large               | c3.xlarge   | 7.5 GB   | 14 units            | 4 cores  | $0.210 hourly | 80 GB (2 * 40 GB SSD)     | 64-bit    | Moderate            | $0.376 hourly |
+| C4 High-CPU Extra Large               | c4.xlarge   | 7.5 GB   | 16 units            | 4 cores  | $0.232 hourly | 0 GB (EBS only)           | 64-bit    | High                | $0.398 hourly |
+| M2 High Memory Extra Large            | m2.xlarge   | 17.1 GB  | 6.5 units           | 2 cores  | $0.245 hourly | 420 GB                    | 64-bit    | Moderate            | $0.345 hourly |
+| M3 General Purpose Extra Large        | m3.xlarge   | 15.0 GB  | 13 units            | 4 cores  | $0.280 hourly | 80 GB (2 * 40 GB SSD)     | 64-bit    | High                | $0.532 hourly |
+| M1 General Purpose Extra Large        | m1.xlarge   | 15.0 GB  | 8 units             | 4 cores  | $0.350 hourly | 1680 GB (4 * 420 GB)      | 64-bit    | High                | $0.598 hourly |
+| R3 High-Memory Extra Large            | r3.xlarge   | 30.5 GB  | 13 units            | 4 cores  | $0.350 hourly | 80 GB SSD                 | 64-bit    | Moderate            | $0.600 hourly |
+| C3 High-CPU Double Extra Large        | c3.2xlarge  | 15.0 GB  | 28 units            | 8 cores  | $0.420 hourly | 160 GB (2 * 80 GB SSD)    | 64-bit    | High                | $0.752 hourly |
+| C4 High-CPU Double Extra Large        | c4.2xlarge  | 15.0 GB  | 31 units            | 8 cores  | $0.464 hourly | 0 GB (EBS only)           | 64-bit    | High                | $0.796 hourly |
+| M2 High Memory Double Extra Large     | m2.2xlarge  | 34.2 GB  | 13 units            | 4 cores  | $0.490 hourly | 850 GB                    | 64-bit    | Moderate            | $0.690 hourly |
+| C1 High-CPU Extra Large               | c1.xlarge   | 7.0 GB   | 20 units            | 8 cores  | $0.520 hourly | 1680 GB (4 * 420 GB)      | 64-bit    | High                | $0.840 hourly |
+| M3 General Purpose Double Extra Large | m3.2xlarge  | 30.0 GB  | 26 units            | 8 cores  | $0.560 hourly | 160 GB (2 * 80 GB SSD)    | 64-bit    | High                | $1.064 hourly |
+| G2 Double Extra Large                 | g2.2xlarge  | 15.0 GB  | 26 units            | 8 cores  | $0.650 hourly | 60 GB SSD                 | 64-bit    | High                | $0.767 hourly |
+| D2 Extra Large                        | d2.xlarge   | 30.5 GB  | 14 units            | 4 cores  | $0.690 hourly | 6000 GB (3 * 2000 GB)     | 64-bit    | Moderate            | $0.821 hourly |
+| R3 High-Memory Double Extra Large     | r3.2xlarge  | 61.0 GB  | 26 units            | 8 cores  | $0.700 hourly | 160 GB SSD                | 64-bit    | High                | $1.080 hourly |
+| C3 High-CPU Quadruple Extra Large     | c3.4xlarge  | 30.0 GB  | 55 units            | 16 cores | $0.840 hourly | 320 GB (2 * 160 GB SSD)   | 64-bit    | High                | $1.504 hourly |
+| I2 Extra Large                        | i2.xlarge   | 30.5 GB  | 14 units            | 4 cores  | $0.853 hourly | 800 GB SSD                | 64-bit    | Moderate            | $0.973 hourly |
+| C4 High-CPU Quadruple Extra Large     | c4.4xlarge  | 30.0 GB  | 62 units            | 16 cores | $0.928 hourly | 0 GB (EBS only)           | 64-bit    | High                | $1.592 hourly |
+| M2 High Memory Quadruple Extra Large  | m2.4xlarge  | 68.4 GB  | 26 units            | 8 cores  | $0.980 hourly | 1680 GB (2 * 840 GB)      | 64-bit    | High                | $1.380 hourly |
+| D2 Double Extra Large                 | d2.2xlarge  | 61.0 GB  | 28 units            | 8 cores  | $1.380 hourly | 12000 GB (6 * 2000 GB)    | 64-bit    | High                | $1.601 hourly |
+| R3 High-Memory Quadruple Extra Large  | r3.4xlarge  | 122.0 GB | 52 units            | 16 cores | $1.400 hourly | 320 GB SSD                | 64-bit    | High                | $1.944 hourly |
+| C3 High-CPU Eight Extra Large         | c3.8xlarge  | 60.0 GB  | 108 units           | 32 cores | $1.680 hourly | 640 GB (2 * 320 GB SSD)   | 64-bit    | 10 Gigabit          | $3.008 hourly |
+| I2 Double Extra Large                 | i2.2xlarge  | 61.0 GB  | 27 units            | 8 cores  | $1.705 hourly | 1600 GB (2 * 800 GB SSD)  | 64-bit    | High                | $1.946 hourly |
+| C4 High-CPU Eight Extra Large         | c4.8xlarge  | 60.0 GB  | 132 units           | 36 cores | $1.856 hourly | 0 GB (EBS only)           | 64-bit    | 10 Gigabit          | $3.184 hourly |
+| Cluster Compute Eight Extra Large     | cc2.8xlarge | 60.5 GB  | 88 units            | 32 cores | $2.000 hourly | 3360 GB (4 * 840 GB)      | 64-bit    | 10 Gigabit          | $2.570 hourly |
+| Cluster GPU Quadruple Extra Large     | cg1.4xlarge | 22.5 GB  | 33.5 units          | 16 cores | $2.100 hourly | 1680 GB (2 * 840 GB)      | 64-bit    | 10 Gigabit          | $2.600 hourly |
+| D2 Quadruple Extra Large              | d2.4xlarge  | 122.0 GB | 56 units            | 16 cores | $2.760 hourly | 24000 GB (12 * 2000 GB)   | 64-bit    | High                | $3.062 hourly |
+| R3 High-Memory Eight Extra Large      | r3.8xlarge  | 244.0 GB | 104 units           | 32 cores | $2.800 hourly | 640 GB (2 * 320 GB SSD)   | 64-bit    | 10 Gigabit          | $3.500 hourly |
+| HI1. High I/O Quadruple Extra Large   | hi1.4xlarge | 60.5 GB  | 35 units            | 16 cores | $3.100 hourly | 2048 GB (2 * 1024 GB SSD) | 64-bit    | 10 Gigabit          | $3.580 hourly |
+| I2 Quadruple Extra Large              | i2.4xlarge  | 122.0 GB | 53 units            | 16 cores | $3.410 hourly | 3200 GB (4 * 800 GB SSD)  | 64-bit    | High                | $3.891 hourly |
+| High Memory Cluster Eight Extra Large | cr1.8xlarge | 244.0 GB | 88 units            | 32 cores | $3.500 hourly | 240 GB (2 * 120 GB SSD)   | 64-bit    | 10 Gigabit          | $3.831 hourly |
+| High Storage Eight Extra Large        | hs1.8xlarge | 117.0 GB | 35 units            | 17 cores | $4.600 hourly | 48000 GB (24 * 2000 GB)   | 64-bit    | 10 Gigabit          | $4.931 hourly |
+| D2 Eight Extra Large                  | d2.8xlarge  | 244.0 GB | 116 units           | 36 cores | $5.520 hourly | 48000 GB (24 * 2000 GB)   | 64-bit    | 10 Gigabit          | $6.198 hourly |
+| I2 Eight Extra Large                  | i2.8xlarge  | 244.0 GB | 104 units           | 32 cores | $6.820 hourly | 6400 GB (8 * 800 GB SSD)  | 64-bit    | 10 Gigabit          | $7.782 hourly |
+
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

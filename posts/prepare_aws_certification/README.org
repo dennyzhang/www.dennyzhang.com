@@ -1,0 +1,63 @@
+* Entrance Page For AWS Exam Preparation                          :BLOG:AWS:
+:PROPERTIES:
+:type:   AWS,DevOps
+:END:
+
+---------------------------------------------------------------------
+Apparently AWS certifications are hot. And it takes a lot of reading and practice to crack them down. Here I collect and organize useful materials, during my preparation.
+*Entrance Page For AWS Exams Preparation**. Bookmark it or share it!
+
+[[image-blog:nagios monitor memory][https://www.dennyzhang.com/wp-content/uploads/denny/aws_certification.png]]
+---------------------------------------------------------------------
+Why Take AWS Exams?* AWS provides several certification exams[1] at both associate levels and professional levels. It helps anyone in Cloud/DevOps fields.
+1. Certify a good and indepth understanding for all aspects of cloud computing and DevOps.
+- Familiar with AWS and OpenStack technology, which covers public cloud and private cloud.
+What The Cost Is?*  _Plenty of Time_. Tons of documents and whitepapers are waiting for you! Believe me. I'm not kidding. **A small amount of Money: 150~300 dollars**.
+List Of Learning Materials*. The list will be updated constantly. Notify me, if I've missed anything important or useful. The most important tip: [[color:#c7254e][Try All Major Features Of AWS Services]]. You will fail without that. Even if you magically pass it, it's truely pointless.
+** Learning: Basic Understanding
+- Basic Links: [[http://aws.amazon.com/products/][AWS Products Intro]], [[http://aws.amazon.com/architecture][AWS Architecture]]
+- [[https://www.dennyzhang.com/aws_summary][One Sentence Summary]] For AWS Services
+- Price Reference: [[https://www.dennyzhang.com/aws_price_reference_card][Price Reference Card]] for Popular AWS Products
+** Learning: Quiz & Exercises
+- [[https://www.dennyzhang.com/quiz_questions_aws_exam][Practice Quiz]] For AWS Certification Exam
+- Try AWS service for real: AWS Step-By-Step [[https://www.dennyzhang.com/aws_exercise_examples][Exercise Examples]]
+** Learning: Deep Dive Into Documents
+- Read FAQ: [[http://aws.amazon.com/ec2/faqs/][EC2]], [[http://aws.amazon.com/s3/faqs/][S3]], [[http://aws.amazon.com/vpc/faqs/][VPC]], etc
+- Whitepapers: [[http://d0.awsstatic.com/whitepapers/aws-overview.pdf][AWS Overview]], [[http://aws.amazon.com/whitepapers][AWS Whitepapers]]
+** Learning: More Community Materials
+- AWS YouTube: [[https://www.youtube.com/channel/UCd6MoB9NC6uYN2grvUNT-Zg][YouTube]] Channel for Amazon Web Services, [[https://www.youtube.com/playlist?list=PLhr1KZpdzukcMmx04RbtWuQ0yYOp1vQi4][YouTube Training]]: Introduction to AWS
+- AWS Slidshares: [[http://www.slideshare.net/search/slideshow?searchfrom=header&q=AWS][PPT for AWS sharing]]
+- Quora topics: [[http://www.quora.com/Where-can-I-learn-Amazon-Web-Services][Quora:]] Where can I learn Amazon Web Services?
+- StackOverflow: [[http://stackoverflow.com/questions/tagged/amazon-web-services?sort=frequent&pageSize=15][Tagged Questions about AWS]]
+
+[1] https://aws.amazon.com/certification/
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/prepare_aws_certification"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/prepare_aws_certification
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

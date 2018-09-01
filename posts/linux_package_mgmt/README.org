@@ -1,0 +1,1409 @@
+* Reference Card For Linux Package Management                   :BLOG:Linux:
+:PROPERTIES:
+:type:   linux
+:END:
+
+---------------------------------------------------------------------
+Commands for Linux Package Management. e.g. apt-get, HomeBrew, Port
+
+[[image-blog:linux package management][https://www.dennyzhang.com/wp-content/uploads/denny/linux_package.png]]
+
+---------------------------------------------------------------------
+- **Debian/Ubuntu**
+| Name                            | Command                                                                |
+|---------------------------------+------------------------------------------------------------------------|
+| Install given version package   | apt-get install subversion-tools=1.3.2-5~bpo1                          |
+| Uninstall packages              | dpkg --remove python-boto                                              |
+| Remove orphaned packages        | apt-get autoremove                                                     |
+| extract contents of a package   | ar x <packageFileName>                                                 |
+| Reinstall packages              | apt-get --reinstall install tree                                       |
+| Upgrade a package               | apt-get --only-upgrade install bash                                    |
+| Search a package                | apt-get install -y aptitude; aptitude search openssl                   |
+| List files installed by package | dpkg --listfiles openssh-server                                        |
+| List installed packages         | dpkg -l                                                                |
+| Check package info              | dpkg -s pm-utils                                                       |
+| Install package by file         | dpkg -i package-name-here.deb                                          |
+| Sort installed packages by size | dpkg-query -W --showformat='${Installed-Size}\t${Package}\n'; sort -nr |
+| Check pacakges by file          | dpkg -S /usr/lib/libgtk-1.2.so.0.9.1                                   |
+
+- **Redhat/CentOS**
+| Name                            | Command                                                         |
+|---------------------------------+-----------------------------------------------------------------|
+| Install given version package   | yum install kernel-debuginfo-2.6.18-238.19.1.el5                |
+| Uninstall packages              | yum remove zookeeper                                            |
+| Uninstall packages              | rpm -e --nodeps autoconf-2.59                                   |
+| Reinstall packages              |                                                                 |
+| Upgrade a package               |                                                                 |
+| Search a package                | yum list available 'graphviz*'                                  |
+| List files installed by package | rpm -ql zookeeper                                               |
+| List installed packages         | rpm -qa                                                         |
+| List installed packages         | yum list installed                                              |
+| Check package info              | yum info zookeper                                               |
+| Install package by file         | rpm -ivh epel-release-6-8.noarch.rpm                            |
+| Sort installed packages by size | rpm -qa --queryformat '%{SIZE} %{NAME} %{VENDOR}\n'; sort -n -r |
+| Check pacakges by file          | yum provides /usr/sbin/semanage                                 |
+
+- **Mac OSX**
+| Name                            | Command                                       |
+|---------------------------------+-----------------------------------------------|
+| Install given version package   | brew install postgresql8                      |
+| Uninstall packages              |                                               |
+| Reinstall packages              |                                               |
+| Upgrade a package               | brew upgrade bash                             |
+| Search a package                | brew search postgresql                        |
+| List files installed by package | HomeBrew: brew ls mysql                       |
+| List files installed by package | OpenPorts: port contents libiconv             |
+| List installed packages         |                                               |
+| Check package info              |                                               |
+| Install package by file         | Double click *.dmg file                       |
+| Install package by file         | sudo installer -pkg GCC-10.7-v2.pkg -target / |
+| Sort installed packages by size |                                               |
+| Check pacakges by file          |                                               |
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/linux_package_mgmt"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/linux_package_mgmt
+* misc                                                             :noexport:
+** package management                                       :noexport:Linux:
+*** DONE yum groupinstall "Development Tools"
+     CLOSED: [2015-04-17 Fri 15:13]
+*** CANCELED apt-get出问题了
+  CLOSED: [2012-08-20 一 21:56]
+#+begin_example
+denny@ubuntu:~/Downloads$ sudo apt-get -f install
+
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+Correcting dependencies... Done
+The following packages were automatically installed and are no longer required:
+ libbreakpoint-ruby1.8 libdigest-sha1-perl nspluginwrapper libcmdparse2-ruby1.8 libmocha-ruby1.8 libredcloth-ruby1.8 linux-source-2.6.32 libsqlite3-ruby1.8 diff
+ liblog4r-ruby1.8 libredcloth-ruby scim-gtk2-immodule liberb-ruby libmmap-ruby1.8 libdaemons-ruby1.8 libxml-simple-ruby rubygems1.8 exim4 libcommons-lang-java
+ libruby1.8-extras libmocha-ruby libsqlite3-ruby
+Use 'apt-get autoremove' to remove them.
+The following extra packages will be installed:
+ kbd libgphoto2-2
+Suggested packages:
+ gphoto2
+The following packages will be upgraded:
+ kbd libgphoto2-2
+2 upgraded, 0 newly installed, 0 to remove and 710 not upgraded.
+656 not fully installed or removed.
+Need to get 0B/1,202kB of archives.
+After this operation, 3,109kB disk space will be freed.
+Do you want to continue [Y/n]? Y
+(Reading database ...
+dpkg: warning: files list file for package `libgphoto2-port0' missing, assuming package has no files currently installed.
+
+dpkg: warning: files list file for package `libgphoto2-l10n' missing, assuming package has no files currently installed.
+
+dpkg: warning: files list file for package `libgphoto2-2' missing, assuming package has no files currently installed.
+
+dpkg: warning: files list file for package `libsane' missing, assuming package has no files currently installed.
+
+dpkg: warning: files list file for package `sane-utils' missing, assuming package has no files currently installed.
+(Reading database ... 230913 files and directories currently
+#+end_example
+*** DONE rpmbuild problem: error: Installed (but unpackaged) file(s) found.
+  CLOSED: [2012-08-23 Thu 10:01]
+  The %files section identifies what files and directories were added by the package.
+#+begin_example
+Requires(rpmlib): rpmlib(CompressedFileNames) <= 3.0.4-1 rpmlib(PayloadFilesHavePrefix) <= 4.0-1
+Checking for unpackaged file(s): /usr/lib/rpm/check-files /var/tmp/zabbix-buildroot
+error: Installed (but unpackaged) file(s) found:
+   /etc/zabbix/zabbix_agent.conf
+   /etc/zabbix/zabbix_agentd.conf
+   /etc/zabbix/zabbix_proxy.conf
+   /usr/etc/zabbix_agent.conf
+   /usr/etc/zabbix_agentd.conf
+   /usr/etc/zabbix_proxy.conf
+   /usr/etc/zabbix_server.conf
+
+
+RPM build errors:
+    Installed (but unpackaged) file(s) found:
+   /etc/zabbix/zabbix_agent.conf
+   /etc/zabbix/zabbix_agentd.conf
+   /etc/zabbix/zabbix_proxy.conf
+   /usr/etc/zabbix_agent.conf
+   /usr/etc/zabbix_agentd.conf
+   /usr/etc/zabbix_proxy.conf
+   /usr/etc/zabbix_server.conf
+#+end_example
+**** useful link
+http://www.cyberciti.biz/faq/rhel-centos-linuxrpmbuild-error-installed-but-unpackaged-files-found/\\
+http://hi.baidu.com/yangyingchao/item/ab4c9c7e0f8d20356f29f652\\
+http://stackoverflow.com/questions/5031464/rpmbuild-error-installed-but-unpackaged-files-found\\
+*** DONE Setting RPM Repo Server
+  CLOSED: [2012-01-09 Mon 20:20]
+#+begin_example
+yum install createrepo
+createrepo /usr/src/redhat/RPMS/x86_64
+createrepo /usr/src/redhat/RPMS/noarch
+#+end_example
+**** cat /etc/yum.repos.d/shopex-test.repo                        :noexport:
+#+begin_example
+[shopex.$basearch]
+name=shopex's RPM
+baseurl=http://192.168.75.109:8970/$basearch/
+gpgcheck=0
+enabled=1
+
+[shopex.noarch]
+name=shopex's RPM
+baseurl=http://192.168.75.109:8970/noarch/
+gpgcheck=0
+enabled=1
+#+end_example
+**** web page: CloudGurus.net - Setting RPM Repo Server (CentOS)
+#+BEGIN_EXAMPLE
+http://www.cloudgurus.net/blog/2011/01/10/RPM_Repo_Server_Setup.html\\
+#+END_EXAMPLE
+***** wecontent                                                   :noexport:
+*** DONE yum -d 0 -e 0 -y install php-ecae-memcache失败,但量yum install php-ecae-memcache成功: 其实两者效果是一样的, 只是前者显示的信息更少 :noexport:
+  CLOSED: [2011-11-23 Wed 14:41]
+[root@ecae-test-denny ~]# /usr/bin/yum -d 0 -e 0 -y install php-ecae-memcache
+
+Error Downloading Packages:
+  php-ecae-memcache-5.3.3-shopex.x86_64: failure: php-ecae-memcache-5.3.3-shopex.x86_64.rpm from shopex.x86_64: [Errno 256] No more mirrors to try.
+
+[root@ecae-test-denny ~]# yum install php-ecae-memcache
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+Setting up Install Process
+Resolving Dependencies
+--> Running transaction check
+---> Package php-ecae-memcache.x86_64 0:5.3.3-shopex set to be updated
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+========================================================================================================================================================================
+ Package                                      Arch                              Version                                  Repository                                Size
+========================================================================================================================================================================
+Installing:
+ php-ecae-memcache                            x86_64                            5.3.3-shopex                             shopex.x86_64                             25 k
+
+Transaction Summary
+========================================================================================================================================================================
+Install       1 Package(s)
+Upgrade       0 Package(s)
+
+Total download size: 25 k
+Is this ok [y/N]: n
+*** DONE yum help                                                 :noexport:
+  CLOSED: [2011-11-23 Wed 14:46]
+#+begin_example
+///845fe30be49df8eba69e260c45786cf3#$yum help
+Loaded plugins: fastestmirror
+usage: yum [options] COMMAND
+
+List of Commands:
+
+check-update   Check for available package updates
+clean          Remove cached data
+deplist        List a package's dependencies
+downgrade      downgrade a package
+erase          Remove a package or packages from your system
+groupinfo      Display details about a package group
+groupinstall   Install the packages in a group on your system
+grouplist      List available package groups
+groupremove    Remove the packages in a group from your system
+help           Display a helpful usage message
+info           Display details about a package or group of packages
+install        Install a package or packages on your system
+list           List a package or groups of packages
+localinstall   Install a local RPM
+makecache      Generate the metadata cache
+provides       Find what package provides the given value
+reinstall      reinstall a package
+repolist       Display the configured software repositories
+resolvedep     Determine which package provides the given dependency
+search         Search package details for the given string
+shell          Run an interactive yum shell
+update         Update a package or packages on your system
+upgrade        Update packages taking obsoletes into account
+
+
+options:
+  -h, --help            show this help message and exit
+  -t, --tolerant        be tolerant of errors
+  -C                    run entirely from cache, don't update cache
+  -c  [config file]     config file location
+  -R  [minutes]         maximum command wait time
+  -d  [debug level]     debugging output level
+  --showduplicates      show duplicates, in repos, in list/search commands
+  -e  [error level]     error output level
+  -q, --quiet           quiet operation
+  -v, --verbose         verbose operation
+  -y                    answer yes for all questions
+  --version             show Yum version and exit
+  --installroot=[path]  set install root
+  --enablerepo=[repo]   enable one or more repositories (wildcards allowed)
+  --disablerepo=[repo]  disable one or more repositories (wildcards allowed)
+  -x [package], --exclude=[package]
+                        exclude package(s) by name or glob
+  --disableexcludes=[repo]
+                        disable exclude from main, for a repo or for
+                        everything
+  --obsoletes           enable obsoletes processing during updates
+  --noplugins           disable Yum plugins
+  --nogpgcheck          disable gpg signature checking
+  --disableplugin=[plugin]
+                        disable plugins by name
+  --enableplugin=[plugin]
+                        enable plugins by name
+  --skip-broken         skip packages with depsolving problems
+  --color=COLOR         control whether color is used
+
+  Plugin Options:
+#+end_example
+*** DONE yum install php-ecae-memcache失败, 而rpm -ivh却可以: 因为rpm源的服务器端,　没有更新脚本 :noexport:
+  CLOSED: [2011-12-22 Thu 00:11]
+[root@ecae-test-denny ~]# yum install php-ecae-memcache
+Loaded plugins: fastestmirror
+Loading mirror speeds from cached hostfile
+Setting up Install Process
+Resolving Dependencies
+--> Running transaction check
+---> Package php-ecae-memcache.x86_64 0:5.3.3-shopex set to be updated
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+========================================================================================================================================================================
+ Package                                      Arch                              Version                                  Repository                                Size
+========================================================================================================================================================================
+Installing:
+ php-ecae-memcache                            x86_64                            5.3.3-shopex                             shopex.x86_64                             25 k
+
+Transaction Summary
+========================================================================================================================================================================
+Install       1 Package(s)
+Upgrade       0 Package(s)
+
+Total download size: 25 k
+Is this ok [y/N]: y
+Downloading Packages:
+php-ecae-memcache-5.3.3-shopex.x86_64.rpm                                                                                                        |  25 kB     00:00
+http://mirrors.dev.shopex.cn/rpm/shopex/x86_64/php-ecae-memcache-5.3.3-shopex.x86_64.rpm: [Errno -1] Package does not match intended download
+Trying other mirror.
+
+
+Error Downloading Packages:
+  php-ecae-memcache-5.3.3-shopex.x86_64: failure: php-ecae-memcache-5.3.3-shopex.x86_64.rpm from shopex.x86_64: [Errno 256] No more mirrors to try.
+*** DONE yum cpio: MD5 sum mismatch
+  CLOSED: [2012-03-22 Thu 16:45]
+#+begin_example
+  [I]t appears that the RPM archive that is generated gets a list of
+  the MD5 sums for components of the executable file calculated by
+  prelink.  By disabling prelink, it fixed the problem; in my RPM .spec
+  file:
+  %define         __prelink_undo_cmd     %{nil}
+#+end_example
+*** DONE apt-get cache
+  CLOSED: [2013-11-26 Tue 15:41]
+#+begin_example
+root@ubuntu:~# apt-cache showpkg openvswitch-switch
+Package: openvswitch-switch
+Versions:
+1.10.2-0ubuntu2~cloud0 (/var/lib/apt/lists/ubuntu-cloud.archive.canonical.com_ubuntu_dists_precise-updates_havana_main_binary-amd64_Packages)
+ Description Language:
+                 File: /var/lib/apt/lists/ubuntu-cloud.archive.canonical.com_ubuntu_dists_precise-updates_havana_main_binary-amd64_Packages
+                  MD5: a3693da748c76fbc356928927bf14fce
+
+1.4.0-1ubuntu1.5 (/var/lib/apt/lists/us.archive.ubuntu.com_ubuntu_dists_precise-updates_universe_binary-amd64_Packages)
+ Description Language:
+                 File: /var/lib/apt/lists/us.archive.ubuntu.com_ubuntu_dists_precise_universe_binary-amd64_Packages
+                  MD5: 8c5a742ba270593d4735b29557114e5d
+ Description Language: en
+                 File: /var/lib/apt/lists/us.archive.ubuntu.com_ubuntu_dists_precise_universe_i18n_Translation-en
+                  MD5: 8c5a742ba270593d4735b29557114e5d
+
+1.4.0-1ubuntu1 (/var/lib/apt/lists/us.archive.ubuntu.com_ubuntu_dists_precise_universe_binary-amd64_Packages)
+ Description Language:
+                 File: /var/lib/apt/lists/us.archive.ubuntu.com_ubuntu_dists_precise_universe_binary-amd64_Packages
+                  MD5: 8c5a742ba270593d4735b29557114e5d
+ Description Language: en
+                 File: /var/lib/apt/lists/us.archive.ubuntu.com_ubuntu_dists_precise_universe_i18n_Translation-en
+                  MD5: 8c5a742ba270593d4735b29557114e5d
+
+
+Reverse Depends:
+  openvswitch-switch:i386,openvswitch-switch
+  openvswitch-ipsec,openvswitch-switch 1.10.2-0ubuntu2~cloud0
+  openvswitch-dbg,openvswitch-switch 1.10.2-0ubuntu2~cloud0
+  openvswitch-datapath-source,openvswitch-switch
+  nova-xcp-network,openvswitch-switch
+  neutron-plugin-openvswitch-agent,openvswitch-switch
+  neutron-plugin-nec-agent,openvswitch-switch
+  neutron-plugin-openvswitch-agent,openvswitch-switch
+  neutron-l3-agent,openvswitch-switch
+  mininet,openvswitch-switch
+  openvswitch-switch:i386,openvswitch-switch
+  xcp-networkd,openvswitch-switch
+  openvswitch-ipsec,openvswitch-switch 1.4.0-1ubuntu1.5
+  openvswitch-dbg,openvswitch-switch 1.4.0-1ubuntu1.5
+  openvswitch-datapath-source,openvswitch-switch
+  openvswitch-brcompat,openvswitch-switch 1.4.0-1ubuntu1.5
+  nova-xcp-network,openvswitch-switch
+  openvswitch-datapath-lts-raring-source,openvswitch-switch
+  openvswitch-switch:i386,openvswitch-switch
+  xcp-networkd,openvswitch-switch
+  quantum-plugin-openvswitch-agent,openvswitch-switch
+  quantum-plugin-openvswitch,openvswitch-switch
+  openvswitch-ipsec,openvswitch-switch 1.4.0-1ubuntu1
+  openvswitch-dbg,openvswitch-switch 1.4.0-1ubuntu1
+  openvswitch-datapath-source,openvswitch-switch
+  openvswitch-brcompat,openvswitch-switch 1.4.0-1ubuntu1
+  nova-xcp-network,openvswitch-switch
+Dependencies:
+1.10.2-0ubuntu2~cloud0 - libc6 (2 2.14) libssl1.0.0 (2 1.0.0) upstart-job (0 (null)) python (0 (null)) openvswitch-common (5 1.10.2-0ubuntu2~cloud0) module-init-tools (0 (null)) procps (0 (null)) uuid-runtime (0 (null)) netbase (0 (null)) openvswitch-datapath-module (0 (null)) openvswitch-switch:i386 (0 (null))
+1.4.0-1ubuntu1.5 - libc6 (2 2.14) libssl1.0.0 (2 1.0.0) python (0 (null)) openvswitch-common (5 1.4.0-1ubuntu1.5) module-init-tools (0 (null)) procps (0 (null)) uuid-runtime (0 (null)) openvswitch-datapath-dkms (0 (null)) openvswitch-switch:i386 (0 (null))
+1.4.0-1ubuntu1 - libc6 (2 2.14) libssl1.0.0 (2 1.0.0) python (0 (null)) openvswitch-common (5 1.4.0-1ubuntu1) module-init-tools (0 (null)) procps (0 (null)) uuid-runtime (0 (null)) openvswitch-datapath-dkms (0 (null)) openvswitch-switch:i386 (0 (null))
+Provides:
+1.10.2-0ubuntu2~cloud0 -
+1.4.0-1ubuntu1.5 -
+1.4.0-1ubuntu1 -
+Reverse Provides:
+root@ubuntu:~#
+#+end_example
+*** [#A] install epel repo                                       :IMPORTANT:
+If you are running an CentOS6/EL6 version, enter:
+
+cd /tmp
+wget http://mirror-fpt-telecom.fpt.net/fedora/epel/6/i386/epel-release-6-8.noarch.rpm
+rpm -ivh epel-release-6-8.noarch.rpm
+**** web page: CentOS / RHEL / Scientific Linux 6 Enable & Install EPEL Repo
+http://www.cyberciti.biz/faq/fedora-sl-centos-redhat6-enable-epel-repo/
+***** webcontent                                                  :noexport:
+#+begin_example
+Location: http://www.cyberciti.biz/faq/fedora-sl-centos-redhat6-enable-epel-repo/
+  * Tutorials
+      + BASH Shell
+      + Troubleshooting
+      + Nginx
+      + Networking
+      + MySQL
+      + Google Cloud Platform
+      + Amazon Cloud Computing
+      + Rackspace Cloud Computing
+      + Linux
+          o CentOS
+          o Debian / Ubuntu
+          o Ubuntu Linux
+          o Suse
+          o RedHat and Friends
+          o Slackware Linux
+      + UNIX
+          o AIX
+          o Mac OS X
+          o FreeBSD
+          o FreeBSD Jails (VPS)
+          o Openbsd
+          o Solaris
+      + See all tutorial topics
+  * Blog
+  * About
+  * Contact us
+  * Forum
+  * Linux Scripting Guide
+  * RSS/FEED
+
+Linux FAQ / Howtos
+
+CentOS / RHEL / Scientific Linux 6 Enable & Install EPEL Repo
+
+by Nix Craft on January 24, 2012 · 9 comments· LAST UPDATED February 24, 2013
+
+in CentOS, RedHat and Friends
+
+[rhlogo]
+Extra Packages for Enterprise Linux (or EPEL) is a Fedora Special Interest Group that creates,
+maintains, and manages a high quality set of additional packages for Enterprise Linux, including,
+but not limited to, Red Hat Enterprise Linux (RHEL),CentOS and Scientific Linux (SL). How do I
+enable it under CentOS 6 or RHLE 6 server?
+
+     Tutorial details
+Difficulty                 Easy (rss)
+Root privileges            Yes
+Requirements               CentOS/RHEL
+Estimated completion time  N/A
+
+You need to install the following rpms as per your Enterprise Linux version. Use the wget command
+to download rpm files.
+Fig.01: HowTo: Enable EPEL Repository on CentOS/RHEL/SL/Fedora Linux
+
+Fig.01: HowTo: Enable EPEL Repository on CentOS/RHEL/SL/Fedora Linux
+
+If you are running an CentOS6/EL6 version, enter:
+
+$ cd /tmp
+$ wget http://mirror-fpt-telecom.fpt.net/fedora/epel/6/i386/epel-release-6-8.noarch.rpm
+# rpm -ivh epel-release-6-8.noarch.rpm
+
+If you are running an CentOS5/EL5 version, enter:
+
+$ cd /tmp
+$ wget http://download.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm
+# rpm -ivh epel-release-5-4.noarch.rpm
+
+If you are running an CentOS4/EL4 version, enter:
+
+The following may not be supported:
+$ cd /tmp
+$ wget http://download.fedoraproject.org/pub/epel/4/i386/epel-release-4-10.noarch.rpm
+# rpm -ivh epel-release-4-10.noarch.rpm
+
+Install epel*.rpm file using yum command
+
+You can use the yum command instead of rpm command:
+# yum install epel-release-6-8.noarch.rpm
+Sample outputs:
+
+Loaded plugins: product-id, rhnplugin, security, subscription-manager
+This system is not registered to Red Hat Subscription Management. You can use subscription-manager to register.
+This system is receiving updates from RHN Classic or RHN Satellite.
+Setting up Install Process
+Examining epel-release-6-8.noarch.rpm: epel-release-6-8.noarch
+Marking epel-release-6-8.noarch.rpm to be installed
+Resolving Dependencies
+--> Running transaction check
+---> Package epel-release.noarch 0:6-8 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================
+ Package            Arch         Version   Repository                      Size
+================================================================================
+Installing:
+ epel-release       noarch       6-8       /epel-release-6-8.noarch        22 k
+
+Transaction Summary
+================================================================================
+Install       1 Package(s)
+
+Total size: 22 k
+Installed size: 22 k
+Is this ok [y/N]: y
+Downloading Packages:
+Running rpm_check_debug
+Running Transaction Test
+Transaction Test Succeeded
+Running Transaction
+  Installing : epel-release-6-8.noarch                                      1/1
+  Verifying  : epel-release-6-8.noarch                                      1/1
+
+Installed:
+  epel-release.noarch 0:6-8
+
+Complete!
+
+How do I list all enabled repos?
+
+Type the following commands:
+# yum repolist
+OR
+# yum -v repolist | less
+Sample outputs:
+Fig.01: Yum Query All Repositories and Show Repository ID's Command
+
+Fig.01: Yum Query All Repositories and Show Repository ID's Command
+
+Please note that epel is your "EPEL Repo ID" in the above output.
+
+How do I list all packages in EPEL repo?
+
+Type the following command to list all packages from EPEL repo only:
+# yum --disablerepo="*" --enablerepo="epel" list available
+To search packages in epel repo only, enter:
+# yum --disablerepo="*" --enablerepo="epel" search packageNameHere
+# yum --disablerepo="*" --enablerepo="epel" search nginx
+
+How do I use EPEL repo?
+
+Simply use the yum commands to search or install packages from EPEL repo:
+# yum search nginx
+# yum update
+# yum --disablerepo="*" --enablerepo="epel" install nginx
+Sample outputs:
+
+Loaded plugins: product-id, rhnplugin, subscription-manager
+Updating certificate-based repositories.
+epel/metalink                                                                                                                          |  13 kB     00:00
+epel                                                                                                                                   | 4.3 kB     00:00
+epel/primary_db                                                                                                                        | 4.1 MB     00:03
+Setting up Update Process
+Resolving Dependencies
+--> Running transaction check
+---> Package dkms.noarch 0:2.0.10-1 will be updated
+---> Package dkms.noarch 0:2.1.0.1-1.el6 will be an update
+---> Package iftop.x86_64 0:0.17-1.el6 will be updated
+---> Package iftop.x86_64 0:1.0-0.1.pre2.el6 will be an update
+--> Finished Dependency Resolution
+Dependencies Resolved
+==============================================================================================================================================================
+ Package                            Arch                                Version                                       Repository                         Size
+==============================================================================================================================================================
+Updating:
+ dkms                               noarch                              2.1.0.1-1.el6                                 epel                               99 k
+ iftop                              x86_64                              1.0-0.1.pre2.el6                              epel                               44 k
+Transaction Summary
+==============================================================================================================================================================
+Upgrade       2 Package(s)
+Total download size: 144 k
+Is this ok [y/N]: y
+Downloading Packages:
+(1/2): dkms-2.1.0.1-1.el6.noarch.rpm                                                                                                   |  99 kB     00:00
+(2/2): iftop-1.0-0.1.pre2.el6.x86_64.rpm                                                                                               |  44 kB     00:00
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+Total                                                                                                                         543 kB/s | 144 kB     00:00
+warning: rpmts_HdrFromFdno: Header V3 RSA/SHA256 Signature, key ID 0608b895: NOKEY
+Retrieving key from file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6
+Importing GPG key 0x0608B895:
+ Userid : EPEL (6)
+ Package: epel-release-6-5.noarch (installed)
+ From   : /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6
+Is this ok [y/N]: y
+Running rpm_check_debug
+Running Transaction Test
+Transaction Test Succeeded
+Running Transaction
+Warning: RPMDB altered outside of yum.
+  Updating   : dkms-2.1.0.1-1.el6.noarch                                                                                                                  1/4
+  Updating   : iftop-1.0-0.1.pre2.el6.x86_64                                                                                                              2/4
+  Cleanup    : dkms-2.0.10-1.noarch                                                                                                                       3/4
+  Cleanup    : iftop-0.17-1.el6.x86_64                                                                                                                    4/4
+Installed products updated.
+Updated:
+  dkms.noarch 0:2.1.0.1-1.el6                                                 iftop.x86_64 0:1.0-0.1.pre2.el6
+Complete!
+
+Check out related media
+
+This tutorial is also avilable in a quick video format that explains how to install EPEL repository
+on CentOS or RHEL 6.x server so that you can install additional packages directly using the yum
+command only.
+
+           (Video 01: Enable EPEL Repository On CentOS / Red Hat Linux For Yum Package)
+
+See also
+
+For more information see how to use "yum command to Update / Install Packages Under Red Hat
+Enterprise / CentOS Linux Version v5.x/v6.x and above" for more information.
+
+  * Tweet
+  *
+  *
+  *
+  * submit to reddit
+  * Download this as pdf
+
+Featured Articles:
+
+  * 30 Cool Open Source Software I Discovered in 2013 [new_post]
+  * 30 Handy Bash Shell Aliases For Linux / Unix / Mac OS X
+  * Top 30 Nmap Command Examples For Sys/Network Admins
+  * 25 PHP Security Best Practices For Sys Admins
+  * 20 Linux System Monitoring Tools Every SysAdmin Should Know
+  * 20 Linux Server Hardening Security Tips
+  * Linux: 20 Iptables Examples For New SysAdmins
+  * Top 20 OpenSSH Server Best Security Practices
+  * Top 20 Nginx WebServer Best Security Practices
+  * 20 Examples: Make Sure Unix / Linux Configuration Files Are Free From Syntax Errors
+  * 15 Greatest Open Source Terminal Applications Of 2012
+  * My 10 UNIX Command Line Mistakes
+  * Top 10 Open Source Web-Based Project Management Software
+  * Top 5 Email Client For Linux, Mac OS X, and Windows Users
+  * The Novice Guide To Buying A Linux Laptop
+
+{ 9 comments... read them below or add one }
+
+1 Me June 3, 2012 at 10:44 am
+
+    http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-5.noarch.rpm
+    http://download.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm
+
+    These links are no more alive. would you please share the updated link for epel repo.
+
+    Reply
+
+2 AJ June 11, 2012 at 7:09 pm
+
+    The new link is:
+
+    rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm
+
+    The other gives 404 errors.
+
+    Reply
+
+3 kamal June 12, 2012 at 5:01 am
+
+    Nice tips... I have updated my EPEL Repo!!
+    Thanks
+
+    Reply
+
+4 Aaron June 30, 2012 at 9:19 am
+
+    Thanks for this tip and AJ's new link. I was finally able to install Twinkle SIP softphone with
+    help of this blog post.
+
+    Reply
+
+5 AJ July 2, 2012 at 1:15 pm
+
+    I have to say this is the BEST site for RHEL/CentOS, I found the updated EPEL repo info from
+    going to the site.
+    Glad to help out.
+    :)
+
+    Reply
+
+6 Kristian September 27, 2012 at 3:40 pm
+
+    For those who are wondering why the RPM links in the article won't work, just go to
+    http://download.fedoraproject.org/pub/epel/6/i386/
+
+    and find the current epel-release-*.noarch.rpm.
+
+    Reply
+
+7 michael January 8, 2013 at 6:57 am
+
+    For all why centos 6 links are not working they have update 6.8/
+    Below the commands:
+
+    rpm -ivh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+
+    or:
+    cd /tmp
+    wget http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+    rpm -ivh epel-release-6-8.noarch.rpm
+
+    Reply
+
+8 Majid January 14, 2013 at 1:17 pm
+
+    Thank you
+
+    Reply
+
+9 Renol Pad December 1, 2013 at 12:07 pm
+
+    Client 0000000e0017fc01
+    Red Hat Global Desktop 000000990007fc02
+    Server 000000e90007fc00
+    Server with Cluster 00000065000bfc00
+    Server with ClusterStorage 000000ab000ffc00
+    Server with HPC 000000e30013fc00
+    Server with Directory 000000890017fc00
+    Server with SMB 00000052001bfc00
+
+    http://linuxczar.net/articles/rhel-installation-numbers
+
+    Reply
+
+Cancel reply
+
+Leave a Comment
+
+[                    ]Name *
+
+[                    ]E-mail *
+
+[                                        ]
+[                                        ]
+[                                        ]
+[                                        ]
+[                                        ]
+[                                        ]
+[                                        ]
+[                                        ]
+
+[ ] Notify me of followup comments via e-mail
+
+ Submit
+
+Tagged as: CentOS Linux EPEL Repo, enterprise linux, epel, fedora, Fedora Linux EPEL repo, high
+quality, product id, red hat enterprise, repositories, rpm, rpms, Scientific Linux, Scientific
+Linux EPEL repo, signature, special interest group, subscription manager, wget command, yum, yum
+command, Easy
+
+Previous Faq: RHEL / CentOS 6 Linux Install Memcached High Performance Distributed Memory Object
+Cache Server
+
+Next Faq: HowTo: Flush Contents Of a Memcached Server Using Command Line
+
+twitter youtube googleplus  facebook rss email
+
+  *
+  * [To search, type and ]
+
+  *
+  *
+  * Related Faqs
+
+      + Linux /boot: Out of Disk Space While Installing Package kernel-2.6.32-131.2.1.el6.x86_64
+        Linux /boot: Out of Disk Space While Installing Package kernel-2.6.32-131.2.1.el6.x86_64
+      + RHEL / CentOS Yum Command: Blacklist Packages [ Disable Certain Packages ]RHEL / CentOS Yum
+        Command: Blacklist Packages [ Disable Certain Packages ]
+      + CentOS / Redhat: Protect Yum Repo's PackagesCentOS / Redhat: Protect Yum Repo's Packages
+      + RHEL / CentOS Linux: Mount and Access NTFS PartitionRHEL / CentOS Linux: Mount and Access
+        NTFS Partition
+      + yum Download All Source Packages (SRPM) From RedHat / CentOS WebSiteyum Download All Source
+        Packages (SRPM) From RedHat / CentOS WebSite
+      + Redhat / CentOS: Install Internet whois / nicname ClientRedhat / CentOS: Install Internet
+        whois / nicname Client
+      + Red Hat Enterprise Linux / CentOS Linux Enable EPEL (Extra Packages for Enterprise Linux)
+        Repository          Red Hat Enterprise Linux / CentOS Linux Enable EPEL (Extra Packages for
+        Enterprise Linux) Repository
+      + Yum In RHEL 5Yum In RHEL 5
+      + No xauth Program; Cannot Forward With Spoofing Error and SolutionNo xauth Program; Cannot
+        Forward With Spoofing Error and Solution
+      + yum Command Hangs on Running Transaction Test Message Error and Solution yum Command Hangs
+        on Running Transaction Test Message Error and Solution
+  * RSS Latest posts from our blog
+
+      + Download of The Day: FreeBSD 10 ISO DVD / CD Images
+      + 30 Cool Open Source Software I Discovered in 2013
+      + Download Of The Day: Fedora Linux 20 (Heisenbug) CD / DVD ISO
+      + Valve SteamOS: A Linux-based Gaming Operating System Announced
+      + Download of the day: Half-Life 2 For Steam on Linux
+
+©2006-2014 nixCraft. All rights reserved. Privacy Policy - Terms of Service - Questions or
+Comments - We are proudly powered by Linux + Nginx + WordPress.
+
+#+end_example
+**** web page: Installing RHEL EPEL Repo on Centos 5.x or 6.x | Knowledge Center | Rackspace Hosting
+http://www.rackspace.com/knowledge_center/article/installing-rhel-epel-repo-on-centos-5x-or-6x
+***** webcontent                                                  :noexport:
+#+begin_example
+Location: http://www.rackspace.com/knowledge_center/article/installing-rhel-epel-repo-on-centos-5x-or-6x
+  * Cloud Hosting
+  * Managed Hosting
+  * Email & Apps
+  * About
+
+  * Sales: 1-800-961-2888
+  * Support: 1-800-961-4454
+
+Knowledge Center
+
+Search [               ]
+All Topics
+
+  * All Topics
+  * Hosting Services
+  * Email & Apps
+
+ submit
+  * Knowledge Center Home
+  * Cloud Hosting
+  * Cloud Servers
+  * Installing RHEL EPEL Repo on Centos 5.x or 6.x
+
+Feedback
+
+Let us know what you think of our Knowledge Center!
+
+Rackspace Community
+
+Learn about Rackspace products, ask questions, and share your knowledge in our Rackspace Community.
+
+Installing RHEL EPEL Repo on Centos 5.x or 6.x
+
+  * Article ID: 1272
+  * Last updated on February 13, 2013
+  * Authored by: Rackspace Support
+
+---------------------------------------------------------------------------------------------------
+
+How to install RHEL EPEL repository on Centos 5.x or 6.x
+
+The following article will describe how to configure a CentOS 5.x-based or Centos 6.x-based system
+to use Fedora Epel repos and third party remi package repos. These package repositories are not
+officially supported by CentOS, but they provide much more current versions of popular applications
+like PHP or MYSQL.
+
+Install the extra repositories
+
+The first step requires downloading some RPM files that contain the additional YUM repository
+definitions. The instructions below point to the 64-bit versions that work with our Cloud Server
+instances.
+
+Centos 5.x
+
+wget http://dl.fedoraproject.org/pub/epel/5/x86_64/epel-release-5-4.noarch.rpm
+wget http://rpms.famillecollet.com/enterprise/remi-release-5.rpm
+sudo rpm -Uvh remi-release-5*.rpm epel-release-5*.rpm
+
+Centos 6.x
+
+wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+wget http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+sudo rpm -Uvh remi-release-6*.rpm epel-release-6*.rpm
+
+Once installed you should see some additional repo definitions under the /etc/yum.repos.d
+directory.
+
+$ ls -1 /etc/yum.repos.d/epel* /etc/yum.repos.d/remi.repo
+/etc/yum.repos.d/epel.repo
+/etc/yum.repos.d/epel-testing.repo
+/etc/yum.repos.d/remi.repo
+
+Enable the remi repository
+
+The remi repository provides a variety of up-to-date packages that are useful or are a requirement
+for many popular web-based services. That means it generally is not a bad idea to enable the remi
+repositories by default.
+
+First, open the /etc/yum.repos.d/remi.repo repository file using a text editor of your choice:
+
+sudo vim /etc/yum.repos.d/remi.repo
+
+Edit the [remi] portion of the file so that the enabled option is set to 1. This will enable the
+remi repository.
+
+name=Les RPM de remi pour Enterprise Linux $releasever - $basearch
+#baseurl=http://rpms.famillecollet.com/enterprise/$releasever/remi/$basearch/
+mirrorlist=http://rpms.famillecollet.com/enterprise/$releasever/remi/mirror
+enabled=1
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-remi
+failovermethod=priority
+
+You will now have a larger array of yum repositories from which to install.
+
+View the discussion thread.
+
+© 2011-2013 Rackspace US, Inc.
+
+Except where otherwise noted, content on this site is licensed under a Creative Commons
+Attribution-NonCommercial-NoDerivs 3.0 Unported License
+
+[88x31]
+See license specifics and DISCLAIMER
+
+  * Rackspace
+      + About Rackspace Hosting®
+      + Fanatical Support®
+      + Hosting Solutions
+      + Web Hosting 101
+      + Hosting Partner Programs
+      + OpenStack®
+
+  * Managed Hosting
+      + Managed Configurations
+      + Managed Private Clouds
+      + Managed Colocation Servers
+      + Dedicated Servers
+      + Managed Customers
+      + MyRackspace® Portal
+
+  * Cloud Hosting
+      + Cloud Servers™
+      + Cloud Sites™
+      + Cloud Load Balancers
+      + Cloud Files™
+      + Cloud Hosting Demos
+      + Cloud Customer Portal
+
+  * Email & Apps
+      + Rackspace Email Hosting
+      + Microsoft Hosted Exchange
+      + Compare Hosted Products
+      + Email Archiving
+      + Customer Log-In
+
+Contact Us
+
+Sales
+    1-800-961-2888
+Support
+    1-800-961-4454
+
+© 2014 Rackspace, US Inc
+
+  * About Rackspace
+  * Fanatical Support®
+  * Hosting Solutions
+  * Investors
+  * Careers
+  * Privacy Statement
+  * Website Terms
+  * Sitemap
+
+#+end_example
+**** web page: using EPEL in Fedora 16 - FedoraForum.org
+http://forums.fedoraforum.org/showthread.php?t=272498
+***** webcontent                                                  :noexport:
+#+begin_example
+Location: http://forums.fedoraforum.org/showthread.php?t=272498
+Fedora Linux Support Community & Resources Center
+
+#
+# *                                                                                                *
+
+  Home Forums   Posting    Linux Help    Fedora Set-Up        Fedora     Ask Fedora    Fedora
+                 Rules                      Guides           Magazine                  Project
+
+                                    Fedora Project Links
+
+                                    The Fedora Project
+
+                                    Get Fedora
+
+                                    Release Notes
+
+                                    Installation Guide
+
+                                    Common F18 Bugs
+
+                                    Common F19 Bugs
+
+                                    Communicate with Fedora
+
+                                    The Documents
+
+                                    Bug Reports
+
+                                    Fedora Update System (Bodhi)
+
+                                    Fedora Build System (Koji)
+
+                                    Official Spins
+
+         FedoraForum.org
+  Go     > Fedora 19/20 >        FedoraForum Search         User     [User Name ] [ ]Remember Me?
+  Back       Using Fedora                                       Name
+  Reload this Page using     [                      ]  Go   Password [          ]  Log in
+  EPEL in Fedora 16                                         Forgot Password?      Join Us!
+
+    Register       All Albums     FAQ   Search       Today's Posts          Mark Forums Read
+
+  Using Fedora General support for current versions. Ask questions about Fedora and it's software
+  that do not belong in any other forum.
+
+  Reply
+
+                                                  Thread Tools  Search this Thread  Display Modes
+
+    #1
+  Old 15th November 2011, 01:40 AM
+
+  kanato Offline                                                              Join Date: Dec 2008
+  Registered User                                                             Posts: 28
+                                                                              linuxfirefox
+
+  using EPEL in Fedora 16
+  -----------------------------------------------------------------------------------------------
+  Is there a way to use EPEL in Fedora 16?
+
+  Following the instructions here: http://fedoraproject.org/wiki/EPEL/F..._repository.3F
+
+  I run this command
+  Code:
+
+  su -c 'rpm -Uvh http://download.fedora.redhat.com/pub/epel/6/i386/epel-release-6-5.noarch.rpm'
+
+  But I get the result
+  Code:
+
+  error: Failed dependencies:
+      fedora-release conflicts with epel-release-6-5.noarch
+
+  Not sure what to do here...
+                                                                                 Reply With Quote
+
+                                      kanato
+
+                                      View Public Profile
+
+                                      Find all posts by kanato
+
+    #2
+  Old 21st November 2011, 11:10 PM
+
+  DollarSoup Offline                                                          Join Date: Nov 2011
+  Registered User                                                             Posts: 1
+                                                                              macoschrome
+
+  Re: using EPEL in Fedora 16
+  -----------------------------------------------------------------------------------------------
+  This seems to be an issue with every new release of Fedora. I googled for "fedora-release
+  conflicts with epel-release" and found this page:
+  http://www.geekdevs.com/2011/09/solv...-on-fedora-15/
+  ...which is specific to Fedora 15, but those directions worked for my instance of Fedora 16.
+  All the rpm does, apparently, is write some conf files to /etc/yum.repos.d/ and import a GPG
+  key. The linked page shows you how to do this manually.
+                                                                                 Reply With Quote
+
+                                    DollarSoup
+
+                                    View Public Profile
+
+                                    Find all posts by DollarSoup
+
+    #3
+  Old 21st November 2011, 11:36 PM
+
+  leigh123linux Online                                                        Join Date: Oct 2006
+  Retired Administrator                                                       Posts: 21,933
+                                                                              linuxfirefox
+
+  Re: using EPEL in Fedora 16
+  -----------------------------------------------------------------------------------------------
+  Why do you want EPEL?, theres nothing additional to the fedora repos there.
+                                                                                 Reply With Quote
+
+                                  leigh123linux
+
+                                  View Public Profile
+
+                                  Visit leigh123linux's homepage!
+
+                                  Find all posts by leigh123linux
+
+    #4
+  Old 22nd November 2011, 12:34 AM
+
+  kanato Offline                                                              Join Date: Dec 2008
+# Registered User                                                             Posts: 28            *
+                                                                              linuxfirefox
+
+  Re: using EPEL in Fedora 16
+  -----------------------------------------------------------------------------------------------
+  h5py is not in the fedora repos. I tried downloading and installing the h5py package from EPEL
+  but it has dependencies on older versions of stuff in the fedora repo (don't remember which).
+  So I just built from source. Not my ideal solution but it works.
+                                                                                 Reply With Quote
+
+                                      kanato
+
+                                      View Public Profile
+
+                                      Find all posts by kanato
+
+    #5
+  Old 22nd November 2011, 02:16 AM
+
+                                                                           Join Date: Dec 2006
+  angryfirelord Offline                                                    Location: Pennsylvania
+  Registered User                                                          Posts: 344
+                                                                           linuxfirefox
+
+  Re: using EPEL in Fedora 16
+  -----------------------------------------------------------------------------------------------
+  According to rpm.pbone.net, h5py is only available for RHEL 6 and Mandrivia. Chances are, it's
+  pulling the RHEL version, so the libraries for Fedora 16 are too new. Yeah yeah, the wonders of
+  Linux backwards compatibility..... [yuck]
+
+  It looks likes it needs Python 2.6 specifically for some odd reason.
+                                                                                 Reply With Quote
+
+                                  angryfirelord
+
+                                  View Public Profile
+
+                                  Find all posts by angryfirelord
+
+    #6
+  Old 27th November 2011, 06:26 PM
+
+                                                                         Join Date: Mar 2009
+  nirik Online                                                           Location: Broomfield, CO
+  Community Manager                                                      Posts: 425
+                                                                         macosmidori
+
+  Re: using EPEL in Fedora 16
+  -----------------------------------------------------------------------------------------------
+  EPEL is add on packages for RHEL and clones. It will not work at all on Fedora. We specifically
+  added the conflicts there to prevent people messing up their machines. [wink]
+
+  You can always file a bug asking for Fedora support...
+                                                                                 Reply With Quote
+
+                                      nirik
+
+                                      View Public Profile
+
+                                      Visit nirik's homepage!
+
+                                      Find all posts by nirik
+
+  Reply
+
+  Tags
+
+  epel, fedora [11x11progr]
+
+                                « Previous Thread | Next Thread »
+
+  Thread Tools                                                 Search this Thread
+
+  Show Printable Version Show Printable Version                Search this Thread:
+  Email this Page Email this Page                              [                    ] Go
+                                                               Advanced Search
+
+  Display Modes
+
+  Linear Mode Linear Mode
+  Hybrid Mode Switch to Hybrid Mode
+  Threaded Mode Switch to Threaded Mode
+
+  [collapse_t] Posting Rules
+
+  You may not post new threads
+  You may not post replies
+  You may not post attachments
+  You may not edit your posts
+  ----------------------------
+  BB code is On
+  Smilies are On
+  [IMG] code is On
+  HTML code is Off
+  ----------------------------     Forum Jump
+  Forum Rules                      [Using Fedora                                                ]
+                                    Go
+
+  [collapse_t] Similar Threads
+
+                Thread                   Thread            Forum        Replies      Last Post
+                                         Starter
+
+  Announcing EPEL 6 - Kevin Fenzi     bob            News                  0     20th January 2011
+                                                                                          06:34 PM
+
+  Using EPEL Repo on Fedora:          tc@cs          Using Fedora          4     29th January 2010
+  Problems                                                                                03:11 PM
+
+  How to enable EPEL on CentOS 5.4    bendib         Linux Chat            6         22nd November
+                                                                                     2009 01:46 AM
+
+  EPEL Problem                        Metropolis     Linux Chat           11         9th September
+                                                                                     2009 07:43 PM
+
+  Problem with epel.repo              TommyV         Using Fedora          1       29th June 2009
+                                                                                          11:50 PM
+
+                           Current GMT-time: 21:54 (Sunday, 19-01-2014)
+
+# *                                                                                                *
+
+          TopSubscribe to XML RSS for all Threads in all ForumsFedoraForumDotOrg Archive
+              [ads]                                                            [ads]
+
+                              All trademarks, and forum posts in this
+                            site are property of their respective owner
+                                               (s).
+                             FedoraForum.org is privately owned and is
+                               not directly sponsored by the Fedora
+logo                                 Project or Red Hat, Inc.             FedoraForum is Powered by
+                              Privacy Policy | Term of Use | Posting                         RedHat
+                               Guidelines | Archive | Contact Us |
+                                         Founding Members
+
+                              Powered by vBulletin® Copyright ©2000 -
+                                  2012, vBulletin Solutions, Inc.
+
+[pixel]
+[pixel]
+                                             Quantcast
+
+#+end_example
+*** DONE yum install fail: Error: database disk image is malformed
+  CLOSED: [2014-11-19 Wed 09:09]
+#+BEGIN_EXAMPLE
+If you receive this error while installing applications or making an update using YUM under CentOS or any related distro:
+
+Error: database disk image is malformed
+
+You can easily fix this error by running this command from the terminal:
+
+yum clean dbcache
+
+or
+
+yum clean all
+
+This type of error is not limited to only CentOS, but it may affect other distributions that use YUM like Fedora, Red Hat, etc.
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+[root@ip-10-51-181-133 ~]# yum install ntp
+Loaded plugins: amazon-id, rhui-lb, security
+Error: database disk image is malformed
+#+END_EXAMPLE
+*** DONE [#A] linux search packages                              :IMPORTANT:
+  CLOSED: [2014-11-26 Wed 17:13]
+http://pkgs.org/search/libntlm
+http://pkgs.repoforge.org
+** DONE apt-get issue: 404 Not Found error              :IMPORTANT:noexport:
+  CLOSED: [2016-03-11 Fri 15:48]
+http://xmodulo.com/how-to-fix-apt-get-update-error-on-ubuntu.html
+http://unix.stackexchange.com/questions/90803/e-some-index-files-failed-to-download-they-have-been-ignored-when-tunning
+http://askubuntu.com/questions/329450/e-some-index-files-failed-to-download-they-have-been-ignored-or-old-ones-used
+
+If you are getting "404 Not Found" error, and you are using a rather old Ubuntu release, there is a chance that the 404 error occurs because your Ubuntu installation is no longer supported.
+
+To find out whether this is the case, first check which Ubuntu release you are using, by running:
+
+$ cat /etc/lsb-release
+Then check out the "End of Life" date of your Ubuntu release by referring to https://wiki.ubuntu.com/Releases
+
+If your release has reached end of life (EOL), you need to modify /etc/apt/sources.list as follows, in order to avoid 404 errors during apt-get update. Replace CODENAME with the codename of Ubuntu release that you are using.
+
+# Required
+deb http://old-releases.ubuntu.com/ubuntu/ CODENAME main restricted universe multiverse
+deb http://old-releases.ubuntu.com/ubuntu/ CODENAME-updates main restricted universe multiverse
+deb http://old-releases.ubuntu.com/ubuntu/ CODENAME-security main restricted universe multiverse
+
+# Optional
+#deb http://old-releases.ubuntu.com/ubuntu/ CODENAME-backports main restricted universe multiverse
+** DONE apt-get issue: Hash Sum mismatch error          :IMPORTANT:noexport:
+  CLOSED: [2016-03-11 Fri 17:19]
+http://jira.jinganiam.com/browse/ID-644
+
+https://trello.com/c/76hJTtY2
+
+sudo rm -rf /var/lib/apt/lists/*
+sudo apt-get update
+
+DevOps probably will run command of "apt-get update".
+
+However this command may run into errors like below.
+
+#+BEGIN_EXAMPLE
+W: Failed to fetch http://archive.ubuntu.com/ubuntu/dists/trusty-updates/universe/binary-amd64/Packages  Hash Sum mismatch
+
+E: Some index files failed to download. They have been ignored, or old ones used instead.
+#+END_EXAMPLE
+
+DevOps code would be able to handle this kind of issue.
+Otherwise we will have to let people login to the box and run multiple commands to pass through.
+
+This error can happen when fetching the latest repositories during "apt-get update" was interrupted, and a subsequent "apt-get update" is not able to resume the interrupted fetch. In this case, remove the content in /var/lib/apt/lists before retrying "apt-get update".
+http://xmodulo.com/how-to-fix-apt-get-update-error-on-ubuntu.html
+
+#+BEGIN_EXAMPLE
+Wilson Souza [1:38 PM]
+I ran the updateJenkins before
+
+ [1:38]
+now I ran the updateSandbox
+
+ [1:39]
+W: Failed to fetch http://archive.ubuntu.com/ubuntu/dists/trusty-updates/universe/binary-amd64/Packages  Hash Sum mismatch
+
+E: Some index files failed to download. They have been ignored, or old ones used instead.
+Build step 'Execute shell' marked build as failure
+Finished: FAILURE
+
+denny zhang [1:41 PM]
+Looks like "apt-get" status is not right for jenkins container.
+
+Wilson Souza [1:45 PM]
+the master branch was working
+
+ [1:46]
+I am getting error with the dev branch of devops
+
+denny zhang [1:46 PM]
+Yes, we're talking about dev branch
+
+ [1:46]
+Can we login to jenkins containers and run below commands?
+
+apt-get update
+
+Wilson Souza [1:49 PM]
+W: Failed to fetch http://archive.ubuntu.com/ubuntu/dists/trusty-updates/universe/binary-amd64/Packages  Hash Sum mismatch
+
+E: Some index files failed to download. They have been ignored, or old ones used instead.
+
+denny zhang [1:50 PM]
+Got it.
+
+My code should fix this kind of apt-get issue.
+
+Would you like we manually fix this issue right now, Wilson?
+
+It's getting late there. I'm fine if we schedule some other time tomorrow.
+#+END_EXAMPLE
+** DONE list package dependency: apt-cache showpkg nagios-nrpe-plugin :noexport:
+  CLOSED: [2016-06-07 Tue 08:40]
+
+http://xmodulo.com/how-to-check-package-dependencies-on-ubuntu-or-debian.html
+
+apt-cache rdepends nagios-nrpe-plugin
+
+http://askubuntu.com/questions/128524/how-to-list-dependent-packages-reverse-dependencies
+#+BEGIN_EXAMPLE
+]0;root@kitchen-cluster-node2: /root@kitchen-cluster-node2:/# apt-cache rdepends nagios-nrpe-plugin
+apt-cache rdepends nagios-nrpe-plugin
+nagios-nrpe-plugin
+Reverse Depends:
+  icinga-core
+  icinga
+  nagios3-core
+  nagios3
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+]133;D;0]1337;RemoteHost=root@prod-es-1]1337;CurrentDir=/tmp]133;Aroot@prod-es-1:/tmp# ]133;Bdpkg -s  nagios-nrpe-plugin
+dpkg -s  nagios-nrpe-plugin
+]133;C;Package: nagios-nrpe-plugin
+Status: install ok installed
+Priority: optional
+Section: net
+Installed-Size: 78
+Maintainer: Ubuntu Developers <ubuntu-devel@lists.ubuntu.com>
+Architecture: amd64
+Source: nagios-nrpe
+Version: 2.15-0ubuntu1
+Depends: libc6 (>= 2.15), libssl1.0.0 (>= 1.0.0)
+Recommends: nagios3 | icinga
+Conflicts: nagios-nrpe-doc
+Conffiles:
+ /etc/nagios-plugins/config/check_nrpe.cfg 9c6e5957b606cb4bc8911a43419fb92f
+Description: Nagios Remote Plugin Executor Plugin
+ Nagios is a host/service/network monitoring and management system.
+ .
+ The purpose of this addon is to allow you to execute Nagios plugins on a
+ remote host in as transparent a manner as possible.
+ .
+ This is a plugin that is run on the Nagios host and is used to contact the
+ NRPE process on remote hosts.
+Original-Maintainer: Debian Nagios Maintainer Group <pkg-nagios-devel@lists.alioth.debian.org>
+]133;D;0]1337;RemoteHost=root@prod-es-1]1337;CurrentDir=/tmp]133;Aroot@prod-es-1:/tmp# ]133;B
+#+END_EXAMPLE
+** DONE jenkins check version: dpkg -s jenkins
+    CLOSED: [2016-08-22 Mon 18:38]
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

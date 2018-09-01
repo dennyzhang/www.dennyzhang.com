@@ -1,0 +1,61 @@
+* AWS Step-by-Step Exercise Examples                              :BLOG:AWS:
+:PROPERTIES:
+:type:   AWS,DevOps
+:END:
+
+---------------------------------------------------------------------
+Usually step-by-step examples is an easy and direct way for people to learn more about complex systems. Check below examples and learn for real of AWS features.
+
+[[image-blog:aws example][https://www.dennyzhang.com/wp-content/uploads/denny/aws_example.png]]
+---------------------------------------------------------------------
+Check more about AWS under my series posts: [[https://www.dennyzhang.com/prepare_aws_certification][Prepare AWS Certification Exam]].
+
+| Name           | Example Link                                                |
+|----------------+-------------------------------------------------------------|
+| EC2            | [[http://docs.aws.amazon.com/gettingstarted/latest/wah-linux/web-app-hosting-intro.html][Hosting a Web App on Amazon Web Services]]                    |
+| S3             | [[https://docs.aws.amazon.com/AmazonS3/latest/dev/HostingWebsiteOnS3Setup.html][Setting Up a Static Website - Amazon Simple Storage Service]] |
+| CloudWatch     | [[http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/gs_monitor_estimated_charges_with_cloudwatch.html][Scenario: Monitor Your Estimated Charges Using CloudWatch]]   |
+| CloudWatch     | [[http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/PublishMetrics.html][Scenario: Publish Metrics to CloudWatch]]                     |
+| CloudWatch     | [[http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UsingAlarmActions.html][Create Alarms That Stop, Terminate, or Recover an Instance]]  |
+| CloudFront     | [[http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/GettingStarted.html][Getting Started with CloudFront - Amazon CloudFront]]         |
+| CloudFormation | [[http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/GettingStarted.html][Getting Started with AWS CloudFormation]]                     |
+| VPC            | [[http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/vpc-peering.html][VPC Peering]]                                                 |
+| SNS            | [[http://docs.aws.amazon.com/sns/latest/dg/SMSMessages.html][Sending and Receiving SMS Notifications Using Amazon SNS]]    |
+| DynamoDB       | [[http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStartedDynamoDB.html][Getting Started with DynamoDB]]                               |
+| SWF            | [[https://docs.aws.amazon.com/amazonswf/latest/developerguide/swf-sns-tutorial.html][A Subscription Workflow with Amazon SWF and SNS]]             |
+| ECS            | [[http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ECS_GetStarted.html][Amazon EC2 Container Service]]                                |
+| ELB            | [[http://docs.aws.amazon.com/ElasticLoadBalancing/latest/DeveloperGuide/US_UpdatingLoadBalancerSSL.html][Update an SSL Certificate for a Load Balancer]]               |
+| RDS            | [[http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html][Using Amazon RDS Event Notification]]                         |
+| Redshift       | [[http://docs.aws.amazon.com/redshift/latest/mgmt/connecting-from-psql.html][Connect to Redshift Cluster by Using the psql Tool]]          |
+
+More Reading: [[https://www.dennyzhang.com/quiz_questions_aws_exam][Practice Quiz For AWS Certification Exam]].
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/aws_exercise_examples"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/aws_exercise_examples
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
