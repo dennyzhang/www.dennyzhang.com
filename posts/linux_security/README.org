@@ -1,0 +1,850 @@
+* 9 Useful Tips For Linux Server Security                     :BLOG:Security:
+:PROPERTIES:
+:type:     DevOps,Security,Linux,Popular
+:END:
+---------------------------------------------------------------------
+Any serious systems can't ignore server security, especially in public Cloud. No doubt there're tons of tips and tutorials available on the Internet. Let's focus on fundamental and general best practices first.
+*A List Of Security Improvements I Enforce After OS Provisioning.*
+
+[[image-blog:9 Useful Tips For Linux Server Security][https://www.dennyzhang.com/wp-content/uploads/denny/linux_security.jpg]]
+---------------------------------------------------------------------
+Here we use Ubuntu 16.04 for instance.
+** *1. Keep Kernel Up-To-Date.*
+Certainly no blind update for prod envs. But for newly installed servers, it's usually harmless and can guarantee a higher level of security.
+
+One common suggestion is disabling unused services. But I choose to trust my distros provider. Generally speaking, I believe they might make right choices to have what installed and enabled by default.
+#+BEGIN_SRC sh
+apt-get -y update
+#+END_SRC
+** *2. Reset Root password And Install Basic Packages*
+We need that to access web console of VMs. This happens when ssh doesn't work. e.g. problematic iptables rules block you, OS runs into kernel panic, or machine reboot mysteriously stucks.
+#+BEGIN_SRC sh
+root_pwd="DevOpsDennyChangeMe1"
+echo "root:$root_pwd" | chpasswd
+#+END_SRC
+
+- Basic packages I use heavily
+#+BEGIN_SRC sh
+apt-get install -y wget curl
+
+# vim for quick editing
+apt-get install -y vim
+
+# tmux is useful to persist sessions
+apt-get install -y tmux
+
+# lsof for checking tcp ports
+apt-get install -y lsof
+#+END_SRC
+
+- Install docker daemon, if necessary
+#+BEGIN_SRC sh
+wget -qO- https://get.docker.com/ | sh
+#+END_SRC
+
+- Change hostname
+#+BEGIN_SRC sh
+echo "my-hostname" > /etc/hostname
+hostname -F /etc/hostname
+#+END_SRC
+** *3. Generate SSH Key Pair*.
+Never never share the same ssh key pair across servers!
+#+BEGIN_SRC sh
+exec ssh-agent bash
+
+# General new key pair
+ssh-keygen
+
+# Load key pair
+ssh-add
+#+END_SRC
+** *4. Hardening SSHD.*
+Only allow ssh by keyfile, thus hackers can't easily break-in by guessing your password. Use another ssh listening port other than 22, which can avoid annoying ssh login attempts.
+
+- Inject my ssh key
+#+BEGIN_SRC sh
+mkdir -p /root/.ssh/
+echo "ssh-rsa AAA... denny@dennyzhang.com" \
+   >> ~/.ssh/authorized_keys
+#+END_SRC
+
+- Disable ssh by password
+#+BEGIN_SRC sh
+# Disable ssh by password
+sed -i 's/^#PasswordAuthentication yes/PasswordAuthentication no/g' \
+      /etc/ssh/sshd_config
+sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' \
+     /etc/ssh/sshd_config
+grep PasswordAuthentication /etc/ssh/sshd_config
+
+# Use another ssh port
+sshd_port="2702"
+sed -i "s/^Port 22/Port $sshd_port/g" /etc/ssh/sshd_config
+grep "^Port " /etc/ssh/sshd_config
+
+# Restart sshd to take effect
+service ssh restart
+#+END_SRC
+** *5. Restrict Malicious Access By Firewall.*
+This might be _the most important security improvement_ you shall do.
+#+BEGIN_SRC sh
+# Have a clean start with iptables
+iptables -F; iptables -X
+echo 'y' | ufw reset
+echo 'y' | ufw enable
+ufw default deny incoming
+ufw default deny forward
+
+# Allow traffic of safe ports
+ufw allow 22/tcp
+ufw allow 80,443/tcp
+
+# Allow traffic from certain port
+ufw allow 2702/tcp
+
+# Allow traffic from given ethernet nic
+ufw allow in on docker0
+
+# Allow traffic from trusted ip
+ufw allow from 52.74.151.55
+#+END_SRC
+** *6. Add Timestamp To Command History*.
+It allows us to review what commands has been issued, and when.
+#+BEGIN_SRC sh
+echo export HISTTIMEFORMAT=\"%h %d %H:%M:%S \" >> /root/.bashrc
+#+END_SRC
+** *7. Pay Close Attention to /var/log/*.
+Use [[https://www.howtoforge.com/tutorial/logwatch-installation-on-debian-and-ubuntu][logwatch]] to automate the check and analysis.  It's a userful parsing perl script that analyzes and generates daily reports on your system's log activity. Major log files:
+- /var/log/kern.log
+- /var/log/syslog
+- /var/log/ufw.log
+- /var/log/auth.log
+- /var/log/dpkg.log
+- /var/log/aptitude
+- /var/log/boot.log
+- /var/log/cron.log
+- /var/log/mailog
+
+#+BEGIN_SRC sh
+apt-get install -y logwatch
+
+# Full check. Takes several minutes
+logwatch --range ALL
+
+# Only check log of Today
+logwatch --range Today
+
+# Check log for last week
+logwatch --range "between -7 days and -1 days"
+
+#+END_SRC
+** *8. Run 3rd Security Check Tools*.
+Not everyone can or will be a security expert. Better try reliable and versatile tools. [[https://cisofy.com/lynis][lynis]] is quite handy and straight-forward. Just a single bash file.
+#+BEGIN_SRC sh
+apt-get install -y lynis
+
+# Run lynis to check security issues
+lynis -c
+#+END_SRC
+** *9. Proper Backup Unrecoverable Data*.
+Always has plan B. As the last resort, make it's feasible to do a quick system restore in new servers.
+
+Special thanks to [[https://www.reddit.com/r/linuxquestions/comments/52w0ie/hardening_linux_server_security_after_provisioning][this reddit discussion]].
+
+More Reading: [[https://www.dennyzhang.com/suspicious_process][Detect Suspicious Linux Processes]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/linux_security"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/linux_security
+* misc                                                             :noexport:
+** preparation                                                     :noexport:
+*** Community discussion
+Reddit:
+https://www.reddit.com/r/linuxquestions/comments/52w0ie/hardening_linux_server_security_after_provisioning/
+
+v2ex:
+https://www.v2ex.com/t/306519#reply0
+
+google SEO:
+https://www.linode.com/docs/security/linux-security-basics
+https://www.linode.com/docs/security/securing-your-server
+http://www.cyberciti.biz/tips/linux-security.html
+http://www.tecmint.com/linux-server-hardening-security-tips/
+https://plusbryan.com/my-first-5-minutes-on-a-server-or-essential-security-for-linux-servers
+https://bobcares.com/blog/how-to-secure-linux-server-from-hackers/
+https://www.thefanclub.co.za/how-to/how-secure-ubuntu-1204-lts-server-part-1-basics
+** logwatch                                                        :noexport:
+http://www.cyberciti.biz/tips/linux-security.html
+http://linuxdiary.blogspot.sg/2008/10/logwatch.html
+https://www.digitalocean.com/community/tutorials/how-to-install-and-use-logwatch-log-analyzer-and-reporter-on-a-vps
+
+Monitor Suspicious Log Messages With Logwatch / Logcheck
+Read your logs using logwatch or logcheck. These tools make your log reading life easier. You get detailed reporting on unusual items in syslog via email.
+
+logwatch --range "between -7 days and -1 days"
+
+| Name            | Command                     |
+|-----------------+-----------------------------|
+| Installation    | apt-get install -y logwatch |
+| Full check      | logwatch --range ALL        |
+| Check For Today | logwatch --range Today      |
+** chkrootkit: checks system binaries for rootkit modification.    :noexport:
+http://www.chkrootkit.org
+https://www.thefanclub.co.za/how-to/how-secure-ubuntu-1204-lts-server-part-1-basics
+
+Check Whether System Binaries Are Infected. [[http://www.chkrootkit.org][chkrootkit]] is a bash script for this.
+
+sudo apt-get install -y chkrootkit
+chkrootkit
+*** TODO how chkrootkit is implemented
+** Tiger: security tool for both security audit and intrusion detection :noexport:
+https://www.thefanclub.co.za/how-to/how-secure-ubuntu-1204-lts-server-part-1-basics
+
+tiger is a bash script.
+
+apt-get install -y tiger
+tiger
+ls -lth /var/log/tiger/security.report.*
+** Tripwire: well-known IDS(Intrusion Detection System) implementations :noexport:
+https://www.digitalocean.com/community/tutorials/an-introduction-to-securing-your-linux-vps
+
+Tripwire compiles a database of system files and protects its
+configuration files and binaries with a set of keys. After
+configuration details are chosen and exceptions are defined,
+subsequent runs notify of any alterations to the files that it
+monitors.
+
+Tripwire sets up a baseline of normal system binaries for your
+computer. It then reports any anomalies against this baseline through
+an email alert or through a log. Essentially, if the system binaries
+have changed, you'll know about it. If a legitimate installation
+causes such a change, no problem. But if the binaries are altered as a
+result of a Trojan horse-type installation, you have a starting point
+from which to research the attack and fix the problems.
+** lynis: A CLI-based vulnerability scanner tool                   :noexport:
+http://linoxide.com/how-tos/lynis-security-tool-audit-hardening-linux/
+
+lynis can scan the entire Linux system, and report potential vulnerabilities along with possible solutions.
+
+docker run -t -d denny/devubuntu:v1 /bin/bash
+apt-get install -y lynis
+*** console shot
+#+begin_example
+]0;root@1888e8c11a21: /root@1888e8c11a21:/#  lynis -c --auditor "DennyZhang"
+ lynis -c --auditor "DennyZhang"
+
+[ Lynis 1.3.9 ]
+
+################################################################################
+ Lynis comes with ABSOLUTELY NO WARRANTY. This is free software, and you are
+ welcome to redistribute it under the terms of the GNU General Public License.
+ See the LICENSE file for details about using this software.
+
+ Copyright 2007-2014 - Michael Boelen, http://cisofy.com
+ Enterprise support and plugins available via CISOfy - http://cisofy.com
+################################################################################
+
+[+] Initializing program
+------------------------------------
+[2C- Detecting OS... [41C [ DONE ]
+[2C- Clearing log file (/var/log/lynis.log)... [15C [ DONE ]
+
+  ---------------------------------------------------
+  Program version:           1.3.9
+  Operating system:          Linux
+  Operating system name:     Ubuntu
+  Operating system version:  14.04
+  Kernel version:            3.13.0-71-generic
+  Hardware platform:         x86_64
+  Hostname:                  1888e8c11a21
+  Auditor:                   DennyZhang
+  Profile:                   /etc/lynis/default.prf
+  Log file:                  /var/log/lynis.log
+  Report file:               /var/log/lynis-report.dat
+  Report version:            1.0
+  ---------------------------------------------------
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+[2C- Checking profile file (/etc/lynis/default.prf)...[8C
+[2C- Program update status... [32C [ SKIPPED ]
+
+[+] System Tools
+------------------------------------
+[2C- Scanning available tools...[30C
+[2C- Checking system binaries...[30C
+[4C- Checking /bin... [38C [ FOUND ]
+[4C- Checking /sbin... [37C [ FOUND ]
+[4C- Checking /usr/bin... [34C [ FOUND ]
+-i used with no filenames on the command line, reading from STDIN.
+[4C- Checking /usr/sbin... [33C [ FOUND ]
+[4C- Checking /usr/local/bin... [28C [ FOUND ]
+[4C- Checking /usr/local/sbin... [27C [ FOUND ]
+[4C- Checking /usr/local/libexec... [24C [ NOT FOUND ]
+[4C- Checking /usr/libexec... [30C [ NOT FOUND ]
+[4C- Checking /usr/sfw/bin... [30C [ NOT FOUND ]
+[4C- Checking /usr/sfw/sbin... [29C [ NOT FOUND ]
+[4C- Checking /usr/sfw/libexec... [26C [ NOT FOUND ]
+[4C- Checking /opt/sfw/bin... [30C [ NOT FOUND ]
+[4C- Checking /opt/sfw/sbin... [29C [ NOT FOUND ]
+[4C- Checking /opt/sfw/libexec... [26C [ NOT FOUND ]
+[4C- Checking /usr/xpg4/bin... [29C [ NOT FOUND ]
+[4C- Checking /usr/css/bin... [30C [ NOT FOUND ]
+[4C- Checking /usr/ucb... [34C [ NOT FOUND ]
+[4C- Checking /usr/X11R6/bin... [28C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Boot and services
+------------------------------------
+[2C- Checking boot loaders[36C
+[4C- Checking presence GRUB... [29C [ NOT FOUND ]
+[4C- Checking presence LILO... [29C [ NOT FOUND ]
+[4C- Checking boot loader SILO[30C [ NOT FOUND ]
+[4C- Checking boot loader YABOOT[28C [ NOT FOUND ]
+[2C- Check startup files (permissions)... [20C [ OK ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Kernel
+------------------------------------
+[2C- Checking default run level...[28C [ UNKNOWN ]
+[2C- Checking CPU support (NX/PAE)[28C
+[4CCPU support: PAE and/or NoeXecute supported[14C [ FOUND ]
+[2C- Checking kernel version and release[22C [ DONE ]
+[2C- Checking kernel type[37C [ DONE ]
+[2C- Checking loaded kernel modules[27C [ DONE ]
+[6CFound 85 active modules[32C
+[2C- Checking Linux kernel configuration file...[14C [ NOT FOUND ]
+dpkg-query: no path found matching pattern /vmlinuz
+[2C- Checking for available kernel update... [17C [ UNKNOWN ]
+[2C- Checking core dumps configuration... [20C [ DISABLED ]
+[4C- Checking setuid core dumps configuration... [11C [ PROTECTED ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Memory and processes
+------------------------------------
+[2C- Checking /proc/meminfo... [31C [ FOUND ]
+[2C- Searching for dead/zombie processes...[19C [ OK ]
+[2C- Searching for IO waiting processes...[20C [ OK ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Users, Groups and Authentication
+------------------------------------
+[2C- Search administrator accounts...[25C [ OK ]
+[2C- Checking consistency of group files (grpck)...[11C [ OK ]
+[2C- Checking non unique group ID's...[24C [ OK ]
+[2C- Checking non unique group names...[23C [ OK ]
+[2C- Checking password file consistency...[20C [ OK ]
+[2C- Query system users (non daemons)...[22C [ DONE ]
+[2C- Checking NIS+ authentication support[21C [ NOT ENABLED ]
+[2C- Checking NIS authentication support[22C [ NOT ENABLED ]
+[2C- Checking sudoers file[36C [ FOUND ]
+[4C- Check sudoers file permissions[25C [ OK ]
+[2C- Checking PAM password strength tools[21C [ SUGGESTION ]
+[2C- Checking PAM configuration files (pam.conf)[14C [ FOUND ]
+[2C- Checking PAM configuration files (pam.d)[17C [ FOUND ]
+[2C- Checking PAM modules[37C [ FOUND ]
+[2C- Checking LDAP module in PAM[30C [ NOT FOUND ]
+[2C- Checking accounts without expire date[20C [ OK ]
+[2C- Checking accounts without password[23C [ OK ]
+[2C- Checking user password aging[29C [ DISABLED ]
+[2C- Determining default umask[32C
+[4C- Checking umask (/etc/profile)[26C [ UNKNOWN ]
+[4C- Checking umask (/etc/login.defs)[23C [ SUGGESTION ]
+[4C- Checking umask (/etc/init.d/rc)[24C [ SUGGESTION ]
+[2C- Checking LDAP authentication support[21C [ NOT ENABLED ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Shells
+------------------------------------
+[2C- Checking shells from /etc/shells...[22C
+[4CResult: found 5 shells (valid shells: 5).[16C
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] File systems
+------------------------------------
+[2C- Checking mount points[36C
+[4C- Checking /home mount point...[26C [ SUGGESTION ]
+[4C- Checking /tmp mount point...[27C [ SUGGESTION ]
+[2C- Checking for old files in /tmp...[24C [ WARNING ]
+[2C- Checking /tmp sticky bit...[30C [ OK ]
+tune2fs: No such file or directory while trying to open none
+Couldn't find valid filesystem superblock.
+[2C- ACL support root file system...[26C [ DISABLED ]
+[2C- Checking Locate database...[30C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Storage
+------------------------------------
+[2C- Checking usb-storage driver (modprobe config)...[9C [ NOT DISABLED ]
+[2C- Checking firewire ohci driver (modprobe config)...[7C [ DISABLED ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] NFS
+------------------------------------
+[2C- Check running NFS daemon...[30C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Software: name services
+------------------------------------
+[2C- Checking default DNS search domain...[20C [ NONE ]
+[2C- Checking /etc/resolv.conf options...[21C [ NONE ]
+[2C- Searching DNS domain name...[29C [ UNKNOWN ]
+[2C- Checking nscd status...[34C [ NOT FOUND ]
+[2C- Checking BIND status...[34C [ NOT FOUND ]
+[2C- Checking PowerDNS status...[30C [ NOT FOUND ]
+[2C- Checking ypbind status...[32C [ NOT FOUND ]
+[2C- Checking /etc/hosts[38C
+[4C- Checking /etc/hosts (duplicates)[23C [ OK ]
+[4C- Checking /etc/hosts (hostname)[25C [ OK ]
+[4C- Checking /etc/hosts (localhost)[24C [ OK ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Ports and packages
+------------------------------------
+[2C- Searching package managers...[28C
+[4C- Searching dpkg package manager...[22C [ FOUND ]
+[6C- Querying package manager...[26C
+[4C- Query unpurged packages...[29C [ NONE ]
+[2C- Checking security repository in sources.list file... [4C [ OK ]
+[2C- Checking APT package database...[25C [ OK ]
+
+
+W: Size of file /var/lib/apt/lists/archive.ubuntu.com_ubuntu_dists_trusty-security_universe_source_Sources.gz is not what the server reported 37871 37879
+[2C- Checking vulnerable packages (apt-get only)...[11C [ DONE ]
+[2C- Checking upgradeable packages...[25C [ SKIPPED ]
+[2C- Checking package audit tool...[27C [ NONE ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+[+] Networking
+------------------------------------
+[2C- Checking configured nameservers...[23C
+[4C- Testing nameservers...[33C
+[6CNameserver: 8.8.8.8... [32C [ SKIPPED ]
+[6CNameserver: 8.8.4.4... [32C [ SKIPPED ]
+[4C- Minimal of 2 responsive nameservers...[17C [ SKIPPED ]
+[2C- Checking default gateway...[30C [ DONE ]
+[2C- Getting listening ports (TCP/UDP)...[21C [ SKIPPED ]
+[2C- Checking promiscuous interfaces...[23C [ OK ]
+[2C- Checking waiting connections...[26C [ OK ]
+[2C- Checking status DHCP client...[27C [ NOT ACTIVE ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Printers and Spools
+------------------------------------
+[2C- Checking cups daemon...[34C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Software: e-mail and messaging
+------------------------------------
+[2C- Checking Exim status...[34C [ NOT FOUND ]
+[2C- Checking Postfix status...[31C [ NOT FOUND ]
+[2C- Checking Qmail smtpd status...[27C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Software: firewalls
+------------------------------------
+[2C- Checking iptables kernel module[26C [ FOUND ]
+iptables v1.4.21: can't initialize iptables table `filter': Permission denied (you must be root)
+Perhaps iptables or your kernel needs to be upgraded.
+[4C- Checking for empty ruleset[29C [ WARNING ]
+iptables v1.4.21: can't initialize iptables table `filter': Permission denied (you must be root)
+Perhaps iptables or your kernel needs to be upgraded.
+[4C- Checking for unused rules[30C [ OK ]
+[4CStatus pf[48C [ NOT FOUND ]
+[2C- Checking host based firewall[29C [ ACTIVE ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Software: webserver
+------------------------------------
+[2C- Checking Apache (binary /usr/sbin/apache2)...[12C [ FOUND ]
+[Fri Feb 19 02:13:41.306689 2016] [core:warn] [pid 8804] AH00111: Config variable ${APACHE_LOCK_DIR} is not defined
+[Fri Feb 19 02:13:41.306783 2016] [core:warn] [pid 8804] AH00111: Config variable ${APACHE_PID_FILE} is not defined
+[Fri Feb 19 02:13:41.306802 2016] [core:warn] [pid 8804] AH00111: Config variable ${APACHE_RUN_USER} is not defined
+[Fri Feb 19 02:13:41.306807 2016] [core:warn] [pid 8804] AH00111: Config variable ${APACHE_RUN_GROUP} is not defined
+[Fri Feb 19 02:13:41.306818 2016] [core:warn] [pid 8804] AH00111: Config variable ${APACHE_LOG_DIR} is not defined
+[Fri Feb 19 02:13:41.425525 2016] [core:warn] [pid 8804:tid 140104663631744] AH00111: Config variable ${APACHE_LOG_DIR} is not defined
+[Fri Feb 19 02:13:41.431427 2016] [core:warn] [pid 8804:tid 140104663631744] AH00111: Config variable ${APACHE_LOG_DIR} is not defined
+[Fri Feb 19 02:13:41.431467 2016] [core:warn] [pid 8804:tid 140104663631744] AH00111: Config variable ${APACHE_LOG_DIR} is not defined
+AH00526: Syntax error on line 74 of /etc/apache2/apache2.conf:
+Invalid Mutex directory in argument file:${APACHE_LOCK_DIR}
+[6CResult: Can't find the configuration file, so skipping some Apache related tests[-25C
+[6CInfo: No virtual hosts found[27C
+[4C* Loadable modules[39C [ FOUND ]
+[8C- Found 103 loadable modules[25C
+[10Cmod_evasive: anti-DoS/brute force[18C [ NOT FOUND ]
+[10Cmod_qos: anti-Slowloris[28C [ NOT FOUND ]
+[10Cmod_spamhaus: anti-spam (spamhaus)[17C [ NOT FOUND ]
+[10CModSecurity: web application firewall[14C [ NOT FOUND ]
+[2C- Checking nginx...[40C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] SSH Support
+------------------------------------
+[2C- Checking running SSH daemon...[27C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] SNMP Support
+------------------------------------
+[2C- Checking running SNMP daemon...[26C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Databases
+------------------------------------
+[2C- MySQL process status...[34C [ NOT FOUND ]
+[2C- PostgreSQL processes status...[27C [ NOT FOUND ]
+[2C- Oracle processes status...[31C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] LDAP Services
+------------------------------------
+[2C- Checking OpenLDAP instance...[28C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Software: PHP
+------------------------------------
+[2C- Checking PHP...[42C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Squid Support
+------------------------------------
+[2C- Checking running Squid daemon...[25C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Logging and files
+------------------------------------
+[2C- Checking for a running log daemon...[21C [ WARNING ]
+[4C- Checking Syslog-NG status[30C [ NOT FOUND ]
+[4C- Checking Metalog status[32C [ NOT FOUND ]
+[4C- Checking RSyslog status[32C [ NOT FOUND ]
+[4C- Checking RFC 3195 daemon status[24C [ NOT FOUND ]
+[4C- Checking klogd[41C [ OK ]
+[4C- Checking minilogd instances[28C [ NONE ]
+[2C- Checking logrotate presence[30C [ OK ]
+[2C- Checking log directories (static list)[19C [ DONE ]
+[2C- Checking open log files[34C [ DONE ]
+[2C- Checking deleted files in use[28C [ DONE ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Insecure services
+------------------------------------
+[2C- Checking inetd status...[33C [ NOT ACTIVE ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Banners and identification
+------------------------------------
+[2C- /etc/motd...[45C [ NOT FOUND ]
+[2C- /etc/issue...[44C [ FOUND ]
+[4C- /etc/issue contents...[33C [ WEAK ]
+[2C- /etc/issue.net...[40C [ FOUND ]
+[4C- /etc/issue.net contents...[29C [ WEAK ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Scheduled tasks
+------------------------------------
+[2C- Checking crontab/cronjob[33C [ DONE ]
+[2C- Checking atd status[38C [ NOT RUNNING ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Accounting
+------------------------------------
+[2C- Checking accounting information... [22C [ NOT FOUND ]
+[2C- Checking auditd[42C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Time and Synchronization
+------------------------------------
+[2C- Checking running NTP daemon (ntpd)...[20C [ NOT FOUND ]
+[2C- Checking running NTP daemon (timed)...[19C [ NOT FOUND ]
+[2C- Checking running NTP daemon (dntpd)...[19C [ NOT FOUND ]
+[2C- Checking NTP client in crontab file (/etc/crontab)...[4C [ NOT FOUND ]
+[2C- Checking NTP client in cron.d files...[19C [ NOT FOUND ]
+[2C- Checking event based ntpdate (if-up)...[18C [ FOUND ]
+[2C- Checking for a running NTP daemon or client...[11C [ OK ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Cryptography
+------------------------------------
+[2C- Checking SSL certificate expiration...[19C [ WARNING ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Virtualization
+------------------------------------
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Security frameworks
+------------------------------------
+[2C- Checking presence AppArmor[31C [ FOUND ]
+apparmor filesystem is not mounted.
+[2C- Checking presence SELinux[32C [ NOT FOUND ]
+[2C- Checking presence grsecurity[29C [ NOT FOUND ]
+[2C- Checking for implemented MAC framework[19C [ NONE ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Software: file integrity
+------------------------------------
+[2C- Checking file integrity tools...[25C
+[4C- AFICK...[47C [ NOT FOUND ]
+[4C- AIDE...[48C [ NOT FOUND ]
+[4C- Osiris...[46C [ NOT FOUND ]
+[4C- Samhain...[45C [ NOT FOUND ]
+[4C- Tripwire...[44C [ NOT FOUND ]
+[4C- OSSEC (syscheck)...[36C [ NOT FOUND ]
+[2C- Checking presence integrity tool...[22C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Software: Malware scanners
+------------------------------------
+[2C- Checking chkrootkit...[35C [ NOT FOUND ]
+[2C- Checking Rootkit Hunter...[31C [ NOT FOUND ]
+[2C- Checking ClamAV scanner...[31C [ NOT FOUND ]
+[2C- Checking ClamAV daemon...[32C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] System Tools
+------------------------------------
+[2C- Starting file permissions check...[23C
+[4C/etc/lilo.conf[43C [ NOT FOUND ]
+[4C/root/.ssh[47C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Home directories
+------------------------------------
+[2C- Checking shell history files... [25C [ OK ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Kernel Hardening
+------------------------------------
+[2C- Comparing sysctl key pairs with scan profile...[10C
+[4C- kernel.core_uses_pid (exp: 1)[26C [ DIFFERENT ]
+[4C- kernel.ctrl-alt-del (exp: 0)[27C [ OK ]
+[4C- kernel.sysrq (exp: 0)[34C [ DIFFERENT ]
+[4C- net.ipv4.conf.all.accept_redirects (exp: 0)[12C [ OK ]
+[4C- net.ipv4.conf.all.accept_source_route (exp: 0)[9C [ OK ]
+[4C- net.ipv4.conf.all.bootp_relay (exp: 0)[17C [ OK ]
+[4C- net.ipv4.conf.all.forwarding (exp: 0)[18C [ DIFFERENT ]
+[4C- net.ipv4.conf.all.log_martians (exp: 1)[16C [ DIFFERENT ]
+[4C- net.ipv4.conf.all.mc_forwarding (exp: 0)[15C [ OK ]
+[4C- net.ipv4.conf.all.proxy_arp (exp: 0)[19C [ OK ]
+[4C- net.ipv4.conf.all.rp_filter (exp: 1)[19C [ OK ]
+[4C- net.ipv4.conf.all.send_redirects (exp: 0)[14C [ DIFFERENT ]
+[4C- net.ipv4.conf.default.accept_redirects (exp: 0)[8C [ DIFFERENT ]
+[4C- net.ipv4.conf.default.accept_source_route (exp: 0)[5C [ DIFFERENT ]
+[4C- net.ipv4.conf.default.log_martians (exp: 1)[12C [ DIFFERENT ]
+[4C- net.ipv4.icmp_echo_ignore_broadcasts (exp: 1)[10C [ OK ]
+[4C- net.ipv4.icmp_ignore_bogus_error_responses (exp: 1)[4C [ OK ]
+[4C- net.ipv6.conf.all.accept_redirects (exp: 0)[12C [ DIFFERENT ]
+[4C- net.ipv6.conf.all.accept_source_route (exp: 0)[9C [ OK ]
+[4C- net.ipv6.conf.default.accept_redirects (exp: 0)[8C [ DIFFERENT ]
+[4C- net.ipv6.conf.default.accept_source_route (exp: 0)[5C [ OK ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Hardening
+------------------------------------
+[4C- Installed compiler(s)...[31C [ FOUND ]
+[4C- Installed malware scanner...[27C [ NOT FOUND ]
+
+[ Press [ENTER] to continue, or [CTRL]+C to stop ]
+
+
+
+[+] Custom Tests
+------------------------------------
+[2C- Running custom tests... [33C [ SKIPPED ]
+
+================================================================================
+
+  -[ Lynis 1.3.9 Results ]-
+
+  Tests performed: 156
+
+  Warnings:
+  ----------------------------
+  - Found 1 files in /tmp which are older than 90 days [test:FILE-6354]
+  - iptables module(s) loaded, but no rules active [test:FIRE-4512]
+  - No syslog daemon found [test:LOGG-2130]
+  - klogd is not running, which could lead to missing kernel messages in log files [test:LOGG-2138]
+  - Found SSL certificate expiration (/etc/ssl/certs/ca-certificates.crt) [test:CRYP-7902]
+
+  Suggestions:
+  ----------------------------
+  - Please check the output of apt-cache policy manually to determine why output is empty [test:KRNL-5788]
+  - Install a PAM module for password strength testing like pam_cracklib or pam_passwdqc [test:AUTH-9262]
+  - Configure password aging limits to enforce password changing on a regular base [test:AUTH-9286]
+  - Default umask in /etc/login.defs could be more strict like 027 [test:AUTH-9328]
+  - Default umask in /etc/init.d/rc could be more strict like 027 [test:AUTH-9328]
+  - To decrease the impact of a full /home file system, place /home on a separated partition [test:FILE-6310]
+  - To decrease the impact of a full /tmp file system, place /tmp on a separated partition [test:FILE-6310]
+  - Clean up unused files in /tmp [test:FILE-6354]
+  - The database required for 'locate' could not be found. Run 'updatedb' or 'locate.updatedb' to create this file. [test:FILE-6410]
+  - Disable drivers like USB storage when not used, to prevent unauthorized storage or data theft [test:STRG-1840]
+  - Install package apt-show-versions for patch management purposes [test:PKGS-7394]
+  - Install a package audit tool to determine vulnerable packages [test:PKGS-7398]
+  - Disable iptables kernel module if not used or make sure rules are being used [test:FIRE-4512]
+  - Install Apache mod_evasive to guard webserver against DoS/brute force attempts [test:HTTP-6640]
+  - Install Apache mod_qos to guard webserver against Slowloris attacks [test:HTTP-6641]
+  - Install Apache mod_spamhaus to guard webserver against spammers [test:HTTP-6642]
+  - Install Apache modsecurity to guard webserver against web application attacks [test:HTTP-6643]
+  - Check if any syslog daemon is running and correctly configured. [test:LOGG-2130]
+  - Check why klogd is not running [test:LOGG-2138]
+  - Add a legal banner to /etc/issue, to warn unauthorized users [test:BANN-7126]
+  - Add legal banner to /etc/issue.net, to warn unauthorized users [test:BANN-7130]
+  - Enable auditd to collect audit information [test:ACCT-9628]
+  - Renew SSL expired certificates. [test:CRYP-7902]
+  - Install a file integrity tool [test:FINT-4350]
+  - One or more sysctl values differ from the scan profile and could be tweaked [test:KRNL-6000]
+  - Harden the system by removing unneeded compilers. This can decrease the chance of customized trojans, backdoors and rootkits to be compiled and installed [test:HRDN-7220]
+  - Harden compilers and restrict access to world [test:HRDN-7222]
+  - Harden the system by installing one or malware scanners to perform periodic file system scans [test:HRDN-7230]
+================================================================================
+  Files:
+  - Test and debug information      : /var/log/lynis.log
+  - Report data                     : /var/log/lynis-report.dat
+================================================================================
+  Hardening index : [56]     [###########         ]
+
+  Enterprise support and plugins available via CISOfy - http://cisofy.com
+================================================================================
+  Tip: Disable all tests which are not relevant or are too strict for the
+       purpose of this particular machine. This will remove unwanted suggestions
+       and also boost the hardening index. Each test should be properly analyzed
+       to see if the related risks can be accepted, before disabling the test.
+================================================================================
+  Lynis 1.3.9
+  Copyright 2007-2014 - Michael Boelen, http://cisofy.com
+================================================================================
+
+
+]0;root@1888e8c11a21: /root@1888e8c11a21:/#
+#+end_example
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

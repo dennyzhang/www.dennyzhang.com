@@ -1,0 +1,1602 @@
+* 5 Common Failures Of Package Installation                      :BLOG:Linux:
+:PROPERTIES:
+:type:   DevOps,Linux,Operate,Popular
+:END:
+---------------------------------------------------------------------
+For DevOps, *installation* is one of our major tasks. People may wonder package installation is pretty straight-forward and easy now. Just run commands like apt-get, yum, brew, etc. Or simply leave it to containers.
+
+Is it really that easy? Here is *a list of headache and hidden costs*. Discuss with us, DevOps gurus!
+
+[[image-blog:Case Study For Failures Of Package Installation][https://www.dennyzhang.com/wp-content/uploads/denny/linux-package-installation.png]]
+---------------------------------------------------------------------
+** Admit it. We all have unexpected installation failures.
+Okay, we have wrapped up multiple scripts, which will install and configure all required services and components. And the test looks good. Services are running correctly, GUI opens nicely. *It feels just great*. Maybe even a bit proud of our achievements. Shouldn't we?
+
+Then more and more people are starting to use our code to do the deployment. That's when the real fun comes. *Oh, yes. Surprises and embarrassments too*. Packages installation fails with endless issues. The process mysteriously stucks somewhere with little clues. Or installation itself seem to be fine, but system just doesn't behavior the same as our testing envs.
+
+Firstly people won't complain, and they understand it happens. However with more and more issues, the smell changes. And you feel the pressure! You gonna tell yourself the failure won't and shouldn't happen again. But do you really have 100% confidence?
+
+Your boss and colleagues have their concerns too. *This part hasn't been changed that much. And the task seems to be quite straight-forward*. Why it takes so long? And how much longer you will need to stabilize the installation?
+
+Sounds familiar? It's exactly how I felt in the past years. *So what the moving parts and obstacles really are, in terms of system installation?* [[color:#c7254e][We want to deliver the installation feature quickly. And it has to be reliable and stable]].
+** Problem1: Tools are in rapid development, and complicated package dependencies with incompatible versions.
+Linux is powerful, because it believes in the philosophy of simplicity. Each tool is there for one and simple purpose. Then we combine different tools into bigger ones, for bigger missions.
+
+That's so called integration. Yeah, *the integration*!
+
+If we only integrate stable and well-known tools, we're in luck. Probably things will go smoothly. Otherwise the situation would be much different.
+
+- Tools are in rapid development simply indicates issues, limitations and workarounds.
+
+Even worse, the error messages could be confusing. Check below error of chef development. How we can easily guess it's a locale issue, not a bug, at the first time?
+#+BEGIN_EXAMPLE
+Installing yum-epel (0.6.0) from https://supermarket.getchef.com ([opscode] https://supermarket.chef.io/api/v1)
+Installing yum (3.5.3) from https://supermarket.getchef.com ([opscode] https://supermarket.chef.io/api/v1)
+/var/lib/gems/1.9.1/gems/json-1.8.2/lib/json/common.rb:155:in `encode': "\xC2" on US-ASCII (Encoding::InvalidByteSequenceError)
+	from /var/lib/gems/1.9.1/gems/json-1.8.2/lib/json/common.rb:155:in `initialize'
+	from /var/lib/gems/1.9.1/gems/json-1.8.2/lib/json/common.rb:155:in `new'
+	from /var/lib/gems/1.9.1/gems/json-1.8.2/lib/json/common.rb:155:in `parse'
+#+END_EXAMPLE
+
+- Issues of incompatible version frequently happen in system integration. Usually using latest released version for all tools may work. But not always. Sometimes our develop team may have their own preference, which makes things a bit complicated.
+
+We see issues like below constantly. Yes, I know. I need to upgrade ruby, python, or whatever. It just takes time. *Unplanned work*, [[color:#c7254e][again]].
+#+BEGIN_EXAMPLE
+sudo gem install rack -v '2.0.1'
+ERROR:  Error installing rack:
+        rack requires Ruby version >= 2.2.2.
+#+END_EXAMPLE
+*Tips: Record the exact version for all components, including OS.* After a successful deployment, I usually automatically dump versions via the trick listed in another post: [[https://www.dennyzhang.com/compare_envs][Compare Difference Of Two Envs]].
+** Problem2: Every network request is an vulnerable failing point
+It's quite common, installation will run commands like "apt-get/yum" or "curl/wget". It will launch outgoing requests.
+
+Well, watch out any network request, my friends.
+- The external server may run into 5XX error, timeout or slower than before.
+- Files are removed in server, which result in HTTP 404 error.
+- Corporate firewall blocks the requests, for the concern of security or data leak.
+
+Each ongoing network request is a failure point. Consequently our deployment fails or suffers.
+*Tips: Replicate as many as possible in servers under our control.* e.g, local http server, apt repo server, etc.
+
+People might try to pre-cache all internet download, by building *customized OS images or docker images*. This is meaningful for installation with no network. It comes with a cost. Things are now more complicated and it takes a significant amount of effort.
+*Tips: Record all outgoing network requests during deployment*. Yes, the issue is still there. But this give us with an valuable input: what to improve or what to check. Tracking requests can be done easily: [[https://www.dennyzhang.com/monitor_outbound_traffic][Monitor Outbound Traffic In Deployment]].
+** Problem3: Always install latest versions could be troublesome.
+People install package like below quite often.
+#+BEGIN_SRC sh
+apt-get -y update && \
+apt-get -y install ruby
+#+END_SRC
+But what version we will get? Today we get ruby 1.9.5. But months later, it would be ruby 2.0.0, or 2.2.2. You do see the potential risks, do you?
+*Tips: Only install packages with fixed version*
+| Name   | Before                        | After                                            |
+|--------+-------------------------------+--------------------------------------------------|
+| Ubuntu | apt-get install docker-engine | apt-get install docker-engine=1.12.1-0~trusty    |
+| CentOS | yum install kernel-debuginfo  | yum install kernel-debuginfo-2.6.18-238.19.1.el5 |
+| Ruby   | gem install rubocop           | gem install rubocop -v "0.44.1"                  |
+| Python | pip install flake8            | pip install flake8==2.0                          |
+| NodeJs | npm install express           | npm install express@3.0.0                        |
+** Problem4: Better avoid installation from 3rd repo
+Let's say we want to install haproxy 1.6. However official Ubuntu repo only provides haproxy with 1.4 or 1.5. So we finally find a nice way like this.
+#+BEGIN_SRC sh
+sudo apt-get install software-properties-common
+add-apt-repository ppa:vbernat/haproxy-1.6
+
+apt-get update
+apt-get dist-upgrade
+
+apt-get install haproxy
+#+END_SRC
+
+It works like a charm. But wait, does this really put an end to this problem? Yes, mostly. However [[color:#c7254e][it fails from time to time]].
+
+- The availability of 3rd repo is usually lower than official repo.
+#+BEGIN_EXAMPLE
+---- Begin output of apt-key adv --keyserver keyserver.ubuntu.com --recv 1C61B9CD ----
+STDOUT: Executing: gpg --ignore-time-conflict --no-options --no-default-keyring --homedir /tmp/tmp.VTYpQ40FG8 --no-auto-check-trustdb --trust-model always --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyring /etc/apt/trusted.gpg.d/brightbox-ruby-ng.gpg --keyring /etc/apt/trusted.gpg.d/oreste-notelli-ppa.gpg --keyring /etc/apt/trusted.gpg.d/webupd8team-java.gpg --keyserver keyserver.ubuntu.com --recv 1C61B9CD
+gpgkeys: key 1C61B9CD can't be retrieved
+STDERR: gpg: requesting key 1C61B9CD from hkp server keyserver.ubuntu.com
+gpg: no valid OpenPGP data found.
+gpg: Total number processed: 0
+---- End output of apt-key adv --keyserver keyserver.ubuntu.com --recv 1C61B9CD ----
+#+END_EXAMPLE
+
+- 3rd repo is more likely to change. Now you get 1.6.5 and happy with that. But suddenly, days later, it starts to install 1.6.6 or 1.6.7. Surprise!
+*Tips: Avoid 3rd repo as much as possible. If no way, track and examine version installed closely.*
+** Problem5: Install by source code could be painful.
+If we can install directly from source code, it's much more reliable.
+
+But the problem is ...
+- It's usually harder. Try to build linux from the scratch, you will feel the disater and mess. Too many wired errors, missing packages, conflict versions, etc. Feel like flying a plane without manual.
+- Source compile takes much longer. For example, compile nodejs would take ~30 min. But apt-get only take seconds.
+- Missing facility of service management. We want to manage service by via "service XXX status/stop/start", and configure it to be autostart. With source code installation, they might be missing.
+** Does container cure the pain?
+Nowadays more and more people start to use containers, to avoid installation failure.
+
+Yes, it largely reduce the failures for end users.
+
+Well it doesn't solve the problem completely. Especially for DevOps. We're the ones who provide the docker image. Right?
+
+To build images from Dockerfile, we still have 5 common failures listed in above. As a conclusion, [[color:#c7254e][container shifts the failure risks from real deployment to image build process]].
+
+Further reading: [[https://www.dennyzhang.com/docker_deployment][5 Tips For Building Docker Image]].
+** Bring it all together
+Improvement suggestions for package installation
+- List all versions and hidden dependencies
+- Monitor All External Outgoing Traffic
+- Only Install Package With Fixed Version
+- Try your best to avoid 3rd repo
+
+Containers help to reduce installation failure largely. For DevOps like us, we still need to deal with all above possible failures in images build process.
+
+More Reading: [[https://www.dennyzhang.com/check_process][How To Check Linux Process Deeply With Common Sense]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/installation_failure"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/installation_failure
+* misc                                                             :noexport:
+** DONE jenkins Failed to install jQuery Plugin
+   CLOSED: [2014-03-09 Sun 10:06]
+#+begin_example
+INFO: Starting the installation of jQuery Plugin on behalf of anonymous
+Mar 09, 2014 10:42:43 PM hudson.model.UpdateCenter$DownloadJob run
+SEVERE: Failed to install jQuery Plugin
+java.io.IOException: Failed to download from http://updates.jenkins-ci.org/download/plugins/jquery/1.7.2-1/jquery.hpi
+	at hudson.model.UpdateCenter$UpdateCenterConfiguration.download(UpdateCenter.java:781)
+	at hudson.model.UpdateCenter$DownloadJob._run(UpdateCenter.java:1125)
+	at hudson.model.UpdateCenter$InstallationJob._run(UpdateCenter.java:1285)
+	at hudson.model.UpdateCenter$DownloadJob.run(UpdateCenter.java:1103)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:471)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:262)
+	at hudson.remoting.AtmostOneThreadExecutor$Worker.run(AtmostOneThreadExecutor.java:104)
+	at java.lang.Thread.run(Thread.java:744)
+Caused by: java.net.ConnectException: Connection timed out
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:57)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:526)
+	at sun.net.www.protocol.http.HttpURLConnection$6.run(HttpURLConnection.java:1675)
+	at sun.net.www.protocol.http.HttpURLConnection$6.run(HttpURLConnection.java:1673)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at sun.net.www.protocol.http.HttpURLConnection.getChainedException(HttpURLConnection.java:1671)
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1244)
+	at hudson.model.UpdateCenter$UpdateCenterConfiguration.download(UpdateCenter.java:751)
+	... 7 more
+Caused by: java.net.ConnectException: Connection timed out
+	at java.net.PlainSocketImpl.socketConnect(Native Method)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:339)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:200)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:182)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:579)
+	at java.net.Socket.connect(Socket.java:528)
+	at sun.net.NetworkClient.doConnect(NetworkClient.java:180)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:432)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:527)
+	at sun.net.www.http.HttpClient.<init>(HttpClient.java:211)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:308)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:326)
+	at sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:996)
+	at sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:932)
+	at sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:850)
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1300)
+	at sun.net.www.protocol.http.HttpURLConnection.getHeaderField(HttpURLConnection.java:2678)
+	at java.net.URLConnection.getHeaderFieldLong(URLConnection.java:639)
+	at java.net.URLConnection.getContentLengthLong(URLConnection.java:511)
+	at java.net.URLConnection.getContentLength(URLConnection.java:495)
+	at hudson.model.UpdateCenter$UpdateCenterConfiguration.download(UpdateCenter.java:750)
+	... 7 more
+
+Mar 09, 2014 10:42:43 PM hudson.model.UpdateCenter$DownloadJob run
+INFO: Starting the installation of jQuery UI Plugin on behalf of anonymous
+Mar 09, 2014 10:43:46 PM hudson.model.UpdateCenter$DownloadJob run
+SEVERE: Failed to install jQuery UI Plugin
+java.io.IOException: Failed to download from http://updates.jenkins-ci.org/download/plugins/jquery-ui/1.0.2/jquery-ui.hpi
+	at hudson.model.UpdateCenter$UpdateCenterConfiguration.download(UpdateCenter.java:781)
+	at hudson.model.UpdateCenter$DownloadJob._run(UpdateCenter.java:1125)
+	at hudson.model.UpdateCenter$InstallationJob._run(UpdateCenter.java:1285)
+	at hudson.model.UpdateCenter$DownloadJob.run(UpdateCenter.java:1103)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:471)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:262)
+	at hudson.remoting.AtmostOneThreadExecutor$Worker.run(AtmostOneThreadExecutor.java:104)
+	at java.lang.Thread.run(Thread.java:744)
+Caused by: java.net.ConnectException: Connection timed out
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:57)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:526)
+	at sun.net.www.protocol.http.HttpURLConnection$6.run(HttpURLConnection.java:1675)
+	at sun.net.www.protocol.http.HttpURLConnection$6.run(HttpURLConnection.java:1673)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at sun.net.www.protocol.http.HttpURLConnection.getChainedException(HttpURLConnection.java:1671)
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1244)
+	at hudson.model.UpdateCenter$UpdateCenterConfiguration.download(UpdateCenter.java:751)
+	... 7 more
+Caused by: java.net.ConnectException: Connection timed out
+	at java.net.PlainSocketImpl.socketConnect(Native Method)
+	at java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:339)
+	at java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:200)
+	at java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:182)
+	at java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)
+	at java.net.Socket.connect(Socket.java:579)
+	at java.net.Socket.connect(Socket.java:528)
+	at sun.net.NetworkClient.doConnect(NetworkClient.java:180)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:432)
+	at sun.net.www.http.HttpClient.openServer(HttpClient.java:527)
+	at sun.net.www.http.HttpClient.<init>(HttpClient.java:211)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:308)
+	at sun.net.www.http.HttpClient.New(HttpClient.java:326)
+	at sun.net.www.protocol.http.HttpURLConnection.getNewHttpClient(HttpURLConnection.java:996)
+	at sun.net.www.protocol.http.HttpURLConnection.plainConnect(HttpURLConnection.java:932)
+	at sun.net.www.protocol.http.HttpURLConnection.connect(HttpURLConnection.java:850)
+	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1300)
+	at sun.net.www.protocol.http.HttpURLConnection.getHeaderField(HttpURLConnection.java:2678)
+	at java.net.URLConnection.getHeaderFieldLong(URLConnection.java:639)
+	at java.net.URLConnection.getContentLengthLong(URLConnection.java:511)
+	at java.net.URLConnection.getContentLength(URLConnection.java:495)
+	at hudson.model.UpdateCenter$UpdateCenterConfiguration.download(UpdateCenter.java:750)
+	... 7 more
+
+Mar 09, 2014 10:43:46 PM hudson.model.UpdateCenter$DownloadJob run
+INFO: Starting the installation of Dependency Graph View Plugin on behalf of anonymous
+
+#+end_example
+** TODO [#A] fail to install jenkins: don't want to install jenkins2.0 :IMPORTANT:
+https://www.digitalocean.com/community/questions/problem-installing-jenkins-1-560-on-ubuntu-14-04-x32
+https://wiki.jenkins-ci.org/display/JENKINS/Installing+Jenkins+on+Ubuntu
+https://www.rosehosting.com/blog/install-jenkins-on-an-ubuntu-14-04-vps/
+#+BEGIN_EXAMPLE
+root@denny-02:~# apt-get install -y curl
+
+curl -o /root/ssh_id_rsa.pub https://raw.githubusercontent.com/TOTVS/mdmpublic/master/chef/ssh_id_rsa.pub
+
+curl -o /root/enable_chef_depoyment.sh \
+https://raw.githubusercontent.com/TOTVS/mdmpublic/master/chef/enable_chef_depoyment.sh
+
+bash -e /root/enable_chef_depoyment.sh
+apt-get install -y curl
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+curl is already the newest version.
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+root@denny-02:~#
+</raw.githubusercontent.com/TOTVS/mdmpublic/master/chef/ssh_id_rsa.pub
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   403  100   403    0     0   3439      0 --:--:-- --:--:-- --:--:--  3444
+root@denny-02:~#
+root@denny-02:~# curl -o /root/enable_chef_depoyment.sh \
+<tent.com/TOTVS/mdmpublic/master/chef/enable_chef_depoyment.sh
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  8087  100  8087    0     0   204k      0 --:--:-- --:--:-- --:--:--  207k
+root@denny-02:~#
+root@denny-02:~# bash -e /root/enable_chef_depoyment.sh
+[2016-05-25 06:13:10] enable chef deployment
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following extra packages will be installed:
+  git-man liberror-perl
+Suggested packages:
+  git-daemon-run git-daemon-sysvinit git-doc git-el git-email git-gui gitk
+  gitweb git-arch git-bzr git-cvs git-mediawiki git-svn
+The following NEW packages will be installed:
+  git git-man liberror-perl
+0 upgraded, 3 newly installed, 0 to remove and 0 not upgraded.
+Need to get 3,306 kB of archives.
+After this operation, 21.9 MB of additional disk space will be used.
+Get:1 http://mirrors.digitalocean.com/ubuntu/ trusty/main liberror-perl all 0.17-1.1 [21.1 kB]
+Get:2 http://mirrors.digitalocean.com/ubuntu/ trusty-updates/main git-man all 1:1.9.1-1ubuntu0.3 [699 kB]
+Get:3 http://mirrors.digitalocean.com/ubuntu/ trusty-updates/main git amd64 1:1.9.1-1ubuntu0.3 [2,586 kB]
+Fetched 3,306 kB in 1s (2,303 kB/s)
+debconf: unable to initialize frontend: Dialog
+debconf: (Dialog frontend will not work on a dumb terminal, an emacs shell buffer, or without a controlling terminal.)
+debconf: falling back to frontend: Readline
+Selecting previously unselected package liberror-perl.
+(Reading database ... 57380 files and directories currently installed.)
+Preparing to unpack .../liberror-perl_0.17-1.1_all.deb ...
+Unpacking liberror-perl (0.17-1.1) ...
+Selecting previously unselected package git-man.
+Preparing to unpack .../git-man_1%3a1.9.1-1ubuntu0.3_all.deb ...
+Unpacking git-man (1:1.9.1-1ubuntu0.3) ...
+Selecting previously unselected package git.
+Preparing to unpack .../git_1%3a1.9.1-1ubuntu0.3_amd64.deb ...
+Unpacking git (1:1.9.1-1ubuntu0.3) ...
+Processing triggers for man-db (2.6.7.1-1ubuntu1) ...
+Setting up liberror-perl (0.17-1.1) ...
+Setting up git-man (1:1.9.1-1ubuntu0.3) ...
+Setting up git (1:1.9.1-1ubuntu0.3) ...
+[2016-05-25 06:13:15] wget -O /root/git_update.sh https://raw.githubusercontent.com/TOTVS/mdmpublic/master/git_update.sh
+--2016-05-25 06:13:15--  https://raw.githubusercontent.com/TOTVS/mdmpublic/master/git_update.sh
+Resolving raw.githubusercontent.com (raw.githubusercontent.com)... 23.235.39.133
+Connecting to raw.githubusercontent.com (raw.githubusercontent.com)|23.235.39.133|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 1776 (1.7K) [text/plain]
+Saving to: '/root/git_update.sh'
+
+100%[======================================>] 1,776       --.-K/s   in 0s
+
+2016-05-25 06:13:15 (381 MB/s) - '/root/git_update.sh' saved [1776/1776]
+
+[2016-05-25 06:13:15] inject git deploy key to /root/.ssh/git_id_rsa
+[2016-05-25 06:13:15] configure /root/.ssh/config
+[2016-05-25 06:13:15] inject ssh authorized keys to /root/.ssh/authorized_keys
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 19602  100 19602    0     0  40880      0 --:--:-- --:--:-- --:--:-- 40837
+ubuntu 14.04 x86_64
+Getting information for chef stable 12.4.1 for ubuntu...
+downloading https://omnitruck-direct.chef.io/stable/chef/metadata?v=12.4.1&p=ubuntu&pv=14.04&m=x86_64
+  to file /tmp/install.sh.2301/metadata.txt
+trying wget...
+sha1	b0d128d7f3cb5e2d32a13eda67c6c521f2982896
+sha256	bb2bdaa0c551fff21ccdf37dab75fc71374b521c419f1af51d1eab3ea2c791ba
+url	https://packages.chef.io/stable/ubuntu/14.04/chef_12.4.1-1_amd64.deb
+version	12.4.1
+downloaded metadata file looks valid...
+downloading https://packages.chef.io/stable/ubuntu/14.04/chef_12.4.1-1_amd64.deb
+  to file /tmp/install.sh.2301/chef_12.4.1-1_amd64.deb
+trying wget...
+Comparing checksum with sha256sum...
+Installing chef 12.4.1
+installing with dpkg...
+Selecting previously unselected package chef.
+(Reading database ... 58128 files and directories currently installed.)
+Preparing to unpack .../chef_12.4.1-1_amd64.deb ...
+Unpacking chef (12.4.1-1) ...
+Setting up chef (12.4.1-1) ...
+Thank you for installing Chef!
+Action Done
+root@denny-02:~# chef-solo -version
+chef-solo -version
+Chef: 12.4.1
+root@denny-02:~# apt-get install -y curl
+
+curl -o /root/setup_jenkins.sh https://raw.githubusercontent.com/TOTVS/mdmpublic/master/chef/setup_jenkins.sh
+
+bash -e /root/setup_jenkins.sh
+apt-get install -y curl
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+curl is already the newest version.
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+root@denny-02:~#
+<://raw.githubusercontent.com/TOTVS/mdmpublic/master/chef/setup_jenkins.sh
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  1925  100  1925    0     0  32562      0 --:--:-- --:--:-- --:--:-- 33189
+root@denny-02:~#
+root@denny-02:~# bash -e /root/setup_jenkins.sh
+dpkg-query: package 'jenkins' is not installed and no information is available
+Use dpkg --info (= dpkg-deb --info) to examine archive files,
+and dpkg --contents (= dpkg-deb --contents) to list their contents.
+setup jenkins
+OK
+Ign http://mirrors.digitalocean.com trusty InRelease
+Get:1 http://mirrors.digitalocean.com trusty-updates InRelease [65.9 kB]
+Get:2 http://mirrors.digitalocean.com trusty-backports InRelease [65.9 kB]
+Hit http://mirrors.digitalocean.com trusty Release.gpg
+Hit http://mirrors.digitalocean.com trusty Release
+Ign http://pkg.jenkins-ci.org binary/ InRelease
+Get:3 http://pkg.jenkins-ci.org binary/ Release.gpg [181 B]
+Get:4 http://pkg.jenkins-ci.org binary/ Release [2,046 B]
+Get:5 http://mirrors.digitalocean.com trusty-updates/main Sources [275 kB]
+Get:6 http://mirrors.digitalocean.com trusty-updates/restricted Sources [5,352 B]
+Get:7 http://mirrors.digitalocean.com trusty-updates/universe Sources [155 kB]
+Get:8 http://mirrors.digitalocean.com trusty-updates/multiverse Sources [5,939 B]
+Get:9 http://mirrors.digitalocean.com trusty-updates/main amd64 Packages [768 kB]
+Get:10 http://pkg.jenkins-ci.org binary/ Packages [651 B]
+Get:11 http://security.ubuntu.com trusty-security InRelease [65.9 kB]
+Get:12 http://mirrors.digitalocean.com trusty-updates/restricted amd64 Packages [15.9 kB]
+Get:13 http://mirrors.digitalocean.com trusty-updates/universe amd64 Packages [360 kB]
+Get:14 http://mirrors.digitalocean.com trusty-updates/multiverse amd64 Packages [13.2 kB]
+Get:15 http://mirrors.digitalocean.com trusty-updates/main i386 Packages [737 kB]
+Get:16 http://mirrors.digitalocean.com trusty-updates/restricted i386 Packages [15.6 kB]
+Get:17 http://mirrors.digitalocean.com trusty-updates/universe i386 Packages [361 kB]
+Get:18 http://mirrors.digitalocean.com trusty-updates/multiverse i386 Packages [13.6 kB]
+Get:19 http://mirrors.digitalocean.com trusty-updates/main Translation-en [384 kB]
+Ign http://pkg.jenkins-ci.org binary/ Translation-en_US
+Ign http://pkg.jenkins-ci.org binary/ Translation-en
+Get:20 http://mirrors.digitalocean.com trusty-updates/multiverse Translation-en [7,227 B]
+Get:21 http://mirrors.digitalocean.com trusty-updates/restricted Translation-en [3,699 B]
+Get:22 http://mirrors.digitalocean.com trusty-updates/universe Translation-en [188 kB]
+Get:23 http://mirrors.digitalocean.com trusty-backports/main Sources [9,544 B]
+Get:24 http://mirrors.digitalocean.com trusty-backports/restricted Sources [28 B]
+Get:25 http://mirrors.digitalocean.com trusty-backports/universe Sources [35.2 kB]
+Get:26 http://mirrors.digitalocean.com trusty-backports/multiverse Sources [1,898 B]
+Get:27 http://mirrors.digitalocean.com trusty-backports/main amd64 Packages [13.0 kB]
+Get:28 http://mirrors.digitalocean.com trusty-backports/restricted amd64 Packages [28 B]
+Get:29 http://mirrors.digitalocean.com trusty-backports/universe amd64 Packages [43.1 kB]
+Get:30 http://mirrors.digitalocean.com trusty-backports/multiverse amd64 Packages [1,571 B]
+Get:31 http://mirrors.digitalocean.com trusty-backports/main i386 Packages [13.1 kB]
+Get:32 http://mirrors.digitalocean.com trusty-backports/restricted i386 Packages [28 B]
+Get:33 http://mirrors.digitalocean.com trusty-backports/universe i386 Packages [43.2 kB]
+Get:34 http://mirrors.digitalocean.com trusty-backports/multiverse i386 Packages [1,552 B]
+Get:35 http://mirrors.digitalocean.com trusty-backports/main Translation-en [7,370 B]
+Get:36 http://mirrors.digitalocean.com trusty-backports/multiverse Translation-en [1,215 B]
+Get:37 http://mirrors.digitalocean.com trusty-backports/restricted Translation-en [28 B]
+Get:38 http://mirrors.digitalocean.com trusty-backports/universe Translation-en [36.8 kB]
+Hit http://mirrors.digitalocean.com trusty/main Sources
+Hit http://mirrors.digitalocean.com trusty/restricted Sources
+Hit http://mirrors.digitalocean.com trusty/universe Sources
+Hit http://mirrors.digitalocean.com trusty/multiverse Sources
+Hit http://mirrors.digitalocean.com trusty/main amd64 Packages
+Hit http://mirrors.digitalocean.com trusty/restricted amd64 Packages
+Hit http://mirrors.digitalocean.com trusty/universe amd64 Packages
+Hit http://mirrors.digitalocean.com trusty/multiverse amd64 Packages
+Hit http://mirrors.digitalocean.com trusty/main i386 Packages
+Hit http://mirrors.digitalocean.com trusty/restricted i386 Packages
+Hit http://mirrors.digitalocean.com trusty/universe i386 Packages
+Hit http://mirrors.digitalocean.com trusty/multiverse i386 Packages
+Hit http://mirrors.digitalocean.com trusty/main Translation-en
+Hit http://mirrors.digitalocean.com trusty/multiverse Translation-en
+Hit http://mirrors.digitalocean.com trusty/restricted Translation-en
+Get:39 http://security.ubuntu.com trusty-security/main Sources [115 kB]
+Hit http://mirrors.digitalocean.com trusty/universe Translation-en
+Ign http://mirrors.digitalocean.com trusty/main Translation-en_US
+Ign http://mirrors.digitalocean.com trusty/multiverse Translation-en_US
+Ign http://mirrors.digitalocean.com trusty/restricted Translation-en_US
+Ign http://mirrors.digitalocean.com trusty/universe Translation-en_US
+Get:40 http://security.ubuntu.com trusty-security/universe Sources [36.9 kB]
+Get:41 http://security.ubuntu.com trusty-security/main amd64 Packages [481 kB]
+Get:42 http://security.ubuntu.com trusty-security/universe amd64 Packages [129 kB]
+Get:43 http://security.ubuntu.com trusty-security/main i386 Packages [454 kB]
+Get:44 http://security.ubuntu.com trusty-security/universe i386 Packages [129 kB]
+Get:45 http://security.ubuntu.com trusty-security/main Translation-en [264 kB]
+Get:46 http://security.ubuntu.com trusty-security/universe Translation-en [76.0 kB]
+Fetched 5,401 kB in 3s (1,385 kB/s)
+Reading package lists... Done
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following extra packages will be installed:
+  ca-certificates-java daemon default-jre-headless fontconfig-config
+  fonts-dejavu-core java-common libasyncns0 libavahi-client3
+  libavahi-common-data libavahi-common3 libcups2 libflac8 libfontconfig1
+  libjpeg-turbo8 libjpeg8 liblcms2-2 libnspr4 libnss3 libnss3-nssdb libogg0
+  libpulse0 libsctp1 libsndfile1 libvorbis0a libvorbisenc2 lksctp-tools
+  openjdk-7-jre-headless tzdata-java
+Suggested packages:
+  default-jre equivs cups-common liblcms2-utils pulseaudio icedtea-7-jre-jamvm
+  libnss-mdns sun-java6-fonts fonts-dejavu-extra fonts-ipafont-gothic
+  fonts-ipafont-mincho ttf-wqy-microhei ttf-wqy-zenhei ttf-indic-fonts-core
+  ttf-telugu-fonts ttf-oriya-fonts ttf-kannada-fonts ttf-bengali-fonts
+The following NEW packages will be installed:
+  ca-certificates-java daemon default-jre-headless fontconfig-config
+  fonts-dejavu-core java-common jenkins libasyncns0 libavahi-client3
+  libavahi-common-data libavahi-common3 libcups2 libflac8 libfontconfig1
+  libjpeg-turbo8 libjpeg8 liblcms2-2 libnspr4 libnss3 libnss3-nssdb libogg0
+  libpulse0 libsctp1 libsndfile1 libvorbis0a libvorbisenc2 lksctp-tools
+  openjdk-7-jre-headless tzdata-java
+0 upgraded, 29 newly installed, 0 to remove and 28 not upgraded.
+Need to get 112 MB of archives.
+After this operation, 141 MB of additional disk space will be used.
+Get:1 http://mirrors.digitalocean.com/ubuntu/ trusty/main libasyncns0 amd64 0.8-4ubuntu2 [11.9 kB]
+Get:2 http://mirrors.digitalocean.com/ubuntu/ trusty/main libavahi-common-data amd64 0.6.31-4ubuntu1 [21.2 kB]
+Get:3 http://mirrors.digitalocean.com/ubuntu/ trusty/main libavahi-common3 amd64 0.6.31-4ubuntu1 [21.7 kB]
+Get:4 http://mirrors.digitalocean.com/ubuntu/ trusty/main libavahi-client3 amd64 0.6.31-4ubuntu1 [25.1 kB]
+Get:5 http://mirrors.digitalocean.com/ubuntu/ trusty-updates/main libcups2 amd64 1.7.2-0ubuntu1.7 [179 kB]
+Get:6 http://mirrors.digitalocean.com/ubuntu/ trusty/main libogg0 amd64 1.3.1-1ubuntu1 [17.0 kB]
+Get:7 http://mirrors.digitalocean.com/ubuntu/ trusty-updates/main libflac8 amd64 1.3.0-2ubuntu0.14.04.1 [80.2 kB]
+Get:8 http://mirrors.digitalocean.com/ubuntu/ trusty/main fonts-dejavu-core all 2.34-1ubuntu1 [1,024 kB]
+Get:9 http://mirrors.digitalocean.com/ubuntu/ trusty-updates/main fontconfig-config all 2.11.0-0ubuntu4.1 [47.4 kB]
+Get:10 http://mirrors.digitalocean.com/ubuntu/ trusty-updates/main libfontconfig1 amd64 2.11.0-0ubuntu4.1 [123 kB]
+Get:11 http://mirrors.digitalocean.com/ubuntu/ trusty/main libjpeg-turbo8 amd64 1.3.0-0ubuntu2 [104 kB]
+Get:12 http://mirrors.digitalocean.com/ubuntu/ trusty-updates/main liblcms2-2 amd64 2.5-0ubuntu4.1 [131 kB]
+Get:13 http://mirrors.digitalocean.com/ubuntu/ trusty-updates/main libnspr4 amd64 2:4.10.10-0ubuntu0.14.04.1 [111 kB]
+Get:14 http://mirrors.digitalocean.com/ubuntu/ trusty-updates/main libnss3-nssdb all 2:3.21-0ubuntu0.14.04.2 [10.6 kB]
+Get:15 http://mirrors.digitalocean.com/ubuntu/ trusty-updates/main libnss3 amd64 2:3.21-0ubuntu0.14.04.2 [1,103 kB]
+Get:16 http://mirrors.digitalocean.com/ubuntu/ trusty/main libvorbis0a amd64 1.3.2-1.3ubuntu1 [87.2 kB]
+Get:17 http://mirrors.digitalocean.com/ubuntu/ trusty/main libvorbisenc2 amd64 1.3.2-1.3ubuntu1 [84.5 kB]
+Get:18 http://mirrors.digitalocean.com/ubuntu/ trusty-updates/main libsndfile1 amd64 1.0.25-7ubuntu2.1 [136 kB]
+Get:19 http://mirrors.digitalocean.com/ubuntu/ trusty-updates/main libpulse0 amd64 1:4.0-0ubuntu11.1 [225 kB]
+Get:20 http://mirrors.digitalocean.com/ubuntu/ trusty/main libsctp1 amd64 1.0.15+dfsg-1 [9,226 B]
+Get:21 http://mirrors.digitalocean.com/ubuntu/ trusty/main java-common all 0.51 [130 kB]
+Get:22 http://mirrors.digitalocean.com/ubuntu/ trusty/main default-jre-headless amd64 2:1.7-51 [3,834 B]
+Get:23 http://mirrors.digitalocean.com/ubuntu/ trusty/main ca-certificates-java all 20130815ubuntu1 [13.4 kB]
+Get:24 http://mirrors.digitalocean.com/ubuntu/ trusty-updates/main tzdata-java all 2016d-0ubuntu0.14.04 [69.6 kB]
+Get:25 http://mirrors.digitalocean.com/ubuntu/ trusty/main libjpeg8 amd64 8c-2ubuntu8 [2,194 B]
+Get:26 http://mirrors.digitalocean.com/ubuntu/ trusty-updates/main openjdk-7-jre-headless amd64 7u101-2.6.6-0ubuntu0.14.04.1 [39.2 MB]
+Get:27 http://pkg.jenkins-ci.org/debian/ binary/ jenkins 2.6 [68.5 MB]
+Get:28 http://mirrors.digitalocean.com/ubuntu/ trusty/universe daemon amd64 0.6.4-1 [98.2 kB]
+Get:29 http://mirrors.digitalocean.com/ubuntu/ trusty/main lksctp-tools amd64 1.0.15+dfsg-1 [51.3 kB]
+Fetched 112 MB in 1s (63.7 MB/s)
+debconf: unable to initialize frontend: Dialog
+debconf: (Dialog frontend will not work on a dumb terminal, an emacs shell buffer, or without a controlling terminal.)
+debconf: falling back to frontend: Readline
+Selecting previously unselected package libasyncns0:amd64.
+(Reading database ... 74932 files and directories currently installed.)
+Preparing to unpack .../libasyncns0_0.8-4ubuntu2_amd64.deb ...
+Unpacking libasyncns0:amd64 (0.8-4ubuntu2) ...
+Selecting previously unselected package libavahi-common-data:amd64.
+Preparing to unpack .../libavahi-common-data_0.6.31-4ubuntu1_amd64.deb ...
+Unpacking libavahi-common-data:amd64 (0.6.31-4ubuntu1) ...
+Selecting previously unselected package libavahi-common3:amd64.
+Preparing to unpack .../libavahi-common3_0.6.31-4ubuntu1_amd64.deb ...
+Unpacking libavahi-common3:amd64 (0.6.31-4ubuntu1) ...
+Selecting previously unselected package libavahi-client3:amd64.
+Preparing to unpack .../libavahi-client3_0.6.31-4ubuntu1_amd64.deb ...
+Unpacking libavahi-client3:amd64 (0.6.31-4ubuntu1) ...
+Selecting previously unselected package libcups2:amd64.
+Preparing to unpack .../libcups2_1.7.2-0ubuntu1.7_amd64.deb ...
+Unpacking libcups2:amd64 (1.7.2-0ubuntu1.7) ...
+Selecting previously unselected package libogg0:amd64.
+Preparing to unpack .../libogg0_1.3.1-1ubuntu1_amd64.deb ...
+Unpacking libogg0:amd64 (1.3.1-1ubuntu1) ...
+Selecting previously unselected package libflac8:amd64.
+Preparing to unpack .../libflac8_1.3.0-2ubuntu0.14.04.1_amd64.deb ...
+Unpacking libflac8:amd64 (1.3.0-2ubuntu0.14.04.1) ...
+Selecting previously unselected package fonts-dejavu-core.
+Preparing to unpack .../fonts-dejavu-core_2.34-1ubuntu1_all.deb ...
+Unpacking fonts-dejavu-core (2.34-1ubuntu1) ...
+Selecting previously unselected package fontconfig-config.
+Preparing to unpack .../fontconfig-config_2.11.0-0ubuntu4.1_all.deb ...
+Unpacking fontconfig-config (2.11.0-0ubuntu4.1) ...
+Selecting previously unselected package libfontconfig1:amd64.
+Preparing to unpack .../libfontconfig1_2.11.0-0ubuntu4.1_amd64.deb ...
+Unpacking libfontconfig1:amd64 (2.11.0-0ubuntu4.1) ...
+Selecting previously unselected package libjpeg-turbo8:amd64.
+Preparing to unpack .../libjpeg-turbo8_1.3.0-0ubuntu2_amd64.deb ...
+Unpacking libjpeg-turbo8:amd64 (1.3.0-0ubuntu2) ...
+Selecting previously unselected package liblcms2-2:amd64.
+Preparing to unpack .../liblcms2-2_2.5-0ubuntu4.1_amd64.deb ...
+Unpacking liblcms2-2:amd64 (2.5-0ubuntu4.1) ...
+Selecting previously unselected package libnspr4:amd64.
+Preparing to unpack .../libnspr4_2%3a4.10.10-0ubuntu0.14.04.1_amd64.deb ...
+Unpacking libnspr4:amd64 (2:4.10.10-0ubuntu0.14.04.1) ...
+Selecting previously unselected package libnss3-nssdb.
+Preparing to unpack .../libnss3-nssdb_2%3a3.21-0ubuntu0.14.04.2_all.deb ...
+Unpacking libnss3-nssdb (2:3.21-0ubuntu0.14.04.2) ...
+Selecting previously unselected package libnss3:amd64.
+Preparing to unpack .../libnss3_2%3a3.21-0ubuntu0.14.04.2_amd64.deb ...
+Unpacking libnss3:amd64 (2:3.21-0ubuntu0.14.04.2) ...
+Selecting previously unselected package libvorbis0a:amd64.
+Preparing to unpack .../libvorbis0a_1.3.2-1.3ubuntu1_amd64.deb ...
+Unpacking libvorbis0a:amd64 (1.3.2-1.3ubuntu1) ...
+Selecting previously unselected package libvorbisenc2:amd64.
+Preparing to unpack .../libvorbisenc2_1.3.2-1.3ubuntu1_amd64.deb ...
+Unpacking libvorbisenc2:amd64 (1.3.2-1.3ubuntu1) ...
+Selecting previously unselected package libsndfile1:amd64.
+Preparing to unpack .../libsndfile1_1.0.25-7ubuntu2.1_amd64.deb ...
+Unpacking libsndfile1:amd64 (1.0.25-7ubuntu2.1) ...
+Selecting previously unselected package libpulse0:amd64.
+Preparing to unpack .../libpulse0_1%3a4.0-0ubuntu11.1_amd64.deb ...
+Unpacking libpulse0:amd64 (1:4.0-0ubuntu11.1) ...
+Selecting previously unselected package libsctp1:amd64.
+Preparing to unpack .../libsctp1_1.0.15+dfsg-1_amd64.deb ...
+Unpacking libsctp1:amd64 (1.0.15+dfsg-1) ...
+Selecting previously unselected package java-common.
+Preparing to unpack .../java-common_0.51_all.deb ...
+Unpacking java-common (0.51) ...
+Selecting previously unselected package default-jre-headless.
+Preparing to unpack .../default-jre-headless_2%3a1.7-51_amd64.deb ...
+Unpacking default-jre-headless (2:1.7-51) ...
+Selecting previously unselected package ca-certificates-java.
+Preparing to unpack .../ca-certificates-java_20130815ubuntu1_all.deb ...
+Unpacking ca-certificates-java (20130815ubuntu1) ...
+Selecting previously unselected package tzdata-java.
+Preparing to unpack .../tzdata-java_2016d-0ubuntu0.14.04_all.deb ...
+Unpacking tzdata-java (2016d-0ubuntu0.14.04) ...
+Selecting previously unselected package libjpeg8:amd64.
+Preparing to unpack .../libjpeg8_8c-2ubuntu8_amd64.deb ...
+Unpacking libjpeg8:amd64 (8c-2ubuntu8) ...
+Selecting previously unselected package openjdk-7-jre-headless:amd64.
+Preparing to unpack .../openjdk-7-jre-headless_7u101-2.6.6-0ubuntu0.14.04.1_amd64.deb ...
+Unpacking openjdk-7-jre-headless:amd64 (7u101-2.6.6-0ubuntu0.14.04.1) ...
+Selecting previously unselected package daemon.
+Preparing to unpack .../daemon_0.6.4-1_amd64.deb ...
+Unpacking daemon (0.6.4-1) ...
+Selecting previously unselected package lksctp-tools.
+Preparing to unpack .../lksctp-tools_1.0.15+dfsg-1_amd64.deb ...
+Unpacking lksctp-tools (1.0.15+dfsg-1) ...
+Selecting previously unselected package jenkins.
+Preparing to unpack .../archives/jenkins_2.6_all.deb ...
+Unpacking jenkins (2.6) ...
+Processing triggers for man-db (2.6.7.1-1ubuntu1) ...
+Processing triggers for ca-certificates (20160104ubuntu0.14.04.1) ...
+Updating certificates in /etc/ssl/certs... 0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d....done.
+Processing triggers for ureadahead (0.100.0-16) ...
+Setting up libasyncns0:amd64 (0.8-4ubuntu2) ...
+Setting up libavahi-common-data:amd64 (0.6.31-4ubuntu1) ...
+Setting up libavahi-common3:amd64 (0.6.31-4ubuntu1) ...
+Setting up libavahi-client3:amd64 (0.6.31-4ubuntu1) ...
+Setting up libcups2:amd64 (1.7.2-0ubuntu1.7) ...
+Setting up libogg0:amd64 (1.3.1-1ubuntu1) ...
+Setting up libflac8:amd64 (1.3.0-2ubuntu0.14.04.1) ...
+Setting up fonts-dejavu-core (2.34-1ubuntu1) ...
+Setting up fontconfig-config (2.11.0-0ubuntu4.1) ...
+Setting up libfontconfig1:amd64 (2.11.0-0ubuntu4.1) ...
+Setting up libjpeg-turbo8:amd64 (1.3.0-0ubuntu2) ...
+Setting up liblcms2-2:amd64 (2.5-0ubuntu4.1) ...
+Setting up libnspr4:amd64 (2:4.10.10-0ubuntu0.14.04.1) ...
+Setting up libvorbis0a:amd64 (1.3.2-1.3ubuntu1) ...
+Setting up libvorbisenc2:amd64 (1.3.2-1.3ubuntu1) ...
+Setting up libsndfile1:amd64 (1.0.25-7ubuntu2.1) ...
+Setting up libpulse0:amd64 (1:4.0-0ubuntu11.1) ...
+Setting up libsctp1:amd64 (1.0.15+dfsg-1) ...
+Setting up java-common (0.51) ...
+Setting up tzdata-java (2016d-0ubuntu0.14.04) ...
+Setting up libjpeg8:amd64 (8c-2ubuntu8) ...
+Setting up daemon (0.6.4-1) ...
+Setting up lksctp-tools (1.0.15+dfsg-1) ...
+Setting up default-jre-headless (2:1.7-51) ...
+Setting up jenkins (2.6) ...
+ * Starting Jenkins Continuous Integration Server jenkins
+   ...fail!
+invoke-rc.d: initscript jenkins, action "start" failed.
+dpkg: error processing package jenkins (--configure):
+ subprocess installed post-installation script returned error exit status 7
+Setting up libnss3-nssdb (2:3.21-0ubuntu0.14.04.2) ...
+Setting up libnss3:amd64 (2:3.21-0ubuntu0.14.04.2) ...
+Setting up openjdk-7-jre-headless:amd64 (7u101-2.6.6-0ubuntu0.14.04.1) ...
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java to provide /usr/bin/java (java) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/keytool to provide /usr/bin/keytool (keytool) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/pack200 to provide /usr/bin/pack200 (pack200) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/rmid to provide /usr/bin/rmid (rmid) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/rmiregistry to provide /usr/bin/rmiregistry (rmiregistry) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/unpack200 to provide /usr/bin/unpack200 (unpack200) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/orbd to provide /usr/bin/orbd (orbd) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/servertool to provide /usr/bin/servertool (servertool) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/tnameserv to provide /usr/bin/tnameserv (tnameserv) in auto mode
+update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/jexec to provide /usr/bin/jexec (jexec) in auto mode
+Setting up ca-certificates-java (20130815ubuntu1) ...
+Adding debian:CA_Disig_Root_R2.pem
+Adding debian:USERTrust_ECC_Certification_Authority.pem
+Adding debian:GeoTrust_Universal_CA_2.pem
+Adding debian:Camerfirma_Chambers_of_Commerce_Root.pem
+Adding debian:TeliaSonera_Root_CA_v1.pem
+Adding debian:DigiCert_Global_Root_CA.pem
+Adding debian:S-TRUST_Universal_Root_CA.pem
+Adding debian:Swisscom_Root_CA_2.pem
+Adding debian:Autoridad_de_Certificacion_Firmaprofesional_CIF_A62634068.pem
+Adding debian:AddTrust_Public_Services_Root.pem
+Adding debian:NetLock_Notary_=Class_A=_Root.pem
+Adding debian:Actalis_Authentication_Root_CA.pem
+Adding debian:Camerfirma_Global_Chambersign_Root.pem
+Adding debian:Swisscom_Root_EV_CA_2.pem
+Adding debian:certSIGN_ROOT_CA.pem
+Adding debian:Swisscom_Root_CA_1.pem
+Adding debian:Entrust.net_Premium_2048_Secure_Server_CA.pem
+Adding debian:WoSign_China.pem
+Adding debian:DigiCert_Global_Root_G2.pem
+Adding debian:Certplus_Class_2_Primary_CA.pem
+Adding debian:IGC_A.pem
+Adding debian:Microsec_e-Szigno_Root_CA.pem
+Adding debian:Equifax_Secure_CA.pem
+Adding debian:CA_Disig.pem
+Adding debian:GlobalSign_Root_CA_-_R3.pem
+Adding debian:Hellenic_Academic_and_Research_Institutions_RootCA_2011.pem
+Adding debian:AddTrust_External_Root.pem
+Adding debian:DST_ACES_CA_X6.pem
+Adding debian:PSCProcert.pem
+Adding debian:UTN_USERFirst_Email_Root_CA.pem
+Adding debian:Certification_Authority_of_WoSign_G2.pem
+Adding debian:Entrust_Root_Certification_Authority_-_G2.pem
+Adding debian:GeoTrust_Universal_CA.pem
+Adding debian:Trustis_FPS_Root_CA.pem
+Adding debian:TÜRKTRUST_Elektronik_Sertifika_Hizmet_Sağlayıcısı_H6.pem
+Adding debian:Microsec_e-Szigno_Root_CA_2009.pem
+Adding debian:ComSign_CA.pem
+Adding debian:Staat_der_Nederlanden_EV_Root_CA.pem
+Adding debian:TWCA_Root_Certification_Authority.pem
+Adding debian:QuoVadis_Root_CA_2_G3.pem
+Adding debian:AddTrust_Qualified_Certificates_Root.pem
+Adding debian:CA_WoSign_ECC_Root.pem
+Adding debian:GeoTrust_Primary_Certification_Authority_-_G3.pem
+Adding debian:SwissSign_Gold_CA_-_G2.pem
+Adding debian:Go_Daddy_Root_Certificate_Authority_-_G2.pem
+Adding debian:Starfield_Services_Root_Certificate_Authority_-_G2.pem
+Adding debian:Verisign_Class_1_Public_Primary_Certification_Authority_-_G3.pem
+Adding debian:Entrust_Root_Certification_Authority_-_EC1.pem
+Adding debian:NetLock_Arany_=Class_Gold=_Főtanúsítvány.pem
+Adding debian:DigiCert_Global_Root_G3.pem
+Adding debian:Entrust_Root_Certification_Authority.pem
+Adding debian:ACEDICOM_Root.pem
+Adding debian:Verisign_Class_3_Public_Primary_Certification_Authority_-_G2.pem
+Adding debian:AffirmTrust_Networking.pem
+Adding debian:Staat_der_Nederlanden_Root_CA_-_G2.pem
+Adding debian:GlobalSign_ECC_Root_CA_-_R5.pem
+Adding debian:Buypass_Class_2_CA_1.pem
+Adding debian:Equifax_Secure_Global_eBusiness_CA.pem
+Adding debian:Certigna.pem
+Adding debian:Verisign_Class_2_Public_Primary_Certification_Authority_-_G2.pem
+Adding debian:NetLock_Qualified_=Class_QA=_Root.pem
+Adding debian:AffirmTrust_Premium.pem
+Adding debian:Verisign_Class_3_Public_Primary_Certification_Authority_-_G3.pem
+Adding debian:Juur-SK.pem
+Adding debian:GlobalSign_ECC_Root_CA_-_R4.pem
+Adding debian:D-TRUST_Root_Class_3_CA_2_2009.pem
+Adding debian:E-Tugra_Certification_Authority.pem
+Adding debian:DigiCert_Assured_ID_Root_G3.pem
+Adding debian:DigiCert_Assured_ID_Root_G2.pem
+Adding debian:VeriSign_Class_3_Public_Primary_Certification_Authority_-_G4.pem
+Adding debian:CNNIC_ROOT.pem
+Adding debian:GeoTrust_Primary_Certification_Authority.pem
+Adding debian:COMODO_Certification_Authority.pem
+Adding debian:COMODO_RSA_Certification_Authority.pem
+Adding debian:AC_Raíz_Certicámara_S.A..pem
+Adding debian:WellsSecure_Public_Root_Certificate_Authority.pem
+Adding debian:OISTE_WISeKey_Global_Root_GA_CA.pem
+Adding debian:ePKI_Root_Certification_Authority.pem
+Adding debian:Izenpe.com.pem
+Adding debian:NetLock_Business_=Class_B=_Root.pem
+Adding debian:IdenTrust_Commercial_Root_CA_1.pem
+Adding debian:IdenTrust_Public_Sector_Root_CA_1.pem
+Adding debian:Verisign_Class_1_Public_Primary_Certification_Authority.pem
+Adding debian:Comodo_AAA_Services_root.pem
+Adding debian:SecureTrust_CA.pem
+Adding debian:T-TeleSec_GlobalRoot_Class_2.pem
+Adding debian:EBG_Elektronik_Sertifika_Hizmet_Sağlayıcısı.pem
+Adding debian:AddTrust_Low-Value_Services_Root.pem
+Adding debian:thawte_Primary_Root_CA_-_G2.pem
+Adding debian:Root_CA_Generalitat_Valenciana.pem
+Adding debian:DigiCert_Assured_ID_Root_CA.pem
+Adding debian:Staat_der_Nederlanden_Root_CA.pem
+Adding debian:CFCA_EV_ROOT.pem
+Adding debian:Security_Communication_EV_RootCA1.pem
+Adding debian:Verisign_Class_2_Public_Primary_Certification_Authority_-_G3.pem
+Adding debian:TÜBİTAK_UEKAE_Kök_Sertifika_Hizmet_Sağlayıcısı_-_Sürüm_3.pem
+Adding debian:TC_TrustCenter_Class_3_CA_II.pem
+Adding debian:Buypass_Class_3_Root_CA.pem
+Adding debian:Secure_Global_CA.pem
+Adding debian:Sonera_Class_1_Root_CA.pem
+Adding debian:GlobalSign_Root_CA_-_R2.pem
+Adding debian:Security_Communication_RootCA2.pem
+Adding debian:StartCom_Certification_Authority_2.pem
+Adding debian:Security_Communication_Root_CA.pem
+Adding debian:AffirmTrust_Premium_ECC.pem
+Adding debian:Sonera_Class_2_Root_CA.pem
+Adding debian:Network_Solutions_Certificate_Authority.pem
+Adding debian:D-TRUST_Root_Class_3_CA_2_EV_2009.pem
+Adding debian:Visa_eCommerce_Root.pem
+Adding debian:StartCom_Certification_Authority_G2.pem
+Adding debian:GlobalSign_Root_CA.pem
+Adding debian:COMODO_ECC_Certification_Authority.pem
+Adding debian:QuoVadis_Root_CA_1_G3.pem
+Adding debian:China_Internet_Network_Information_Center_EV_Certificates_Root.pem
+Adding debian:Certinomis_-_Autorite_Racine.pem
+Adding debian:SwissSign_Silver_CA_-_G2.pem
+Adding debian:Buypass_Class_2_Root_CA.pem
+Adding debian:Global_Chambersign_Root_-_2008.pem
+Adding debian:EC-ACC.pem
+Adding debian:GeoTrust_Global_CA_2.pem
+Adding debian:EE_Certification_Centre_Root_CA.pem
+Adding debian:CA_Disig_Root_R1.pem
+Adding debian:TURKTRUST_Certificate_Services_Provider_Root_2007.pem
+Adding debian:QuoVadis_Root_CA.pem
+Adding debian:GeoTrust_Global_CA.pem
+Adding debian:Equifax_Secure_eBusiness_CA_1.pem
+Adding debian:QuoVadis_Root_CA_3.pem
+Adding debian:S-TRUST_Authentication_and_Encryption_Root_CA_2005_PN.pem
+Adding debian:StartCom_Certification_Authority.pem
+Adding debian:Hongkong_Post_Root_CA_1.pem
+Adding debian:VeriSign_Class_3_Public_Primary_Certification_Authority_-_G5.pem
+Adding debian:Verisign_Class_1_Public_Primary_Certification_Authority_-_G2.pem
+Adding debian:USERTrust_RSA_Certification_Authority.pem
+Adding debian:NetLock_Express_=Class_C=_Root.pem
+Adding debian:SwissSign_Platinum_CA_-_G2.pem
+Adding debian:thawte_Primary_Root_CA_-_G3.pem
+Adding debian:QuoVadis_Root_CA_3_G3.pem
+Adding debian:Comodo_Trusted_Services_root.pem
+Adding debian:TÜRKTRUST_Elektronik_Sertifika_Hizmet_Sağlayıcısı_H5.pem
+Adding debian:Deutsche_Telekom_Root_CA_2.pem
+Adding debian:Comodo_Secure_Services_root.pem
+Adding debian:thawte_Primary_Root_CA.pem
+Adding debian:ACCVRAIZ1.pem
+Adding debian:Taiwan_GRCA.pem
+Adding debian:Certinomis_-_Root_CA.pem
+Adding debian:XRamp_Global_CA_Root.pem
+Adding debian:Verisign_Class_3_Public_Primary_Certification_Authority.pem
+Adding debian:Cybertrust_Global_Root.pem
+Adding debian:ApplicationCA_-_Japanese_Government.pem
+Adding debian:T-TeleSec_GlobalRoot_Class_3.pem
+Adding debian:Staat_der_Nederlanden_Root_CA_-_G3.pem
+Adding debian:GeoTrust_Primary_Certification_Authority_-_G2.pem
+Adding debian:OISTE_WISeKey_Global_Root_GB_CA.pem
+Adding debian:RSA_Security_2048_v3.pem
+Adding debian:Starfield_Class_2_CA.pem
+Adding debian:SecureSign_RootCA11.pem
+Adding debian:VeriSign_Universal_Root_Certification_Authority.pem
+Adding debian:Starfield_Root_Certificate_Authority_-_G2.pem
+Adding debian:Certum_Trusted_Network_CA.pem
+Adding debian:Verisign_Class_3_Public_Primary_Certification_Authority_2.pem
+Adding debian:DigiCert_High_Assurance_EV_Root_CA.pem
+Adding debian:DST_Root_CA_X3.pem
+Adding debian:DigiCert_Trusted_Root_G4.pem
+Adding debian:Chambers_of_Commerce_Root_-_2008.pem
+Adding debian:QuoVadis_Root_CA_2.pem
+Adding debian:Certum_Root_CA.pem
+Adding debian:Baltimore_CyberTrust_Root.pem
+Adding debian:TWCA_Global_Root_CA.pem
+Adding debian:Go_Daddy_Class_2_CA.pem
+Adding debian:Atos_TrustedRoot_2011.pem
+Adding debian:WoSign.pem
+Adding debian:UTN_USERFirst_Hardware_Root_CA.pem
+Adding debian:AffirmTrust_Commercial.pem
+done.
+Processing triggers for libc-bin (2.19-0ubuntu6.7) ...
+Processing triggers for ureadahead (0.100.0-16) ...
+Processing triggers for ca-certificates (20160104ubuntu0.14.04.1) ...
+Updating certificates in /etc/ssl/certs... 0 added, 0 removed; done.
+Running hooks in /etc/ca-certificates/update.d....
+done.
+done.
+Errors were encountered while processing:
+ jenkins
+E: Sub-process /usr/bin/dpkg returned an error code (1)
+root@denny-02:~#
+#+END_EXAMPLE
+** DONE Fail to start docker: yum install device-mapper-event-libs
+  CLOSED: [2015-11-13 Fri 23:50]
+http://qicheng0211.blog.51cto.com/3958621/1582909
+
+#+BEGIN_EXAMPLE
+docker: relocation error: docker: symbol
+dm_task_get_info_with_deferred_remove, version Base not defined in
+file libdevmapper.so.1.02 with link time reference 报这个错误的时候,
+运行yum install device-mapper-event-libs即可. 详见:
+http://stackoverflow.com/questions/27216473/docker-1-3-fails-to-start-on-rhel6-5
+#+END_EXAMPLE
+
+不升级内核会报错,我把错误摘一下:
+[info] WARNING: You are running linux kernel version 2.6.32-431.el6.x86_64, which might be unstable running docker. Please upgrade your kernel to 3.8.0.
+/usr/bin/docker: relocation error: /usr/bin/docker: symbol dm_task_get_info_with_deferred_remove, version Base not defined in file libdevmapper.so.1.02 with link time reference
+
+#+BEGIN_EXAMPLE
+[root@osc-serv-01 ~(keystone_admin)]#  tail  /var/log/docker
+\nFri Nov 13 10:43:02 EST 2015\n
+time="2015-11-13T10:43:02.571108787-05:00" level=info msg="Listening for HTTP on unix (/var/run/docker.sock)"
+time="2015-11-13T10:43:02.578820070-05:00" level=warning msg="You are running linux kernel version 2.6.32-431.el6.x86_64, which might be unstable running docker. Please upgrade your kernel to 3.10.0."
+/usr/bin/docker: relocation error: /usr/bin/docker: symbol dm_task_get_info_with_deferred_remove, version Base not defined in file libdevmapper.so.1.02 with link time reference
+\nFri Nov 13 10:44:22 EST 2015\n
+time="2015-11-13T10:44:22.435590912-05:00" level=warning msg="You are running linux kernel version 2.6.32-431.el6.x86_64, which might be unstable running docker. Please upgrade your kernel to 3.10.0."
+/usr/bin/docker: relocation error: /usr/bin/docker: symbol dm_task_get_info_with_deferred_remove, version Base not defined in file libdevmapper.so.1.02 with link time reference
+#+END_EXAMPLE
+** HALF librarian-puppet install fail: undefined method `load_file' for Psych:Module (NoMethodError)
+https://github.com/sferik/t/issues/258
+#+BEGIN_EXAMPLE
+macs-air:puppet-kitchen-example mac$ librarian-puppet install
+librarian-puppet install
+/Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/config/file_source.rb:27:in `load': undefined method `load_file' for Psych:Module (NoMethodError)
+	from /Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/config/source.rb:60:in `load!'
+	from /Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/config/source.rb:40:in `[]='
+	from /Library/Ruby/Gems/2.0.0/gems/librarian-puppet-2.1.0/lib/librarian/puppet/cli.rb:55:in `install'
+	from /Library/Ruby/Gems/2.0.0/gems/thor-0.19.1/lib/thor/command.rb:27:in `run'
+	from /Library/Ruby/Gems/2.0.0/gems/thor-0.19.1/lib/thor/invocation.rb:126:in `invoke_command'
+	from /Library/Ruby/Gems/2.0.0/gems/thor-0.19.1/lib/thor.rb:359:in `dispatch'
+	from /Library/Ruby/Gems/2.0.0/gems/thor-0.19.1/lib/thor/base.rb:440:in `start'
+	from /Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/cli.rb:26:in `block (2 levels) in bin!'
+	from /Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/cli.rb:31:in `returning_status'
+	from /Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/cli.rb:26:in `block in bin!'
+	from /Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/cli.rb:47:in `with_environment'
+	from /Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/cli.rb:26:in `bin!'
+	from /Library/Ruby/Gems/2.0.0/gems/librarian-puppet-2.1.0/bin/librarian-puppet:7:in `<top (required)>'
+	from /usr/bin/librarian-puppet:23:in `load'
+	from /usr/bin/librarian-puppet:23:in `<main>'
+#+END_EXAMPLE
+** DONE gem install berkshelf fail: need to install ruby2.2
+  CLOSED: [2016-08-22 Mon 17:41]
+root@bcdd70fb7cdc:/#     gem install berkshelf --no-ri --no-rdoc
+ERROR:  While executing gem ... (Gem::DependencyError)
+    Unable to resolve dependencies: berkshelf requires buff-extensions (~> 1.0); ridley requires buff-extensions (~> 1.0); buff-config requires buff-extensions (~> 1.0); varia_model requires buff-extensions (~> 1.0)
+** DONE webdriver-manager error: cannot find Chrome binary: Need to install chrome
+  CLOSED: [2015-07-02 Thu 00:03]
+http://askubuntu.com/questions/510056/how-to-install-google-chrome-on-ubuntu
+#+BEGIN_EXAMPLE
+root@f02e02f7c2bd:~# webdriver-manager start
+seleniumProcess.pid: 5862
+04:52:29.436 INFO - Launching a standalone server
+Setting system property webdriver.chrome.driver to /usr/lib/node_modules/protractor/selenium/chromedriver
+04:52:29.465 INFO - Java: Oracle Corporation 24.79-b02
+04:52:29.465 INFO - OS: Linux 3.13.0-53-generic amd64
+04:52:29.476 INFO - v2.45.0, with Core v2.45.0. Built from revision 5017cb8
+04:52:29.543 INFO - Default driver org.openqa.selenium.ie.InternetExplorerDriver registration is skipped: registration capabilities Capabilities [{platform=WINDOWS, ensureCleanSession=true, browserName=internet explorer, version=}] does not match with current platform: LINUX
+04:52:29.568 INFO - RemoteWebDriver instances should connect to: http://127.0.0.1:4444/wd/hub
+04:52:29.568 INFO - Version Jetty/5.1.x
+04:52:29.569 INFO - Started HttpContext[/selenium-server/driver,/selenium-server/driver]
+04:52:29.569 INFO - Started HttpContext[/selenium-server,/selenium-server]
+04:52:29.570 INFO - Started HttpContext[/,/]
+04:52:29.583 INFO - Started org.openqa.jetty.jetty.servlet.ServletHandler@6f3ee250
+04:52:29.583 INFO - Started HttpContext[/wd,/wd]
+04:52:29.586 INFO - Started SocketListener on 0.0.0.0:4444
+04:52:29.586 INFO - Started org.openqa.jetty.jetty.Server@543d8ee8
+04:52:46.064 INFO - Executing: [new session: Capabilities [{count=1, browserName=chrome}]])
+04:52:46.076 INFO - Creating a new session for Capabilities [{count=1, browserName=chrome}]
+Starting ChromeDriver 2.15.322448 (52179c1b310fec1797c81ea9a20326839860b7d3) on port 6783
+Only local connections are allowed.
+04:52:47.404 WARN - Exception thrown
+java.util.concurrent.ExecutionException: org.openqa.selenium.WebDriverException: java.lang.reflect.InvocationTargetException
+Build info: version: '2.45.0', revision: '5017cb8', time: '2015-02-26 23:59:50'
+System info: host: 'f02e02f7c2bd', ip: '172.17.0.191', os.name: 'Linux', os.arch: 'amd64', os.version: '3.13.0-53-generic', java.version: '1.7.0_79'
+Driver info: driver.version: unknown
+	at java.util.concurrent.FutureTask.report(FutureTask.java:122)
+	at java.util.concurrent.FutureTask.get(FutureTask.java:188)
+	at org.openqa.selenium.remote.server.DefaultSession.execute(DefaultSession.java:175)
+	at org.openqa.selenium.remote.server.DefaultSession.<init>(DefaultSession.java:111)
+	at org.openqa.selenium.remote.server.DefaultSession.createSession(DefaultSession.java:88)
+	at org.openqa.selenium.remote.server.DefaultDriverSessions.newSession(DefaultDriverSessions.java:109)
+	at org.openqa.selenium.remote.server.handler.NewSession.handle(NewSession.java:57)
+	at org.openqa.selenium.remote.server.handler.NewSession.handle(NewSession.java:1)
+	at org.openqa.selenium.remote.server.rest.ResultConfig.handle(ResultConfig.java:110)
+	at org.openqa.selenium.remote.server.JsonHttpCommandHandler.handleRequest(JsonHttpCommandHandler.java:172)
+	at org.openqa.selenium.remote.server.DriverServlet.handleRequest(DriverServlet.java:201)
+	at org.openqa.selenium.remote.server.DriverServlet.doPost(DriverServlet.java:163)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:727)
+	at org.openqa.selenium.remote.server.DriverServlet.service(DriverServlet.java:129)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:820)
+	at org.openqa.jetty.jetty.servlet.ServletHolder.handle(ServletHolder.java:428)
+	at org.openqa.jetty.jetty.servlet.ServletHandler.dispatch(ServletHandler.java:680)
+	at org.openqa.jetty.jetty.servlet.ServletHandler.handle(ServletHandler.java:571)
+	at org.openqa.jetty.http.HttpContext.handle(HttpContext.java:1526)
+	at org.openqa.jetty.http.HttpContext.handle(HttpContext.java:1479)
+	at org.openqa.jetty.http.HttpServer.service(HttpServer.java:920)
+	at org.openqa.jetty.http.HttpConnection.service(HttpConnection.java:820)
+	at org.openqa.jetty.http.HttpConnection.handleNext(HttpConnection.java:986)
+	at org.openqa.jetty.http.HttpConnection.handle(HttpConnection.java:837)
+	at org.openqa.jetty.http.SocketListener.handleConnection(SocketListener.java:243)
+	at org.openqa.jetty.util.ThreadedServer.handle(ThreadedServer.java:358)
+	at org.openqa.jetty.util.ThreadPool$PoolThread.run(ThreadPool.java:537)
+Caused by: org.openqa.selenium.WebDriverException: java.lang.reflect.InvocationTargetException
+Build info: version: '2.45.0', revision: '5017cb8', time: '2015-02-26 23:59:50'
+System info: host: 'f02e02f7c2bd', ip: '172.17.0.191', os.name: 'Linux', os.arch: 'amd64', os.version: '3.13.0-53-generic', java.version: '1.7.0_79'
+Driver info: driver.version: unknown
+	at org.openqa.selenium.remote.server.DefaultDriverProvider.callConstructor(DefaultDriverProvider.java:69)
+	at org.openqa.selenium.remote.server.DefaultDriverProvider.newInstance(DefaultDriverProvider.java:53)
+	at org.openqa.selenium.remote.server.DefaultDriverFactory.newInstance(DefaultDriverFactory.java:54)
+	at org.openqa.selenium.remote.server.DefaultSession$BrowserCreator.call(DefaultSession.java:214)
+	at org.openqa.selenium.remote.server.DefaultSession$BrowserCreator.call(DefaultSession.java:1)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:262)
+	at org.openqa.selenium.remote.server.DefaultSession$1.run(DefaultSession.java:168)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:57)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:526)
+	at org.openqa.selenium.remote.server.DefaultDriverProvider.callConstructor(DefaultDriverProvider.java:59)
+	... 9 more
+Caused by: org.openqa.selenium.WebDriverException: unknown error: cannot find Chrome binary
+  (Driver info: chromedriver=2.15.322448 (52179c1b310fec1797c81ea9a20326839860b7d3),platform=Linux 3.13.0-53-generic x86_64) (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 590 milliseconds
+Build info: version: '2.45.0', revision: '5017cb8', time: '2015-02-26 23:59:50'
+System info: host: 'f02e02f7c2bd', ip: '172.17.0.191', os.name: 'Linux', os.arch: 'amd64', os.version: '3.13.0-53-generic', java.version: '1.7.0_79'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:57)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:526)
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:204)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:156)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:599)
+	at org.openqa.selenium.remote.RemoteWebDriver.startSession(RemoteWebDriver.java:240)
+	at org.openqa.selenium.remote.RemoteWebDriver.<init>(RemoteWebDriver.java:126)
+	at org.openqa.selenium.remote.RemoteWebDriver.<init>(RemoteWebDriver.java:139)
+	at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:171)
+	at org.openqa.selenium.chrome.ChromeDriver.<init>(ChromeDriver.java:139)
+	... 14 more
+04:52:47.413 WARN - Exception: unknown error: cannot find Chrome binary
+  (Driver info: chromedriver=2.15.322448 (52179c1b310fec1797c81ea9a20326839860b7d3),platform=Linux 3.13.0-53-generic x86_64) (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 590 milliseconds
+Build info: version: '2.45.0', revision: '5017cb8', time: '2015-02-26 23:59:50'
+System info: host: 'f02e02f7c2bd', ip: '172.17.0.191', os.name: 'Linux', os.arch: 'amd64', os.version: '3.13.0-53-generic', java.version: '1.7.0_79'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+#+END_EXAMPLE
+** DONE nodejs sails: Error: Cannot find module 'nodemailer': npm install nodemailer
+CLOSED: [2014-07-20 Sun 13:42]
+https://github.com/sockethub/sockethub/issues/104
+
+#+begin_example
+root@ubuntu188:/home/website/AmazingReader# sails lift
+sails lift
+
+module.js:340
+    throw err;
+          ^
+Error: Cannot find module 'nodemailer'
+    at Function.Module._resolveFilename (module.js:338:15)
+    at Function.Module._load (module.js:280:25)
+    at Module.require (module.js:364:17)
+    at require (module.js:380:17)
+    at Object.<anonymous> (/home/website/AmazingReader/api/controllers/ApplyController.js:17:18)
+    at Module._compile (module.js:456:26)
+    at Object.Module._extensions..js (module.js:474:10)
+    at Module.load (module.js:356:32)
+    at Function.Module._load (module.js:312:12)
+    at Module.require (module.js:364:17)
+    at require (module.js:380:17)
+    at /usr/lib/node_modules/sails/node_modules/include-all/index.js:96:53
+    at Array.forEach (native)
+    at requireAll (/usr/lib/node_modules/sails/node_modules/include-all/index.js:40:9)
+    at buildDictionary (/usr/lib/node_modules/sails/lib/moduleloader/buildDictionary.js:63:14)
+    at Object.module.exports.optional (/usr/lib/node_modules/sails/lib/moduleloader/index.js:40:10)
+    at Hook.loadMiddleware (/usr/lib/node_modules/sails/lib/hooks/controllers/index.js:194:12)
+    at Hook.bound [as loadMiddleware] (/usr/lib/node_modules/sails/node_modules/lodash/dist/lodash.js:729:21)
+    at Hook.initialize (/usr/lib/node_modules/sails/lib/hooks/controllers/index.js:71:9)
+    at Hook.bound [as initialize] (/usr/lib/node_modules/sails/node_modules/lodash/dist/lodash.js:729:21)
+    at Hook.load (/usr/lib/node_modules/sails/lib/hooks/index.js:70:32)
+    at initializeHook (/usr/lib/node_modules/sails/lib/app/load.js:174:16)
+    at /usr/lib/node_modules/sails/node_modules/async/lib/async.js:108:13
+    at Array.forEach (native)
+    at _each (/usr/lib/node_modules/sails/node_modules/async/lib/async.js:32:24)
+    at Object.async.each (/usr/lib/node_modules/sails/node_modules/async/lib/async.js:107:9)
+    at Array.async.auto.initialize [as 0] (/usr/lib/node_modules/sails/lib/app/load.js:172:11)
+    at /usr/lib/node_modules/sails/node_modules/async/lib/async.js:456:38
+    at Array.forEach (native)
+    at _each (/usr/lib/node_modules/sails/node_modules/async/lib/async.js:32:24)
+    at Object.async.auto (/usr/lib/node_modules/sails/node_modules/async/lib/async.js:427:9)
+    at initializeHooks (/usr/lib/node_modules/sails/lib/app/load.js:169:9)
+    at /usr/lib/node_modules/sails/lib/app/load.js:91:20
+    at /usr/lib/node_modules/sails/node_modules/async/lib/async.js:548:21
+    at /usr/lib/node_modules/sails/node_modules/async/lib/async.js:224:13
+    at iterate (/usr/lib/node_modules/sails/node_modules/async/lib/async.js:131:13)
+    at /usr/lib/node_modules/sails/node_modules/async/lib/async.js:142:25
+    at /usr/lib/node_modules/sails/node_modules/async/lib/async.js:226:17
+    at /usr/lib/node_modules/sails/node_modules/async/lib/async.js:553:34
+    at hookDefinitionsLoaded (/usr/lib/node_modules/sails/lib/app/load.js:125:11)
+    at buildDictionary (/usr/lib/node_modules/sails/lib/moduleloader/buildDictionary.js:129:9)
+    at Object.module.exports.optional (/usr/lib/node_modules/sails/lib/moduleloader/index.js:40:10)
+    at loadHookDefinitions (/usr/lib/node_modules/sails/lib/app/load.js:109:11)
+    at /usr/lib/node_modules/sails/lib/app/load.js:90:20
+    at /usr/lib/node_modules/sails/node_modules/async/lib/async.js:548:21
+    at /usr/lib/node_modules/sails/node_modules/async/lib/async.js:224:13
+    at iterate (/usr/lib/node_modules/sails/node_modules/async/lib/async.js:131:13)
+    at async.eachSeries (/usr/lib/node_modules/sails/node_modules/async/lib/async.js:147:9)
+    at _asyncMap (/usr/lib/node_modules/sails/node_modules/async/lib/async.js:223:9)
+    at Object.mapSeries (/usr/lib/node_modules/sails/node_modules/async/lib/async.js:213:23)
+    at Object.async.series (/usr/lib/node_modules/sails/node_modules/async/lib/async.js:546:19)
+    at Array.loadHooks [as 1] (/usr/lib/node_modules/sails/lib/app/load.js:89:9)
+    at listener (/usr/lib/node_modules/sails/node_modules/async/lib/async.js:462:46)
+    at /usr/lib/node_modules/sails/node_modules/async/lib/async.js:416:17
+    at Array.forEach (native)
+    at _each (/usr/lib/node_modules/sails/node_modules/async/lib/async.js:32:24)
+    at Object.taskComplete (/usr/lib/node_modules/sails/node_modules/async/lib/async.js:415:13)
+    at processImmediate [as _immediateCallback] (timers.js:336:15)
+#+end_example
+** HALF librarian-puppet install fail: undefined method `load_file' for Psych:Module (NoMethodError)
+https://github.com/sferik/t/issues/258
+#+BEGIN_EXAMPLE
+macs-air:puppet-kitchen-example mac$ librarian-puppet install
+librarian-puppet install
+/Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/config/file_source.rb:27:in `load': undefined method `load_file' for Psych:Module (NoMethodError)
+	from /Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/config/source.rb:60:in `load!'
+	from /Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/config/source.rb:40:in `[]='
+	from /Library/Ruby/Gems/2.0.0/gems/librarian-puppet-2.1.0/lib/librarian/puppet/cli.rb:55:in `install'
+	from /Library/Ruby/Gems/2.0.0/gems/thor-0.19.1/lib/thor/command.rb:27:in `run'
+	from /Library/Ruby/Gems/2.0.0/gems/thor-0.19.1/lib/thor/invocation.rb:126:in `invoke_command'
+	from /Library/Ruby/Gems/2.0.0/gems/thor-0.19.1/lib/thor.rb:359:in `dispatch'
+	from /Library/Ruby/Gems/2.0.0/gems/thor-0.19.1/lib/thor/base.rb:440:in `start'
+	from /Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/cli.rb:26:in `block (2 levels) in bin!'
+	from /Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/cli.rb:31:in `returning_status'
+	from /Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/cli.rb:26:in `block in bin!'
+	from /Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/cli.rb:47:in `with_environment'
+	from /Library/Ruby/Gems/2.0.0/gems/librarianp-0.6.2/lib/librarian/cli.rb:26:in `bin!'
+	from /Library/Ruby/Gems/2.0.0/gems/librarian-puppet-2.1.0/bin/librarian-puppet:7:in `<top (required)>'
+	from /usr/bin/librarian-puppet:23:in `load'
+	from /usr/bin/librarian-puppet:23:in `<main>'
+#+END_EXAMPLE
+** #  --8<-------------------------- separator ------------------------>8--
+** TODO package installation failure
+#+BEGIN_EXAMPLE
+2016-07-18 15:52:35          * apt_package[tmux] action install (skipped due to not_if)
+2016-07-18 15:52:39          * apt_package[syslinux] action install
+2016-07-18 15:52:39
+2016-07-18 15:52:39            ================================================================================
+2016-07-18 15:52:39            Error executing action `install` on resource 'apt_package[syslinux]'
+2016-07-18 15:52:39            ================================================================================
+2016-07-18 15:52:39
+2016-07-18 15:52:39            Mixlib::ShellOut::ShellCommandFailed
+2016-07-18 15:52:39            ------------------------------------
+2016-07-18 15:52:39            Expected process to exit with [0], but received '100'
+2016-07-18 15:52:39            ---- Begin output of apt-get -q -y install syslinux=3:4.05+dfsg-6+deb8u1 ----
+2016-07-18 15:52:39            STDOUT: Reading package lists...
+2016-07-18 15:52:39            Building dependency tree...
+2016-07-18 15:52:39            Reading state information...
+2016-07-18 15:52:39            The following extra packages will be installed:
+2016-07-18 15:52:39              libcrypt-passwdmd5-perl mtools syslinux-common
+2016-07-18 15:52:39            Suggested packages:
+2016-07-18 15:52:39              floppyd dosfstools os-prober
+2016-07-18 15:52:39            The following NEW packages will be installed:
+2016-07-18 15:52:39              libcrypt-passwdmd5-perl mtools syslinux syslinux-common
+2016-07-18 15:52:39            0 upgraded, 4 newly installed, 0 to remove and 115 not upgraded.
+2016-07-18 15:52:39            Need to get 1177 kB of archives.
+2016-07-18 15:52:39            After this operation, 3906 kB of additional disk space will be used.
+2016-07-18 15:52:39            WARNING: The following packages cannot be authenticated!
+2016-07-18 15:52:39
+2016-07-18 15:52:39            STDERR: E: There are problems and -y was used without --force-yes
+2016-07-18 15:52:39            ---- End output of apt-get -q -y install syslinux=3:4.05+dfsg-6+deb8u1 ----
+2016-07-18 15:52:39            Ran apt-get -q -y install syslinux=3:4.05+dfsg-6+deb8u1 returned 100
+2016-07-18 15:52:39
+2016-07-18 15:52:39            Resource Declaration:
+2016-07-18 15:52:39            ---------------------
+2016-07-18 15:52:39            # In /var/chef/cache/cookbooks/devops_basic/recipes/packages.rb
+2016-07-18 15:52:39
+2016-07-18 15:52:39             14:   package x do
+2016-07-18 15:52:39             15:     action :install
+2016-07-18 15:52:39             16:     not_if "dpkg -l #{x} | grep -E '^ii'"
+2016-07-18 15:52:39             17:   end
+2016-07-18 15:52:39             18: end
+2016-07-18 15:52:39
+2016-07-18 15:52:39            Compiled Resource:
+2016-07-18 15:52:39            ------------------
+2016-07-18 15:52:39            # Declared in /var/chef/cache/cookbooks/devops_basic/recipes/packages.rb:14:in `block in from_file'
+2016-07-18 15:52:39
+2016-07-18 15:52:39            apt_package("syslinux") do
+2016-07-18 15:52:39              action [:install]
+2016-07-18 15:52:39              retries 0
+2016-07-18 15:52:39              retry_delay 2
+2016-07-18 15:52:39              default_guard_interpreter :default
+2016-07-18 15:52:39              package_name "syslinux"
+2016-07-18 15:52:39              declared_type :package
+2016-07-18 15:52:39              cookbook_name "devops_basic"
+2016-07-18 15:52:39              recipe_name "packages"
+2016-07-18 15:52:39              not_if "dpkg -l syslinux | grep -E '^ii'"
+2016-07-18 15:52:39            end
+2016-07-18 15:52:39
+2016-07-18 15:52:39
+2016-07-18 15:52:39        Running handlers:
+2016-07-18 15:52:39        [2016-07-18T15:52:39+00:00] ERROR: Running exception handlers
+2016-07-18 15:52:39        Run customized commands after failure:
+2016-07-18 15:52:39        Check Report: /root/chef_update/report.txt
+2016-07-18 15:52:39          - MyChefReport::ChangReportHandler
+2016-07-18 15:52:39        Running handlers complete
+2016-07-18 15:52:39        [2016-07-18T15:52:39+00:00] ERROR: Exception handlers complete
+2016-07-18 15:52:39        Chef Client failed. 34 resources updated in 01 minutes 14 seconds
+2016-07-18 15:52:39        [2016-07-18T15:52:39+00:00] FATAL: Stacktrace dumped to /var/chef/cache/chef-stacktrace.out
+2016-07-18 15:52:39        [2016-07-18T15:52:39+00:00] FATAL: Please provide the contents of the stacktrace.out file if you file a bug report
+2016-07-18 15:52:39        [2016-07-18T15:52:39+00:00] ERROR: apt_package[syslinux] (devops_basic::packages line 14) had an error: Mixlib::ShellOut::ShellCommandFailed: Expected process to exit with [0], but received '100'
+#+END_EXAMPLE
+** TODO [#A] install apt repository fail                          :IMPORTANT:
+#+BEGIN_SRC ruby
+apt_repository 'haproxy-repo' do
+  uri 'ppa:vbernat/haproxy-1.6'
+  distribution node['lsb']['codename']
+  key '1C61B9CD'
+  keyserver 'keyserver.ubuntu.com'
+  retries 3
+  retry_delay 3
+  not_if { ::File.exist?('/etc/apt/sources.list.d/haproxy-repo.list') }
+end
+#+END_SRC
+
+2016-07-26 23:38:59        Run customized commands after failure:
+2016-07-26 23:38:59        Check Report: /root/chef_update/report.txt
+2016-07-26 23:38:59          - MyChefReport::ChangReportHandler
+2016-07-26 23:38:59        Running handlers complete
+2016-07-26 23:38:59        [2016-07-26T23:38:59+00:00] ERROR: Exception handlers complete
+2016-07-26 23:38:59        Chef Client failed. 143 resources updated in 07 minutes 01 seconds
+2016-07-26 23:38:59        [2016-07-26T23:38:59+00:00] FATAL: Stacktrace dumped to /var/chef/cache/chef-stacktrace.out
+2016-07-26 23:38:59        [2016-07-26T23:38:59+00:00] FATAL: Please provide the contents of the stacktrace.out file if you file a bug report
+2016-07-26 23:38:59        [2016-07-26T23:38:59+00:00] ERROR: apt_repository[haproxy-repo] (haproxy-mdm::install line 26) had an error: Mixlib::ShellOut::ShellCommandFailed: execute[install-key 1C61B9CD] (/var/chef/cache/cookbooks/apt/providers/repository.rb line 28) had an error: Mixlib::ShellOut::ShellCommandFailed: Expected process to exit with [0], but received '2'
+2016-07-26 23:38:59        ---- Begin output of apt-key adv --keyserver keyserver.ubuntu.com --recv 1C61B9CD ----
+2016-07-26 23:38:59        STDOUT: Executing: gpg --ignore-time-conflict --no-options --no-default-keyring --homedir /tmp/tmp.VTYpQ40FG8 --no-auto-check-trustdb --trust-model always --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyring /etc/apt/trusted.gpg.d/brightbox-ruby-ng.gpg --keyring /etc/apt/trusted.gpg.d/oreste-notelli-ppa.gpg --keyring /etc/apt/trusted.gpg.d/webupd8team-java.gpg --keyserver keyserver.ubuntu.com --recv 1C61B9CD
+2016-07-26 23:38:59        gpgkeys: key 1C61B9CD can't be retrieved
+2016-07-26 23:38:59        STDERR: gpg: requesting key 1C61B9CD from hkp server keyserver.ubuntu.com
+2016-07-26 23:38:59        gpg: no valid OpenPGP data found.
+2016-07-26 23:38:59        gpg: Total number processed: 0
+2016-07-26 23:38:59        ---- End output of apt-key adv --keyserver keyserver.ubuntu.com --recv 1C61B9CD ----
+2016-07-26 23:38:59        Ran apt-key adv --keyserver keyserver.ubuntu.com --recv 1C61B9CD returned 2
+2016-07-26 23:39:00        [2016-07-26T23:39:00+00:00] FATAL: Chef::Exceptions::ChildConvergeError: Chef run process exited unsuccessfully (exit code 1)
+2016-07-26 23:39:01 >>>>>> Converge failed on instance <default-ubuntu-1404>.
+2016-07-26 23:39:01 >>>>>> Please see .kitchen/logs/default-ubuntu-1404.log for more details
+2016-07-26 23:39:01 >>>>>> ------Exception-------
+2016-07-26 23:39:01 >>>>>> Class: Kitchen::ActionFailed
+2016-07-26 23:39:01 >>>>>> Message: SSH exited (1) for command: [sh -c '
+** DONE berks install error: Encoding::InvalidByteSequenceError: "\xC2" on US-ASCII
+  CLOSED: [2015-04-03 Fri 21:58]
+locale-gen --lang en_US.UTF-8
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
+export LC_CTYPE="en_US.UTF-8"
+
+#+BEGIN_EXAMPLE
+Using os-basic (0.0.1) from source at .
+Installing windows (1.36.6) from https://supermarket.getchef.com ([opscode] https://supermarket.chef.io/api/v1)
+E, [2015-04-04T02:23:21.961465 #384] ERROR -- : Actor crashed!
+Encoding::InvalidByteSequenceError: "\xC2" on US-ASCII
+	/var/lib/gems/1.9.1/gems/json-1.8.2/lib/json/common.rb:155:in `encode'
+	/var/lib/gems/1.9.1/gems/json-1.8.2/lib/json/common.rb:155:in `initialize'
+	/var/lib/gems/1.9.1/gems/json-1.8.2/lib/json/common.rb:155:in `new'
+	/var/lib/gems/1.9.1/gems/json-1.8.2/lib/json/common.rb:155:in `parse'
+	/var/lib/gems/1.9.1/gems/ridley-4.1.2/lib/ridley/chef/cookbook/metadata.rb:473:in `from_json'
+	/var/lib/gems/1.9.1/gems/ridley-4.1.2/lib/ridley/chef/cookbook/metadata.rb:29:in `from_json'
+	/var/lib/gems/1.9.1/gems/ridley-4.1.2/lib/ridley/chef/cookbook.rb:36:in `from_path'
+	/var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/cached_cookbook.rb:15:in `from_store_path'
+	/var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/cookbook_store.rb:86:in `cookbook'
+	/var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/cookbook_store.rb:67:in `import'
+	/var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/cookbook_store.rb:30:in `import'
+	/var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/installer.rb:106:in `block in install'
+	/var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/downloader.rb:38:in `block in download'
+	/var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/downloader.rb:35:in `each'
+	/var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/downloader.rb:35:in `download'
+	/var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/installer.rb:105:in `install'
+	/var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/calls.rb:26:in `public_send'
+	/var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/calls.rb:26:in `dispatch'
+	/var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/calls.rb:63:in `dispatch'
+	/var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/cell.rb:60:in `block in invoke'
+	/var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/cell.rb:71:in `block in task'
+	/var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/actor.rb:357:in `block in task'
+	/var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/tasks.rb:57:in `block in initialize'
+	/var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/tasks/task_fiber.rb:15:in `block in create'
+Installing yum-epel (0.6.0) from https://supermarket.getchef.com ([opscode] https://supermarket.chef.io/api/v1)
+Installing yum (3.5.3) from https://supermarket.getchef.com ([opscode] https://supermarket.chef.io/api/v1)
+/var/lib/gems/1.9.1/gems/json-1.8.2/lib/json/common.rb:155:in `encode': "\xC2" on US-ASCII (Encoding::InvalidByteSequenceError)
+	from /var/lib/gems/1.9.1/gems/json-1.8.2/lib/json/common.rb:155:in `initialize'
+	from /var/lib/gems/1.9.1/gems/json-1.8.2/lib/json/common.rb:155:in `new'
+	from /var/lib/gems/1.9.1/gems/json-1.8.2/lib/json/common.rb:155:in `parse'
+	from /var/lib/gems/1.9.1/gems/ridley-4.1.2/lib/ridley/chef/cookbook/metadata.rb:473:in `from_json'
+	from /var/lib/gems/1.9.1/gems/ridley-4.1.2/lib/ridley/chef/cookbook/metadata.rb:29:in `from_json'
+	from /var/lib/gems/1.9.1/gems/ridley-4.1.2/lib/ridley/chef/cookbook.rb:36:in `from_path'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/cached_cookbook.rb:15:in `from_store_path'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/cookbook_store.rb:86:in `cookbook'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/cookbook_store.rb:67:in `import'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/cookbook_store.rb:30:in `import'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/installer.rb:106:in `block in install'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/downloader.rb:38:in `block in download'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/downloader.rb:35:in `each'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/downloader.rb:35:in `download'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/installer.rb:105:in `install'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/calls.rb:26:in `public_send'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/calls.rb:26:in `dispatch'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/calls.rb:63:in `dispatch'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/cell.rb:60:in `block in invoke'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/cell.rb:71:in `block in task'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/actor.rb:357:in `block in task'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/tasks.rb:57:in `block in initialize'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/tasks/task_fiber.rb:15:in `block in create'
+	from (celluloid):0:in `remote procedure call'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/calls.rb:92:in `value'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/proxies/sync_proxy.rb:33:in `method_missing'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/proxies/cell_proxy.rb:17:in `_send_'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/pool_manager.rb:41:in `_send_'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/pool_manager.rb:140:in `method_missing'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/calls.rb:26:in `public_send'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/calls.rb:26:in `dispatch'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/calls.rb:63:in `dispatch'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/cell.rb:60:in `block in invoke'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/cell.rb:71:in `block in task'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/actor.rb:357:in `block in task'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/tasks.rb:57:in `block in initialize'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/tasks/task_fiber.rb:15:in `block in create'
+	from (celluloid):0:in `remote procedure call'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/future.rb:104:in `value'
+	from /var/lib/gems/1.9.1/gems/celluloid-0.16.0/lib/celluloid/future.rb:68:in `value'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/installer.rb:175:in `map'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/installer.rb:175:in `install_from_universe'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/installer.rb:39:in `run'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/berksfile.rb:374:in `install'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/cli.rb:143:in `install'
+	from /var/lib/gems/1.9.1/gems/thor-0.19.1/lib/thor/command.rb:27:in `run'
+	from /var/lib/gems/1.9.1/gems/thor-0.19.1/lib/thor/invocation.rb:126:in `invoke_command'
+	from /var/lib/gems/1.9.1/gems/thor-0.19.1/lib/thor.rb:359:in `dispatch'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/cli.rb:52:in `dispatch'
+	from /var/lib/gems/1.9.1/gems/thor-0.19.1/lib/thor/base.rb:440:in `start'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/lib/berkshelf/cli.rb:27:in `execute!'
+	from /var/lib/gems/1.9.1/gems/berkshelf-3.2.3/bin/berks:5:in `<top (required)>'
+	from /usr/local/bin/berks:23:in `load'
+	from /usr/local/bin/berks:23:in `<main>'
+#+END_EXAMPLE
+** TODO installation failure for adding apt repository
+http://104.131.129.100:48080/job/DockerDeployAllInOne/34/console
+#+BEGIN_EXAMPLE
+2016-08-05 08:09:53          * execute[apt-get-update-periodic] action run
+2016-08-05 08:09:53        - execute apt-get update
+2016-08-05 08:09:53          * directory[/var/cache/local] action create (up to date)
+2016-08-05 08:09:53          * directory[/var/cache/local/preseeding] action create (up to date)
+2016-08-05 08:09:53        Recipe: justniffer::default
+2016-08-05 08:09:54          * apt_repository[justniffer-repo] action add
+2016-08-05 08:09:56
+2016-08-05 08:09:56
+2016-08-05 08:09:56              ================================================================================
+2016-08-05 08:09:56              Error executing action `run` on resource 'execute[install-key E404C48A]'
+2016-08-05 08:09:56              ================================================================================
+2016-08-05 08:09:56
+2016-08-05 08:09:56              Mixlib::ShellOut::ShellCommandFailed
+2016-08-05 08:09:56              ------------------------------------
+2016-08-05 08:09:56              Expected process to exit with [0], but received '2'
+2016-08-05 08:09:56              ---- Begin output of apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A ----
+2016-08-05 08:09:56              STDOUT: Executing: gpg --ignore-time-conflict --no-options --no-default-keyring --homedir /tmp/tmp.IWhEUNMaQ4 --no-auto-check-trustdb --trust-model always --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyserver keyserver.ubuntu.com --recv E404C48A
+2016-08-05 08:09:56              gpgkeys: key E404C48A can't be retrieved
+2016-08-05 08:09:56              STDERR: gpg: requesting key E404C48A from hkp server keyserver.ubuntu.com
+2016-08-05 08:09:56              gpg: no valid OpenPGP data found.
+2016-08-05 08:09:56        gpg: Total number processed: 0
+2016-08-05 08:09:56              ---- End output of apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A ----
+2016-08-05 08:09:56
+2016-08-05 08:09:56
+2016-08-05 08:09:56        Resource Declaration:
+2016-08-05 08:09:56
+2016-08-05 08:09:56              # In /var/chef/cache/cookbooks/apt/providers/repository.rb
+2016-08-05 08:09:56
+2016-08-05 08:09:56        28:   execute "install-key #{key}" do
+2016-08-05 08:09:56        29:     if !node['apt']['key_proxy'].empty?
+2016-08-05 08:09:56        30:       command "apt-key adv --keyserver-options http-proxy=#{node['apt']['key_proxy']} --keyserver hkp://#{keyserver}:80 --recv #{key}"
+2016-08-05 08:09:56         31:     else
+2016-08-05 08:09:56        32:       command "apt-key adv --keyserver #{keyserver} --recv #{key}"
+2016-08-05 08:09:56         33:     end
+2016-08-05 08:09:56        34:     action :run
+2016-08-05 08:09:56
+2016-08-05 08:09:56
+2016-08-05 08:09:56              ------------------
+2016-08-05 08:09:56              # Declared in /var/chef/cache/cookbooks/apt/providers/repository.rb:28:in `install_key_from_keyserver'
+2016-08-05 08:09:56
+2016-08-05 08:09:56        execute("install-key E404C48A") do
+2016-08-05 08:09:56         action [:run]
+2016-08-05 08:09:56         retries 0
+2016-08-05 08:09:56         retry_delay 2
+2016-08-05 08:09:56         default_guard_interpreter :execute
+2016-08-05 08:09:56         command "apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A"
+2016-08-05 08:09:56         backup 5
+2016-08-05 08:09:56         returns 0
+2016-08-05 08:09:56
+2016-08-05 08:09:56         cookbook_name "justniffer"
+2016-08-05 08:09:56         not_if { #code block }
+2016-08-05 08:09:56        end
+2016-08-05 08:09:56
+2016-08-05 08:10:02            * execute[install-key E404C48A] action run
+2016-08-05 08:10:02
+2016-08-05 08:10:02              ================================================================================
+2016-08-05 08:10:02              Error executing action `run` on resource 'execute[install-key E404C48A]'
+2016-08-05 08:10:02              ================================================================================
+2016-08-05 08:10:02
+2016-08-05 08:10:02              Mixlib::ShellOut::ShellCommandFailed
+2016-08-05 08:10:02              ------------------------------------
+2016-08-05 08:10:02              Expected process to exit with [0], but received '2'
+2016-08-05 08:10:02              ---- Begin output of apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A ----
+2016-08-05 08:10:02              STDOUT: Executing: gpg --ignore-time-conflict --no-options --no-default-keyring --homedir /tmp/tmp.LUmifCtTFq --no-auto-check-trustdb --trust-model always --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyserver keyserver.ubuntu.com --recv E404C48A
+2016-08-05 08:10:02              gpgkeys: key E404C48A can't be retrieved
+2016-08-05 08:10:02              STDERR: gpg: requesting key E404C48A from hkp server keyserver.ubuntu.com
+2016-08-05 08:10:02              gpg: no valid OpenPGP data found.
+2016-08-05 08:10:02              gpg: Total number processed: 0
+2016-08-05 08:10:02              ---- End output of apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A ----
+2016-08-05 08:10:02              Ran apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A returned 2
+2016-08-05 08:10:02
+2016-08-05 08:10:02              Resource Declaration:
+2016-08-05 08:10:02              ---------------------
+2016-08-05 08:10:02              # In /var/chef/cache/cookbooks/apt/providers/repository.rb
+2016-08-05 08:10:02
+2016-08-05 08:10:02        28:   execute "install-key #{key}" do
+2016-08-05 08:10:02        29:     if !node['apt']['key_proxy'].empty?
+2016-08-05 08:10:02        30:       command "apt-key adv --keyserver-options http-proxy=#{node['apt']['key_proxy']} --keyserver hkp://#{keyserver}:80 --recv #{key}"
+2016-08-05 08:10:02        31:     else
+2016-08-05 08:10:02        32:       command "apt-key adv --keyserver #{keyserver} --recv #{key}"
+2016-08-05 08:10:02        33:     end
+2016-08-05 08:10:02        34:     action :run
+2016-08-05 08:10:02
+2016-08-05 08:10:02              Compiled Resource:
+2016-08-05 08:10:02              ------------------
+2016-08-05 08:10:02              # Declared in /var/chef/cache/cookbooks/apt/providers/repository.rb:28:in `install_key_from_keyserver'
+2016-08-05 08:10:02
+2016-08-05 08:10:02              execute("install-key E404C48A") do
+2016-08-05 08:10:02         action [:run]
+2016-08-05 08:10:02         retries 0
+2016-08-05 08:10:02         retry_delay 2
+2016-08-05 08:10:02         default_guard_interpreter :execute
+2016-08-05 08:10:02         command "apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A"
+2016-08-05 08:10:02         backup 5
+2016-08-05 08:10:02          returns 0
+2016-08-05 08:10:02         declared_type :execute
+2016-08-05 08:10:02         cookbook_name "justniffer"
+2016-08-05 08:10:02         not_if { #code block }
+2016-08-05 08:10:02              end
+2016-08-05 08:10:02
+2016-08-05 08:10:09            * execute[install-key E404C48A] action run
+2016-08-05 08:10:09
+2016-08-05 08:10:09              ================================================================================
+2016-08-05 08:10:09              Error executing action `run` on resource 'execute[install-key E404C48A]'
+2016-08-05 08:10:09              ================================================================================
+2016-08-05 08:10:09
+2016-08-05 08:10:09              Mixlib::ShellOut::ShellCommandFailed
+2016-08-05 08:10:09              ------------------------------------
+2016-08-05 08:10:09              Expected process to exit with [0], but received '2'
+2016-08-05 08:10:09              ---- Begin output of apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A ----
+2016-08-05 08:10:09              STDOUT: Executing: gpg --ignore-time-conflict --no-options --no-default-keyring --homedir /tmp/tmp.mzYtT5DOBf --no-auto-check-trustdb --trust-model always --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyserver keyserver.ubuntu.com --recv E404C48A
+2016-08-05 08:10:09              gpgkeys: key E404C48A can't be retrieved
+2016-08-05 08:10:09              STDERR: gpg: requesting key E404C48A from hkp server keyserver.ubuntu.com
+2016-08-05 08:10:09              gpg: no valid OpenPGP data found.
+2016-08-05 08:10:09              gpg: Total number processed: 0
+2016-08-05 08:10:09              ---- End output of apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A ----
+2016-08-05 08:10:09              Ran apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A returned 2
+2016-08-05 08:10:09
+2016-08-05 08:10:09              Resource Declaration:
+2016-08-05 08:10:09              ---------------------
+2016-08-05 08:10:09              # In /var/chef/cache/cookbooks/apt/providers/repository.rb
+2016-08-05 08:10:09
+2016-08-05 08:10:09        28:   execute "install-key #{key}" do
+2016-08-05 08:10:09        29:     if !node['apt']['key_proxy'].empty?
+2016-08-05 08:10:09        30:       command "apt-key adv --keyserver-options http-proxy=#{node['apt']['key_proxy']} --keyserver hkp://#{keyserver}:80 --recv #{key}"
+2016-08-05 08:10:09        31:     else
+2016-08-05 08:10:09        32:       command "apt-key adv --keyserver #{keyserver} --recv #{key}"
+2016-08-05 08:10:09        33:     end
+2016-08-05 08:10:09        34:     action :run
+2016-08-05 08:10:09
+2016-08-05 08:10:09              Compiled Resource:
+2016-08-05 08:10:09              ------------------
+2016-08-05 08:10:09              # Declared in /var/chef/cache/cookbooks/apt/providers/repository.rb:28:in `install_key_from_keyserver'
+2016-08-05 08:10:09
+2016-08-05 08:10:09              execute("install-key E404C48A") do
+2016-08-05 08:10:09         action [:run]
+2016-08-05 08:10:09         retries 0
+2016-08-05 08:10:09         retry_delay 2
+2016-08-05 08:10:09         default_guard_interpreter :execute
+2016-08-05 08:10:09         command "apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A"
+2016-08-05 08:10:09         backup 5
+2016-08-05 08:10:09         returns 0
+2016-08-05 08:10:09         declared_type :execute
+2016-08-05 08:10:09
+2016-08-05 08:10:09         not_if { #code block }
+2016-08-05 08:10:09              end
+2016-08-05 08:10:09
+2016-08-05 08:10:14            * execute[install-key E404C48A] action run
+2016-08-05 08:10:14
+2016-08-05 08:10:14              ================================================================================
+2016-08-05 08:10:14              Error executing action `run` on resource 'execute[install-key E404C48A]'
+2016-08-05 08:10:14              ================================================================================
+2016-08-05 08:10:14
+2016-08-05 08:10:14              Mixlib::ShellOut::ShellCommandFailed
+2016-08-05 08:10:14              ------------------------------------
+2016-08-05 08:10:14              Expected process to exit with [0], but received '2'
+2016-08-05 08:10:14              ---- Begin output of apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A ----
+2016-08-05 08:10:14        STDOUT: Executing: gpg --ignore-time-conflict --no-options --no-default-keyring --homedir /tmp/tmp.OGyMxm84AN --no-auto-check-trustdb --trust-model always --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyserver keyserver.ubuntu.com --recv E404C48A
+2016-08-05 08:10:14        gpgkeys: key E404C48A can't be retrieved
+2016-08-05 08:10:14              STDERR: gpg: requesting key E404C48A from hkp server keyserver.ubuntu.com
+2016-08-05 08:10:14              gpg: no valid OpenPGP data found.
+2016-08-05 08:10:14        gpg: Total number processed: 0
+2016-08-05 08:10:14              ---- End output of apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A ----
+2016-08-05 08:10:14        Ran apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A returned 2
+2016-08-05 08:10:14
+2016-08-05 08:10:14              Resource Declaration:
+2016-08-05 08:10:14        ---------------------
+2016-08-05 08:10:14              # In /var/chef/cache/cookbooks/apt/providers/repository.rb
+2016-08-05 08:10:14
+2016-08-05 08:10:14        28:   execute "install-key #{key}" do
+2016-08-05 08:10:14        29:     if !node['apt']['key_proxy'].empty?
+2016-08-05 08:10:14        30:       command "apt-key adv --keyserver-options http-proxy=#{node['apt']['key_proxy']} --keyserver hkp://#{keyserver}:80 --recv #{key}"
+2016-08-05 08:10:14        31:     else
+2016-08-05 08:10:14        32:       command "apt-key adv --keyserver #{keyserver} --recv #{key}"
+2016-08-05 08:10:14        33:     end
+2016-08-05 08:10:14        34:     action :run
+2016-08-05 08:10:14
+2016-08-05 08:10:14              Compiled Resource:
+2016-08-05 08:10:14        ------------------
+2016-08-05 08:10:14              # Declared in /var/chef/cache/cookbooks/apt/providers/repository.rb:28:in `install_key_from_keyserver'
+2016-08-05 08:10:14
+2016-08-05 08:10:14
+2016-08-05 08:10:14
+2016-08-05 08:10:14
+2016-08-05 08:10:14         retry_delay 2
+2016-08-05 08:10:14         default_guard_interpreter :execute
+2016-08-05 08:10:14         command "apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A"
+2016-08-05 08:10:14          backup 5
+2016-08-05 08:10:14         returns 0
+2016-08-05 08:10:14         declared_type :execute
+2016-08-05 08:10:14         cookbook_name "justniffer"
+2016-08-05 08:10:14         not_if { #code block }
+2016-08-05 08:10:14              end
+2016-08-05 08:10:14
+2016-08-05 08:10:14
+2016-08-05 08:10:14            ================================================================================
+2016-08-05 08:10:14            Error executing action `add` on resource 'apt_repository[justniffer-repo]'
+2016-08-05 08:10:14            ================================================================================
+2016-08-05 08:10:14
+2016-08-05 08:10:14            Mixlib::ShellOut::ShellCommandFailed
+2016-08-05 08:10:14            ------------------------------------
+2016-08-05 08:10:14            execute[install-key E404C48A] (/var/chef/cache/cookbooks/apt/providers/repository.rb line 28) had an error: Mixlib::ShellOut::ShellCommandFailed: Expected process to exit with [0], but received '2'
+2016-08-05 08:10:14        ---- Begin output of apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A ----
+2016-08-05 08:10:14            STDOUT: Executing: gpg --ignore-time-conflict --no-options --no-default-keyring --homedir /tmp/tmp.OGyMxm84AN --no-auto-check-trustdb --trust-model always --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyserver keyserver.ubuntu.com --recv E404C48A
+2016-08-05 08:10:14            gpgkeys: key E404C48A can't be retrieved
+2016-08-05 08:10:14        STDERR: gpg: requesting key E404C48A from hkp server keyserver.ubuntu.com
+2016-08-05 08:10:14            gpg: no valid OpenPGP data found.
+2016-08-05 08:10:14            gpg: Total number processed: 0
+2016-08-05 08:10:14        ---- End output of apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A ----
+2016-08-05 08:10:14        Ran apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A returned 2
+2016-08-05 08:10:14
+2016-08-05 08:10:14            Resource Declaration:
+2016-08-05 08:10:14        ---------------------
+2016-08-05 08:10:14            # In /var/chef/cache/cookbooks/justniffer/recipes/default.rb
+2016-08-05 08:10:14
+2016-08-05 08:10:14             12: apt_repository 'justniffer-repo' do
+2016-08-05 08:10:14             13:   uri 'ppa:oreste-notelli/ppa'
+2016-08-05 08:10:14             14:   distribution node['lsb']['codename']
+2016-08-05 08:10:14             15:   key 'E404C48A'
+2016-08-05 08:10:14             16:   keyserver 'keyserver.ubuntu.com'
+2016-08-05 08:10:14             17:   retries 3
+2016-08-05 08:10:14         18:   retry_delay 3
+2016-08-05 08:10:14         19:   not_if { ::File.exist?('/etc/apt/sources.list.d/oreste-notelli-ppa-trusty.list') }
+2016-08-05 08:10:14             20: end
+2016-08-05 08:10:14             21:
+2016-08-05 08:10:14
+2016-08-05 08:10:14            Compiled Resource:
+2016-08-05 08:10:14            ------------------
+2016-08-05 08:10:14            # Declared in /var/chef/cache/cookbooks/justniffer/recipes/default.rb:12:in `from_file'
+2016-08-05 08:10:14
+2016-08-05 08:10:14        apt_repository("justniffer-repo") do
+2016-08-05 08:10:14              action :add
+2016-08-05 08:10:14              retries 3
+2016-08-05 08:10:14          retry_delay 3
+2016-08-05 08:10:14          default_guard_interpreter :default
+2016-08-05 08:10:14          declared_type :apt_repository
+2016-08-05 08:10:14          cookbook_name "justniffer"
+2016-08-05 08:10:14          recipe_name "default"
+2016-08-05 08:10:14          uri "ppa:oreste-notelli/ppa"
+2016-08-05 08:10:14              distribution "trusty"
+2016-08-05 08:10:14              key "E404C48A"
+2016-08-05 08:10:14              keyserver "keyserver.ubuntu.com"
+2016-08-05 08:10:14              cache_rebuild true
+2016-08-05 08:10:14          not_if { #code block }
+2016-08-05 08:10:14        end
+2016-08-05 08:10:14
+2016-08-05 08:10:14
+2016-08-05 08:10:14        Running handlers:
+2016-08-05 08:10:14        [2016-08-05T08:10:14+00:00] ERROR: Running exception handlers
+2016-08-05 08:10:14        Running handlers complete
+2016-08-05 08:10:14        [2016-08-05T08:10:14+00:00] ERROR: Exception handlers complete
+2016-08-05 08:10:14        Chef Client failed. 1 resources updated in 01 minutes 22 seconds
+2016-08-05 08:10:14        [2016-08-05T08:10:14+00:00] FATAL: Stacktrace dumped to /var/chef/cache/chef-stacktrace.out
+2016-08-05 08:10:14        [2016-08-05T08:10:14+00:00] FATAL: Please provide the contents of the stacktrace.out file if you file a bug report
+2016-08-05 08:10:14        [2016-08-05T08:10:14+00:00] ERROR: apt_repository[justniffer-repo] (justniffer::default line 12) had an error: Mixlib::ShellOut::ShellCommandFailed: execute[install-key E404C48A] (/var/chef/cache/cookbooks/apt/providers/repository.rb line 28) had an error: Mixlib::ShellOut::ShellCommandFailed: Expected process to exit with [0], but received '2'
+2016-08-05 08:10:14        ---- Begin output of apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A ----
+2016-08-05 08:10:14        STDOUT: Executing: gpg --ignore-time-conflict --no-options --no-default-keyring --homedir /tmp/tmp.OGyMxm84AN --no-auto-check-trustdb --trust-model always --keyring /etc/apt/trusted.gpg --primary-keyring /etc/apt/trusted.gpg --keyserver keyserver.ubuntu.com --recv E404C48A
+2016-08-05 08:10:14        gpgkeys: key E404C48A can't be retrieved
+2016-08-05 08:10:14
+2016-08-05 08:10:14        gpg: no valid OpenPGP data found.
+2016-08-05 08:10:14        gpg: Total number processed: 0
+2016-08-05 08:10:14        ---- End output of apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A ----
+2016-08-05 08:10:14        Ran apt-key adv --keyserver keyserver.ubuntu.com --recv E404C48A returned 2
+2016-08-05 08:10:16        [2016-08-05T08:10:16+00:00] FATAL: Chef::Exceptions::ChildConvergeError: Chef run process exited unsuccessfully (exit code 1)
+2016-08-05 08:10:16 >>>>>> Converge failed on instance <default-ubuntu-1404>.
+2016-08-05 08:10:16 >>>>>> Please see .kitchen/logs/default-ubuntu-1404.log for more details
+2016-08-05 08:10:16 >>>>>> ------Exception-------
+2016-08-05 08:10:16 >>>>>> Class: Kitchen::ActionFailed
+2016-08-05 08:10:16 >>>>>> Message: SSH exited (1) for command: [sh -c '
+#+END_EXAMPLE
+** confirmation to install from 3rd repo
+#+BEGIN_EXAMPLE
+---- Begin output of apt-get -q -y install syslinux=3:4.05+dfsg-6+deb8u1 ----
+STDOUT: Reading package lists...
+Building dependency tree...
+Reading state information...
+The following extra packages will be installed:
+  libcrypt-passwdmd5-perl mtools syslinux-common
+Suggested packages:
+  floppyd dosfstools os-prober
+The following NEW packages will be installed:
+  libcrypt-passwdmd5-perl mtools syslinux syslinux-common
+0 upgraded, 4 newly installed, 0 to remove and 115 not upgraded.
+Need to get 1177 kB of archives.
+After this operation, 3906 kB of additional disk space will be used.
+WARNING: The following packages cannot be authenticated!
+
+STDERR: E: There are problems and -y was used without --force-yes
+---- End output of apt-get -q -y install syslinux=3:4.05+dfsg-6+deb8u1 ----
+Ran apt-get -q -y install syslinux=3:4.05+dfsg-6+deb8u1 returned 100
+#+END_EXAMPLE
+
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

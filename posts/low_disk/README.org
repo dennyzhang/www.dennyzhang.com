@@ -1,0 +1,251 @@
+* Reduce Support Effort Of Low Free Disk Issues                :BLOG:General:
+:PROPERTIES:
+:type:   DevOps,Deployment,Maintenance,Linux
+:END:
+---------------------------------------------------------------------
+When you hand over developers new VM(s), or when you have just created a critical env for your team, remember to be prepared for low disk issues.
+
+If you don't, it will bite you sooner or later. More annoying, it usually come out as *a recurring issue*. Evaluating the total support effort, we might get a much bigger number than we thought. Are you feeling the same, my friend?
+*So how we can make low disk issues less likely to happen?* And when it does happen, how we can resolve it faster with less impact?
+
+[[image-blog:Reduce Support Effort Of Low Disk Issues][https://www.dennyzhang.com/wp-content/uploads/denny/low_disk_issue.jpg]]
+---------------------------------------------------------------------
+*1. Reasonable capacity planning is a must.*
+
+You can't put 20GB data into 10GB disk. The good news is cloud providers usually enable us to attach new volumes. Then move data and application(s) into new volumes.
+
+But it may not be working in the way you like.
+
+For example, in Azure you can keep adding volumes, but you can't have volumes  bigger than 1TB. With [[https://www.dennyzhang.com/vps_linode][Linode4096]], the total disk capacity will be smaller than 48GB, regardless how many volumes you have created. Surprised, aren't you? Anyway it's better we do the capacity planning in advance.
+*2. Monitor all disk volumes instead of rootfs only.*
+
+Apparently we want to be notified earlier before others can notice.
+
+One common mistake I've noticed is that people have attached more volumes, but they just forget to monitor the new disks as well. And it usually lead to surprises.
+
+If you use nagios, check_linux_stats.pl can easily monitor all volumes[1]. Probably you can find many other open source alternatives. (Leave me comments, if you have good recommendations.)
+#+BEGIN_EXAMPLE
+# Check all disk volumes.
+# Get warning alerts, if disk utilization is over 90%
+# Get critical alerts, if disk utilization is over 95%
+./check_linux_stats.pl -D -w 10 -c 5
+#+END_EXAMPLE
+*For small teams or less critical envs*, Nagios/Zabbix are just too heavy-weight for me, or I simply don't have the time to learn and setup that. Yes, I understand your pain and concern.
+
+Here would be my suggestions, though I don't have code snippets ready.
+1. If the VM runs docker daemon, we can start a diagnostic container with overlay/aufs driver. Then the container runs the periodical check.
+2. Automate the configuration. So it will download the check script, create crontab job and enable proper alerting. And everything is automated.
+
+What's your cure about this scenario, my friend? Share it with me.
+*3. Monitor both disk volumes but also selective folders.*
+
+With enough information of your applications, you will know which folders are most likely to be oversized.
+
+[[color:#c7254e][Common Sources Of Low Disk Issues.]]
+
+| Data Sources          | Category | Comment                            |
+|-----------------------+----------+------------------------------------|
+| Old Artifacts         | System   | From old deployments               |
+| Temporary Backup      | System   | People run manual cp command       |
+| General Logfiles      | System   | Logs without rotate                |
+| Coredump              | System   | Coredump from frequent app crash   |
+| DB data               | App      | Just too many business data        |
+| Trash from bugs       | App      | Application bugs lead to garbages. |
+| Fast-growing logfiles | App      | Ever notice 10GB log per day?      |
+
+So identity those folders, and put effective watch on them. _du command_ could be quite handy for this job.
+#+BEGIN_EXAMPLE
+root@dennyzhang:~# du -h -d 2 /opt
+36K	/opt/chef/bin
+168M	/opt/chef/embedded
+168M	/opt/chef
+48K	/opt/devops/bin
+52K	/opt/devops
+12K	/opt/java_jce/8
+16K	/opt/java_jce
+..
+7.5M	/opt/digitalocean/bin
+7.5M	/opt/digitalocean
+114G	/opt
+#+END_EXAMPLE
+*4. Enforce daily cleanup in a managed way.*
+
+You have received low disk alerts and identified the big folders. Now it's time to do the cleanup!
+
+So what do you usually do? Something like this?
+#+BEGIN_EXAMPLE
+# find and rm
+find /var/log/ -name "*.gz" -type f -exec rm -f {} \;
+
+# manually rm
+> application.log
+rm -rm /data/backup/couchbase-20170522
+#+END_EXAMPLE
+
+It will work, but ...
+
+How you track the changes for future trouble shooting purpose?
+
+For the old useless files in specific folders, we can usually find some pattern to remove. Instead of manual cleanup, why not automate it?
+
+Here comes cleanup_old_files.py in [[url-external:https://github.com/dennyzhang/cleanup_old_files/blob/tag_v1/cleanup_old_files.py][Github]].
+
+1. It will remove files/folders by pattern.
+- By default, it will keep latest several backups.
+- Track what are removed in log files
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_cleanup_old_files.png]]
+
+What's better, we can wrap up this cleanup script as a scheduled Jenkins job. Then enable slack notification of this job.
+
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_cleanup_jenkins_job.png]]
+
+So we can easily enforce daily cleanup. And when something wrong, we will get slack notifications. Wnat to check the change history? Jenkins GUI is super easy and straightforward.
+
+My friend, hope you can save your precious time for dealing with the notorious low disk issues. And everything is automated as much as you can. Cheers!
+
+More Reading:
+- [[https://www.dennyzhang.com/monitor_outbound_traffic][Monitor Outbound Traffic In Deployment]]
+- [[https://www.dennyzhang.com/list_slowest_steps][List The Slowest Steps In Deployment]]
+- [[https://www.dennyzhang.com/docker_capacity][Docker Low Disk Space]]
+
+[1] exchange.nagios.org/directory/Plugins/Operating-Systems/Linux/check_linux_stats/details
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/low_disk"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/low_disk
+* misc                                                             :noexport:
+** HALF Blog: Remove Old Artifacts Of Previous Deployments In A Safe And Organized Way.
+https://trello.com/c/5MYzO1bZ
+> /opt/devops/bin/cleanup_old_files.py && vim /opt/devops/bin/cleanup_old_files.py
+
+> /usr/sbin/cleanup_old_files.py && vim /usr/sbin/cleanup_old_files.py
+
+> /var/log/cleanup_old_files.log
+python /tmp/cleanup_old_files.py --working_dir "/opt/mdm" --filename_pattern "app-*-SNAPSHOT.jar" \
+                    --cleanup_type file --min_copies 3 --min_size_mb 10 --examine_only true
+tail /var/log/cleanup_old_files.log
+
+> /var/log/cleanup_old_files.log
+python /tmp/cleanup_old_files.py --working_dir "/var/lib/jenkins/code/DigitalOceanDeployCookbooks" --filename_pattern "*" \
+                    --cleanup_type directory --min_copies 3 --min_size_mb 10 --examine_only true
+tail /var/log/cleanup_old_files.log
+
+for folder in "DockerDeployFeatureCookbooks" "DockerDeployBasicCookbooks" "AutoscaleDockerCBClusterTest" "DockerDeployHadoopCookbooks" "DockerDeployAPPWithoutCache" "DockerDeployMDMCluster" "codestyle" "AutoscaleDockerClusterTest" "DockerDeploySandboxUpgradeLegacyEnv" "DockerDeploySandboxPreviousActiveSprint"; do
+  python /tmp/cleanup_old_files.py --working_dir "/var/lib/jenkins/code/$folder" --filename_pattern "*" \
+                    --cleanup_type directory --min_copies 3 --min_size_mb 10 --examine_only false
+done
+
+> /var/log/cleanup_old_files.log
+python /tmp/cleanup_old_files.py --working_dir "/var/lib/jenkins/code/DockerDeploySandboxUpgradeLegacyEnv" --filename_pattern "*" \
+                    --cleanup_type directory --min_copies 3 --examine_only false
+tail /var/log/cleanup_old_files.log
+*** [#A] Requirements
+- Only interested removing big files
+- Don't just sliently remove things, we need audit log to trace the history
+- Keep latest several copies
+- Only remove files which is very old
+- List delete candidate, instead of perform the actual removal
+*** When to run: add it as a post-deployment script, or create a crontab job in Jenkins
+*** useful link
+https://discuss.gradle.org/t/how-can-you-clean-artifacts-of-a-previous-version/6384
+http://kaczanowscy.pl/tomek/2012-11/cleaning-old-artifactory-artifacts
+** When you create VMs for your team, add disk monitoring by default.
+#+BEGIN_EXAMPLE
+Denny Zhang [11:50 AM]
+Daniel, would you spare some minutes to review below wiki? Thanks!
+https://github.com/TOTVS/mdmdevops/wiki/Doc-Template-For-Requests-Of-Asking-A-Public-VM
+
+[11:51]
+No rush, take your time, when you're available, Daniel.
+
+Daniel Melo
+[11:51 AM]
+ok. np
+
+[11:52]
+mey be it would be usefull for you to know if this vm is a dependency os depends on other vms you maintain
+
+Denny Zhang
+[11:52 AM]
+Yeah, that's a good idea.
+
+Daniel Melo
+[11:53 AM]
+I like that the default is to access with a ssh-key
+
+Denny Zhang
+[11:53 AM]
+Happy to hear that, Daniel.
+
+Daniel Melo
+[11:53 AM]
+Do you monitor disk usage?
+
+Denny Zhang
+[11:54 AM]
+By default we don't, but yes we can.
+
+[11:55]
+Maybe we should add the disk monitoring by default.
+
+Daniel Melo
+[11:55 AM]
+Yeah.. I would suggest that
+
+Denny Zhang
+[11:55 AM]
+Roger that. Thanks, man.
+
+Daniel Melo [11:55 AM]
+if you have some kind of notification tool, you could add the person linked to that vm by default
+
+[11:55]
+that because the machine will stop if disk is up
+
+Denny Zhang
+[11:55 AM]
+Yeah, I think that's a good idea.
+
+Daniel Melo
+[11:56 AM]
+I am not sure if, for the use case you have here at labs, that would be usefull:
+in Goiania, as our IT team manages vms from multiple projects, they link the vm to a project and a person
+
+[11:57]
+if, for some reason, the person is not able to answer for the vm, you could contact someone who has knowledge about the project
+
+Denny Zhang
+[11:57 AM]
+I think that's fine for us. We're a small team.
+
+I will enable the monitoring and integrate the alerts with slack.
+
+Daniel Melo
+[11:58 AM
+#+END_EXAMPLE
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

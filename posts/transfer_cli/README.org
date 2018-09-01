@@ -1,0 +1,173 @@
+* transfer.sh: Command Line To Share Files Across The Internet    :BLOG:Tool:
+:PROPERTIES:
+:type:   DevOps,Startup,Linux,Popular
+:END:
+---------------------------------------------------------------------
+Using a single command, we can easily upload any files from our computers or servers to a web server. Then our friends or colleagues can download them directly from web browsers. Isn't that cool?
+
+Worry about the security? We can encrypt files before transfer. Also we can claim the maxinum downloads of those files, or expire download link in several days.
+
+Here we go! [[color:#c7254e][transfer.sh]]: easy and fast file sharing from the command-line. *Zero Initial Setup* and *Super Easy* to use.
+
+[[image-blog:transfer.sh: Command Line To Share Files Across The Internet][https://www.dennyzhang.com/wp-content/uploads/denny/transfersh.png]]
+---------------------------------------------------------------------
+** Problems For Current File Transfer
+Working as a DevOps, I occasionally need to transfer files:
+1. Temporarily copy critical backup set from one server to another.
+- Collect some log files and send back to dev team.
+
+Usually I use scp to do the copy. Apparently we only scp via key file, instead of password. To scp files from one server to another, I need to store my ssh private key in the server. This certainly brings in some *security concerns*. Yes, I can [[https://www.dennyzhang.com/ssh_passphrase][protect ssh key by passphrase]]. Or even better, I can delete it immediately after I have finished the download. hmm... just a bit tricky, and too many manual steps.
+
+When I'm asked to copy and share some log files, I usually scp them to my laptop. Then send over via Slack or Skype. Let's say, the file is ~500 MB. Literally speaking, we need to download 500 MB data, then send 500 MB data. Manually! This would *take a lot of time* for a doggy network. Isn't it? Even worse, if the transfer interrupts, our colleagues will definitely ping us to send again.
+** Use transfer.sh To Share Files Easily
+People may solve part of the problems by scp/rsync, Dropbox[1] or ftp[2]. Or using AWS SDK or tools, upload to AWS S3 buckets.
+
+However, if we expect *no initial setup* and *super easy for end users*,  none of them can compete with this one. [[https://transfer.sh][transfer.sh]], an open source project in  [[https://github.com/dutchcoders/transfer.sh][Github]]. It enables us to easily and quickly share files from the command-line.
+
+Alternatives: mongoose[3], devd[4].
+
+With transfer.sh, we can upload up to 10GB. And the files are stored for 14 days by default.
+
+[[image-blog:transfer.sh: Command Line To Share Files Across The Internet][https://www.dennyzhang.com/wp-content/uploads/denny/transfer_sh_diagram.png]]
+
+All we need is a simple and famous tool, called *curl*. No more ssh key. No more blind wait for the doggy internet.
+#+BEGIN_EXAMPLE
+root@denny:~# curl --upload-file /etc/hosts https://transfer.sh/hosts
+https://transfer.sh/BQTjC/hosts
+#+END_EXAMPLE
+
+For Window users, we can use Powershell.
+#+BEGIN_EXAMPLE
+# Upload using Powershell
+PS H:\> invoke-webrequest -method put -infile .\file.txt https://transfer.sh/file.txt
+#+END_EXAMPLE
+
+See more handy usages in [[https://transfer.sh][transfer.sh]].
+** What About Security?
+Firstly, don't upload any very sensitive files.
+
+Usually we can make the transfer more secured like this:
+- Limit download count. Like snapchat, we only allow one time sharing. I'm happy to get involved in this feature. See my discussion with Remco Verhoef in [[https://twitter.com/dennyzhang001/status/776928640101523456][twitter]].
+[[image-blog:transfer.sh: Command Line To Share Files Across The Internet][https://www.dennyzhang.com/wp-content/uploads/denny/transfer_twitter.png]]
+- Expire in server days.
+#+BEGIN_EXAMPLE
+$ curl -H "Max-Downloads: 1" -H "Max-Days: 1" --upload-file ./hello.txt https://transfer.sh/hello.txt
+https://transfer.sh/66nb8/hello.txt
+# Download the file
+$ curl https://transfer.sh/66nb8/hello.txt -o hello.txt
+#+END_EXAMPLE
+- Encrypt our files before transfer
+#+BEGIN_EXAMPLE
+# Encrypt files with password using gpg
+$ cat /tmp/hello.txt|gpg -ac -o-|curl -X PUT --upload-file "-" https://transfer.sh/test.txt
+
+# Download and decrypt
+$ curl https://transfer.sh/1lDau/test.txt|gpg -o- > /tmp/hello.txt
+#+END_EXAMPLE
+** How fast the download/upload speeds are?
+From my experience, it's fast enough. Frankly speaking, I don't worry about the speed.
+
+It's issued by a command line. So machines can easily take over. For example, the intelligent retries, split big files into pieces, then upload in a parallel way. No human intervene is required in the whole process!
+
+After that, we get a http download link for the recipients. *This works perfectly in an asynchronous way*.
+** Vendor Lock-In, Or Service Is Closed?
+transfer.sh is an open source project in [[https://github.com/dutchcoders/transfer.sh][Github]]. We can even have a [[https://github.com/dutchcoders/transfer.sh/#docker][docker image]] to host the service in our server!
+
+Everything is under control now. Right?
+#+BEGIN_EXAMPLE
+docker build -t transfersh .
+docker run --publish 8080:8080 --rm transfersh --provider local --basedir /tmp/
+#+END_EXAMPLE
+
+[1] softwarerecs.stackexchange.com/questions/1493/website-for-file-sharing-and-easy-command-line-access
+[2] https://www.digitalocean.com/community/tutorials/how-to-use-sftp-to-securely-transfer-files-with-a-remote-server
+[3] https://github.com/cesanta/mongoose
+[4] https://github.com/cortesi/devd
+
+More Reading: [[https://www.dennyzhang.com/deploy_by_git][Deploy Your Websites Using Git In Public Cloud]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/transfer_cli"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/transfer_cli
+* misc                                                             :noexport:
+** #  --8<-------------------------- separator ------------------------>8--
+** off-page SEO                                                    :noexport:
+- find twitter users to @
+@DutchCoders
+
+search transfer.sh:
+
+- twitter
+https://twitter.com/search?q=transfer.sh&src=typd
+
+- reddit:
+https://www.reddit.com/r/linux/comments/53h5ep/easily_share_files_from_the_command_line_with/
+
+- quora:
+https://www.quora.com/Which-file-sharing-service-supports-command-line-upload
+
+- v2ex:
+https://www.v2ex.com/go/linux
+** similar pages                                                   :noexport:
+https://n0where.net/command-line-file-sharing-transfer-sh/
+http://www.webupd8.org/2016/08/easily-share-files-from-command-line.html
+http://www.linux-magazine.com/Online/Blogs/Productivity-Sauce/Transfer-Files-from-the-Command-Line-with-transfer.sh
+http://www.linuxtoday.com/storage/easily-share-files-from-the-command-line-with-transfer.sh-160805090503.html
+** #  --8<-------------------------- separator ------------------------>8--
+** setup docker image                                              :noexport:
+https://github.com/dutchcoders/transfer.sh/blob/master/Dockerfile
+
+docker build -t transfersh .
+docker run --publish 8080:8080 --rm transfersh --provider local --basedir /tmp/
+
+npm install
+bower install
+
+apt-get install -y golang
+apt-get install -y npm
+
+cd /tmp/
+git clone https://github.com/dutchcoders/transfer.sh.git
+cd transfer.sh
+** useful link                                                     :noexport:
+https://transfer.sh
+https://www.justbeamit.com
+https://www.orzeszek.org/dev/transfer/
+http://www.tpsort.com/similar-to/8084-top-15-transfer-sh-alternative-and-similar-softwares
+http://www.webupd8.org/2016/08/easily-share-files-from-command-line.html
+https://github.com/Fornax96/pdup
+
+http://stackoverflow.com/questions/10044151/how-to-generate-a-temporary-url-to-upload-file-to-amazon-s3-with-boto-library
+https://uploadcare.com/documentation/upload/
+
+https://mega.nz
+http://wetransfer.com
+https://openload.co
+- File share: https://www.seafile.com/en/home/
+https://filehero.io
+
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

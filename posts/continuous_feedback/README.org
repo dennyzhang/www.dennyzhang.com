@@ -1,0 +1,212 @@
+* 9 Key Feedbacks For Prod Envs Maintenance                    :BLOG:General:
+:PROPERTIES:
+:type:   DevOps,Operate,Popular
+:END:
+---------------------------------------------------------------------
+To break silos and improve availability, DevOps/Ops should be actively collecting useful feedback of prod env maintenance on a regular basis. Enable developers to easily access it and improve feedback loop together as a team effort.
+
+The very first and most important part. *What To Examine, Providing Developers Meaningful Feedback?*
+
+[[image-blog:Continuous Feedback][https://www.dennyzhang.com/wp-content/uploads/denny/continuous_feedback.png]]
+---------------------------------------------------------------------
+Here is a list I frequently check these years.
+** 1. Fundamental Monitoring Matters At Both OS And Process Level.
+Apparently we need to measure the usage of 4 key resources: memory, CPU, disk and network. Sometime OS is fine, just your crucial process suffers. To be on top of this, monitor at process level as well.
+- [[https://www.dennyzhang.com/nagois_monitor_process_cpu][Nagios Plugin: Monitor Service CPU]]
+- [[https://www.dennyzhang.com/nagois_monitor_process_fd][Nagios Plugin: Monitor Process FD]]
+- [[https://www.dennyzhang.com/nagois_monitor_process_memory][Nagios Plugin: Monitor Service Memory]]
+- [[https://www.dennyzhang.com/nagois_monitor_process_threadcount][Nagios Plugin: Monitor Process Threadcount]]
+** 2. Detect Resource Leak In Your Applications.
+- Memory leak: This defect is a close friend of service outage. If memory usage keeps rising steadily, ring a bell to your dev team.
+- Stale file handlers: Files may have been deleted somehow, but your application still hold the file handlers or even read/write those files. Detect it by "__pmap -x $pid | grep deleted__".
+- Overwhelming network sockets: Either your application can't serve requests fast enough or it has issues reclaiming socket fd. Check this by "lsof -p $pid | grep -iE 'TCP|pipe|socket|anon_inode'". If lots of TCP socket are in WAIT_CLOSE state, it's a bad sign too.
+
+#+BEGIN_SRC sh
+# Detect unhandled file deletion
+pmap -x $pid | grep deleted
+#+END_SRC
+** 3. Always On Top Of Logfiles.
+Believe or not, I saw applications diligently recording hundreds of messages to logfiles every second. This eats up disk so fast, even before logrotate takes effect.
+
+For application logging, alert developers for any major errors/exceptions found. For syslogs, DevOps/Ops are usually the only gatekeepers.
+** 4. Monitor DB Slow Query.
+This usually incur random or constant performance penalty to your applications. If we can grab this information to developers, it would be a very valuable input for developers' trouble shooting.
+** 5. Change History Of Prod Envs.
+A clear and full changelist of prod env may empower developers to identity root cause quickly. See how to [[https://www.dennyzhang.com/track_change_history][Automatically Track All Change History]].
+** 6. Observe Machine Reboot And Service Restart.
+Whether all services will come back to normal after machine reboot? This is especially important for cluster env with complex service dependencies.
+
+_Restarting service could be scaring_. Service stop might hang, service start might be slow.
+
+When we restart db services, do we have to restart application services?
+
+Not all developers know or remember /tmp directory won't survive from machine reboot.
+** 7. Enable Coredump When Applications Crash.
+Coredump helps developers to understand which thread and which function causes the crash.
+** 8. Examine JVM For Key Metrics.
+For Java application operation, JVM toolkit might be helpful to detect suspicious issues. Be familiar with tools like jps, jstack, jmap, etc.
+** 9. Simulate Prod Env At Reasonable Cost.
+The last but not the least. If DevOps can simulate prod env quickly, developers can have a safe playyard to do tests or dryrun patches. Some common obstacles to achieve this:
+- Budget concern. We may need to start enough VMs, in order to get a min "prod env".
+- Automate to automate. Not only to automate cluster deployment but also data export and import.
+- Simulate prod env as much as possible. This would the most difficult part. And it varies across projects.
+
+More Reading: [[https://www.dennyzhang.com/generate_data_report][Generate Common DB Data Report By ELK]]
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/continuous_feedback"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/continuous_feedback
+* misc                                                             :noexport:
+** community discussion                                            :noexport:
+https://www.reddit.com/r/devops/comments/51vigl/when_maintaining_prod_envs_what_valuable_feedback/
+** misc                                                            :noexport:
+*** monitor key metrics of jvm: jmap, jps, jstack, java version
+from java class get jdk version
+#+begin_example
+fluig-id-qa-02:~# hexdump /var/lib/tomcat7/webapps/cloudpass/WEB-INF/classes/gsp_cachedResourcesindex_gsp.class
+<oudpass/WEB-INF/classes/gsp_cachedResourcesindex_gsp.class
+0000000 feca beba 0000 3100 e601 0001 671c 7073
+0000010 635f 6361 6568 5264 7365 756f 6372 7365
+0000020 6e69 6564 5f78 7367 0770 0100 0001 6f2f
+0000030 6772 632f 646f 6865 7561 2f73 7267 6f6f
+0000040 7976 672f 6172 6c69 2f73 6577 2f62 6170
+0000050 6567 2f73 7247 6f6f 7976 6150 6567 0007
+#+end_example
+*** #  --8<-------------------------- separator ------------------------>8--
+*** TODO Learn how jax-rs works
+*** TODO java jmap
+#+BEGIN_EXAMPLE
+root@kitchen-hadoop-3nodes-node1:/# jmap -heap 1645
+jmap -heap 1645
+Attaching to process ID 1645, please wait...
+Debugger attached successfully.
+Server compiler detected.
+JVM version is 25.40-b25
+
+using thread-local object allocation.
+Parallel GC with 8 thread(s)
+
+Heap Configuration:
+   MinHeapFreeRatio         = 0
+   MaxHeapFreeRatio         = 100
+   MaxHeapSize              = 1048576000 (1000.0MB)
+   NewSize                  = 88080384 (84.0MB)
+   MaxNewSize               = 349175808 (333.0MB)
+   OldSize                  = 176160768 (168.0MB)
+   NewRatio                 = 2
+   SurvivorRatio            = 8
+   MetaspaceSize            = 21807104 (20.796875MB)
+   CompressedClassSpaceSize = 1073741824 (1024.0MB)
+   MaxMetaspaceSize         = 17592186044415 MB
+   G1HeapRegionSize         = 0 (0.0MB)
+
+Heap Usage:
+PS Young Generation
+Eden Space:
+   capacity = 216530944 (206.5MB)
+   used     = 31267232 (29.818756103515625MB)
+   free     = 185263712 (176.68124389648438MB)
+   14.44007559492282% used
+From Space:
+   capacity = 13107200 (12.5MB)
+   used     = 5547704 (5.290702819824219MB)
+   free     = 7559496 (7.209297180175781MB)
+   42.32562255859375% used
+To Space:
+   capacity = 20971520 (20.0MB)
+   used     = 0 (0.0MB)
+   free     = 20971520 (20.0MB)
+   0.0% used
+PS Old Generation
+   capacity = 114294784 (109.0MB)
+   used     = 23636536 (22.54155731201172MB)
+   free     = 90658248 (86.45844268798828MB)
+   20.680327809185062% used
+
+11775 interned Strings occupying 1162568 bytes.
+#+END_EXAMPLE
+*** TODO java jps
+#+BEGIN_EXAMPLE
+root@kitchen-hadoop-3nodes-node1:/# sudo -u hdfs jps | grep -v Jps
+sudo -u hdfs jps | grep -v Jps
+1457 SecondaryNameNode
+1221 DataNode
+1645 NameNode
+#+END_EXAMPLE
+** DONE dev suggestion: add X-Request-Trace Header to HTTP response
+   CLOSED: [2016-09-27 Tue 15:51]
+Using curl, people can manually send requests to the API endpoint and
+get a failed response with HTTP response code 502 (Bad Gateway) and no
+payload.
+
+We can add an HTTP header, X-Request-Trace, which lists the addresses
+of the backend servers responsible for responding to that
+request. With this information, we can now examine those backends to
+test whether they're responding appropriately.
+
+Adding hostname to X-Request-Trace should be good enough.
+** DONE dev suggestion: provide an api to display current active jar version
+  CLOSED: [2016-09-27 Tue 15:50]
+#+BEGIN_EXAMPLE
+denny zhang [3:43 PM]
+@bruno
+
+I'm thinking about today's issue.
+
+Certainly I will try my best to confirm what we deploy is what we want.
+But it happens, either code issue or process issue.
+
+The sad part is the error is not that obvious, which is usually found by end users.
+
+Would it be possible that mdm application provide a rest API: http://$server_ip:$port/get_version?
+Based on that, I can query what version is acknowledged and in use. Then raise alert immediately if it's incorrect.
+
+Bruno Volpato [3:46 PM]
+yes, it is possible. we can use antrun to inject the pom version into some java class, that will be returned in a health check/stats API call.
+
+[3:46]
+it is easy to implement too. @kungwang you ok with this approach?
+#+END_EXAMPLE
+** TODO Teams aren't going to diligently read syslogs or stack-traces. :noexport:
+https://www.reddit.com/r/devops/comments/51vigl/when_maintaining_prod_envs_what_valuable_feedback/
+** TODO dev suggestion: when restart db, do we need to restart app service :noexport:
+When we restart one DB(CB/ES) instance or the whole DB cluster, do we have to restart all mdm instance?
+
+I'm asking this, because I have below observations:
+1. Prod env have 4 CB nodes, 6 ES nodes.
+2. ES cluster has 13 indices of mdm-index-*
+3. Each app service(in app01, app02, app03) have 1 tcp long connections to 8092 ports of each CB node
+4. Each app service have 13 tcp long connections to 9300 ports of each ES node.
+
+Run blow commands to confirm in app nodes.
+# es
+lsof -p $(cat /usr/local/var/run/mdm.pid) | grep ":9300" | wc -l
+# cb
+lsof -p $(cat /usr/local/var/run/mdm.pid) | grep ":8092" | wc -l
+http://45.55.6.34:18080/job/RunCommandOnServers/105/console
+
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

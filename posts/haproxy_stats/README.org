@@ -1,0 +1,161 @@
+* Convert HAProxy Statistics To A Python Dictionary               :BLOG:Tool:
+:PROPERTIES:
+:type:   DevOps,Tool
+:END:
+
+---------------------------------------------------------------------
+HAProxy provides both GUI and unix socket file. Through them, we can explore lots of critical info, especially *HAProxy Statistics*.
+
+More importantly, how to read and understand the key output? Furthermore, make good use of it.
+
+[[image-blog:Convert HAProxy Statistics To A Python Dictionary][https://www.dennyzhang.com/wp-content/uploads/denny/haproxy_stats.jpg]]
+---------------------------------------------------------------------
+HAProxy is a very popular load balancer and reverse proxy service at both L7 layer(HTTP) and L4 layer(TCP). With easy setup, we can get haproxy stats page in GUI.[1]
+** Understand HAProxy Stats Page
+[[image-blog:Understand HAProxy Stats GUI][https://www.dennyzhang.com/wp-content/uploads/denny/haproxy_stats_gui.jpg]]
+
+From HAProxy GUI, we know below meaningful metrics:
+- *Normal http/https visit hits*. Poll the data periodically. We can have a clear understanding for the history and the trend. Pretty much close to google analytics. Right?
+- *Exceptions In Server Side*. If we have a noticeable number of failures, raise alarms immediately.
+- *Slow Response.* Mostly we shall see very few slow responses. Better add monitoring items for this.
+- *Errors In Client Side*. Could be different reasons. e.g, being attacked by malicious users, users are calling API with old data format, etc.
+** Interactive With Unix Socket File
+The same metrics in GUI can be retrieved via unix socket[2]. hmm... yes, the same. Just a bit complicated.
+#+BEGIN_EXAMPLE
+# Figure out file path of haproxy socket file
+# grep sock /etc/haproxy/haproxy.cfg
+
+root@denny# echo "show stat" | nc -U /var/run/haproxy/admin.sock
+# pxname,svname,qcur,qmax,scur,smax,slim,stot,bin,bout,dreq,...
+frontend-http,FRONTEND,,,0,1,2000,14,3738,82593,0,0,3,,,,,OP...
+frontend-https,FRONTEND,,,0,1,2000,6,410,150635,0,0,2,,,,,OP...
+backend-http,127.0.0.1,0,0,0,1,4000,5,767,597,,0,,0,0,0,0,UP...
+backend-http,BACKEND,0,0,0,1,200,5,767,597,0,0,,0,0,0,0,UP,1...
+backend-https,127.0.0.1,0,0,0,1,4000,3,263,130057,,0,,0,0,0,...
+backend-https,BACKEND,0,0,0,1,200,3,263,130057,0,0,,0,0,0,0,...
+#+END_EXAMPLE
+** Convert Socket Output Into A Python Dictionary
+The first line of above command output is a list of field names. Following that, each line is a record of data.
+
+Wrap up [[https://github.com/dennyzhang/devops_public/blob/tag_v6/python/parse_haproxy_stats/parse_haproxy_stats.py][a python module]] in github. [[github:DennyZhang][GitHub]]
+
+[[image-blog:Convert HAProxy Statistics To A Python Dictionary][https://www.dennyzhang.com/wp-content/uploads/denny/haproxy_convert.jpg]]
+
+[[color:#c7254e][If you can't measure it, you can't manage it. -- Peter Drucker]].
+
+Next step: Put effective monitoring and pull meaningful metrics about haproxy.
+
+More Reading: [[https://www.dennyzhang.com/generate_data_report][Generate Common DB Data Report By ELK]].
+
+[1] www.datadoghq.com/blog/how-to-collect-haproxy-metrics/
+[2] http://cbonte.github.io/haproxy-dconv/1.6/management.html#9.2
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/haproxy_stats"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/haproxy_stats
+* misc                                                             :noexport:
+echo "show info" | nc -U /var/run/haproxy/admin.sock
+
+pxname,svname,qcur,qmax,scur,smax,slim,stot,bin,bou
+
+parse_haproxy_stats.py: Convert HAProxy Stats Output To A Structured Python Dictionary
+
+output=$(echo "show info" | nc -U /var/run/haproxy/admin.sock)
+
+CumConns: 300642
+1499847
+** useful link
+https://gist.github.com/jlazic/50af0c706196bf81b616
+http://tecadmin.net/how-to-configure-haproxy-statics/
+https://evancarmi.com/writing/setup-haproxy-stats-over-https/
+http://www.networkinghowtos.com/howto/viewing-haproxy-statistics/
+http://serverfault.com/questions/368046/haproxy-stats-socket-incorrect-values
+http://john88wang.blog.51cto.com/2165294/1568541
+
+http://haproxy.tech-notes.net/9-2-unix-socket-commands/
+https://www.datadoghq.com/blog/how-to-collect-haproxy-metrics/
+https://makandracards.com/makandra/36727-get-haproxy-stats-informations-via-socat
+
+HTTPCode: 2xxNum, 4xxNum, 5xxNum
+
+HTTPSession: CurNum, MaxNum
+** echo "show stat" | nc -U /var/run/haproxy/admin.sock
+#+BEGIN_EXAMPLE
+root@all-in-one-DockerDeployAllInOne-162:/# echo "show stat" | nc -U /var/run/haproxy/admin.sock
+# pxname,svname,qcur,qmax,scur,smax,slim,stot,bin,bout,dreq,dresp,ereq,econ,eresp,wretr,wredis,status,weight,act,bck,chkfail,chkdown,lastchg,downtime,qlimit,pid,iid,sid,throttle,lbtot,tracked,type,rate,rate_lim,rate_max,check_status,check_code,check_duration,hrsp_1xx,hrsp_2xx,hrsp_3xx,hrsp_4xx,hrsp_5xx,hrsp_other,hanafail,req_rate,req_rate_max,req_tot,cli_abrt,srv_abrt,comp_in,comp_out,comp_byp,comp_rsp,lastsess,last_chk,last_agt,qtime,ctime,rtime,ttime,
+frontend-http,FRONTEND,,,0,1,2000,1,146,20143,0,0,0,,,,,OPEN,,,,,,,,,1,2,0,,,,0,0,0,1,,,,0,1,0,0,0,0,,0,1,1,,,0,0,0,0,,,,,,,,
+frontend-https,FRONTEND,,,0,1,2000,3,325,150112,0,0,0,,,,,OPEN,,,,,,,,,1,3,0,,,,0,0,0,3,,,,0,3,0,0,0,0,,0,3,3,,,0,0,0,0,,,,,,,,
+backend-http,127.0.0.1,0,0,0,0,4000,0,0,0,,0,,0,0,0,0,UP,1,1,0,1,1,30,396,,1,4,1,,0,,2,0,,0,L4OK,,0,0,0,0,0,0,0,0,,,,0,0,,,,,-1,,,0,0,0,0,
+backend-http,BACKEND,0,0,0,0,200,0,0,0,0,0,,0,0,0,0,UP,1,1,0,,1,30,396,,1,4,0,,0,,1,0,,0,,,,0,0,0,0,0,0,,,,,0,0,0,0,0,0,-1,,,0,0,0,0,
+backend-https,127.0.0.1,0,0,0,1,4000,2,178,129906,,0,,0,0,0,0,UP,1,1,0,1,1,29,396,,1,5,1,,2,,2,0,,2,L6OK,,91,0,2,0,0,0,0,0,,,,0,0,,,,,18,,,0,1,1,1,
+backend-https,BACKEND,0,0,0,1,200,2,178,129906,0,0,,0,0,0,0,UP,1,1,0,,1,29,396,,1,5,0,,2,,1,0,,2,,,,0,2,0,0,0,0,,,,,0,0,0,0,0,0,18,,,0,1,1,1,
+#+END_EXAMPLE
+** haproxy cli help
+#+BEGIN_EXAMPLE
+<yAllInOne-162:/# echo "show status" | nc -U /var/run/haproxy/admin.sock                                                                    [12/1781]
+Unknown command. Please enter one of the following commands only :
+  clear counters : clear max statistics counters (add 'all' for all counters)
+  clear table    : remove an entry from a table
+  help           : this message
+  prompt         : toggle interactive mode with prompt
+  quit           : disconnect
+  show backend   : list backends in the current running config
+  show info      : report information about the running process
+  show pools     : report information about the memory pools usage
+  show stat      : report counters for each proxy and server
+  show stat resolvers [id]: dumps counters from all resolvers section and
+                            associated name servers
+  show errors    : report last request and response errors for each proxy
+  show sess [id] : report the list of current sessions or dump this session
+  show table [id]: report table usage stats or dump this table's contents
+  show servers state [id]: dump volatile server information (for backend <id>)
+  get weight     : report a server's current weight
+  set weight     : change a server's weight
+  set server     : change a server's state, weight or address
+  set table [id] : update or create a table entry's data
+  set timeout    : change a timeout setting
+  set maxconn    : change a maxconn setting
+  set rate-limit : change a rate limiting value
+  disable        : put a server or frontend in maintenance mode
+  enable         : re-enable a server or frontend which is in maintenance mode
+  shutdown       : kill a session or a frontend (eg:to release listening ports)
+  show acl [id]  : report available acls or dump an acl's contents
+  get acl        : reports the patterns matching a sample for an ACL
+  add acl        : add acl entry
+  del acl        : delete acl entry
+  clear acl <id> : clear the content of this acl
+  show map [id]  : report available maps or dump a map's contents
+  get map        : reports the keys and values matching a sample for a map
+  set map        : modify map entry
+  add map        : add map entry
+  del map        : delete map entry
+  clear map <id> : clear the content of this map
+  set ssl <stmt> : set statement for ssl
+#+END_EXAMPLE
+** Statistics and monitoring: http://cbonte.github.io/haproxy-dconv/1.6/management.html#9.2
+https://gist.github.com/jlazic/50af0c706196bf81b616
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

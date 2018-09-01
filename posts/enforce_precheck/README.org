@@ -1,0 +1,142 @@
+* Enforce Pre-check Before Deployment                          :BLOG:General:
+:PROPERTIES:
+:type:   DevOps
+:END:
+---------------------------------------------------------------------
+Before deployment, people might need to provide multiple information. For example, which nodes to deploy what services, use which tcp ports to listen on application endpoints, etc.
+
+Even very careful person would make stupid mistakes! e.g, wrong ip format, invalid port, unsupported OS version, machine doesn't have RAM, etc.
+
+These human errors may not only fail your deployments, but also cause unexpected damages to your existing envs. Even mess up critical envs sometimes. So it's better we *enforce pre-check before update*.
+
+[[image-blog:Enforce Pre-check Before Deployment][https://www.dennyzhang.com/wp-content/uploads/denny/precheck.png]]
+---------------------------------------------------------------------
+*One-button click deployment* is nice. Lots of DevOps practices drive this trend.
+
+I usually enforce it via Chef + Jenkins:
+1. Core deployment is implemented by Chef
+- Wrap up it as a jenkins job.
+
+Consequently people only need to trigger the jenkins job with all parameters default.
+
+Here is an example of Jenkins job:
+[[image-github:https://github.com/dennyzhang/][https://www.dennyzhang.com/wp-content/uploads/denny/github_one_button_deployment.png]]
+
+Super easy, isn't it?
+
+Just one issue. *The parameters*!
+
+People need to configure server_list and chef_json for correctly. It's a bit complicated.
+
+[[color:#c7254e][Compared to documentation, it's better we enforce pre-check]]. Very few people enjoy lengthy manuals. So try your best to help people to avoid common pitfalls and human errors.
+** What Pre-Check To Enforce?
+It depends what things you need people to provide.
+
+For your reference, my favorite checks usually fall into below three categories:
+
+- Parameters Check:
+| Check                  | Summary              |
+|------------------------+----------------------|
+| check_ip_format        | No invalid ip format |
+| check_ip_list_format   | IP list              |
+| check_tcp_port_format  | Valid TCP port       |
+| check_int_format       | Valid integers       |
+| check_string_not_empty |  Parameter is set    |
+
+- Infra Check:
+| Check              | Comment                    |
+|--------------------+----------------------------|
+| check_capcity_disk | Enough disk capacity       |
+| check_capacity_cpu | Enough cpu core            |
+| check_capacity_mem | Enough RAM                 |
+| check_os_version   | Supported OS version       |
+
+- Network Check
+| Check              | Comment                   |
+|--------------------+---------------------------|
+| check_ip_reachable | Verify network assumption |
+| check_port_connect | Telnet server port        |
+
+You can implement your own checks. Then integrate them into your automation scripts as the very first part.
+
+Feedback appreciated!
+** Re-use Code
+Apparently different projects may all need to enforce pre-check.
+
+To lower code duplication, I recommend you to implement a common library.
+
+Here is what I'm using in Chef. (Check out in [[https://github.com/dennyzhang/chef_community_cookbooks/blob/tag_v3/cookbooks/devops_library/libraries/pre_check_helper.rb][Github]]).
+
+#+BEGIN_EXAMPLE
+# Import library
+Chef::Recipe.send(:include, PreCheck::HelperInputFormat)
+Chef::Recipe.send(:include, PreCheck::HelperInfraCheck)
+Chef::Recipe.send(:include, PreCheck::HelperNetworkCheck)
+
+################################################################################
+# Check input parameters
+check_nodename_list_format(node['common_basic']['couchbase_hosts'])
+check_nodename_list_format(node['common_basic']['elasticsearch_hosts'])
+check_nodename_list_format(node['common_basic']['haproxy_hosts'])
+
+check_nodename_format(node['common_basic']['nagios_server'], \
+                      'nagios_server parameter is invalid')
+
+check_tcp_port_format(node['common_basic']['app_https_port'], \
+                      'app_https_port is not a valid tcp port')
+
+check_tcp_port_format(node['common_basic']['haproxy_port'], \
+                      'haproxy_port is not a valid tcp port')
+
+################################################################################
+# Check at infra layer
+check_hostname(node['hostname'])
+
+check_os_version(['ubuntu-14.04'], "#{node['platform']}-#{node['platform_version']}")
+
+check_ip_reachable(['www.google.com'])
+
+################################################################################
+# Check hardware resource
+check_capacity_cpu(node['common_basic']['precheck']['all_in_one']['min_cpu_count'], \
+                   node['cpu']['total'])
+
+total_memory = node['memory']['total'][0..-3].to_f / (1024 * 1024)
+check_capacity_cpu(node['common_basic']['precheck']['all_in_one']['min_memory_gb'], \
+                   total_memory)
+#+END_EXAMPLE
+*Evaluate your deployment practice now*. And share your thoughts and feedback with me, my friend!
+
+More Reading:
+- [[https://www.dennyzhang.com/monitor_outbound_traffic][Monitor Outbound Traffic In Deployment]]
+- [[https://www.dennyzhang.com/list_slowest_steps][List The Slowest Steps In Deployment]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/enforce_precheck"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/enforce_precheck
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 

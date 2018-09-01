@@ -1,0 +1,232 @@
+* Deploy Your Static Or Dynamic Websites Using Git In Public Cloud :BLOG:General:
+:PROPERTIES:
+:type:   DevOps,Popular,Startup
+:END:
+---------------------------------------------------------------------
+Like most versatile engineers, we host websites of side projects in EC2 or DigitalOcean. It might be Boostrap, php, python, nodejs, or anything charming.
+
+We definitely want to have *a quick setup, and keep routine maintenance minimum*. Here are some pratical tips. Check it out!
+
+[[image-blog:Deploy Your Static Or Dynamic Websites Using Git In Public Cloud][https://www.dennyzhang.com/wp-content/uploads/denny/deploy_website_git.jpg]]
+---------------------------------------------------------------------
+Update Per Audience Feedback:
+- Thanks to [[https://www.dennyzhang.com/deploy_by_git/#comment-15388][Rob Larsen]]: We should try our best to avoid using root OS user.
+---------------------------------------------------------------------
+** Don't Want To Start VMs In Public Cloud
+If you want to save some pennies or just for a quick demo, you don't necessarily need to rent a VM. You can run websites directly in your laptop, linux or mac. (Pity for windows users.) Then [[https://www.dennyzhang.com/export_mac_laptop][export your laptop to the internet]].
+** Allow Git Clone By SSH Key, And Run Git Pull Every 10 Min
+- Configure github/bitbucket ssh key.
+I assume you're familiar with git clone by ssh. Probably like lots of developers, you will use your own private key. *I highly diagree with that*. Too dangerous! Your ssh private key can unlock lots of precious treasures, far more than this git repo. Right?
+
+[[image-blog:Git deploy key][https://www.dennyzhang.com/wp-content/uploads/denny/git_deploy_key.png]]
+
+How to improve? Create *a readonly git deploy key* in github/bitbucket repo setting. To do that, we need create a new ssh key pair. So it's new and isolated. And git deploy key has a nice limitation: _we can't use the same deploy key for multiple repos_. It adds extra security.
+
+For simplicity or reasonable security compromise, some people may still use their private key. I admit, it makes sense to some extent. Then [[https://www.dennyzhang.com/ssh_passphrase][protect your ssh key with passphrase]]. It's easy and simple.
+
+For simplicity, here we use root to checkout code and setup website. To improve the security, try with an ordinary OS user.
+#+BEGIN_SRC sh
+# Update ssh key to below
+vim /root/git_deploy_key
+
+# ssh private key can't be widely open
+chmod 400 /root/git_deploy_key
+#+END_SRC
+
+- Specify ssh key for git clone
+#+BEGIN_SRC sh
+vim /root/.ssh/config
+
+host github.com
+     HostName github.com
+     StrictHostKeyChecking no
+     User git
+     IdentityFile /root/git_deploy_key
+#+END_SRC
+
+- Run _git clone_ to get the repo.
+#+BEGIN_SRC sh
+# Run with correct parameters.
+cd /var/www/
+git clone git@github.com:XXX/denny_www.git
+#+END_SRC
+
+- Create crontab for periodical _git pull_. Thus no need for manul login and update anymore.
+#+BEGIN_SRC sh
+crontab -e
+
+# Change file path
+*/10 * * * * cd /var/www/denny_www; git pull
+#+END_SRC
+** For Static Websites, Create Apache Vhost
+For static websites of plain html, we can don't need to run it in our own server. It can be done by Github Pages.[1] See more discussion here.[2]
+
+Well, Github Pages only solves 80% of the problem. If you're in China, the accessibility of Github is not gurantee. Or you want to use your own domain, instead of XXX.github.io. Use apache2 or nginx to serve the requests.
+
+- Apache vhost example. And nginx is pretty similar.
+#+BEGIN_EXAMPLE
+# Install apache
+apt-get install -y apache2
+
+# Define vhost
+vim /etc/apache2/sites-enabled/my-static.conf
+
+<VirtualHost *:80>
+    ServerAdmin webmaster@dummy.test.com
+    DocumentRoot /var/www/denny_www
+    <Directory '/var/www/denny_www'>
+        Options All
+        AllowOverride All
+        Require all granted
+    </Directory>
+    ErrorLog /var/log/apache2/my-error.log
+    CustomLog /var/log/apache2/my.log common
+</VirtualHost>
+
+# Reload apache
+service apache2 reload
+#+END_EXAMPLE
+
+- Verify setting.
+#+BEGIN_SRC sh
+curl http://127.0.0.1
+#+END_SRC
+** For Dynamic Websites, Use Apache For HTTP Reverse Proxy
+Let's say your dynamic website listens on port 8082. And you want to open by http://www.mytest.com or http://mytest.com.
+
+- Configure DNS setting properly or /etc/hosts is properly changed.
+
+- Enable apache modules for http reverse proxy
+#+BEGIN_SRC sh
+a2enmod proxy
+a2enmod proxy_http
+
+# Restart apache to load modules
+service apache2 restart
+#+END_SRC
+
+- Define vhost
+vim /etc/apache2/sites-enabled/dynamic.conf
+#+BEGIN_SRC sh
+<VirtualHost *:80>
+ServerName www.mytest.com
+ServerAlias mytest.com
+ServerAdmin webmaster@smallco.example.com
+ErrorLog /var/log/apache2/dynamic_error_log
+TransferLog /var/log/apache2/dynamic_access_log
+DocumentRoot /var/www
+ProxyPass / http://127.0.0.1:8082/
+ProxyPassReverse / http://127.0.0.1:8082/
+</VirtualHost>
+#+END_SRC
+
+- If necessary, configure firewall to allow the traffic.
+#+BEGIN_SRC sh
+ufw allow 80/tcp
+
+# Some URI might has port number attached
+ufw allow 8082/tcp
+#+END_SRC
+
+- Verify setting
+#+BEGIN_SRC sh
+curl -I http://www.mytest.com
+#+END_SRC
+** Add Password Protection To Your Existing Websites
+Sometime you may only want certain people to visit your websites. With apache htpasswd[3], we can create username-password pair easily. People will need to input the credential first in web browser, before the actual pages load.
+
+- Create an user credential
+#+BEGIN_SRC sh
+apt-get install -y apache2-utils
+
+# create password file for a new user
+/etc/apache2/.htpasswd $username
+#+END_SRC
+
+- Update vhost setting to enforce the authentication
+From:
+#+BEGIN_EXAMPLE
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    <Directory "/var/www/html">
+    </Directory>
+</VirtualHost>
+#+END_EXAMPLE
+
+To:
+#+BEGIN_EXAMPLE
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    <Directory "/var/www/html">
+        AuthType Basic
+        AuthName "Restricted Content"
+        AuthUserFile /etc/apache2/.htpasswd
+        Require valid-user
+    </Directory>
+</VirtualHost>
+#+END_EXAMPLE
+
+- Verify setting, open http://$domain_name:$port in web browser.
+
+[[image-blog:Enforce username and password for apache][https://www.dennyzhang.com/wp-content/uploads/denny/htpasswd.png]]
+** Monitor Your Websites with Free SaaS Monitoring
+Keep checking URL like every 5 minutes. If url doesn't return _HTTP 200 OK_ or tcp ports down, we get alerts.
+
+From my years' experience, I highly recommend uptimerobot[4]. It's a very reliable and light-weight SaaS monitoring service. And It's totally free. You can even integrate the alert notification with slack via a slack email robot.
+
+More Reading: [[https://www.dennyzhang.com/github_wiki][Effectively Technical Writing In GitHub]].
+
+[1] https://pages.github.com
+[2] http://www.mattboldt.com/using-git-for-websites/
+[3] www.digitalocean.com/community/tutorials/how-to-set-up-password-authentication-with-apache-on-ubuntu-14-04
+[4] https://uptimerobot.com
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/deploy_by_git"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/deploy_by_git
+* misc                                                             :noexport:
+** #  --8<-------------------------- separator ------------------------>8--
+** useful link
+http://sebduggan.com/blog/deploy-your-website-changes-using-git/
+https://www.drupal.org/node/803746
+
+https://www.sitepoint.com/deploy-website-using-laravel-git/
+http://nicolasgallagher.com/simple-git-deployment-strategy-for-static-sites/
+http://learntocodewith.me/tutorials/github-pages/
+http://markdotto.com/2011/11/02/how-to-deploy-sites-via-github/
+http://www.mattboldt.com/using-git-for-websites/
+http://toroid.org/git-website-howto
+** Host multiple websites in one apache server
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
