@@ -11,7 +11,8 @@
 <a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
 #+END_HTML
 
-Blog: https://www.dennyzhang.com/
+- See Posts In GitHub: [[https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts][posts]]
+- Blog: https://www.dennyzhang.com/
 
 File me [[https://github.com/DennyZhang/www.dennyzhang.com/issues][Issues]] or star [[https://github.com/DennyZhang/www.dennyzhang.com][this repo]]
 
