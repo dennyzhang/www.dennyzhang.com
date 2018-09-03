@@ -15,14 +15,14 @@ Update Per Audience Feedback:
 
 [[color:#c7254e][Cheat Sheet]] for impatient users. Recommend to read this post through, even for experienced users.
 
-| Name                    | Summary                                  |
-|-------------------------+------------------------------------------|
-| Load key file           | ssh-add ~/.ssh/id_rsa                    |
-| Remove all loaded keys  | ssh-add -D                               |
-| Whether it's encrypted  | grep "ENCRYPTED" id_rsa                  |
-| Add/Change passphrase   | ssh-keygen -p -f id_dsa                  |
-| Remove passphrase       | ssh-keygen -p -P $passwd -N "" -f id_rsa |
-| Load key without prompt | Check link: here                         |
+| Name                    | Summary                                    |
+|-------------------------+--------------------------------------------|
+| Load key file           | =ssh-add ~/.ssh/id_rsa=                    |
+| Remove all loaded keys  | =ssh-add -D=                               |
+| Whether it's encrypted  | =grep "ENCRYPTED" id_rsa=                  |
+| Add/Change passphrase   | =ssh-keygen -p -f id_dsa=                  |
+| Remove passphrase       | =ssh-keygen -p -P $passwd -N "" -f id_rsa= |
+| Load key without prompt | Check link: here                           |
 ** Add passphrase to existing ssh key
 We can easily use *ssh-keygen* to add passphrase. This certainly gives us extra security benefit. Next, what's the impact of this change?
 - You never use your private key other than your computer. Right? If yes, nothing you need to worry. One tiny difference: you might be asked to input the passphrase once. Check all loaded keys by _ssh-add -l_.
