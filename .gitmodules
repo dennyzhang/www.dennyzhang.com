@@ -1,3 +1,6 @@
 [submodule "posts/today-learning"]
 	path = posts/today-learning
 	url = git@github.com:dennyzhang/today-learning.git
+[submodule "posts/challenges-cloudformation-jenkins"]
+	path = posts/challenges-cloudformation-jenkins
+	url = git@github.com:dennyzhang/challenges-cloudformation-jenkins.git
