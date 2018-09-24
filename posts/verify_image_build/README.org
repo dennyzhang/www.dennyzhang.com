@@ -43,7 +43,7 @@ docker exec -it docker-images bash
 
 # Download a dockerfile for test purpose
 wget -O /root/java_v1_0.dockerfile \
-  https://raw.githubusercontent.com/DennyZhang/devops_docker_image/tag_v6/java/java_v1_0.dockerfile
+  https://raw.githubusercontent.com/dennyzhang/devops_docker_image/tag_v6/java/java_v1_0.dockerfile
 
 # Build docker image inside current container
 cd /root/

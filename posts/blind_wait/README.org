@@ -9,7 +9,7 @@ For simplicity or time pressure, people usually use *a blind wait* like "sleep 1
 
 [[image-blog:Blind Wait][https://www.dennyzhang.com/wp-content/uploads/denny/blind_wait.jpg]]
 ---------------------------------------------------------------------
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/DennyZhang/devops_public/master/frontend/org-mode-blog.css" />
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/dennyzhang/devops_public/master/frontend/org-mode-blog.css" />
 Let's examine below automation requirement, which is quite common in daily life of DevOps. You're asked to start service1, then service2. However you can only start service2, after service1 is up and running well. If not, service2 may fail to start or run into unexpected behaviors.
 ** Solution v1.0: blind wait
 #+BEGIN_SRC sh

@@ -13,12 +13,15 @@ function my_test() {
 function refresh_wordpress() {
     local max_days=${MAX_DAYS:-"7"}
     echo "Use emacs to update wordpress posts"
-    cd posts
-    for f in $(find * -name 'README.org' -mtime -${max_days} | grep -v '^README.org$'); do
-        echo "Update $f"
-        dirname=$(basename $(dirname $f))
-        cd $dirname
-        /Applications/Emacs.app/Contents/MacOS/Emacs-x86_64-10_10 --batch -l ../../emacs-update.el
+    for d in "posts" "docker" "aws" "devops" "kubernetes"; do
+        cd "$d"
+        for f in $(find . -name 'README.org' -mtime -${max_days} | grep -v '^README.org$'); do
+            echo "Update $f"
+            dirname=$(basename $(dirname $f))
+            cd $dirname
+            /Applications/Emacs.app/Contents/MacOS/Emacs-x86_64-10_10 --batch -l ../../emacs-update.el
+            cd ..
+        done
         cd ..
     done
 }
@@ -51,22 +54,25 @@ function git_pull() {
 
 function refresh_link() {
     echo "refresh link"
-    cd posts
-    for f in $(ls -1t */README.org); do
-        dirname=$(basename $(dirname $f))
-        if ! grep "<a href=\"https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/$dirname" $f 1>/dev/null 2>&1; then
-            if grep "https://github.com/dennyzhang/www.dennyzhang.com" $f 1>/dev/null 2>&1; then
-                echo "Update GitHub url for $f"
-                sed -ie "s/<a href=\"https:\/\/github.com\/dennyzhang\/www.dennyzhang.com\/tree\/master\/posts\/[^\"]*\"/<a href=\"https:\/\/github.com\/dennyzhang\/www.dennyzhang.com\/tree\/master\/posts\/$dirname\"/g" $f
+    for d in "posts" "docker" "aws" "devops" "kubernetes"; do
+        cd "$d"
+        for f in $(ls -1t */README.org); do
+            dirname=$(basename $(dirname $f))
+            if ! grep "<a href=\"https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/$dirname" $f 1>/dev/null 2>&1; then
+                if grep "https://github.com/dennyzhang/www.dennyzhang.com" $f 1>/dev/null 2>&1; then
+                    echo "Update GitHub url for $f"
+                    sed -ie "s/<a href=\"https:\/\/github.com\/dennyzhang\/www.dennyzhang.com\/tree\/master\/posts\/[^\"]*\"/<a href=\"https:\/\/github.com\/dennyzhang\/www.dennyzhang.com\/tree\/master\/posts\/$dirname\"/g" $f
+                    rm -rf $dirname/README.orge
+                fi
+            fi
+
+            if ! grep "Blog URL: https://www.dennyzhang.com/$dirname" $f 1>/dev/null 2>&1; then
+                echo "Update Blog url for $f"
+                sed -ie "s/Blog URL: https:\/\/www.dennyzhang.com\/.*/Blog URL: https:\/\/www.dennyzhang.com\/$dirname/g" $f
                 rm -rf $dirname/README.orge
             fi
-        fi
-
-        if ! grep "Blog URL: https://www.dennyzhang.com/$dirname" $f 1>/dev/null 2>&1; then
-            echo "Update Blog url for $f"
-            sed -ie "s/Blog URL: https:\/\/www.dennyzhang.com\/.*/Blog URL: https:\/\/www.dennyzhang.com\/$dirname/g" $f
-            rm -rf $dirname/README.orge
-        fi
+        done
+        cd ..
     done
 }
 

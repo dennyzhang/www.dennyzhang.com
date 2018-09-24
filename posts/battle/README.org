@@ -19,7 +19,7 @@ See how comfortable you are to solve them.
 
 GitHub: [[url-external:https://github.com/topics/denny-challenges][denny-challenges]]
 
-[[image-github:https://github.com/topics/denny-challenges][https://raw.githubusercontent.com/DennyZhang/images/master/blog/denny_challenges_github.png]]
+[[image-github:https://github.com/topics/denny-challenges][https://raw.githubusercontent.com/dennyzhang/images/master/blog/denny_challenges_github.png]]
 
 Leave me comments, if they can be helpful to you. Or we can improve them to be better.
 ---------------------------------------------------------------------

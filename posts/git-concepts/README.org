@@ -9,7 +9,7 @@ I found several Git fundamental concepts. They are quite useful, but may not be 
 
 Check it out. And let me know what you think!
 
-[[image-blog:10 Useful Git Skills But You May Not Know][https://raw.githubusercontent.com/DennyZhang/images/master/blog/git-workflow.png]]
+[[image-blog:10 Useful Git Skills But You May Not Know][https://raw.githubusercontent.com/dennyzhang/images/master/blog/git-workflow.png]]
 ---------------------------------------------------------------------
 Q: What is *.gitkeep* file?
 
@@ -30,7 +30,7 @@ $ git cherry-pick $git_revision
 
 In below figure, we cherry-pick [[color:#c7254e][C D E]] from branch2 to branch1.
 
-[[image-blog:10 Useful Git Skills But You May Not Know][https://raw.githubusercontent.com/DennyZhang/images/master/blog/cherry-pick-example.png]]
+[[image-blog:10 Useful Git Skills But You May Not Know][https://raw.githubusercontent.com/dennyzhang/images/master/blog/cherry-pick-example.png]]
 
 Read more: [[url-external:http://think-like-a-git.net/sections/rebase-from-the-ground-up/cherry-picking-explained.html][cherry-picking explained]]
 ---------------------------------------------------------------------

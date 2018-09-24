@@ -9,7 +9,7 @@ To *play safe*, you need to run a long procedure. [[color:#c7254e][And Stay Alar
 
 How about we do it from Jenkins? Kind of VisualOps.
 
-[[image-blog:Restart One Elasticsearch Instance From Jenkins][https://raw.githubusercontent.com/DennyZhang/elasticsearch-cli-tool/master/images/RestartES.png]]
+[[image-blog:Restart One Elasticsearch Instance From Jenkins][https://raw.githubusercontent.com/dennyzhang/elasticsearch-cli-tool/master/images/RestartES.png]]
 ---------------------------------------------------------------------
 *Why Need To Restart?*
 Instead of how, we definitely need to ask *why* first.
@@ -101,7 +101,7 @@ So it's better we ask human intervene.
 
 [[color:#c7254e][Here comes the solution in GitHub!]]
 
-[[image-github:https://github.com/dennyzhang/elasticsearch-cli-tool/tree/master/restart_es_instance][https://raw.githubusercontent.com/DennyZhang/images/master/blog/restart_es_instance.png]]
+[[image-github:https://github.com/dennyzhang/elasticsearch-cli-tool/tree/master/restart_es_instance][https://raw.githubusercontent.com/dennyzhang/images/master/blog/restart_es_instance.png]]
 
 Posts: [[https://www.dennyzhang.com/tag/Elasticsearch][Tag #Elasticsearch]]
 [display-posts tag="Elasticsearch" posts_per_page="20"]

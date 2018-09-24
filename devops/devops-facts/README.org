@@ -32,7 +32,7 @@ But have you ever wonder what does "Kanban" mean here?
 #+END_HTML
 *Kanban, also spelt "kamban" in Japanese, translates to "Billboard" ("signboard" in Chinese).*
 
-[[image-blog:Interesting Facts About DevOps Concepts][https://raw.githubusercontent.com/DennyZhang/images/master/blog/kbanba.png]]
+[[image-blog:Interesting Facts About DevOps Concepts][https://raw.githubusercontent.com/dennyzhang/images/master/blog/kbanba.png]]
 Images credits to: [[url-external:https://blogs.vmware.com/accelerate/2015/11/kanban-it-operations.html][link]]
 
 #+BEGIN_HTML

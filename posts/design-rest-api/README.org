@@ -11,7 +11,7 @@ Designing clean and just-enough API takes experience and efforts.
 
 Your experiences? [[color:#c7254e][Leave Me Comments.]]
 
-[[image-blog:How To Design REST API][https://raw.githubusercontent.com/DennyZhang/images/master/design/basic_rest_example.png]]
+[[image-blog:How To Design REST API][https://raw.githubusercontent.com/dennyzhang/images/master/design/basic_rest_example.png]]
 
 ---------------------------------------------------------------------
 Similar Posts:
@@ -24,7 +24,7 @@ Similar Posts:
 - [[url-external:https://developer.mozilla.org/en-US/docs/Web/HTTP/Status][HTTP response status codes]]
 - [[url-external:https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask][Designing a RESTful API with Python and Flask]]
 
-[[image-blog:How To Design REST API][https://raw.githubusercontent.com/DennyZhang/images/master/design/basic_rest_example.png]]
+[[image-blog:How To Design REST API][https://raw.githubusercontent.com/dennyzhang/images/master/design/basic_rest_example.png]]
 ---------------------------------------------------------------------
 [[color:#c7254e][Common Mistakes:]]
 - In GET requests, add parameters inside the body, instead of in URL

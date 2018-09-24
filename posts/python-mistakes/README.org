@@ -7,7 +7,7 @@ My common mistakes when solving code problems.
 
 Trying to write more bug-free code, if I can. LOL
 
-[[image-blog:My Common Python Coding Mistakes][https://raw.githubusercontent.com/DennyZhang/images/master/blog/python_logo.jpg]]
+[[image-blog:My Common Python Coding Mistakes][https://raw.githubusercontent.com/dennyzhang/images/master/blog/python_logo.jpg]]
 ---------------------------------------------------------------------
 Similar Posts:
 - [[https://brain.dennyzhang.com/review-python][Summary Of My Python Sharing]]

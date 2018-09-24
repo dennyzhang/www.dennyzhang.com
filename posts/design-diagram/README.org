@@ -7,7 +7,7 @@ To get our design idea clearly explained, we need to draw architecture diagrams 
 
 For your reference. Here I try to combine a list of architecture diagrams with typical system designs.
 
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/platform_layer.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/platform_layer.png]]
 
 ---------------------------------------------------------------------
 Similar Posts:
@@ -18,51 +18,51 @@ Resources:
 - [[url-external:https://cloudcraft.co/app][cloudcraft.co]]: draw AWS diagrams
 ---------------------------------------------------------------------
 - Typical: Layer-based Illustration
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/layer-architecture.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/layer-architecture.png]]
 ---------------------------------------------------------------------
 - Typical: 3-tier applications and 2-tier applications.
 Credits to: [[url-external:http://www.softwaretestingclass.com/what-is-difference-between-two-tier-and-three-tier-architecture/][link]]
 
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/two-tier-architecture.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/two-tier-architecture.png]]
 
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/three-tier-architecture.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/three-tier-architecture.png]]
 ---------------------------------------------------------------------
 - Platform Layer (Services)
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/platform_layer.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/platform_layer.png]]
 ---------------------------------------------------------------------
 - Typical: LB-APP-DB
 
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/design.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/design.png]]
 ---------------------------------------------------------------------
 - Tenant design
 - Microservice
 ---------------------------------------------------------------------
 - Typical: Star-based Illustration
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/star-design.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/star-design.png]]
 ---------------------------------------------------------------------
 - Typical: Circle-based Illustration
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/circle-design.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/circle-design.png]]
 ---------------------------------------------------------------------
 - Typical: Group-based Illustration
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/group-box-design.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/group-box-design.png]]
 ---------------------------------------------------------------------
 - Typical: Center-based Illustration
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/center-design.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/center-design.png]]
 ---------------------------------------------------------------------
 - Example: Kubernetes Architecture
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/k8s-design.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/k8s-design.png]]
 ---------------------------------------------------------------------
 - Example: 3-Tier Auto-Scalable Web Application Architecture
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/aws-auto-scale-web-app.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/aws-auto-scale-web-app.png]]
 ---------------------------------------------------------------------
 - Example: Pinterest architecture
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/pinterest-arch-overview.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/pinterest-arch-overview.png]]
 
 Credits to [[url-external:http://www.puncsky.com/blog/2016/02/14/crack-the-system-design-interview/][link]]
 ---------------------------------------------------------------------
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/use_icon1.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/use_icon1.png]]
 
-[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/DennyZhang/images/master/design/use_icon2.png]]
+[[image-blog:Typical Architecture Diagrams In System Design][https://raw.githubusercontent.com/dennyzhang/images/master/design/use_icon2.png]]
 
 #+BEGIN_HTML
 <a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/design-diagram"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
