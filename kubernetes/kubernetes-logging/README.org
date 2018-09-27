@@ -1,0 +1,121 @@
+* 5 Challenges In Kubernetes Log Transport                  :BLOG:Kubernetes:
+:PROPERTIES:
+:type:     GitHub, Kubernetes
+:END:
+---------------------------------------------------------------------
+For the past several months, I have been working in [[https://pivotal.io/platform/pivotal-container-service][PKS product]]. Enterprise Kubernetes solution from VMware and Pivotal. More specifically, I have been working on Kubernetes logging feature in PKS.
+
+hmm, logging? Collect the logs, and send to the endpoint. That looks quite straightforward. Simple and common, isn't it? Agree, but there some new challenges in container world's logging which I have overlooked.
+
+Here are the summary. Check it out! And see how much it applies to your project(s).
+
+[[image-blog:5 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/www/fluentd.png]]
+---------------------------------------------------------------------
+Generally speaking, here is what the log collecting looks like in container world.
+
+TODO: add picture
+
+Then you might have heard of commercial product like splunk, or open source solution like ELK or EFK.
+
+So you might think problem is solved. Not yet, my friends.
+
+Running service in containers are different from running in VM or bare metal. Consequently it makes container log collecting a bit different.
+
+** *Challenge I: Fail to collect all the critical log*
+- Pods get recreated within 5 seconds
+- Not all logs are redirected to stdout/stderr
+- When pod crash or recreated, we lose the log
+*** watch for pod creation/deletion events                         :noexport:
+  https://github.com/honeycombio/honeycomb-kubernetes-agent
+
+  https://docs.honeycomb.io/thinking-about-observability/getting-started-with/kubernetes/
+  #+BEGIN_EXAMPLE
+  Yes, they are doing it in a different way.
+
+  Instead of one static log folder path of fluent-bit/fluentd, they are registering to k8s Pod events.
+
+  So they should get logs more promptly, especially when Pods are only alive for less than 1 minutes.
+  #+END_EXAMPLE
+** *Challenge II: Logging security and segregation*
+- Namespace multi-tenancy
+- Secure infra level logging
+- Security threats from layered log visualizations
+*** Skip pods per namespace                                        :noexport:
+Denny Zhang [19 hours ago]
+@XXX, fluent-bit will still scan logs from pods of "disabled" namespaces. Just fb filter will drop the messages.
+
+So if that namespace keeps logging crazily, the expected performance improvement from disabling that namespace log draining won't happen.
+
+Right? (edited)
+
+
+XXX [3 hours ago]
+Ah, I see what you are talking about now.
+
+
+XXX [3 hours ago]
+This would be something we need to measure to see how bad a performance impact it is. We may move away from hitting disk entirely in the future so I'd hate to invest a lot of time into mitigating this. Do you mind creating a story in the icebox and let XXX know so he is aware?
+
+
+Denny Zhang [1 hour ago]
+Sure. Will do
+
+Yeah, I start this conversation mostly for discussions.  Not intentions to change anything at current stage
+
+
+XXX [1 hour ago]
+We could limit the `[INPUT]` to only the files for containers in our namespace. But that might be a bit involved. Controller would have to do more work and roll the daemonset more often when containers get created or destroyed in the monitored 
+
+- High latency of log collecting
+** *Challenge III: Hard to achieve performance SLA*
+- Noisy neighborhood
+- Single instance of log collector
+- Too many Pods in one K8S worker VM
+- Back-pressure
+- Slow disk create significant latencies for log agent
+** *Challenge IV: Logging for different use cases*
+- k8s addon, control panel, infra level
+- layered problems
+** *Challenge V: Logging for different audience*
+
+More Reading:
+- [[https://www.dennyzhang.com/tag/kubernetes][kubernetes Posts]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/kubernetes-logging"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/kubernetes-logging
+** basic use                                                       :noexport:
+In this presentation, we will share our learnings about
+enterprise logging for microservices architecture. We will highlight
+key reliability and security features that large enterprise dev teams
+require when implementing microservices architectures. We will discuss
+the current state of microservices logging, the new challenges it
+poses for large enterprise dev teams and then we will follow up with
+suggestions on how to address these challenges with a quick demo in
+the end.
+
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
