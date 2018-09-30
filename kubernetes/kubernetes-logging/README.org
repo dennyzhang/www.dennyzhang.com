@@ -17,13 +17,22 @@ TODO: add picture
 
 Then you might have heard of commercial product like splunk, or open source solution like ELK or EFK. So you might think problem is solved. *Not Yet, My Friends*.
 
-[[color:#c7254e][Running service in containers are different from running in VM or bare metal]].
+[[color:#c7254e][Running Service In Containers Are Different From VMs Or Bare Metal]].
+1. Process is more ephemeral
+- Deployment is more distributed
 
-Process is more ephemeral; deployment is more distributed. Consequently it makes container log collecting quite different.
+Consequently log collecting in container world is different.
 
 *Challenge I: Fail to collect all the critical log*
 
-- Pods get recreated within 5 seconds
+- _Pods may get recreated within several seconds_. Especially when something is wrong. 
+
+This means pods will be deleted and recreated quickly. And the log file associated with that pod/container will be deleted/created quickly. 
+
+However log agent like fluentd/logstash detect new log file by scanning the folder or log pattern periodically. The default scan interval is 60 seconds.
+
+[[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/fluentd-scan.png]]
+
 - Not all logs are redirected to stdout/stderr
 - When pod crash or recreated, we lose the log
 *** watch for pod creation/deletion events                         :noexport:
@@ -81,7 +90,9 @@ We could limit the `[INPUT]` to only the files for containers in our namespace. 
 
 What is PKS? [[https://pivotal.io/platform/pivotal-container-service][PKS]] is an enterprise Kubernetes solution from VMware and Pivotal.
 
-Interested in PKS job opportunities? Here is [[https://vmware.rolepoint.com/?shorturl=qeEMe][my referral link]]. Open it, then search with "PKS". You will see all openings. Leave me a message, if you're applying positions for Palo Alto Office specifically.
+[[color:#c7254e][Interested in PKS job opportunities?]] Great! Here is [[https://vmware.rolepoint.com/?shorturl=qeEMe][my referral link]].
+
+Open it, then search with "PKS". You will see all openings. Leave me a message, if you're applying positions for Palo Alto Office specifically.
 
 [[4 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/work/vmware_pks.png]]
 
