@@ -1,16 +1,18 @@
 * 4 Challenges In Kubernetes Log Transport                  :BLOG:Kubernetes:
 :PROPERTIES:
-:type:     Kubernetes, Logging
+:type:     Kubernetes, Logging, PKS
 :END:
 ---------------------------------------------------------------------
-For the past three months, I have been working in [[https://pivotal.io/platform/pivotal-container-service][PKS]] observability features. Right now, it's mostly about kubernetes logging feature.
+For the past three months, I have been working on [[https://pivotal.io/platform/pivotal-container-service][PKS]] observability features. Right now, it's mostly about kubernetes logging feature.
 
-hmm, logging? Collect logs, and send them to log endpoint. That looks quite straightforward. Simple and common, isn't it? Agree, but only partially. Noticed some challenges and differences in the container logging, compared to VM or bare metal envs.
+hmm, logging? Collect logs, and send them to log endpoint. That looks quite straightforward. Simple and Common, isn't it? Agree, but only partially. I have noticed some new challenges in the container logging, compared to VM or bare metal envs.
 
-Here are the summary. Check it out! And see how much it may apply to your kubernetes project(s).
+Here are the summary. Check it out! See how much it may apply to your kubernetes projects. (BTW, our PKS project is [[https://vmware.rolepoint.com/?shorturl=qeEMe][hiring]])
 
 [[image-blog:5 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/www/fluentd.png]]
 ---------------------------------------------------------------------
+Anit-goal of this post: TODO
+
 Normally log transport workflow is like below:
 
 TODO: add picture
@@ -22,36 +24,87 @@ Then you might have heard of commercial product like splunk, or open source solu
 - Deployment is more distributed
 
 Consequently log collecting in container world is different.
+---------------------------------------------------------------------
+*Challenge I: Fail to collect all critical logs*
 
-*Challenge I: Fail to collect all the critical log*
+- _Pods may get recreated within several seconds_. This means the old log transport mechanism may fail to collect logs for those short-lived pods. But your users may need them for trouble shooting!
 
-- _Pods may get recreated within several seconds_. Especially when something is wrong. 
+When something is wrong, pods may get deleted or recreated quickly. Consequently the log file associated with that pod/container will be deleted/created quickly. 
 
-This means pods will be deleted and recreated quickly. And the log file associated with that pod/container will be deleted/created quickly. 
+However log agent like [[https://www.fluentd.org/][fluentd]] or [[https://www.elastic.co/products/logstash][logstash]] detects new log file by scanning the folder or log pattern periodically. And the default scan interval is 60 seconds(see below figure). The scan interval may be too slow to capture the short-lived pods. Yes, you can set the interval to shorter, say 1 second. But you do know the drawbacks, right?
 
-However log agent like fluentd/logstash detect new log file by scanning the folder or log pattern periodically. The default scan interval is 60 seconds.
+[[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/fluentd-scan-interval.png]]
 
-[[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/fluentd-scan.png]]
+Previously this won't be a problem in VM world. When process gets restarted somehow, log file may be rotated but won't be deleted. So users may experience slowness for receiving logs. But not like this: *Missing critical log for problematic processes*.
 
-- Not all logs are redirected to stdout/stderr
-- When pod crash or recreated, we lose the log
-*** watch for pod creation/deletion events                         :noexport:
-  https://github.com/honeycombio/honeycomb-kubernetes-agent
+How we can solve this? Not sure about the best practice, since here in PKS we are also exploring. Maybe we can start a kubernetes controller subscribing to pod events. Whenever a pod creation event has been fired, notify log agent immediately. [[https://github.com/honeycombio/honeycomb-kubernetes-agent][honeycomb-kubernetes-agent]] is an interesting GitHub repo implementing this idea. Please leave us comments, if you have a better solution.
 
-  https://docs.honeycomb.io/thinking-about-observability/getting-started-with/kubernetes/
+- _Not all logs are redirected to stdout/stderr_. If process inside pod writes log to local file instead of stdout/stderr, log agent won't get it.
+
+Why? It only monitors the log file associated with the pod, like below. And that log file will only capture container's stdout/stderr.
+
 #+BEGIN_EXAMPLE
-  Yes, they are doing it in a different way.
-
-  Instead of one static log folder path of fluent-bit/fluentd, they are registering to k8s Pod events.
-
-  So they should get logs more promptly, especially when Pods are only alive for less than 1 minutes.
+# ls -1  /var/lib/docker/containers/*/*-json.log
+ls -1  /var/lib/docker/containers/*/*-json.log
+/var/lib/docker/containers/0470.../0470...-json.log
+/var/lib/docker/containers/0645.../0645...-json.log
+/var/lib/docker/containers/12d2.../12d2...-json.log
+...
+...
 #+END_EXAMPLE
-** *Challenge II: Logging security and segregation*
-- Namespace multi-tenancy
-- Secure infra level logging
+
+Yes, this logging behavior is *anit-pattern* for kubernetes world. However cloud-native movement definitely takes time, not everyone is fasion enough. This is especially true for DB services.
+
+Compared to VM worlds, Pod may move across different worker nodes quite often. But you don't want whenever k8s cluster has one pod change, the log agent needs to be reloaded or restarted. New challenges, right?
+
+How to solve it? TODO: sidecar, log mapping
+---------------------------------------------------------------------
+*Challenge II: Multi-tenancy logging per namespace*
+- _Different log endpoint for different namespace_
+
+Deploying workloads to k8s cluster usually means to shared envs. Different teams/projects may be seperated by different kubernetes namespaces.
+
+[[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/pks-sink-resource.png]]
+
+---------------------------------------------------------------------
+*Challenge III: Support logging SLA*
+- _Disable logging for one namespace?_
+- Noisy neighborhood
+- Single instance of log agent
+- Need to restart the log agent
+- Too many Pods in one K8S worker VM
+- Back-pressure
+- Slow disk create significant latencies for log agent
+---------------------------------------------------------------------
+*Challenge IV: Logging of differe layers*
+- k8s addon, control panel, infra level
 - Security threats from layered log visualizations
-- syslog endpoint protection
-*** Skip pods per namespace                                        :noexport:
+---------------------------------------------------------------------
+What is PKS? [[https://pivotal.io/platform/pivotal-container-service][PKS]] is an enterprise Kubernetes solution from VMware and Pivotal.
+
+[[color:#c7254e][Interested in PKS job opportunities?]] Great! Here is [[https://vmware.rolepoint.com/?shorturl=qeEMe][my referral link]].
+
+Open it, then search with "PKS". You will see all openings. Leave me a message, if you're applying positions for Palo Alto Office specifically.
+
+[[4 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/work/vmware_pks.png]]
+
+More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kubectl cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-yaml][kubernetes yaml templates]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/kubernetes/kubernetes-logging"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/kubernetes-logging
+** Skip pods per namespace                                         :noexport:
 Denny Zhang [19 hours ago]
 @XXX, fluent-bit will still scan logs from pods of "disabled" namespaces. Just fb filter will drop the messages.
 
@@ -78,40 +131,6 @@ XXX [1 hour ago]
 We could limit the `[INPUT]` to only the files for containers in our namespace. But that might be a bit involved. Controller would have to do more work and roll the daemonset more often when containers get created or destroyed in the monitored 
 
 - High latency of log collecting
-** *Challenge III: Hard to achieve performance SLA*
-- Noisy neighborhood
-- Single instance of log collector
-- Too many Pods in one K8S worker VM
-- Back-pressure
-- Slow disk create significant latencies for log agent
-** *Challenge IV: Logging for different use cases*
-- k8s addon, control panel, infra level
-- layered problems
-
-What is PKS? [[https://pivotal.io/platform/pivotal-container-service][PKS]] is an enterprise Kubernetes solution from VMware and Pivotal.
-
-[[color:#c7254e][Interested in PKS job opportunities?]] Great! Here is [[https://vmware.rolepoint.com/?shorturl=qeEMe][my referral link]].
-
-Open it, then search with "PKS". You will see all openings. Leave me a message, if you're applying positions for Palo Alto Office specifically.
-
-[[4 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/work/vmware_pks.png]]
-
-More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kubectl cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-yaml][kubernetes yaml templates]]
-
-#+BEGIN_HTML
-<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/kubernetes/kubernetes-logging"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
-
-<div id="the whole thing" style="overflow: hidden;">
-<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
-<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
-<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
-</div>
-
-<br/><br/>
-<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
-#+END_HTML
-
-Blog URL: https://www.dennyzhang.com/kubernetes-logging
 ** basic use                                                       :noexport:
 In this presentation, we will share our learnings about
 enterprise logging for microservices architecture. We will highlight
@@ -121,6 +140,10 @@ the current state of microservices logging, the new challenges it
 poses for large enterprise dev teams and then we will follow up with
 suggestions on how to address these challenges with a quick demo in
 the end.
+* TODO Questions                                                   :noexport:
+** Secure infra level logging
+** TODO syslog endpoint protection
+** TODO get all pods
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone showall
 #+DESCRIPTION: 

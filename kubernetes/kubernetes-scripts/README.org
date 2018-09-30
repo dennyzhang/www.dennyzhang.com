@@ -1,4 +1,4 @@
-* GitHub Repo Sharing: kubernetes-scripts                       :BLOG:GitHub:
+* GitHub Repo Sharing: kubernetes-scripts                       :BLOG:Kubernetes:
 :PROPERTIES:
 :type:     GitHub, Kubernetes
 :END:
