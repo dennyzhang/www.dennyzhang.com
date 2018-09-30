@@ -8,6 +8,7 @@ Guys, [[Color:#c7254e][Two Big News]] to share with you!!
 My wife and I have relocated to silicon valley. Finally! I will join VMware as a staff engineer next Monday. Work on enterprise-ready kubernetes product([[url-external:https://pivotal.io/platform/pivotal-container-service][PKS]])
 
 Hope I can make good influence and big contributions to the team and the product very soon.
+
 [[image-blog:I'm Joining VMware. And Work On Kubernetes Product!][https://cdn.dennyzhang.com/images/blog/roadtrip.jpg]]
 ---------------------------------------------------------------------
 Apparently I need to thank my wife and my family. It's a big move. California is expensive and challenging. No kidding!
@@ -31,6 +32,8 @@ Definitely a lot of things to learn. And a lot of mistakes to make, I guess. But
 Our office is in Palo Alto. If you're nearby, ping me in [[url-external:https://www.linkedin.com/in/dennyzhang001][LinkedIn]] or [[https://www.dennyzhang.com/slack][Slack]]. Let's grab a coffee! 
 
 If you're not local, it's fine as well. When you have questions related to DevOps, Kurbernets or even VMware [[url-external:https://pivotal.io/platform/pivotal-container-service][PKS]], remember to contact me. I'm just one button away.
+
+(BTW, our PKS project is [[https://vmware.rolepoint.com/?shorturl=qeEMe][hiring]])
 
 [[image-blog:I'm Joining VMware. And Work On Kubernetes Product!][https://cdn.dennyzhang.com/images/blog/work/vmware_pks.png]]
 

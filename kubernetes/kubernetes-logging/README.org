@@ -17,7 +17,7 @@ Normally log transport workflow is like below:
 
 TODO: add picture
 
-Then you might have heard of commercial product like splunk, or open source solution like ELK or EFK. So you might think problem is solved. *Not Yet, My Friends*.
+Then you might have heard of commercial product like Splunk, or open source solution like ELK or EFK. So you might think problem is solved. *Not Yet, My Friends*.
 
 [[color:#c7254e][Running Service In Containers Are Different From VMs Or Bare Metal]].
 1. Process is more ephemeral
@@ -25,7 +25,7 @@ Then you might have heard of commercial product like splunk, or open source solu
 
 Consequently log collecting in container world is different.
 ---------------------------------------------------------------------
-*Challenge I: Fail to collect all critical logs*
+*Challenge I: Fail To Collect All Critical Logs*
 
 - _Pods may get recreated within several seconds_. This means the old log transport mechanism may fail to collect logs for those short-lived pods. But your users may need them for trouble shooting!
 
@@ -53,30 +53,41 @@ ls -1  /var/lib/docker/containers/*/*-json.log
 ...
 #+END_EXAMPLE
 
-Yes, this logging behavior is *anit-pattern* for kubernetes world. However cloud-native movement definitely takes time, not everyone is fasion enough. This is especially true for DB services.
+Yes, this logging behavior is *anit-pattern* for kubernetes world. However cloud-native movement definitely takes time, not everyone is fashion enough. This is especially true for DB services.
 
 Compared to VM worlds, Pod may move across different worker nodes quite often. But you don't want whenever k8s cluster has one pod change, the log agent needs to be reloaded or restarted. New challenges, right?
 
 How to solve it? TODO: sidecar, log mapping
 ---------------------------------------------------------------------
-*Challenge II: Multi-tenancy logging per namespace*
+*Challenge II: Multi-tenancy For Namespace Logging*
 - _Different log endpoint for different namespace_
 
-Deploying workloads to k8s cluster usually means to shared envs. Different teams/projects may be seperated by different kubernetes namespaces.
+Deploying workloads to k8s cluster usually means deploying to shared envs.
+
+*Different projects may have been different preferences for logging*. Where the log goes to, and managed by what tools, etc. Need to provide an easy way to configure and with no extra security compromises.
+
+It turns out kubernetes [[https://kubernetes.io/docs/reference/glossary/?all=true#term-CustomResourceDefinition][CRD (CustomResourceDefinition)]] is a good fit. 
+1. All you need to learn is the standard *kubectl command*. (See [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kubectl cheatsheet]]). 
+- RBAC can be applied to this custom resource. So security can be easily enforced.
+
+In PKS, we call this feature as [[https://docs.pivotal.io/runtimes/pks/1-2/create-sinks.html#define-resource][sink resource]]. Note: this idea has been proposed to kubernetes community. Hopeful it will be merged into upstream soon.
 
 [[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/pks-sink-resource.png]]
+---------------------------------------------------------------------
+*Challenge III: Support Logging SLA For Different Namespaces*
+- _Single instance of log agent._
 
+For simplicity, people usually only deploy one log agent as kubernetes daemonset. It means one pod per kubernetes worker node. If somehow this pod needs to be reloaded or rescheduled, it will impact all Pods living in this worker node.
+
+Starting from k8s v1.12, each node may run [[https://kubernetes.io/docs/setup/cluster-large/][100 pods]]. Like any shared env, you may experience noisy neighborhood issue. One misbehaviors of one Pod will penalty all other pods in the same worker node. Want to disable logging for one problematic namespace? You can easily avoid emitting the log, but not the part of collecting log.
+
+[[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/k8s-large.png]]
+
+- _No gurantee for log transport latency_ 
+
+Back-pressure; Slow disk create significant latencies for log agent
 ---------------------------------------------------------------------
-*Challenge III: Support logging SLA*
-- _Disable logging for one namespace?_
-- Noisy neighborhood
-- Single instance of log agent
-- Need to restart the log agent
-- Too many Pods in one K8S worker VM
-- Back-pressure
-- Slow disk create significant latencies for log agent
----------------------------------------------------------------------
-*Challenge IV: Logging of differe layers*
+*Challenge IV: Handle Logging From Different Layers*
 - k8s addon, control panel, infra level
 - Security threats from layered log visualizations
 ---------------------------------------------------------------------
@@ -84,7 +95,7 @@ What is PKS? [[https://pivotal.io/platform/pivotal-container-service][PKS]] is a
 
 [[color:#c7254e][Interested in PKS job opportunities?]] Great! Here is [[https://vmware.rolepoint.com/?shorturl=qeEMe][my referral link]].
 
-Open it, then search with "PKS". You will see all openings. Leave me a message, if you're applying positions for Palo Alto Office specifically.
+Open the link, then search with "PKS". You will see all openings. Ping me directly, if you're applying Palo Alto positions specifically.
 
 [[4 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/work/vmware_pks.png]]
 
