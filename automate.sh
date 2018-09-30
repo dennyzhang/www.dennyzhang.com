@@ -58,10 +58,10 @@ function refresh_link() {
         cd "$d"
         for f in $(ls -1t */README.org); do
             dirname=$(basename $(dirname $f))
-            if ! grep "<a href=\"https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/$dirname" $f 1>/dev/null 2>&1; then
+            if ! grep "<a href=\"https://github.com/dennyzhang/www.dennyzhang.com/tree/master/$d/$dirname" $f 1>/dev/null 2>&1; then
                 if grep "https://github.com/dennyzhang/www.dennyzhang.com" $f 1>/dev/null 2>&1; then
                     echo "Update GitHub url for $f"
-                    sed -ie "s/<a href=\"https:\/\/github.com\/dennyzhang\/www.dennyzhang.com\/tree\/master\/posts\/[^\"]*\"/<a href=\"https:\/\/github.com\/dennyzhang\/www.dennyzhang.com\/tree\/master\/posts\/$dirname\"/g" $f
+                    sed -ie "s/<a href=\"https:\/\/github.com\/dennyzhang\/www.dennyzhang.com\/tree\/master\/[^\"]*\"/<a href=\"https:\/\/github.com\/dennyzhang\/www.dennyzhang.com\/tree\/master\/$d\/$dirname\"/g" $f
                     rm -rf $dirname/README.orge
                 fi
             fi

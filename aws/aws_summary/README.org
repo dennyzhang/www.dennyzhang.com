@@ -91,7 +91,7 @@ Reference card for the price of popular AWS products. Check more about AWS: [[ht
 
 More Reading: [[https://www.dennyzhang.com/prepare_aws_certification][Entrance Page For AWS Exam Preparation]]
 #+BEGIN_HTML
-<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/aws_summary"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/aws/aws_summary"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 
 <div id="the whole thing" style="overflow: hidden;">
 <div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>

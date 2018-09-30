@@ -169,7 +169,7 @@ Posts: [[https://www.dennyzhang.com/tag/docker][Tag #docker]]
 [2] https://uptimerobot.com
 [3] https://github.com/docker/compose/issues/3140
 #+BEGIN_HTML
-<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/docke_compose"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/docker/docke_compose"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 
 <div id="the whole thing" style="overflow: hidden;">
 <div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>

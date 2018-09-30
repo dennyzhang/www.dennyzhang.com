@@ -36,7 +36,7 @@ But have you ever wonder what does "Kanban" mean here?
 Images credits to: [[url-external:https://blogs.vmware.com/accelerate/2015/11/kanban-it-operations.html][link]]
 
 #+BEGIN_HTML
-<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/devops-facts"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/devops/devops-facts"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 
 <div id="the whole thing" style="overflow: hidden;">
 <div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>

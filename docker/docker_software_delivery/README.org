@@ -72,7 +72,7 @@ The backend mysterious is Linux namespace(cpu, network, mount point, memory, etc
 For further reading, check [[http://www.infoq.com/articles/docker-containers/][Zef Hemel's excellent summary about Docker]].
 
 #+BEGIN_HTML
-<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/docker_software_delivery"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/docker/docker_software_delivery"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 
 <div id="the whole thing" style="overflow: hidden;">
 <div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>

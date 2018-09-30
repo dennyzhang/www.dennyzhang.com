@@ -31,7 +31,7 @@ Check more about AWS under my series posts: [[https://www.dennyzhang.com/prepare
 More Reading: [[https://www.dennyzhang.com/quiz_questions_aws_exam][Practice Quiz For AWS Certification Exam]].
 
 #+BEGIN_HTML
-<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/aws_exercise_examples"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/aws/aws_exercise_examples"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 
 <div id="the whole thing" style="overflow: hidden;">
 <div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>

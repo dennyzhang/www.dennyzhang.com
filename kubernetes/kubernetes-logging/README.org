@@ -1,27 +1,28 @@
-* 5 Challenges In Kubernetes Log Transport                  :BLOG:Kubernetes:
+* 4 Challenges In Kubernetes Log Transport                  :BLOG:Kubernetes:
 :PROPERTIES:
-:type:     GitHub, Kubernetes
+:type:     Kubernetes, Logging
 :END:
 ---------------------------------------------------------------------
-For the past several months, I have been working in [[https://pivotal.io/platform/pivotal-container-service][PKS product]]. Enterprise Kubernetes solution from VMware and Pivotal. More specifically, I have been working on Kubernetes logging feature in PKS.
+For the past three months, I have been working in [[https://pivotal.io/platform/pivotal-container-service][PKS]] observability features. Right now, it's mostly about kubernetes logging feature.
 
-hmm, logging? Collect the logs, and send to the endpoint. That looks quite straightforward. Simple and common, isn't it? Agree, but there some new challenges in container world's logging which I have overlooked.
+hmm, logging? Collect logs, and send them to log endpoint. That looks quite straightforward. Simple and common, isn't it? Agree, but only partially. Noticed some challenges and differences in the container logging, compared to VM or bare metal envs.
 
-Here are the summary. Check it out! And see how much it applies to your project(s).
+Here are the summary. Check it out! And see how much it may apply to your kubernetes project(s).
 
 [[image-blog:5 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/www/fluentd.png]]
 ---------------------------------------------------------------------
-Generally speaking, here is what the log collecting looks like in container world.
+Normally log transport workflow is like below:
 
 TODO: add picture
 
-Then you might have heard of commercial product like splunk, or open source solution like ELK or EFK.
+Then you might have heard of commercial product like splunk, or open source solution like ELK or EFK. So you might think problem is solved. *Not Yet, My Friends*.
 
-So you might think problem is solved. Not yet, my friends.
+_Running service in containers are different from running in VM or bare metal_.
 
-Running service in containers are different from running in VM or bare metal. Consequently it makes container log collecting a bit different.
+Process is more ephemeral; deployment is more distributed. Consequently it makes container log collecting quite different.
 
-** *Challenge I: Fail to collect all the critical log*
+*Challenge I: Fail to collect all the critical log*
+
 - Pods get recreated within 5 seconds
 - Not all logs are redirected to stdout/stderr
 - When pod crash or recreated, we lose the log
@@ -29,17 +30,18 @@ Running service in containers are different from running in VM or bare metal. Co
   https://github.com/honeycombio/honeycomb-kubernetes-agent
 
   https://docs.honeycomb.io/thinking-about-observability/getting-started-with/kubernetes/
-  #+BEGIN_EXAMPLE
+#+BEGIN_EXAMPLE
   Yes, they are doing it in a different way.
 
   Instead of one static log folder path of fluent-bit/fluentd, they are registering to k8s Pod events.
 
   So they should get logs more promptly, especially when Pods are only alive for less than 1 minutes.
-  #+END_EXAMPLE
+#+END_EXAMPLE
 ** *Challenge II: Logging security and segregation*
 - Namespace multi-tenancy
 - Secure infra level logging
 - Security threats from layered log visualizations
+- syslog endpoint protection
 *** Skip pods per namespace                                        :noexport:
 Denny Zhang [19 hours ago]
 @XXX, fluent-bit will still scan logs from pods of "disabled" namespaces. Just fb filter will drop the messages.
@@ -76,13 +78,15 @@ We could limit the `[INPUT]` to only the files for containers in our namespace. 
 ** *Challenge IV: Logging for different use cases*
 - k8s addon, control panel, infra level
 - layered problems
-** *Challenge V: Logging for different audience*
 
-More Reading:
-- [[https://www.dennyzhang.com/tag/kubernetes][kubernetes Posts]]
+What is PKS? [[https://pivotal.io/platform/pivotal-container-service][PKS]] is an enterprise Kubernetes solution from VMware and Pivotal.
+
+[[4 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/work/vmware_pks.png]]
+
+More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kubectl cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-yaml][kubernetes yaml templates]]
 
 #+BEGIN_HTML
-<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/posts/kubernetes-logging"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/kubernetes/kubernetes-logging"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 
 <div id="the whole thing" style="overflow: hidden;">
 <div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
@@ -104,7 +108,6 @@ the current state of microservices logging, the new challenges it
 poses for large enterprise dev teams and then we will follow up with
 suggestions on how to address these challenges with a quick demo in
 the end.
-
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone showall
 #+DESCRIPTION: 
