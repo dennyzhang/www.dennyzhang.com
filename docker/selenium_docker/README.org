@@ -1,7 +1,7 @@
 * Run GUI Test With Docker: Detect Web Page Loading Issues        :BLOG:Tool:
-  :PROPERTIES:
-  :type:     DevOps,Tool,Testing,Selenium
-  :END:
+:PROPERTIES:
+:type:     DevOps,Tool,Testing,Selenium
+:END:
 ---------------------------------------------------------------------
 How fast your web pages load on client sides, especially the portal or login pages? And how do you detect unexpected 302, 404 or 5XX responses. It would probably hurt your user experience or even the functionalities. *Slow or problematic page loading are always bad*.
 

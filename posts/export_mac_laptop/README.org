@@ -1,7 +1,7 @@
 * Reverse SSH Tunnel: Export Your Mac Laptop To The Internet      :BLOG:Tool:
-  :PROPERTIES:
-  :type:     DevOps,Popular,Startup,SSH
-  :END:
+:PROPERTIES:
+:type:     DevOps,Popular,Startup,SSH
+:END:
 ---------------------------------------------------------------------
 Lots of professional programmers use Macs heavily in their daily work. Do you know we can easily export mac laptop to the internet? *Trusted people can access our laptop directly from anywhere*. Definitely for temporary use. It could be ssh operations or various web services.
 

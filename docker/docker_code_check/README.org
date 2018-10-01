@@ -1,7 +1,7 @@
 * Run Code Static Check Via A Temporary Container               :BLOG:Docker:
-  :PROPERTIES:
-  :type:     DevOps,Docker,Testing
-  :END:
+:PROPERTIES:
+:type:     DevOps,Docker,Testing
+:END:
 ---------------------------------------------------------------------
 *How Would You Enforce Code Static Check*? Learn and understand the check tools. Then install and configure them in your servers.
 

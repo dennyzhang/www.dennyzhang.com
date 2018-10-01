@@ -1,7 +1,7 @@
 * 4 Reasons Why SSH Connection Fails                             :BLOG:Linux:
-  :PROPERTIES:
-  :type:     DevOps,Tool,Security,Linux,SSH
-  :END:
+:PROPERTIES:
+:type:     DevOps,Tool,Security,Linux,SSH
+:END:
 ---------------------------------------------------------------------
 As DevOps or IT professionals, people may ask us why they can't ssh to servers. It happens from time to time. Isn't right? Not much fun. Just routine work.
 

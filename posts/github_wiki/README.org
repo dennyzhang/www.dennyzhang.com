@@ -1,7 +1,7 @@
 * Effective Technical Writing In GitHub                         :BLOG:GitHub:
-  :PROPERTIES:
-  :type:     DevOps, Git
-  :END:
+:PROPERTIES:
+:type:     DevOps, Git
+:END:
 ---------------------------------------------------------------------
 Delivering short and precise documents quickly is a key asset for DevOps. Nowdays, hosting code in GitHub is not only fancy but also overwhelming. Consequently more and more documentation effort goes to GitHub.
 

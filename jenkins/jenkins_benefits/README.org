@@ -1,8 +1,7 @@
 * 5 Reasons Why Jenkins Is So Useful And Popular               :BLOG:General:
-  :PROPERTIES:
-  :type:     DevOps,Jenkins
-  :END:
-
+:PROPERTIES:
+:type:     DevOps,Jenkins
+:END:
 ---------------------------------------------------------------------
 I use Jenkins quite a lot. [[color:#c7254e][Almost for everything in my daily work]].
 

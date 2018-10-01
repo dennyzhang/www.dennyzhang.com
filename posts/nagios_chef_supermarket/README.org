@@ -1,7 +1,7 @@
 * Nagios3 Cookbook Has ~4,000,000 Downloads                 :BLOG:Monitoring:
-  :PROPERTIES:
-  :type:     DevOps,Monitoring
-  :END:
+:PROPERTIES:
+:type:     DevOps,Monitoring
+:END:
 ---------------------------------------------------------------------
 Two months ago, I released [[https://supermarket.chef.io/cookbooks/nagios3][nagios3 chef cookbook]] to [[https://supermarket.chef.io][Chef Supermarket]]. Really happy to say it has over __4,000,000__ downloads now! Not sure how large portion are machines or for testing purpose, but it's a good sign indeed.
 

@@ -1,7 +1,7 @@
 * Audit Docker Image Security                                   :BLOG:Docker:
-  :PROPERTIES:
-  :type:     DevOps,Docker,Security,Popular
-  :END:
+:PROPERTIES:
+:type:     DevOps,Docker,Security,Popular
+:END:
 ---------------------------------------------------------------------
 Nowadays people are happy to use community Docker images. It's super fast and easy to setup infrastructure, compared to old black days. But watch out security risks hidding inside!
 

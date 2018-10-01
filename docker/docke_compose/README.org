@@ -1,7 +1,7 @@
 * 8 Lessons Learned Using docker-compose                        :BLOG:Docker:
-  :PROPERTIES:
-  :type:     DevOps,Docker,Tool
-  :END:
+:PROPERTIES:
+:type:     DevOps,Docker,Tool
+:END:
 ---------------------------------------------------------------------
 Nowadays when people setup and configure services, probably nobody will enjoy doing it in a manual way.
 

@@ -1,7 +1,7 @@
 * Verify Docker Images Build By Docker-In-Docker                :BLOG:Docker:
 :PROPERTIES:
-  :type:     DevOps,Deployment,Docker
-  :END:
+:type:     DevOps,Deployment,Docker
+:END:
 ---------------------------------------------------------------------
 Using Docker, deployments are more reliable and faster than ever. But how about the docker images build? Containers don't have any silver bullets. *It shifts installation instability from deployment cycle to image build cycle*.
 

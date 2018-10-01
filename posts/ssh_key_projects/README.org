@@ -1,7 +1,7 @@
 * Avoid Using Same SSH Private Key For All Your Servers       :Security:
-  :PROPERTIES:
-  :type:     DevOps,Tool,Security,Linux,SSH
-  :END:
+:PROPERTIES:
+:type:     DevOps,Tool,Security,Linux,SSH
+:END:
 ---------------------------------------------------------------------
 The more projects you handle, the more servers you manage. But when you ssh to servers of different projects, are you using *the same private key*?
 *And how secured you feel about this?* Let's imagine. One day, your powerful private key gets compromised somehow. Boom! All your servers, and all your projects are in danger.

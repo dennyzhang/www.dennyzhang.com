@@ -1,7 +1,7 @@
 * Get Notification: Monitor Your Docker Image Sizing            :BLOG:Docker:
-  :PROPERTIES:
-  :type:     DevOps,Docker,Tool
-  :END:
+:PROPERTIES:
+:type:     DevOps,Docker,Tool
+:END:
 ---------------------------------------------------------------------
 With Docker deployment, smaller images are usually better.
 

@@ -1,7 +1,7 @@
 * Manage SSH Key File With Passphrase                         :BLOG:Security:
-  :PROPERTIES:
-  :type:     DevOps,Tool,Security,Linux,SSH
-  :END:
+:PROPERTIES:
+:type:     DevOps,Tool,Security,Linux,SSH
+:END:
 ---------------------------------------------------------------------
 Any serious DevOps will only ssh by key file. Not with password, right? And mostly our powerful key file can unlock many critical envs. Have you ever uploaded your private key to other envs, like jumpbox? What if your key is magically stolen by hackers somehow?
 *Time to protect your sensitive ssh key by passphrase*. And live with it, headache-free.

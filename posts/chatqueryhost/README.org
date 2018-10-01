@@ -1,7 +1,7 @@
 * ChatOps Bot: Query Node Info Without Manual Login            :BLOG:ChatOps:
-  :PROPERTIES:
-  :type:     DevOps,ChatOps,Docker
-  :END:
+:PROPERTIES:
+:type:     DevOps,ChatOps,Docker
+:END:
 ---------------------------------------------------------------------
 *Try Your Best To Avoid Any SSH Operations*. Yes, I deeply believe in this principle. But my reality is the automation is never so perfect. I still need to login and check system status sometimes. Though the chance is rare.
 *It may happen at nights or even when I'm on vacation*. So what I can do? Just carry my laptop with me wherever I go? This is certainly bad, isn't it?

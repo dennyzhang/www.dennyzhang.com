@@ -1,8 +1,7 @@
 * Monitor Out-Of-Memory Errors In Your Servers              :BLOG:Monitoring:
-  :PROPERTIES:
-  :type:     DevOps,Monitoring
-  :END:
-
+:PROPERTIES:
+:type:     DevOps,Monitoring
+:END:
 ---------------------------------------------------------------------
 As DevOps/Ops, you maintain DB instances or RAM intensive services. You see *OOM issues* occasionally, don't you? Yes, the scary Out-Of-Memory issues.
 

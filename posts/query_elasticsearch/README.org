@@ -1,7 +1,7 @@
 * A Complete And Easy Guide To Check Elasticsearch                  :BLOG:DB:
-  :PROPERTIES:
-  :type:     DevOps,Tool,DataBase,Elasticsearch
-  :END:
+:PROPERTIES:
+:type:     DevOps,Tool,DataBase,Elasticsearch
+:END:
 ---------------------------------------------------------------------
 To poll Elasticsearch db status, we usually need to learn and try many many REST API. When we're new, it would take quite a while to put all the pieces together.
 

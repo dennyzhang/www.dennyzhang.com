@@ -1,8 +1,7 @@
 * Nagios Plugin: Monitor Process FD                         :BLOG:Monitoring:
-  :PROPERTIES:
-  :type:     DevOps,Monitoring
-  :END:
-
+:PROPERTIES:
+:type:     DevOps,Monitoring
+:END:
 ---------------------------------------------------------------------
 Usually a process will have a limit for how many fd it can open. If the fd count is too many and **abnormal**, usually it indicates resource leak in code level or a burst of request.
 

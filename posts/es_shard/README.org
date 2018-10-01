@@ -1,7 +1,7 @@
 * Examine Your Elasticsearch Shards                               :BLOG:Tool:
-  :PROPERTIES:
-  :type:     DevOps,DataBase,Elasticsearch
-  :END:
+:PROPERTIES:
+:type:     DevOps,DataBase,Elasticsearch
+:END:
 
 ---------------------------------------------------------------------
 People may start their elasticsearch cluster with very few shards. Or even start with 1 somehow.

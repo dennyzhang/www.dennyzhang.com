@@ -1,7 +1,7 @@
 * docker-bench-security: Audit Well-Known Docker Vulnerabilities :BLOG:Docker:
-  :PROPERTIES:
-  :type:     DevOps,Docker,Security,Popular
-  :END:
+:PROPERTIES:
+:type:     DevOps,Docker,Security,Popular
+:END:
 ---------------------------------------------------------------------
 [[https://github.com/docker/docker-bench-security][docker-bench-security]] is a script that checks for dozens of common best-practices around deploying Docker containers in production.
 *We use Docker to save effort, not the other way around*. Try docker-bench-security to avoid common pitfalls using Docker. It's provided by Docker, Inc. Totally free and constantly polished.

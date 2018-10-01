@@ -1,7 +1,7 @@
 * Get Slack Notifications For System Upgrade                   :BLOG:Mindset:
-  :PROPERTIES:
-  :type:     DevOps,Jenkins,Communication
-  :END:
+:PROPERTIES:
+:type:     DevOps,Jenkins,Communication
+:END:
 ---------------------------------------------------------------------
 Has the deployment been initiated? Already finished? And how does it look after the deployment? These are typical questions people will frequently ask. Especially managers and key holders.
 

@@ -1,8 +1,7 @@
 * Demo Jenkins: How I Enforce CI/CD                            :BLOG:General:
-  :PROPERTIES:
-  :type:     DevOps,Jenkins,Startup,Service,Popular
-  :END:
-
+:PROPERTIES:
+:type:     DevOps,Jenkins,Startup,Service,Popular
+:END:
 ---------------------------------------------------------------------
 Lots of people are talking about CI/CD on the Internet. I wish I could learn the details what they really enforce? Quite disappointed, mostly I only see concepts, principles, and guidelines.
 

@@ -1,7 +1,7 @@
 * Backup Elasticsearch Indices By NFS                               :BLOG:DB:
-  :PROPERTIES:
-  :type:     DevOps,Tool,DataBase,Elasticsearch
-  :END:
+:PROPERTIES:
+:type:     DevOps,Tool,DataBase,Elasticsearch
+:END:
 ---------------------------------------------------------------------
 Suppose you have a critical Elasticsearch cluster. You have to know how to backup it. *Correctly and quickly*.
 

@@ -1,7 +1,7 @@
 * Nagios Plugin: Monitor Service Memory                     :BLOG:Monitoring:
-  :PROPERTIES:
-  :type:     DevOps,Monitoring
-  :END:
+:PROPERTIES:
+:type:     DevOps,Monitoring
+:END:
 ---------------------------------------------------------------------
 Monitoring memory usage of a given process is critical for trouble shooting and issues escalation. Quite strange that no available public nagios plugin for this can be found. Thus I write one.
 

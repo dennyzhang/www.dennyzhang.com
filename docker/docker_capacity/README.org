@@ -1,7 +1,7 @@
 * Docker Low Disk Space. Clean Up Disk Leak!                    :BLOG:Docker:
-  :PROPERTIES:
-  :type:     DevOps,Docker
-  :END:
+:PROPERTIES:
+:type:     DevOps,Docker
+:END:
 ---------------------------------------------------------------------
 We have changed daily CI tests from VM to Docker, ever since early last year. It is just awesome! Way too fast and cost-effective.
 

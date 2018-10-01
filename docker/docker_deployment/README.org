@@ -1,7 +1,7 @@
 * 5 Tips For Building Docker Image                              :BLOG:Docker:
-  :PROPERTIES:
-  :type:     DevOps,Deployment,Docker,Popular
-  :END:
+:PROPERTIES:
+:type:     DevOps,Deployment,Docker,Popular
+:END:
 ---------------------------------------------------------------------
 No doubt container is a breakthrough technology in DevOps world. *How to effectively build and use docker image to speed up our deployment?* This would be important to in both our development and release cycle. Here are some our experience and sharing. Check it out, buddy!
 

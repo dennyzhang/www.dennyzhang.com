@@ -1,7 +1,7 @@
 * 5 Tips Of GUI Tests With Python + Selenium                      :BLOG:Tool:
-  :PROPERTIES:
-  :type:     DevOps,Testing,Docker
-  :END:
+:PROPERTIES:
+:type:     DevOps,Testing,Docker
+:END:
 ---------------------------------------------------------------------
 I have been using *Python + Selenium* for years. Honestly speaking, I'm far from a frontend expert or a QA expert. Here are my lessons learned from this journey.
 

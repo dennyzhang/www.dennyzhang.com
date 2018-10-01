@@ -1,7 +1,7 @@
 * [Container] Run Process Debug Tools, But Install Nothing      :BLOG:Docker:
-  :PROPERTIES:
-  :type:     DevOps,Docker
-  :END:
+:PROPERTIES:
+:type:     DevOps,Docker
+:END:
 ---------------------------------------------------------------------
 Ever need to *debug your process in containers*? Use strace, lsof, pstree, or anything you name it. But after login, you get a surprise: The tools are not installed!
 

@@ -1,7 +1,7 @@
 * Get Alerts, When Containers Run Into Issues               :BLOG:Monitoring:
-  :PROPERTIES:
-  :type:     DevOps,Docker,Monitoring,Communication
-  :END:
+:PROPERTIES:
+:type:     DevOps,Docker,Monitoring,Communication
+:END:
 ---------------------------------------------------------------------
 I'm running docker containers for all side projects. Usually one single container. Sometimes multiple containers started by docker-compose[1]. 
 

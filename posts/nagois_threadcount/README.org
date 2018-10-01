@@ -1,8 +1,7 @@
 * Nagios Plugin: Monitor thread count of your service       :BLOG:Monitoring:
-  :PROPERTIES:
-  :type:     DevOps,Monitoring
-  :END:
-
+:PROPERTIES:
+:type:     DevOps,Monitoring
+:END:
 ---------------------------------------------------------------------
 If programs start too many threads, we should raise alarms.
 

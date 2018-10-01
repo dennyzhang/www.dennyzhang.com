@@ -15,6 +15,8 @@ TODO: Anit-goal of this post
 
 Normally log transport workflow is like below:
 
+[[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/efk_stack_illustration.png]]
+
 TODO: add picture
 
 So you might think problem has been solved. *Not Yet, My Friends*.
@@ -85,13 +87,18 @@ Starting from k8s v1.12, each node may run [[https://kubernetes.io/docs/setup/cl
 
 Like any shared env, you may experience *noisy neighborhood issue*. The misbehaviors of one Pod will penalty all other pods in the same worker node. Want to disable logging for one problematic namespace? You can easily avoid emitting the log, but not the part of collecting log.
 
-- _No gurantee for log transport latency_. [[https://en.wikipedia.org/wiki/Back_pressure][Back-pressure]] should be properly handled. Slow disk create significant latencies for log agent.
+- _No gurantee for log transport latency_. Each step will impose an extra overhead for the overall workflow.
+
+Slow disk may create significant latencies for log transport. Fail to handle [[https://en.wikipedia.org/wiki/back_pressure][back-pressure]] issues may DDoS your log agent.
 ---------------------------------------------------------------------
 *Challenge IV: Handle Logging From Different Layers*
 
 TODO: 
 - k8s addon, control panel, infra level
 - Security threats from layered log visualizations
+
+[[4 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/work/pks-logging.png]]
+
 ---------------------------------------------------------------------
 What is PKS? [[https://pivotal.io/platform/pivotal-container-service][PKS]] is an enterprise Kubernetes solution from VMware and Pivotal.
 

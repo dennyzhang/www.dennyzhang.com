@@ -1,7 +1,7 @@
 * My Common Python Coding Mistakes                            :BLOG:Language:
-  :PROPERTIES:
-  :type:     python, language
-  :END:
+:PROPERTIES:
+:type:     python, language
+:END:
 ---------------------------------------------------------------------
 My common mistakes when solving code problems.
 
