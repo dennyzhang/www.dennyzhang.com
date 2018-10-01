@@ -5,40 +5,40 @@
 ---------------------------------------------------------------------
 For the past three months, I have been working on [[https://pivotal.io/platform/pivotal-container-service][PKS]] observability features. Right now, it's mostly about kubernetes logging.
 
-hmm, logging? Collect logs, and send them to log endpoint. That looks quite straightforward. Simple and Common, isn't it? Agree, but only partially. I have noticed some new challenges in the container logging, compared to VM or bare metal envs.
+hmm, logging? Collect logs, and send them to the log server. That looks quite straightforward. Simple and Common, isn't it? Agree, but only partially. I have noticed some new challenges in the container logging, compared to VM or bare metal envs.
 
 Here are the summary. Check it out! See how much it may apply to your kubernetes projects. (BTW, our PKS project is [[https://vmware.rolepoint.com/?shorturl=qeEMe][hiring]])
 
 [[image-blog:5 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/www/fluentd.png]]
 ---------------------------------------------------------------------
 
-The motivation about this post is more about illustrating the problems & technical difficulties. Not for how we solve it. If it has anything against the company's policy, changes will be made.
+The motivation about this post is more about illustrating the problems & technical difficulties. Not about for how to solve them. And if it has anything against the company's policy, changes will be made on-demand.
 
-Normally log transport workflow is like. 
+Normally log transport workflow is like. Either active or passive.
 
-*Active Way*: process actively send log message to a remote syslog server. Usually with the format of [[https://tools.ietf.org/html/rfc5424.html][rfc5424]].
+*Active Way*: process actively sends log messages to a remote syslog server. And usually the format of data encoding is [[https://tools.ietf.org/html/rfc5424.html][rfc5424]].
 
-[[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/log-active.jpg]]
+[[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/log-active.png]]
 
-*Passive Way*: specify the log path of the process. Log agent will scan and send it to the log server automatically.
+*Passive Way*: for each process, specify the log paths or file patterns. Log agent periodically scans them and send the captured log messages to the log server.
 
-[[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/log-passive.jpg]]
+[[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/log-passive.png]]
 
-So you might think problem has been solved. *Not Yet, My Friends*.
+So you may think problem has been solved. *Not Yet, My Friends*.
 
-[[color:#c7254e][Running Service In Containers Are Different From VMs Or Bare Metal]].
-1. Process is more ephemeral
-- Process is deployed more distributedly
+[[color:#c7254e][Running Service In Containers Are Different From VMs Or Bare Metal]]. New trends are:
+1. Process will be more ephemeral.
+- Process will be more distributedly deployed.
 
-Consequently log collecting in container world is different.
+What does that mean to the container logging?
 ---------------------------------------------------------------------
 *Challenge I: Fail To Collect All Critical Logs*
 
-- _Pods may get recreated within several seconds_. This means the old log transport mechanism may fail to collect logs for those short-lived pods. But your users may need them for trouble shooting!
+- _Pods may get recreated within several seconds_. This means the old passive log transport mechanism may fail to collect logs for those short-lived pods. But your users may need them for trouble shooting! Use active log mechanism? It would raise a high maintaince cost, if you're targeted in providing kubernetes solution as a product like PKS.
 
 When something is wrong, pods may get deleted or recreated quickly. Consequently the log file associated with that pod/container will be deleted/created quickly. 
 
-However log agent like [[https://www.fluentd.org/][fluentd]] or [[https://www.elastic.co/products/logstash][logstash]] detects new log file by scanning the folder or log pattern periodically. And the default scan interval is 60 seconds(see below figure). The scan interval may be too slow to capture the short-lived pods. Yes, you can set the interval to shorter, say 1 second. But you do know the drawbacks, right?
+However log agent like [[https://www.fluentd.org/][fluentd]] or [[https://www.elastic.co/products/logstash][logstash]] detects new log file by scanning the folder or log pattern periodically. And the default scan interval is 60 seconds(see below figure). The scan interval may be too slow to capture the short-lived pods. How about we set the interval to shorter, say 1 second? The performance overhead would be much higher.
 
 [[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/fluentd-scan-interval.png]]
 
@@ -88,7 +88,7 @@ For simplicity, people usually only deploy one log agent as kubernetes daemonset
 
 Starting from k8s v1.12, each node may run [[https://kubernetes.io/docs/setup/cluster-large/][100 pods]]. Need to make sure your log agent is fast enough to collect logs from all the pods.
 
-Like any shared env, you may experience *noisy neighborhood issue*. The misbehaviors of one Pod will penalty all other pods in the same worker node. Want to disable logging for one problematic namespace? You can easily avoid emitting the log, but not the part of collecting log.
+Like any shared envs, you may experience *noisy neighborhood issue*. The misbehaviors of one Pod will penalty all other pods in the same worker node. Want to disable logging for one problematic namespace? You can easily avoid emitting the log, but not the part of collecting log.
 
 - _No gurantee for log transport latency_. Each step will impose an extra overhead for the overall workflow.
 
