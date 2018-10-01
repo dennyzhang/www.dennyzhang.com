@@ -3,7 +3,7 @@
 :type:     Kubernetes, Logging, PKS
 :END:
 ---------------------------------------------------------------------
-For the past three months, I have been working on [[https://pivotal.io/platform/pivotal-container-service][PKS]] observability features. Right now, it's mostly about kubernetes logging feature.
+For the past three months, I have been working on [[https://pivotal.io/platform/pivotal-container-service][PKS]] observability features. Right now, it's mostly about kubernetes logging.
 
 hmm, logging? Collect logs, and send them to log endpoint. That looks quite straightforward. Simple and Common, isn't it? Agree, but only partially. I have noticed some new challenges in the container logging, compared to VM or bare metal envs.
 
@@ -11,19 +11,23 @@ Here are the summary. Check it out! See how much it may apply to your kubernetes
 
 [[image-blog:5 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/www/fluentd.png]]
 ---------------------------------------------------------------------
-TODO: Anit-goal of this post
 
-Normally log transport workflow is like below:
+The motivation about this post is more about illustrating the problems & technical difficulties. Not for how we solve it. If it has anything against the company's policy, changes will be made.
+
+Normally log transport workflow is like. 
+
+Active way: process actively send log message to a remote syslog server. Usually with the format of [[url-external:https://tools.ietf.org/html/rfc5424.html][rfc5424]].
 
 [[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/efk_stack_illustration.png]]
 
+Passive way:
 TODO: add picture
 
 So you might think problem has been solved. *Not Yet, My Friends*.
 
 [[color:#c7254e][Running Service In Containers Are Different From VMs Or Bare Metal]].
 1. Process is more ephemeral
-- Deployment is more distributed
+- Process is deployed more distributedly
 
 Consequently log collecting in container world is different.
 ---------------------------------------------------------------------
@@ -77,13 +81,11 @@ In PKS, we call this feature as [[https://docs.pivotal.io/runtimes/pks/1-2/creat
 [[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/pks-sink-resource.png]]
 ---------------------------------------------------------------------
 *Challenge III: Support Logging SLA For Different Namespaces*
-- _Single instance of log agent per worker node_
+- _Single instance of log agent per worker node._
 
 For simplicity, people usually only deploy one log agent as kubernetes daemonset. It means one pod per kubernetes worker node. If somehow this pod needs to be reloaded or rescheduled, it will impact all Pods living in this worker node.
 
 Starting from k8s v1.12, each node may run [[https://kubernetes.io/docs/setup/cluster-large/][100 pods]]. Need to make sure your log agent is fast enough to collect logs from all the pods.
-
-[[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/k8s-large.png]]
 
 Like any shared env, you may experience *noisy neighborhood issue*. The misbehaviors of one Pod will penalty all other pods in the same worker node. Want to disable logging for one problematic namespace? You can easily avoid emitting the log, but not the part of collecting log.
 
@@ -93,12 +95,15 @@ Slow disk may create significant latencies for log transport. Fail to handle [[h
 ---------------------------------------------------------------------
 *Challenge IV: Handle Logging From Different Layers*
 
-TODO: 
-- k8s addon, control panel, infra level
-- Security threats from layered log visualizations
+- _Problems may happen from three different layers_.
+
+Like below figure, we have *pod logs*, *k8s logs* and *platform logs*. Even for "pod logs", we have logs from standard workload or from k8s add-ons.
+
+As you may guess, different types of logs have different characteristics. And they may have different priorities. Not only layer vs layer, but also different SLA for the same layer.
+
+To provide k8s solution, how we can address this? Faciliate Ops/Dev to find out root cause quickly. Meanwhile minimize the security compromises.
 
 [[4 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/work/pks-logging.png]]
-
 ---------------------------------------------------------------------
 What is PKS? [[https://pivotal.io/platform/pivotal-container-service][PKS]] is an enterprise Kubernetes solution from VMware and Pivotal.
 
