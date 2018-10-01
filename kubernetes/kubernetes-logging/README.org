@@ -20,7 +20,7 @@ Normally log transport workflow is like.
 
 [[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/log-active.jpg]]
 
-*Passive Way*: 
+*Passive Way*: specify the log path of the process. Log agent will scan and send it to the log server automatically.
 
 [[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/log-passive.jpg]]
 
