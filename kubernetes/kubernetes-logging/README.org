@@ -11,13 +11,13 @@ Here are the summary. Check it out! See how much it may apply to your kubernetes
 
 [[image-blog:5 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/www/fluentd.png]]
 ---------------------------------------------------------------------
-Anit-goal of this post: TODO
+TODO: Anit-goal of this post
 
 Normally log transport workflow is like below:
 
 TODO: add picture
 
-Then you might have heard of commercial product like Splunk, or open source solution like ELK or EFK. So you might think problem is solved. *Not Yet, My Friends*.
+So you might think problem has been solved. *Not Yet, My Friends*.
 
 [[color:#c7254e][Running Service In Containers Are Different From VMs Or Bare Metal]].
 1. Process is more ephemeral
@@ -62,7 +62,7 @@ How to solve it? TODO: sidecar, log mapping
 *Challenge II: Multi-tenancy For Namespace Logging*
 - _Different log endpoint for different namespace_
 
-Deploying workloads to k8s cluster usually means deploying to shared envs.
+Kubernetes workloads are usually running in shared worker VMs. Workloads from different projects are divided by namespaces.
 
 *Different projects may have been different preferences for logging*. Where the log goes to, and managed by what tools, etc. Need to provide an easy way to configure and with no extra security compromises.
 
@@ -75,25 +75,27 @@ In PKS, we call this feature as [[https://docs.pivotal.io/runtimes/pks/1-2/creat
 [[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/pks-sink-resource.png]]
 ---------------------------------------------------------------------
 *Challenge III: Support Logging SLA For Different Namespaces*
-- _Single instance of log agent._
+- _Single instance of log agent per worker node_
 
 For simplicity, people usually only deploy one log agent as kubernetes daemonset. It means one pod per kubernetes worker node. If somehow this pod needs to be reloaded or rescheduled, it will impact all Pods living in this worker node.
 
-Starting from k8s v1.12, each node may run [[https://kubernetes.io/docs/setup/cluster-large/][100 pods]]. Like any shared env, you may experience noisy neighborhood issue. One misbehaviors of one Pod will penalty all other pods in the same worker node. Want to disable logging for one problematic namespace? You can easily avoid emitting the log, but not the part of collecting log.
+Starting from k8s v1.12, each node may run [[https://kubernetes.io/docs/setup/cluster-large/][100 pods]]. Need to make sure your log agent is fast enough to collect logs from all the pods.
 
 [[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/k8s-large.png]]
 
-- _No gurantee for log transport latency_ 
+Like any shared env, you may experience *noisy neighborhood issue*. The misbehaviors of one Pod will penalty all other pods in the same worker node. Want to disable logging for one problematic namespace? You can easily avoid emitting the log, but not the part of collecting log.
 
-Back-pressure; Slow disk create significant latencies for log agent
+- _No gurantee for log transport latency_. [[https://en.wikipedia.org/wiki/Back_pressure][Back-pressure]] should be properly handled. Slow disk create significant latencies for log agent.
 ---------------------------------------------------------------------
 *Challenge IV: Handle Logging From Different Layers*
+
+TODO: 
 - k8s addon, control panel, infra level
 - Security threats from layered log visualizations
 ---------------------------------------------------------------------
 What is PKS? [[https://pivotal.io/platform/pivotal-container-service][PKS]] is an enterprise Kubernetes solution from VMware and Pivotal.
 
-[[color:#c7254e][Interested in PKS job opportunities?]] Great! Here is [[https://vmware.rolepoint.com/?shorturl=qeEMe][my referral link]].
+[[color:#c7254e][Interested in PKS job opportunities?]] Here is [[https://vmware.rolepoint.com/?shorturl=qeEMe][my referral link]].
 
 Open the link, then search with "PKS". You will see all openings. Ping me directly, if you're applying Palo Alto positions specifically.
 
