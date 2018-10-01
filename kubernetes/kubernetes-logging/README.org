@@ -16,12 +16,13 @@ The motivation about this post is more about illustrating the problems & technic
 
 Normally log transport workflow is like. 
 
-Active way: process actively send log message to a remote syslog server. Usually with the format of [[url-external:https://tools.ietf.org/html/rfc5424.html][rfc5424]].
+*Active Way*: process actively send log message to a remote syslog server. Usually with the format of [[https://tools.ietf.org/html/rfc5424.html][rfc5424]].
 
-[[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/efk_stack_illustration.png]]
+[[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/log-active.jpg]]
 
-Passive way:
-TODO: add picture
+*Passive Way*: 
+
+[[4 Challenges In Kubernetes Log Transport][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-logging/log-passive.jpg]]
 
 So you might think problem has been solved. *Not Yet, My Friends*.
 
