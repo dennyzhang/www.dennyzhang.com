@@ -28,13 +28,13 @@ So you may think problem has been solved. *Not Yet, My Friends*.
 
 [[color:#c7254e][Running Service In Containers Are Different From VMs Or Bare Metal]]. New trends are:
 1. Process will be more ephemeral.
-- Process will be more distributedly deployed.
+- Process deployment will be more distributed.
 
 What does that mean to the container logging?
 ---------------------------------------------------------------------
 *Challenge I: Fail To Collect All Critical Logs*
 
-- _Pods may get recreated within several seconds_. This means the old passive log transport mechanism may fail to collect logs for those short-lived pods. But your users may need them for trouble shooting! Use active log mechanism? It would raise a high maintaince cost, if you're targeted in providing kubernetes solution as a product like PKS.
+- _Pods may get recreated within several seconds_. This means the old passive log transport mechanism may fail to collect logs for those short-lived pods. But your users may need them for trouble shooting! Use active log mechanism? It would raise a high maintainance cost, if you're targeted in providing kubernetes solution as a product like PKS.
 
 When something is wrong, pods may get deleted or recreated quickly. Consequently the log file associated with that pod/container will be deleted/created quickly. 
 
@@ -73,7 +73,7 @@ Kubernetes workloads are usually running in shared worker VMs. Workloads from di
 
 *Different projects may have been different preferences for logging*. Where the log goes to, and managed by what tools, etc. Need to provide an easy way to configure and with no extra security compromises.
 
-It turns out kubernetes [[https://kubernetes.io/docs/reference/glossary/?all=true#term-CustomResourceDefinition][CRD (CustomResourceDefinition)]] is a good fit. 
+It turns out kubernetes [[https://kubernetes.io/docs/reference/glossary/?all=true#term-CustomResourceDefinition][CRD]](CustomResourceDefinition) is a good fit. 
 1. All you need to learn is the standard *kubectl command*. (See [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kubectl cheatsheet]]). 
 - RBAC can be applied to this custom resource. So security can be easily enforced.
 
@@ -88,11 +88,11 @@ For simplicity, people usually only deploy one log agent as kubernetes daemonset
 
 Starting from k8s v1.12, each node may run [[https://kubernetes.io/docs/setup/cluster-large/][100 pods]]. Need to make sure your log agent is fast enough to collect logs from all the pods.
 
-Like any shared envs, you may experience *noisy neighborhood issue*. The misbehaviors of one Pod will penalty all other pods in the same worker node. Want to disable logging for one problematic namespace? You can easily avoid emitting the log, but not the part of collecting log.
+Like any shared envs, you may experience *noisy neighborhood issue*. The misbehavior of one Pod will hurt all other pods in the same worker node. Want to disable logging for one problematic namespace? You can easily avoid emitting the log, but not the part of collecting log.
 
-- _No gurantee for log transport latency_. Each step will impose an extra overhead for the overall workflow.
+- _No guarantee for log transport latency_. Each step will impose an extra overhead for the overall workflow.
 
-Slow disk may create significant latencies for log transport. Fail to handle [[https://en.wikipedia.org/wiki/back_pressure][back-pressure]] issues may DDoS your log agent.
+Slow disk may create significant latency for log transport. Fail to handle [[https://en.wikipedia.org/wiki/back_pressure][back-pressure]] issues may DDoS your log agent.
 ---------------------------------------------------------------------
 *Challenge IV: Handle Logging From Different Layers*
 
@@ -102,7 +102,7 @@ Like below figure, we have *pod logs*, *k8s logs* and *platform logs*. Even for 
 
 As you may guess, different types of logs have different characteristics. And they may have different priorities. Not only layer vs layer, but also different SLA for the same layer.
 
-To provide k8s solution, how we can address this? Faciliate Ops/Dev to find out root cause quickly. Meanwhile minimize the security compromises.
+To provide k8s solution, how we can address this? Facilitate Ops/Dev to find out root cause quickly. Meanwhile minimize the security compromises.
 
 [[4 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/work/pks-logging.png]]
 ---------------------------------------------------------------------
@@ -130,6 +130,11 @@ More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kube
 #+END_HTML
 
 Blog URL: https://www.dennyzhang.com/kubernetes-logging
+* TODO Questions & Misc                                            :noexport:
+** TODO update doc: sidecar and log folder
+** TODO Secure infra level logging
+** TODO syslog endpoint protection
+** TODO get all pods
 ** Skip pods per namespace                                         :noexport:
 Denny Zhang [19 hours ago]
 @XXX, fluent-bit will still scan logs from pods of "disabled" namespaces. Just fb filter will drop the messages.
@@ -166,10 +171,6 @@ the current state of microservices logging, the new challenges it
 poses for large enterprise dev teams and then we will follow up with
 suggestions on how to address these challenges with a quick demo in
 the end.
-* TODO Questions                                                   :noexport:
-** Secure infra level logging
-** TODO syslog endpoint protection
-** TODO get all pods
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone showall
 #+DESCRIPTION: 

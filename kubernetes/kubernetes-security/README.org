@@ -1,0 +1,67 @@
+* Understand Kubernetes Security Model                      :BLOG:Kubernetes:
+:PROPERTIES:
+:type:     Kubernetes, Security, PKS
+:END:
+---------------------------------------------------------------------
+Maintain least privilege: Incorrect or excessively permissive RBAC policies are a security threat in case of a compromised pod. 
+
+For Kubernetes workloads (pods, deployments, jobs, sets, etc.), they may be trusted at deployment time, but if they're internet-facing there's always a risk of later exploitation. 
+
+The Linux kernel has a number of overlapping security extensions (capabilities, SELinux, AppArmor, seccomp-bpf) that can be configured to provide least privilege to applications.
+
+TODO: diagram
+- Linux Security Features and PodSecurityPolicies; Network security
+- RABC
+
+[[image-blog:Kubernetes Security][https://cdn.dennyzhang.com/images/blog/work/k8s-security-layer.png]]
+---------------------------------------------------------------------
+[[image-blog:Kubernetes Security][https://cdn.dennyzhang.com/images/blog/work/k8s-security-model.png]]
+** Facts & State
+- Hard to keep aligned with current security best practice
+- Security pratice may break our applications or slow down our developers
+- Missing features of k8s security
+** Current Limitations
+*** DONE You can't get network policy security with default CNI
+    CLOSED: [2018-10-02 Tue 00:48]
+*** DONE Volume security: my PVC can be mounted only by me. Security within one namespace
+    CLOSED: [2018-10-02 Tue 00:49]
+*** DONE RABC can only filter individual resources, but not with name pattern
+    CLOSED: [2018-10-02 Tue 00:38]
+ https://github.com/kubernetes/kubernetes/issues/56582
+
+ Subdividing namespaces is not trivial. The current advice is to use different namespaces. Are you primarily concerned with dividing access between users or service accounts?
+*** DONE hostPath mount: filter by path pattern
+    CLOSED: [2018-10-02 Tue 16:47]
+*** TODO Audit won't get your the volume mount activities
+** What Security Enhancement PKS Has been Made?
+
+More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-yaml][Kubernetes YAML Templates]], [[https://kubernetes.io/blog/2018/07/18/11-ways-not-to-get-hacked/][11 Ways (Not) to Get Hacked]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/kubernetes/kubernetes-security"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/kubernetes-security
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
