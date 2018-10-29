@@ -1,4 +1,4 @@
-* Effective Technical Writing In GitHub                         :BLOG:GitHub:
+* Effective Technical Writing In GitHub                         :BLOG:Tool:
 :PROPERTIES:
 :type:     DevOps, Git
 :END:

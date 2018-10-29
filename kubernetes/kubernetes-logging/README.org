@@ -11,7 +11,6 @@ Here are the summary. Check it out! See how much it may apply to your kubernetes
 
 [[image-blog:5 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/www/fluentd.png]]
 ---------------------------------------------------------------------
-
 The motivation about this post is more about illustrating the problems & technical difficulties. Not about for how to solve them. And if it has anything against the company's policy, changes will be made on-demand.
 
 Normally log transport workflow is like. Either active or passive.
@@ -34,7 +33,7 @@ What does that mean to the container logging?
 ---------------------------------------------------------------------
 *Challenge I: Fail To Collect All Critical Logs*
 
-- _Pods may get recreated within several seconds_. This means the old passive log transport mechanism may fail to collect logs for those short-lived pods. But your users may need them for trouble shooting! Use active log mechanism? It would raise a high maintainance cost, if you're targeted in providing kubernetes solution as a product like PKS.
+- _Pods may get recreated within several seconds_. This means the old passive log transport mechanism may fail to collect logs for those short-lived pods. But your users may need them for trouble shooting! Use active log mechanism? It would raise a high maintenance cost, if you're targeted in providing kubernetes solution as a product like PKS.
 
 When something is wrong, pods may get deleted or recreated quickly. Consequently the log file associated with that pod/container will be deleted/created quickly. 
 
@@ -73,7 +72,7 @@ Kubernetes workloads are usually running in shared worker VMs. Workloads from di
 
 *Different projects may have been different preferences for logging*. Where the log goes to, and managed by what tools, etc. Need to provide an easy way to configure and with no extra security compromises.
 
-It turns out kubernetes [[https://kubernetes.io/docs/reference/glossary/?all=true#term-CustomResourceDefinition][CRD]](CustomResourceDefinition) is a good fit. 
+It turns out kubernetes [[https://kubernetes.io/docs/reference/glossary/?all=true#term-CustomResourceDefinition][CRD]] (CustomResourceDefinition) is a good fit. 
 1. All you need to learn is the standard *kubectl command*. (See [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kubectl cheatsheet]]). 
 - RBAC can be applied to this custom resource. So security can be easily enforced.
 
@@ -105,12 +104,11 @@ As you may guess, different types of logs have different characteristics. And th
 To provide k8s solution, how we can address this? Facilitate Ops/Dev to find out root cause quickly. Meanwhile minimize the security compromises.
 
 [[4 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/work/pks-logging.png]]
+
 ---------------------------------------------------------------------
 What is PKS? [[https://pivotal.io/platform/pivotal-container-service][PKS]] is an enterprise Kubernetes solution from VMware and Pivotal.
 
-[[color:#c7254e][Interested in PKS job opportunities?]] Here is [[https://vmware.rolepoint.com/?shorturl=qeEMe][my referral link]].
-
-Open the link, then search with "PKS". You will see all openings. Ping me directly, if you're applying Palo Alto positions specifically.
+[[color:#c7254e][Interested in PKS job opportunities?]] Search PKS in [[https://vmware.rolepoint.com/?shorturl=qeEMe][this link]]. (Or contact me directly)
 
 [[4 Challenges In Kubernetes Log Transport][https://cdn.dennyzhang.com/images/blog/work/vmware_pks.png]]
 
@@ -130,6 +128,25 @@ More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kube
 #+END_HTML
 
 Blog URL: https://www.dennyzhang.com/kubernetes-logging
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+* useful link                                                      :noexport:
+https://banzaicloud.com/blog/k8s-logging-advanced/
+
+google doc:
+https://docs.google.com/document/d/1HvMHCMi0uydnCWTLxKlSyI1304jGwp8R9Jrm1WC2htw/edit
 * TODO Questions & Misc                                            :noexport:
 ** TODO update doc: sidecar and log folder
 ** TODO Secure infra level logging
@@ -171,17 +188,7 @@ the current state of microservices logging, the new challenges it
 poses for large enterprise dev teams and then we will follow up with
 suggestions on how to address these challenges with a quick demo in
 the end.
-* org-mode configuration                                           :noexport:
-#+STARTUP: overview customtime noalign logdone showall
-#+DESCRIPTION: 
-#+KEYWORDS: 
-#+AUTHOR: Denny Zhang
-#+EMAIL:  denny@dennyzhang.com
-#+TAGS: noexport(n)
-#+PRIORITIES: A D C
-#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
-#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
-#+EXPORT_EXCLUDE_TAGS: exclude noexport
-#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
-#+LINK_UP:   
-#+LINK_HOME: 
+** #  --8<-------------------------- separator ------------------------>8-- :noexport:
+** layered monitoring
+https://banzaicloud.com/blog/prometheus-application-monitoring/
+** No extra things for developers: add label, run sidecar, etc.

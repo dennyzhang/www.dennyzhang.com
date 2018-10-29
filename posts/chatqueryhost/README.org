@@ -1,4 +1,4 @@
-* ChatOps Bot: Query Node Info Without Manual Login            :BLOG:ChatOps:
+* ChatOps Bot: Query Node Info Without Manual Login            :BLOG:Tool:
 :PROPERTIES:
 :type:     DevOps,ChatOps,Docker
 :END:

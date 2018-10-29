@@ -1,4 +1,4 @@
-* Understand Kubernetes Security Model                      :BLOG:Kubernetes:
+* Multi-tenantcy & Security                                 :BLOG:Kubernetes:
 :PROPERTIES:
 :type:     Kubernetes, Security, PKS
 :END:
@@ -9,18 +9,33 @@ For Kubernetes workloads (pods, deployments, jobs, sets, etc.), they may be trus
 
 The Linux kernel has a number of overlapping security extensions (capabilities, SELinux, AppArmor, seccomp-bpf) that can be configured to provide least privilege to applications.
 
-TODO: diagram
+TODO: diagram phases
+
 - Linux Security Features and PodSecurityPolicies; Network security
 - RABC
 
 [[image-blog:Kubernetes Security][https://cdn.dennyzhang.com/images/blog/work/k8s-security-layer.png]]
 ---------------------------------------------------------------------
 [[image-blog:Kubernetes Security][https://cdn.dennyzhang.com/images/blog/work/k8s-security-model.png]]
+** Federation & Namespace
+** Scenario: Secure Human Errors
+GitOps
+** Scenario: Secure Data Breach From Neighbors
+** #  --8<-------------------------- separator ------------------------>8-- :noexport:
 ** Facts & State
 - Hard to keep aligned with current security best practice
 - Security pratice may break our applications or slow down our developers
 - Missing features of k8s security
-** Current Limitations
+** Scenario: Secure Your VMs
+** Scenario: Secure K8S Workload
+** Scenario: Security Practice In SDLC
+Software developing life cycles
+
+Scan the package
+
+- Airgap deployment: avoid docker pull.
+- Use fixed version for everything. OSS/TP
+** Look Ahead
 *** DONE You can't get network policy security with default CNI
     CLOSED: [2018-10-02 Tue 00:48]
 *** DONE Volume security: my PVC can be mounted only by me. Security within one namespace
@@ -34,7 +49,6 @@ TODO: diagram
     CLOSED: [2018-10-02 Tue 16:47]
 *** TODO Audit won't get your the volume mount activities
 ** What Security Enhancement PKS Has been Made?
-
 More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-yaml][Kubernetes YAML Templates]], [[https://kubernetes.io/blog/2018/07/18/11-ways-not-to-get-hacked/][11 Ways (Not) to Get Hacked]]
 
 #+BEGIN_HTML
@@ -65,3 +79,6 @@ Blog URL: https://www.dennyzhang.com/kubernetes-security
 #+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
 #+LINK_UP:   
 #+LINK_HOME: 
+* notes                                                       :noexport:
+* useful link                                                      :noexport:
+https://banzaicloud.com/blog/container-vulnerability-scans/

@@ -1,0 +1,498 @@
+* Motto & Personal Quote                                       :BLOG:General:
+:PROPERTIES:
+:type:   Life
+:END:
+---------------------------------------------------------------------
+Motto and quotes I like
+
+https://www.dennyzhang.com/wp-content/uploads/2014/04//blog_motto.gif
+---------------------------------------------------------------------
+** Startup
+- Never complain forever! If it's the price you must pay, do it generously; If not, just quit silently.
+- You are what you have done.
+- Without feedback or evidence of progress, you'll eventually run out of energy.
+- You become influential, by creating new wisdom that makes the old wisdom look stupid.
+- Do something remarkable. Give people an experience they'll want to talk about.
+- The best way to increase your success rate is to double your failure rate. -- Thomas J. Watson
+- Work for free today, so that you can get a paycheck tomorrow.
+- The only way to do great work is to love what you do. If you haven't found it yet, keep looking. Don't settle. As with all matters of the heart, you'll know when you find it -- Steve jobs
+- Watch out for useless worries, like the past, the future, the nothing you cannot change.
+- Work is a mindset, not a place I go.
+- Your dream is like your car. If you are in full control of it, you are not driving it fast enough
+- Don't follow a model that works poorly in daily life.
+- What drives me is not goals, not discipline, not external motivation, not reward... but passion.
+- Change, don't need you to say, people will see.
+** Communication
+- People always need empathy before advice.
+- Don't just talk; think
+- Even negative feedback can be a gift. Take it seriously but don't let it define you. Define yourself.
+- Don't judge someone's past, when you haven't walked their journey!
+** Life
+- A smile is the shortest distance between two people.
+- One in 10 Americans tells the other nine how to vote, where to eat, and what to buy.
+- "You will get all you want in life, if you help enough other people get what they want." - Zig Ziglar
+- Expect the best. Prepare for the worst. Capitalize on what comes. - Zig Ziglar
+- A fundamental part of being human is doing things, and once you have no things you need to do you can get listless and depressed.
+- Talk about topics people actually care about, then topics people should care about. Not the other way around.
+- If you give up on your dreams, what's left? - Jim Carrey
+- Sometimes you forgive people simply because you still want them in your life.
+- Ask and ye shall receive. -- From The Bible
+- Take it or Accept it? Just don't complain.
+- Maturity is not when we start speaking big things... It is when we start understanding small things...
+- When you talk, you are only repeating what you already know. But if you listen, you may learn something new.
+- What happens to your brain, when it gets to think about something hard? It gets bigger, like a muscle.
+- Having people give you honest feedback is a rare gift.
+- Don't sacrifice what you REALLY want for what you want RIGHT NOW.
+- For all of the most important things, the timing always sucks.
+- Getting lost will help you find youself.
+- Try not to become a man of success but rather try to become a man of value. -- A. Einstein
+- The questions you ask determine the quality of your life.
+- Appreciating beauty in commonplace is hard, but meaningful.
+- Learning anything is easy. Internalizing it is difficult.
+- Transparency breeds trust, and trust is the foundation of great teamwork.
+- Free is really not free, because it invokes you to try more.
+- It feels good when you've something and you share.
+- Working for someone else when you have some entrepreneurial sense is simply too frustrating.
+- The best time to plant a tree is twenty years ago. The second best time is today
+- Spend more time around people that both challenge and respect you.
+- Live your life to the fullest
+- Never forget learning and reading
+- Telling jokes in another language is one of the most harrowing experiences you can imagine.
+- If you overvalue trivial matters, you probably have not experienced enough hardship.
+** Mindset
+- Brick walls let us show our dedication
+- Always reset to be a freshman!
+- Work hard to give yourself lots of options and opportunities
+- Learn how to give up one pleasurable thing for another
+- When you blame others, you give up your power to change
+- Experience is what you get when you didn't get what you wanted
+- Some people want to get rich and famous, but I want to get real and get deep.
+** Work
+- There are only two ways to influence human behavior: you can manipulate or inspire it - Simon Sinek
+- Engading: If anyone can XXX, I'm all ears.
+- Assignment: Package tasks into theme
+- Good companies solve problems, great companies create opportunities
+- Enjoy learning for nothing.
+- In business as in life, you don't get what you deserve, you get what you negotiate. - Chester L.Karrass
+- An expert is a person who has made all the mistakes that can be made in a very narrow field. -- Niels Bohr
+- You can try to deny it, but sales drive a company.
+- Culture is an important reason as to why people gravitate to one tool or another
+- 40-90% of total costs of a system are incurred after birth. The labor before that is painful,but the labor afterwards cost the most
+- Teach me, and I will forget. Show me, and I will remember. Involve me, and I will understand.
+- Everyone has a story to share.
+- Feedback is the breakfast of champions, but focus is the dinner of winners.
+- Train people well enough so they can leave, treat them well enough so they don't want to. - Richard Branson
+- In content marketing, the purpose of content is to create influence; The purpose of marketing is to convert influence into action.
+- Never underestimate the power of the expression "Thank You".
+- Trust is the bedrock of all effective teams.
+- People respect you for doing stuff, not just talking about it.
+- Influence: prove that what you're talking about really works.
+- It's better to tell a short story well, than a long one poorly.
+- It is considered rude to just ask a question without searching the archives.
+- If everything seems under control, you're not going fast enough. -- Mario Andretti
+- Don't be a boss. Be an example and a leader.
+- You don't hire for skills, you hire for attitude. You can always teach skills. -- Simon Sinek
+- Some people live where they work. Others just visit.
+- If you can't explain it simply, you don't understand it well enough. -- Albert Einstein
+- A bird siting on a tree is never afraid of the branch breaking, because her trust is not on the branch but on its own wings. Always believe in yourself.
+- We shape our tools and afterwards our tools shape us.
+- Connect with likeminded people. Give more than you take.
+- Do what you value. Value what you do. Why do anything else?
+- Only Do What Computers Cannot.
+- Quality is just another word for how well can you repeat something.
+- Don't be a "yes" man
+- If a tool isn't easy to use, people won't use it.
+- People work much better together when they can find common ground.
+- Resolve the problems before anyone else finds them.
+- People can deny your logic, but they can never deny your enthusiasm
+- Everything you send out is a part of you and your brand.
+- A problem well stated is a problem half-solved
+- Improving daily work is even more important than doing daily work.
+- We should always do the thing we can do immediately.
+- Every work center is made up of four things: the machine, the man, the method and the measures.
+- Mostly we shall think deep, before talk too much.
+** Programmer
+- The programming language itself is not that difficult to learn, it's the standard libraries, the external libraries, the ecosystem that takes a while to learn and get fluent in.
+- Do One Thing & Do It Well
+- In a cloud platform, no one hears the kittens dying. Cattle computing wins.
+- The Devil Hides in the Details
+- 15 minutes rules: If you're stuck on something, spend 15 minutes trying to figure it out. After that, ask for help.
+- As a best practice, no one user should have uniform access to every secret within an infrastructure.
+- There are one hundred ways to fix a problem. However the ultimate solution is, don't give it any chance to happen.
+- If a new user has a problem, it's a bug in the code or the documentation. End of story.
+- Debugging is twice as hard as writing the code in the first place.
+- 90% of the code is written by 10% of the programmers
+- It doesn't matter if you use Ruby, Erlang, Haskel, Lisp or C. if you poorly implement a system, no programming language will make up for it.
+- Avoid general TOI-style questions
+- Emacs made me realize anything can be changed by a programmer
+- TDD force us to think how the code is going to be used.
+- Talk is cheap, show me the code: Win arguments with code.
+- Let it crash, only fix the errors you know how to fix
+- Don't make wrong decision and do it in a wrong way, due to schedule pressure
+- Don't attend meeting without preparation!
+- Done is better than perfect.
+- Ugly, I know. But it works
+- Architecture represents the significant design decisions that shape a system
+** #  --8<-------------------------- separator ------------------------>8-- :noexport:
+** Chinese                                                         :noexport:
+- 个人比较欣赏的一些警世格言和人生体会
+- 硅谷 - Silicon Valley
+- 在硅谷,人们很少会问"你为谁工作",反而常问"你热爱什么"--这也正是硅谷成功的精髓
+- 家庭生活                                                         :Family:
+- 每个女人都是一个天使,当她爱上一个人时,她就会折断翅膀来 到人间,所以男人不要伤害身边深爱自己的女人,因为她已经没有翅膀再飞
+- 做父母最失败的,就是既看不起自己的孩子,又希望孩子成龙成凤
+- 要想让婚姻生活幸福,就要当3年聋子,3年哑巴,3年盲人 -- 韩国俗语
+- 作为父母,让孩子通过语言把所有的感情--积极和消极的都表达出来,是对孩子的最大保护
+- 家不是讲理,是讲爱的地方
+- 家庭的幸福需夫妻共同努力, 而破坏它, 一人就够了
+- 婚姻不是1+1=2, 而是0.5+0.5=1. 即, 两人各削去一半自己的个性和缺点, 然后凑合在一起才完整
+- 两个人吵架, 先说对不起的人, 并不是认输了, 并不是原谅了.他只是比对方, 更珍惜这份感情
+- 如果你把工作搞砸了, 你总可以再找另外一个工作, 但如果你把家庭关系搞砸了, 特别是跟孩子的关系, 你永远无法弥补, 你会一辈子背负这个债务
+- 别让孩子替你实现梦想
+- 成年人的生活里没有容易二字
+- 所有的孩子都是在玩耍时学习的
+- "要听话"用来抹杀自由, "要孝顺"用来抹杀独立, "就你跟大家不一样"用来抹杀个性, "别整天琢磨那没用的"用来抹杀想象力, "少管闲事"用来抹杀公德心, "养你这孩子有什么用"用来抹杀自尊, "我不许你跟他/她在一起"用来抹杀爱情--这就是中国父母著名的"七种武器"
+- 男人和老婆的关系再差,他和岳母的关系也是好的;女人和老公的关系再好,她和婆婆的关系也是差的
+- 男人善于发现老婆的缺点,女人善于发现老公的优点
+- 心态                                                           :Attitude:
+- 做不到不要说,说了一定要做到
+- 我们之所以觉得自己的idea酷炫拽霸吊炸天,其实是因为我们文献看的太少....
+- 听到各类建议和反馈时,先不要想个人得失.讨论和做决定是两个不同阶段的事情
+- 你说我是错的,那你最好证明你是对的.
+- 只有在心中先有了目标,做事的时候才不会被各种条件和现象所迷惑,才不会偏离正轨
+- 一个人的成就,永远不会超越自己思想的格局
+- 我们能原谅我们讨厌的人,但却不能原谅讨厌我们的人
+- 我们的痛苦不是问题本身带来的, 而是我们对这些问题的看法产生的
+- 一个人的涵养, 不在心平气和时, 而是在心浮气燥时
+- 除非你同意, 没有任何人可以伤害到你
+- 任由感觉左右行为是不负责任的做法
+- 别想过去, 别想将来, 想想现在
+- 千万不要因为有一天你得到了整个世界却丧失了自我灵魂 -- 鲍勃.马利
+- 宁愿悲哀的深刻, 不愿开心的肤浅
+- 伟人之所以为伟人, 只不过他克服惰性多一点
+- 人的能力都是在做事的过程中提升的
+- 任何一次对自己的原谅, 都会导致下一次更大的错误
+- 千万不要相信你能统一人的思想,那是不可能的.30%的人永远不可能相信你
+- 越是接近人生的最高阶段, 别人越是帮不上忙.每个人的顶峰都是独特的, 这独一无二的风景, 世上没有任何人曾有过相同体验.此时, 任何帮助都会变成干扰, 任何期待都是一种松懈
+- 现实并不残酷,残酷的是你自己对青春的挥霍！
+- 可以相信别人, 但不可以指望别人
+- 自由从自信而来, 而自信则是从自律来! 先学会克制自己, 用严格的日程表控制生活, 才能在这种自律中不断磨练出自信.自信是对事情的控制能力, 如果你连最基本的时间都做控制不了, 还谈什么自信？
+- 有没有想过, 也许一辈子你都是个小人物
+- 用心做事做人的, 必定会与众不同
+- 有时候傻坚持要比不坚持好很多, 如果空有理想, 没有坚持, 理想将变成一种痛苦
+- 任何一件事情, 只要是心甘情愿, 总是能够变得简单
+- 别兜售你不相信的东西, 别为你不敬佩的人工作, 别和你不喜欢的人共事 -- 芒格
+- 人之所以有道德,是因为受的诱惑太少.要是有致命的诱惑向他发起攻击,几乎没有人能够幸免. --罗素
+- 道理是个人的选择,不能绑架别人
+- 你可以用爱得到全世界,　也可以用恨失去全世界
+- 生活体验                                                        :Feeling:
+- 人无癖不可与交,以其无深情也;人无疵不可与交,以其无真气也.
+- 所有的伟大,都源于一个勇敢的开始.
+- 永远不要低估你的能力,永远不要高估你的毅力
+- 不如意事常八九,可与言者无二三
+- 解决是能力,担当才是王道
+- 未来不迎,当时不杂,过往不恋 -- 曾国藩
+- 优雅的秘诀在于克制
+- 每个人只会看到自己想看的东西
+- 把最不想做`最容易拖延的事情安排在最前面.当不想做的事情统统都完成后,它们也不会在你脑海里持续浮现干扰你的工作心情了.
+- 如果我没见过太阳,我本可以忍受黑暗.
+- 这个世界上,没有一步是浪费的
+- 其实我们认识的许多人最终都不会成为我们的朋友.因为友谊的建立需要信任,而信任往往需要两个人互相不断解决对方的痛点才能逐渐建立.
+- 妄念就是一个自己挥之不去,但又必须靠他人才能够实现的愿望 -- 冯唐
+- 一分钱一分货, 一毛钱两分货, 一块钱三分货
+- 爱的反面不是仇恨,而是漠不关心 -- 特蕾莎
+- 我的生活经验使我深信,没有缺点的人往往优点也很少 -- 林肯
+- 没有任何人的人生,可以不经历痛苦
+- 有些人认识再久也做不了朋友,再怎么费力贴近都觉得有隔阂.有些人第一次接触就怀疑是不是曾经见过,像是两只找到了同类的小怪兽.
+- 青春就是做可爱的自我
+- 梦想才是最真的现实.不是现实支撑着梦想,而是梦想支撑起现实.
+- 所谓能耐,就是既有能力又有耐力.没有能力的人做不了事,没有耐力的人成不了事！能力是锻炼出来的,耐力是磨炼出来的.没有能力的耐力是一生平庸,没有耐力的能力是一时之勇.人生想要有所成就,就必须有"能"有"耐".
+- 越有故事的人越沉静简单,越肤浅单薄的人越浮躁不安
+- 科技是大脑,金融是血液
+- 你很在意别人怎么看你吗？记住一只狮子是不会在意羊的意见的.
+- 一个人成熟的标志之一就是,明白每天发生在自己身上99%的事情对别人而言根本毫无意义.
+- [#B] 阐述观点时,列出例证,能帮助自己和对方更深入的理解和说服
+- 道理两三句话讲不清楚,那说明你还没看透
+- 如果谈话时,你一心想着诉说,你是无法倾听到任何新信息的
+- 以绝大多数人的努力程度之低,根本轮不到去拼天赋.
+- 你的收益不是由你创造的价值决定的,而是由替代你的成本决定的.
+- 有一种东西,你开始很讨厌他,但之后你却慢慢适应了他,当有一天失去了他,你就感觉你离不开他,他就是体制.
+- 一个人敢于笑话自己,他是有很强的安全感的
+- 历史吊诡的地方在于,再复杂`再重大的决定,往往都是在一两分钟的思考之后作出的
+- 比起浪费时间来说,浪费钱真算不得了什么
+- 社交,是件私密的事情,越有价值的信息,受众越少.
+- 保持微笑,哪怕是状态不佳的情况下.
+- 包容不同价值观,不同性格的旁人.
+- 一个人一天的行为中大约只有5％是属于非习惯性的,而剩下的95％的行为都是习惯性的
+- 时间告诉你什么叫衰老 回忆告诉你什么叫幼稚
+- 真我,胜过一切偶像
+- 成功完全是一种个人现象,只有你所完成的事情和你的价值观相符,你才会觉得成功
+- 人生最痛苦的不是要什么得不到,而是根本不知道自己要什么
+- Surround yourself with inspiration.
+- 通过敏锐的洞察力,高效的方法学,完善的工具集来支撑我们去追寻任何我们想达到的目标.
+- 原创的思想其实往往比二手的容易理解很多.
+- 你跟圈子的人关系密切,谈论的话题也都相似.你努力做到这个群体的最好,以为看到了整个世界,其实你看到的只是很小很小的一部分.
+- 你无法说服还没有吃过很多很多面包的人们,让他们懂得吃一千个面包是要反胃的.
+- 一将无能,累死三军
+- 人可以不相信神,但不能不相信神圣
+- 使人疲惫的不是远处的高山,而是鞋里的一粒沙子
+- 一个真正强大的人,不会把太多心思花在取悦和亲附别人上面.所谓的圈子`资源,都只是衍生品
+- 时间是最大的成本, 观点是最有价值的财富
+- 与普通人学沟通,与牛人学技术
+- 只是因为太年轻,所以所有的悲伤和快乐都显得那么深刻,轻轻一碰就惊天动地
+- 三种单纯而强烈的激情支配我的一生:对于爱的渴望,对于知识的渴求,以及对人类苦难痛彻肺腑的怜悯 -- 罗素
+- 成熟的标志,不是会说大道理,而是你开始去理解,身边的小事情
+- 成人的最大烦恼是自寻烦恼,孩子的最大快乐是自得其乐
+- 当你放弃追寻外在世界的财富,开始追寻内心世界的真正财富时,就是你真正觉悟的时刻
+- 其实创业就是干别人没有干过的事情,或者干别人没有干成的事情
+- 追求激情,而不是追求薪水和职位
+- 一个成熟的人往往发觉可以责怪的人越来越少,人人都有他的难处
+- 大师之所以为大师, 正因为他一出手就能化腐朽为神奇
+- 人们最终所真正能够理解和欣赏的事物,只不过是一些在本质上和他自身相同的事物罢了. --叔本华
+- 所有一直在追求"出色"和"卓越"的人最后都在他们最坚信的标准上"输"给了那些只是想过自己独特生活的人
+- 最小的善行胜过最大的善念
+- 这辈子什么苦都可以吃,就是别让心累着
+- 有时候,同样的一件事情,我们可以去安慰别人,却说服不了自己
+- 在你不在乎的人和事面前,你总是显得特别有尊严
+- 真正的成功,不是来自别人的认可和评价,而是由自我满足带来的宁静平和的心态
+- 让你难过的事情,有一天,你一定会笑着说出来
+- 你的负担将变成礼物,你受的苦将照亮你的路 -- 泰戈尔
+- 如果不冥思苦想,怎么会恍然大悟？
+- 慷慨不仅仅是把别人所需要的送给他, 而真正的慷慨是能把自己需要的也送给别人
+- 阅读是人的第二生命
+- 人最想得到什么,就会成为什么的囚徒
+- 问佛:世间为何有那么多遗憾？ 佛曰:这是一个婆娑世界,婆娑即遗憾,没有遗憾,给再多幸福也不会体会快乐
+- 若一个人不靠关系,不用巴结,不为某种得失提心吊胆,不必把命运系在某个人身上,而是在用自己的能力创造社会价值并养活自己,而且做的还是自己喜欢的事,并且不虚荣,春天就常驻你心里
+- 人一定要想清楚三个问题:你有什么？你要什么？你能放弃什么？
+- 你永远都不会知道自己到底有多坚强,直到有一天你除了坚强别无选择
+- 如果不出去走走,你会以为这就是世界
+- 有事情不是因为看到了才相信, 而是因为相信才看得到, 就像爱情,就像梦想
+- 一个人总强调什么,他身上就缺少什么
+- 诚实: 是一种态度,也是一种能力
+- 在古代, 我们不短信, 不网聊, 不漂洋过海, 不被堵在路上, 如果我想你, 就翻过两座山走五里路, 去牵你的手. -- 蔡康永
+- 长大成人这件事最恐怖的地方之一在于, 你或许会变成自己曾经最看不起的那种人
+- 如果一个人什么生活嗜好都没有, 那么他往往也没有好朋友
+- 工作需求与圈子极大地影响个人的能力
+- 说真话会得罪一些人, 但却会更容易找到知音
+- 许多人的所谓成熟, 不过是被世俗磨中去了棱角, 变得世故而现实了.那不是成熟, 而是精神的早衰和个性的夭亡.真正的成熟, 应当是独特个性的形成, 真实自我的发现, 精神上的结果和丰收
+- 你因为满腔热情`认定一样事情, 而去创业, 还是因为不满意目前的生活状态, 便考虑换一种模式？
+- EQ在斗争中成长最快
+- 当你超过别人一点点, 别人会嫉妒你;当你超过别人一大截, 别人就会羡慕你
+- 心若没有栖息的地方, 到哪里都是流浪
+- 真相只有一个, 但观察角度和表达方式会给我们很多不同的判断.尤其在你愿意相信自己的判断并以此为自己辩护的时候.相由心生, 所以月映千川.也就是人们常说的罗生门
+- 学习的根本意义在于提升自己的洞察力
+- 任何环境都足以让你脚踏实地地自我修炼
+- 讲真话的最大好处就是:不必记得自己讲过什么
+- 没有实力, 愤怒毫无意义
+- 一分钟有多长？这要看你是蹲在厕所里, 还是等在厕所外
+- 路走对了, 就不怕走远
+- 关心你的技术, 然后你的技术才会关心你
+- 爱所有人, 信少数人, 不欺负任何人
+- 幸福就是好的身体和坏的记忆
+- 如果你能将学到的东西解释给一个十岁的孩子, 让他听懂, 你一定是学会了
+- 你和时间开玩笑, 它却对你很认真
+- 读书不一定改变一个人的命运, 可是却实实在在地改变一个人
+- 任何一个高级的知识内容, 其中都只有一小部分是有思想创新`有重大影响的, 而其它很多东西都是琐碎的`非本质的
+- 一次温暖的握手抵得上一万次微博
+- 我们已走得太远, 以至于我们忘了为什么而出发 -- 纪伯伦
+- 真正的效率源自于内心对一个东西强烈的热忱, 也就是俗称的追求, 这时从表层意识到深层意识都关注在这件事情上面, 脑细胞高度活跃, 才能创造最大的效益
+- 人生最大的投资, 不是房子, 不是股票, 是人. 钱不会给人机会, 房子也不会, 只有人会给人机会, 当人需要帮助的时候, 只有人会帮人
+- 要么深度, 要么有趣, 要么安静
+- 突然发现生命中好多不可或缺的人, 走着走着就散了
+- 如果有什么事情让你感到恐惧或者兴奋, 那就去做吧
+- 没有一颗心, 会因为追求梦想而受伤
+- 社交之所以累, 是因为我们想表现出自己其实并不具备的素质
+- 我们失去了饥饿感, 所以很难活得那么真实了
+- 对别人的情感最大的伤害就是欺骗
+- 你就是一道风景 , 没必要在别人风景里面仰视
+- 有些事现在不做, 一辈子都不会做
+- 人生最痛苦的是梦醒了无路可走.做梦的人是幸福的.倘没有看出可走的路, 最要紧的是不要去惊醒他
+- 永远不要恨你的敌人, 因为这会影响你的判断力！
+- 健康就是最大的节约
+- 有些情感上的错误,就像一只摔破的碗一样,即使经过修补,裂痕不可能消失
+- 家庭沟通
+- 当有人在你毫无防备时刁难你,那你内心的情绪就会波涛澎湃,顿时变得紧张`躁动.因此提前沟通很重要.
+- 在婚姻生活中,推理只会把我们引入歧途.
+** 职场感悟                                                        :noexport:
+- 唯有爱与用户不可辜负
+- 时间比金钱更珍贵的是,它是不可逆的.人类几千年历史,自己能实际参与的只有短短几十年,不要做别人做过的事情,要找到真正发挥自己创造力的地方.
+- 利可共而不可独,谋可寡而不可众 -- 曾国藩
+- 过了十年,谁都不记得你做了什么,但是记得和你做事情的感觉
+- 真正的"关系", 在于如何想办法让其他人更成功,在于努力地去"付出"而不是"索取"
+- 竞技的水平越高,心理因素所占的影响就越大
+- 组织的成果产生于组织外部 -- 彼得.德鲁克
+- 人们往往不会记住你说了什么,而是记住你让他们有什么样的感觉
+- 或许,真正的成功只有一个,就是按照自己喜欢的方式,去度过自己想要的人生... ...
+- 善于学习,能下笨功夫
+- 权力的本质就是信息
+- 抠门的人不适合当老板
+- 战术上的勤奋,掩盖不了战略上的懒惰 -- 雷军
+- 没有感情沟通,留不住老人; 没有宽阔心胸,用不了能人; 没有专业能力,指导不了新人.
+- 其实研究烂产品还有另外一个好处: 出色的产品可能是靠某个华丽的效果或精美的设计而引人注目的,但烂产品只能是靠碰准真正需求才能够存留下来的
+- 天理即人欲 -- 王阳明
+- 机遇往往是伪装成挑战出现在你面前
+- 让自己感觉无知,这是唯一能保持学习的方法.
+- 写出精美的代码,开源给所有人.
+- 缺少时间不是问题; 问题是缺少专注.
+- 所谓专家,就是在一个很小的领域里把所有错误都犯过了的人.
+- 如何做减法:专注目标`分配有限资源`付出舍弃的勇气.
+- 在有限的时间内完成事务,避免完美主义,压力得到解脱
+- 虽然工作强度很大,但总有一种玩的感觉.
+- 每一个管理者都会在实际工作中遇到一个非常现实的问题--员工激情的可持续性问题
+- 加班加点, 废寝忘食有时很可能是不具备效率和工作能力的表现
+- 很多时候, 在办公室里一起工作三年, 不如出差畅谈一夜能增进了解
+** 管理与做事方式                                       :noexport:Management:
+- Money will come and go, but experiences and learning are what I define as true wealth.
+- I need someone reliable, who isn't afraid to tell me bad news.
+- If you can't measure it, you can't manage it. -- Peter Drucker
+- The metrics themselves are not important. The action is.
+- 风险管理, 简单说就是一件事情的出现,不会是由于一个人的失误造成的.
+- 在进行工作的时候,一定要念念不忘这个工作应于何时截止
+- 能够把简单的事情想复杂, 使你具备执行力;能够把复杂的事情想简单, 使你具备操控局面的能力.
+- 有时候,做事情并不需要有目的,最重要的是自己内心的充实.
+- Creating a challenge can be an inspiration for all of us.
+- 当我们是少数人,我们可以检验自己的勇气.当我们是多数人,我们可以检验自己的宽容
+- 做你真正感兴趣的事情会让你珍惜时间
+- 团队引导的首要原则: 永远优先保护大家的主动性和积极性
+- 教育是三分教,七分等.沟通和引导何常不是呢?
+- 生活最沉重的负担不是工作,而是无聊.-- 罗曼·罗兰
+- 如工作没有挑战,再有能力的人,也像傻瓜一样
+- 激励和惩罚需要及时, 因为它们都有着积极或消极的巨大示范效应
+- 只有生产低级产品的企业, 才把竞争力完全建立在劳动力成本上
+- 人们从来都不曾真正地想要去实现完美, 而是害怕完美.完美对于绝大多数人来说, 意味着脱离大众带来的孤独, 意味着承担更多的责任, 意味着成为上帝或上帝的使者
+- 老板对你的投资主要是为了你未来的贡献, 而不是回报你的过去
+- 【高效能人士7个习惯】: 1`主动积极(个人愿景的原则); 2`以终为始(自我领导的原则); 3`要事第一(自我管理的原则); 4`双赢思维(人际领导的原则); 5`知彼解己(移情沟通的原则); 6`统合综效(创造性合作的原则); 7`不断更新(平衡的自我更新的原则) -- 史蒂芬·柯维
+- 公开发表你的思考, 你将因感到来自公众的积极的压力而坚持下去
+- 工作需求与圈子极大地影响个人的能力
+- 人生五大发展阶段:首先自己要行;其次要有人说你行;再次, 说你行的人要行;然后, 你说谁行谁就行;最后, 谁敢说你不行
+- 无论发生怎样的变故, 不要打破生活原有的规律, 要按时吃饭, 按时睡觉
+- 吕布固执于自己的方天画戟, 赤兔马和高强的技艺
+- 有些事儿一对一地做效果更好,且更结实.
+- 你必须非常努力, 才能看起来毫不费力
+- 作息时间表是一种自我约束
+- 一种技能如同一块肌肉, 一旦缺乏反复的训练, 它就会渐渐萎缩
+- 没有人情的政治是短命的
+- 凡事只要不用人去操心了, 我们就可以暂时认为这事儿就不存在了
+- 项目沟通的最大目的是最大限度地发挥团队的合力
+- Continuous improvements is the key at all levels
+- Don't live with broken windows
+- Most of what we learn, we learn indirectly
+- Never use the last bullet!
+- Never ruin other's dream and wish
+- 有效沟通的目的是拿到充分`正确的信息, 来做出有利的决断
+- 没有比解决瓶颈更高效的事情了
+- 在管理的世界中, 最困难的事情就是把一件你很拿手的工作交给别人, 再眼睁睁地看着他把事情搞砸, 而你却还能心平气和的不发一言
+- 你想要管理的事情越平淡无奇, 你的系统就需要越复杂才能把它们管理好
+- 跟踪移交他人处理的工作
+- 对员工不应是管理, 而应是激励
+- 授权就像是放风筝, 对方能力弱就收收, 对方能力强就放放
+- 不能因为一个人心地善良就原谅他的无能, 更不能因为一个人有表演天赋就大加赞扬
+- 团队里面善于质疑的人最容易获得成长; 安于现状的每天都是在重复自己
+- 用8小时工作, 用24小时思考. 同样的工作, 不同的人会有不同的绩效, 差异在于业余时间的思考
+- "当一个政府或部门失去公信力时, 不论说真话还是假话, 做好事还是坏事, 都会被认为是说假话`做坏事."--古罗马历史学家塔西陀
+- 什么叫爱好？爱好就是在业余时间用专业精神去做的业余事情
+- 如果你想要造一艘船, 不要招徕你的手下收集木材`分配任务, 相反,去激发他们对海洋的渴望
+- 成功的买卖, 都是以双赢为目标开始的
+- 照顾每个人的感受, 注定自己不会好受！
+- 理想未必能感召人, 但利益一定可以团结人
+- 所谓执行力,就是这件事交给你,你就得一直盯出个结果来,最忌石沉大海.执行过程三个关键:完成标准`时间要求和风险控制.对完成标准之理解的不同或令辛苦成为无用功;时间点即使老板没明确给,也要自己设定并确认是否可以;大部分可发生的意外能预估并加以控制,失控则迅速解决,不要拖延到最后
+- 越是出色的人越善于在缺乏条件的状态下把事情做到最好,越是平庸的人越是对做事的条件挑三拣四
+** 沟通                                                            :noexport:
+- 人都有着劣根性,但也有着善良的本质
+- 你永远说服不了任何人,更无法改变任何人.但你可以做好自己. 如果你把自己做得足够好,不需要你说,别人就会以你为榜样,改变他自己,因为这决定是他自己做出来的,他愿意改变
+- 告诉别人的观点必须是简单的,好像是他自己想出来的
+** 程序员                                                       :noexport:IT:
+- 编程有两件事,一件是处理数值,另一件是处理字符串
+- 注释的目的是为了弥补代码自身在表达上的不足.
+- 挑项目绝对是程序员职业发展第一准则
+- 信息量等于不确定性的多少
+- 调试前先思考是最好的调试方法
+- 缓存的本质是: 在能够预测未来使用的前提下, 预先存储一些处理结果提供快速访问, 从而做到用空间换时间或缓解瓶颈
+- 工具比框架更容易被接受
+- 相比成本控制, 业务创新更重要
+- 世界上最真情的相依, 是你在try我在catch.无论你发神马脾气, 我都默默承受, 静静处理.到那时, 再来期待我们的finally -- 我是程序员
+- 世界上最痴心的等待, 是我当case你是switch, 或许永远都选不上自己 -- 我是程序员
+- 世界上最遥远的距离, 是我在if里你在else里, 似乎一直相伴又永远分离 -- 我是程序员
+- 需要对核心细节进行深入了解
+- 知识技能的提升还是得靠不断地尝试折腾, 在烦和累中发现有趣和酷, 成就感
+- 如果一个系统或者一个模块设计时没有想好怎么测试, 说明设计做得还不够
+- 一个只有学计算机的孩纸才明白的冷笑话:烫烫烫烫烫烫烫烫烫烫烫, 屯屯屯屯屯屯屯屯屯屯屯屯屯
+- 《程序员的雨巷》开着emacs, 独自编写着悠长`悠长又无聊的ErLang, 我希望编译出来的结果是一个美丽的姑娘.她是有lua一样的风骚, c一样的贤惠, lisp一样的慈祥, 与我在ubuntu里牵手, 拥抱又疯狂;梦醒, 她仅仅是这无聊的ErLang
+- 如何实现可维护的软件是高级工程师的价值所在
+- 领导总让人一声叹息. 领导:"我们不需要两台服务器". 我:"可是我们需要双机备份" 领导:"两台服务器是为失败者准备的,优秀的团队绝对不允许任何一台服务器出问题" 我:"唉..."
+** 幽默                                                      :noexport:Humor:
+- 丝袜是权力的象征, 女人穿了能征服男人, 男人戴了可以征服银行
+- 青春不常在, 抓紧谈恋爱
+- 一哥们儿隔壁新搬来了个老外, 一天晚上老外敲门求助, 说:"我的电视坏了, 不能换台."这哥们儿低头看了眼表, 很镇定的说:"过了七点半就好了..."
+- 下午在法学院新楼自习,其间去接开水,见证了经典的一幕:前面排了一个美女和一个男生,美女突然回头对那男生说,她杯子拧不开了.于是那男生说:那我先接吧.瞬间我就石化了
+- 小丸子问:"为什么只能说女儿像爸爸, 不说爸爸像女儿呢？"爸爸说:"我问你, 是先有爸爸还是先有女儿？""当然是先有女儿, 后有爸爸."小丸子理直气壮地说, "在妈妈生了我以后, 你才成了爸爸的！"..
+- 男人需要幽默, 就像女人需要一个漂亮的脸蛋一样重要
+- 我国火车专用对联.上联: 啤酒饮料矿泉水; 下联:　花生瓜子八宝粥;　横批:　让一下, 　让一下
+- 中午不睡, 下午崩溃 ..
+- 上课的区别:小学上课费嘴, 初中上课费笔, 高中上课费脑, 大学上课费流量, 工作时上课费钱
+- 上联: 大四的看大三的教大二的怎么骗大一的. 下联: 大一的听大二的讲大三的怎么甩大四的. 横批: 大三最牛
+- 唐僧没本事, 大家都这么看.面对八十一难, 他哭过, 哀求过, 但从没说过一次:'我们不取经了, 大家散伙吧'.-- 坚持当如唐僧
+** 爱情                                                       :noexport:Love:
+- 我遇见你,然后遇见我自己
+- 友谊意味着两个人和世界, 然而爱情意味着两个人就是世界
+- 开始相爱不是因为找到一个完美的人, 而是因为学会了完美地看待一个不完美的人
+- 结婚以前自己那是吉普越野车, 愿意往哪开就往哪开, 爱怎么开怎么开.结婚后那就是火车啦, 那得按轨道跑, 准时准点还不能出轨.若有孩子了, 不仅不能出轨, 还得拉货
+- 遇见你是命运的安排, 成为了朋友是我的选择, 而爱上你是我无法控制的意外
+- 爱对一個人, 人生就等于做对了大部分的事情
+- 世界上最疼痛的话是:"我爱你, 但是......".世界上最甜蜜的话是:"...... 但是, 我爱你."
+- 其实, 你喜欢一个人, 就赋予了他/她伤害你的权力
+- '爱'和'喜欢'的区别很简单, 如果你爱花你会给它浇水, 喜欢则会摘下它
+- 如果我24小时不QQ, 不短信, 不微博, 原因只有一个:今天我们在一起
+- 他殷勤, 那是他刚刚爱上你.他笨拙, 那是他深深爱着你.他随性, 那是他已认定是你
+** 睿智的道理 -- 大智慧                                            :noexport:
+- 在职场上, 使用是最大的培养, 宠爱是最大的迫害
+- 对待人和对待事不一样,光有技巧和理智是不够的,很多时候信念和大度更重要
+- 人们愿意跟你说,比把观点表达得清晰`准确更重要
+- 一个人生活虽然很难,但也必须学会一个人,不要轻易依赖别人,这是为了防止你身边的人都离开的时候,你还可以好好生活下去.永远没有一个人是你离不开的,现在离不开的,不代表永远离不开.
+** 良好的习惯                                                      :noexport:
+- 需要把非常好的"陈述性记忆"变成一种"条件反射"
+- 每天花一点钟看10页有用的书,每年可看3600多页书,30年读11万页书.而11万页书足可以使你成为一个学者了
+- 把有意义的小事变成习惯
+** 短文                                                      :noexport:Story:
+- 德国记者提问:＂在德国,德国公民能了解德国总理的子女及其财产状况,在中国能吗？＂ 面对恶意刁难,中国发言人不慌不忙,沉着冷静,机智地回答:＂当然能,中国公民也能了解德国总理的子女财产情况.＂全场为发言人的机智报以热烈掌声.
+- 一位单身女子刚搬完家, 晚上忽然停电.她刚点燃一支蜡烛, 听见了敲门声.她打开门, 是隔壁的小女孩, 小女孩问:"阿姨, 你家里有蜡烛吗？"单身女子心想:这才刚来就这样, 以后会怎样.于是她冷冰冰的说"没有".小女孩笑了:"妈妈怕你害怕, 让我给你送来了."
+- 行善:鲁国规定凡鲁人在国外见到本族人被卖当奴, 可赎之回国库报账.孔子学生赎一奴, 却不报账, 人人夸学生高尚.孔子很不满, 学生问救而不报账, 岂不更高尚.孔子骂:呆货, 以后别人要是赎了奴去报账, 就会被骂不高尚;不报账, 做好事又成了亏本的事.渐渐人们就会装没看有人做奴, 渐渐就没人做好事
+- 一名记者采访一个从事编程的工程师, 并问了他一个典型的问题: "你怎样判断一个函数或者方法太大了？"被采访者说, "我不喜欢任何比我头还大的方法.""你是说那些无法将所有细节都记到脑子里的方法？""不, 我是说我把我的头放在显示器上, 然后那段代码不应该比我的头还大."
+- 他散尽万贯家财, 终于获得了一次穿越的机会, 他回到了1998年, 找到了那个犹豫不决, 手握50万现金的青年, 告诉他:"买房子吧, 10年后, 房价会翻好几个跟头的."那个人说:"真的的太谢谢你了！请问你贵姓？你认识我吗？"他诡异的一笑:"我当然认识你, 化腾.我叫周鸿祎
+- 毕业答辩, 台下坐满老师, 台上同学讲得支支吾吾, 基本就不懂, 其中最牛的一个都是发话:你导师是谁, 怎么这么不负责任, 基本知识都不懂？只见该同学还是支支吾吾, 老师发火了, 快说！同学蹦出两字, 是你！！
+- 爸爸:儿子你觉得爸爸壮吗？儿子:嗯.爸爸:你觉得少林功夫厉害吗？儿子:厉害.爸爸:如果我剃成光头, 练少林功夫好吗？儿子拍手:太好了.第二天, 儿子看到光头的爸爸, 高兴地说:爸爸加油, 一定要练成高手.那天, 是爸爸化疗的前一天.那天, 爸爸用特有的方式教会了儿子乐观和勇敢
+- 我要一步一步往上爬/等待阳光静静看着它的脸/小小的天有大大的梦想/重重的壳裹着轻轻的仰望/我要一步一步往上爬/在最高点乘着叶片往前飞/小小的天留过的泪和汗/总有一天我有属于我的天----周杰伦《蜗牛》
+- 走出考场, 她哭的一塌糊涂.考生们都看着这么一个漂亮的女孩子哭的梨花带雨.他不顾旁人的眼光, 一把揽过她, 凶狠狠的说, "再哭我就当众吻你".她哭的更厉害了, "数学好难, 我们不能上同一所大学了啦"."笨蛋, 就知道你不会, 后面的大题我都没做".后来他考上了蓝翔, 而她妈送她去国外读大学了
+- 那些不和别人比较, 专注于自己世界的人们是幸福的.他们热爱自己的学习, 热爱自己的工作, 热爱自己的生命.生命的本质在于生命的乐趣, 这一乐趣是持久而宁静的, 不是转瞬即逝的.因此这一乐趣必须来自心灵而不是来自对于现实物质的拥有.和物质的满足相比, 心灵的富足是真正快乐的源泉
+- 对休息时间的掌握要学习长跑运动员.在马拉松赛场上, 运动员们都明确自己的实力, 知道什么时候该休息, 什么时候该努力追赶. 在开始阶段, 虽然体力充沛, 但也不能往前冲, 也要适当休息, 在结束阶段, 在疲惫的情况也要调节好体能, 适当休息, 只有这样才能在冲过终点线的时候取得好成绩
+- 不要忙于解决具体问题, 而要善于解决根本问题; 不要力图解决全部问题, 而要善于解决关键问题; 不要仅解决当前问题, 而要善于解决未来问题; 不要只解决有形问题, 而要学会解决无形问题; 不要先解决别人问题, 而要首先解决自己问题
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/life/motto"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/motto
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION:
+#+KEYWORDS:
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:
+#+LINK_HOME:
+* All human beings are born creative. We all have good ideas. But on the path from idea to creation we can be ambushed by fear, doubt and uncertainty – and that often means that great ideas land up dead in the dust, instead of coming to fruition :noexport:

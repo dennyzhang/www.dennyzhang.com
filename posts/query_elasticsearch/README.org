@@ -5650,3 +5650,7 @@ https://www.elastic.co/guide/en/elasticsearch/reference/2.3/mapping-all-field.ht
 #+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
 #+LINK_UP:   
 #+LINK_HOME: 
+* TODO upgrade from elasticsearch2 to elasticsearch 5              :noexport:
+https://www.linkedin.com/pulse/upgrading-elasticsearch-2x-5x-gian-giovani/
+http://www.idata.co.il/2016/11/upgrading-from-elasticsearch-2-x-to-5-0/
+https://www.metabrik.org/blog/2016/11/19/upgrading-an-elasticsearch-cluster-from-2-x-to-5-0-0/
