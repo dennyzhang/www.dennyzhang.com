@@ -7,7 +7,7 @@ There are mulitple popular kubernetes solutions for On-prem envs in the market.
 
 To deep dive into the design and implementation of kubernetes
 
-[[Components Of Popular On-Prem Kubernetes][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-components/kubernetes-onprem.png]]
+[[Components Of Popular On-Prem Kubernetes][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-components/kubernetes_onprem.png]]
 ---------------------------------------------------------------------
 ** Key Components
 *** VM Virtualization
