@@ -1,0 +1,84 @@
+* Pros and Cons Of Using Cloudfoundry Bosh                  :BLOG:Kubernetes:
+:PROPERTIES:
+:type:     Kubernetes, PKS, Deployment
+:END:
+---------------------------------------------------------------------
+Experience using bosh for Day-0 Deployment
+---------------------------------------------------------------------
+*Bosh Concepts VS K8S Concepts*
+| Bosh Concept     | Kubernetes Concept                               |
+|------------------+--------------------------------------------------|
+| Bosh Envs        | Kubernetes Context                               |
+| Bosh Deployment  | Kubernetes Deployment                            |
+| Bosh Stemcell    | Docker Image                                     |
+| Bosh Manifest    | Kubernetes Configmap & Yaml                      |
+| Bosh Errand      | Kubernetes Job                                   |
+| Bosh Task        | Kubernetes Event                                 |
+| Bosh Release     | Kubernetes Chart                                 |
+| Bosh Tile        | Kubernetes Helm                                  |
+| Bosh Ops manager | No related feature: UI to customize your service |
+| Bosh Director    | Kubernetes API server                            |
+| Bosh Agent       | Kubernetes Controllers In Worker VMs             |
+| Bosh Addon       |                                                  |
+
+See [[https://cheatsheet.dennyzhang.com/cheatsheet-bosh-a4][Bosh Cheatsheet]].
+
+*Pros Of Using Bosh*
+- Errand yaml: single entrypoint
+- Track all previous running history into DB
+- Daemon process and VM lifecyle management
+- Strict version control in all releases
+---------------------------------------------------------------------
+*Cons Of Using Bosh*
+- Time consuming to run errands
+#+BEGIN_EXAMPLE
+- provision VMs
+- Sequential
+#+END_EXAMPLE
+
+- Upfront investment
+#+BEGIN_EXAMPLE
+Hard to guess and debug: cut short, avoid extra wrapper layer
+#+END_EXAMPLE
+- Community is not big enough
+#+BEGIN_EXAMPLE
+- Documentation
+- Easy-to-follow Examples
+- Immature features: tail log
+#+END_EXAMPLE
+
+- Tile is usually very big. Slow to be distributed and tested
+
+More Reading: [[https://www.dennyzhang.com/kubernetes-logging][4 Challenges In Kubernetes Log Transport]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/pks/bosh"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/bosh
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+* notes                                                       :noexport:
+* useful link                                                      :noexport:
+https://banzaicloud.com/blog/container-vulnerability-scans/

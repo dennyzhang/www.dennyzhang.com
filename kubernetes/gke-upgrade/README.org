@@ -1,0 +1,276 @@
+* How GKE Upgrades Our Clusters                             :BLOG:Kubernetes:
+:PROPERTIES:
+:type:     Kubernetes, Cloud
+:END:
+---------------------------------------------------------------------
+How GKE upgrade our kubernetes clusters?
+---------------------------------------------------------------------
+Concepts
+- No master node maintainance
+- Upgrade node pool by node pool; mixed version
+- Downgrade for minor versions
+- Auto-upgrading nodes: https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-upgrades
+- Customize the upgrade timewindow
+
+Reviews:
+- cats vs cattles
+- experience downtime
+
+Upgrade Procedures:
+- Upgrade master node
+- Upgrade node pool for worker VMs: canary upgrade; node get rebooted
+---------------------------------------------------------------------
+[[How GKE Upgrades Our Clusters][https://cdn.dennyzhang.com/images/blog/work/vmware_pks.png]]
+
+What is PKS? [[https://pivotal.io/platform/pivotal-container-service][PKS]] is an enterprise Kubernetes solution from VMware and Pivotal.
+
+[[color:#c7254e][Interested in PKS job opportunities?]] Search PKS in [[https://vmware.rolepoint.com/?shorturl=qeEMe][this link]]. (Or contact [[https://www.dennyzhang.com/contact][Denny]] directly)
+
+More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kubectl cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-pks-a4][PKS cheatsheet]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/kubernetes/gke-upgrade"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/gke-upgrade
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+* TODO [#A] Blog: How GKE run upgrade?                             :noexport:
+https://cloud.google.com/kubernetes-engine/docs/how-to/upgrading-a-cluster?hl=en_US&_ga=2.6323186.-173569867.1539210129
+** DONE master node upgrade
+   CLOSED: [2018-10-17 Wed 15:38]
+** DONE Node pool upgrade: different machine flavors
+   CLOSED: [2018-10-17 Wed 15:38]
+** DONE sequentially upgrade?
+   CLOSED: [2018-10-17 Wed 15:36]
+** DONE Maintainance window for master node
+   CLOSED: [2018-10-17 Wed 15:38]
+** DONE Downtime to my workload: still downtime!
+   CLOSED: [2018-10-17 Wed 15:36]
+** DONE Upgrade for one node pool: sequential canary upgrade
+   CLOSED: [2018-10-17 Wed 15:43]
+cats vs cattles
+** DONE Node get rebooted
+   CLOSED: [2018-10-17 Wed 15:48]
+#+BEGIN_EXAMPLE
+   /Users/zdenny/Dropbox/private_data/work/vmware/code_community/hack-nimbus  gcloud compute ssh gke-cluster-1-default-pool-36da1c6a-6wx8                                                                                                                 master ✔  ✔ 0
+Warning: Permanently added 'compute.7963380298331850187' (ED25519) to the list of known hosts.
+
+Welcome to Kubernetes v1.10.7-gke.1!
+
+You can find documentation for Kubernetes at:
+  http://docs.kubernetes.io/
+
+The source for this release can be found at:
+  /home/kubernetes/kubernetes-src.tar.gz
+Or you can download it at:
+  https://storage.googleapis.com/kubernetes-release-gke/release/v1.10.7-gke.1/kubernetes-src.tar.gz
+
+It is based on the Kubernetes source at:
+  https://github.com/kubernetes/kubernetes/tree/v1.10.7-gke.1
+
+For Kubernetes copyright and licensing information, see:
+  /home/kubernetes/LICENSES
+
+zdenny@gke-cluster-1-default-pool-36da1c6a-6wx8 ~ $ uptime
+ 22:48:32 up 4 min,  1 user,  load average: 0.36, 0.45, 0.21
+#+END_EXAMPLE
+** DONE It supports downgrade among minor versions
+   CLOSED: [2018-10-17 Wed 16:09]
+** [#A] console output
+*** curl check
+#+BEGIN_EXAMPLE
+bash-3.2$ for((i=0; i< 1000; i++)); do { curl -I http://35.208.117.158/; date; sleep 1 ;}; done
+
+
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:34:53 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:34:54 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:34:55 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:34:56 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:34:57 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:34:58 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:00 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:01 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:02 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:03 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:04 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:05 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:06 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:07 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:08 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:09 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:10 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:12 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:13 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:14 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:15 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:16 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:17 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:18 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:19 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:20 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:21 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:22 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:24 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:25 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:26 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:27 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:28 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:29 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:30 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:31 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:32 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:33 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:34 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:36 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:37 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:38 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:39 PDT 2018
+curl: (7) Failed to connect to 35.208.117.158 port 80: Connection refused
+Wed Oct 17 15:35:40 PDT 2018
+HTTP/1.1 200 OK
+Date: Wed, 17 Oct 2018 22:36:16 GMT
+Server: Apache/2.4.25 (Debian)
+X-Powered-By: PHP/7.2.10
+Link: <http://35.188.54.97/wp-json/>; rel="https://api.w.org/"
+Content-Type: text/html; charset=UTF-8
+
+Wed Oct 17 15:36:17 PDT 2018
+HTTP/1.1 200 OK
+Date: Wed, 17 Oct 2018 22:36:18 GMT
+Server: Apache/2.4.25 (Debian)
+X-Powered-By: PHP/7.2.10
+Link: <http://35.188.54.97/wp-json/>; rel="https://api.w.org/"
+Content-Type: text/html; charset=UTF-8
+
+Wed Oct 17 15:36:18 PDT 2018
+HTTP/1.1 200 OK
+Date: Wed, 17 Oct 2018 22:36:19 GMT
+Server: Apache/2.4.25 (Debian)
+X-Powered-By: PHP/7.2.10
+Link: <http://35.188.54.97/wp-json/>; rel="https://api.w.org/"
+Content-Type: text/html; charset=UTF-8
+
+Wed Oct 17 15:36:19 PDT 2018
+HTTP/1.1 200 OK
+Date: Wed, 17 Oct 2018 22:36:20 GMT
+Server: Apache/2.4.25 (Debian)
+X-Powered-By: PHP/7.2.10
+Link: <http://35.188.54.97/wp-json/>; rel="https://api.w.org/"
+Content-Type: text/html; charset=UTF-8
+
+Wed Oct 17 15:36:20 PDT 2018
+HTTP/1.1 200 OK
+Date: Wed, 17 Oct 2018 22:36:21 GMT
+Server: Apache/2.4.25 (Debian)
+X-Powered-By: PHP/7.2.10
+Link: <http://35.188.54.97/wp-json/>; rel="https://api.w.org/"
+Content-Type: text/html; charset=UTF-8
+
+Wed Oct 17 15:36:21 PDT 2018
+HTTP/1.1 200 OK
+Date: Wed, 17 Oct 2018 22:36:22 GMT
+Server: Apache/2.4.25 (Debian)
+X-Powered-By: PHP/7.2.10
+Link: <http://35.188.54.97/wp-json/>; rel="https://api.w.org/"
+Content-Type: text/html; charset=UTF-8
+#+END_EXAMPLE
+*** node status
+#+BEGIN_EXAMPLE
+   /Users/zdenny/Dropbox/private_data/work/vmware/code_community/hack-nimbus  kubectl get nodes                                                                                                                                                           master ✔  ✔ 0
+NAME                                       STATUS                        ROLES     AGE       VERSION
+gke-cluster-1-default-pool-36da1c6a-4356   NotReady,SchedulingDisabled   <none>    2d        v1.10.7-gke.6
+gke-cluster-1-default-pool-36da1c6a-6wx8   Ready                         <none>    2d        v1.10.7-gke.6
+gke-cluster-1-pool-1-e95a10b3-jx2r         Ready                         <none>    31m       v1.10.7-gke.2
+
+   /Users/zdenny/Dropbox/private_data/work/vmware/code_community/hack-nimbus  kubectl get nodes                                                                                                                                                           master ✔  ✔ 0
+NAME                                       STATUS    ROLES     AGE       VERSION
+gke-cluster-1-default-pool-36da1c6a-6wx8   Ready     <none>    2d        v1.10.7-gke.6
+gke-cluster-1-pool-1-e95a10b3-jx2r         Ready     <none>    34m       v1.10.7-gke.2
+   /Users/zdenny/Dropbox/private_data/work/vmware/code_community/hack-nimbus  kubectl get nodes                                                                                                                                                           master ✔  ✔ 0
+NAME                                       STATUS    ROLES     AGE       VERSION
+gke-cluster-1-default-pool-36da1c6a-6wx8   Ready     <none>    2d        v1.10.7-gke.6
+gke-cluster-1-pool-1-e95a10b3-jx2r         Ready     <none>    34m       v1.10.7-gke.2
+
+   /Users/zdenny/Dropbox/private_data/work/vmware/code_community/hack-nimbus  kubectl get nodes                                                                                                                                                           master ✔  ✔ 0
+NAME                                       STATUS                     ROLES     AGE       VERSION
+gke-cluster-1-default-pool-36da1c6a-4356   Ready                      <none>    36s       v1.10.7-gke.1
+gke-cluster-1-default-pool-36da1c6a-6wx8   Ready,SchedulingDisabled   <none>    2d        v1.10.7-gke.6
+gke-cluster-1-pool-1-e95a10b3-jx2r         Ready                      <none>    35m       v1.10.7-gke.2
+
+   /Users/zdenny/Dropbox/private_data/work/vmware/code_community/hack-nimbus  kubectl get nodes                                                                                                                                                           master ✔  ✔ 0
+NAME                                       STATUS                        ROLES     AGE       VERSION
+gke-cluster-1-default-pool-36da1c6a-4356   Ready                         <none>    2m        v1.10.7-gke.1
+gke-cluster-1-default-pool-36da1c6a-6wx8   NotReady,SchedulingDisabled   <none>    2d        v1.10.7-gke.6
+gke-cluster-1-pool-1-e95a10b3-jx2r         Ready                         <none>    38m       v1.10.7-gke.2
+#+END_EXAMPLE
+** #  --8<-------------------------- separator ------------------------>8-- :noexport:
+** Extra cost?
+** kubectl unavailable?
+** useful link
+https://www.youtube.com/watch?v=YYpuvguAdOY
+

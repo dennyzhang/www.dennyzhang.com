@@ -1,0 +1,198 @@
+* Components Of Popular On-Prem Kubernetes                  :BLOG:Kubernetes:
+:PROPERTIES:
+:type:     Kubernetes, PKS
+:END:
+---------------------------------------------------------------------
+There are mulitple popular kubernetes solutions for On-prem envs in the market.
+
+To deep dive into the design and implementation of kubernetes
+---------------------------------------------------------------------
+** Key Components
+*** VM Virtualization
+| Solution                       | Summary                 |
+|--------------------------------+-------------------------|
+| [[https://cheatsheet.dennyzhang.com/cheatsheet-openshift-A4][Redhat OpenShift]]               | [[https://en.wikipedia.org/wiki/Kernel-based_Virtual_Machine][KVM]]                     |
+| [[https://cheatsheet.dennyzhang.com/cheatsheet-pks-A4][Pivotal Container Service(PKS)]] | [[https://en.wikipedia.org/wiki/VMware_vSphere][VMware vSphere]] + Others |
+| [[https://cheatsheet.dennyzhang.com/cheatsheet-rancher-A4][Rancher]]                        |                         |
+| Google GKE                     | GCP computing (KVM)     |
+*** Bare Metal
+| Solution  | Summary |
+|-----------+---------|
+| OpenShift |         |
+| PKS       |         |
+| Rancher   |         |
+| GKE       |         |
+*** Networking
+| Solution  | Summary                                   |
+|-----------+-------------------------------------------|
+| OpenShift |                                           |
+| PKS       | [[https://docs.vmware.com/en/VMware-NSX-T/2.2/com.vmware.nsxt.ncp_kubernetes.doc/GUID-52A92986-0FDF-43A5-A7BB-C037889F7559.html][VMware NSX-T]] (L4/L7 networking) + Flannel |
+| Rancher   |                                           |
+| GKE       | GCP networking (In-house solution)        |
+*** Storage
+ - Storage class for the persist volume of your container workloads.
+| Solution  | Summary                        |
+|-----------+--------------------------------|
+| OpenShift | [[https://docs.gluster.org/en/latest/][Gluster]]/[[https://ceph.com/][Ceph]]                   |
+| PKS       | [[https://docs.vmware.com/en/VMware-vSAN/index.html][VMware vSAN]] (Object storage)   |
+| Rancher   | [[https://github.com/rancher/longhorn][longhorn]] (Block storage)       |
+| GKE       | GKE volume (In-house solution) |
+** VM
+*** VM Distro
+| Solution  | Summary                                              |
+|-----------+------------------------------------------------------|
+| OpenShift |                                                      |
+| PKS       | [[https://bosh.cloudfoundry.org/stemcells/][CloudFoundry Stemcell]]: Ubuntu + Others in the future |
+| Rancher   | [[https://github.com/rancher/os][Rancher OS]]                                           |
+| GKE       | [[https://cloud.google.com/container-optimized-os/docs/][Container-Optimized OS from Google]]                   |
+*** VM Lifecycle Management
+| Solution  | Summary           |
+|-----------+-------------------|
+| OpenShift | Ansible           |
+| PKS       | [[https://bosh.io/docs/][CloudFoundry Bosh]] |
+| Rancher   |                   |
+| GKE       |                   |
+*** Kubernetes Packaging
+| Solution  | Summary           |
+|-----------+-------------------|
+| OpenShift |                   |
+| PKS       | [[https://docs-cfcr.cfapps.io/][CloudFoundry CFCR]] |
+| Rancher   |                   |
+| GKE       |                   |
+** Management
+*** Kubernetes Federation/Multi-Cloud
+| Solution  | Summary |
+|-----------+---------|
+| OpenShift |         |
+| PKS       |         |
+| Rancher   |         |
+| GKE       |         |
+*** Security
+| Solution  | Summary          |
+|-----------+------------------|
+| OpenShift |                  |
+| PKS       | [[https://github.com/cloudfoundry/uaa][CloudFoundry UAA]] |
+| Rancher   |                  |
+| GKE       |                  |
+*** Monitoring
+| Solution  | Summary                   |
+|-----------+---------------------------|
+| OpenShift |                           |
+| PKS       | [[https://www.youtube.com/watch?v=NAOUUSr9HDU&t=9s][VMware Wavefront]] + Others |
+| Rancher   |                           |
+| GKE       |                           |
+*** Logging
+| Solution  | Summary                    |
+|-----------+----------------------------|
+| OpenShift | EFK                        |
+| PKS       | [[https://www.youtube.com/watch?v=h_99uAgopAQ&t=2s][VMware LogInsight]] + Others |
+| Rancher   | EFK                        |
+| GKE       | Fluentd/stackdriver        |
+** Workload
+*** Catalog/Marketplace
+| Solution  | Summary              |
+|-----------+----------------------|
+| OpenShift |                      |
+| PKS       | N/A in current phase |
+| Rancher   | [[https://helm.sh/][helm]]                 |
+| GKE       | [[https://github.com/GoogleCloudPlatform/click-to-deploy][click-to-deploy]]      |
+*** Image Registration
+| Solution  | Summary       |
+|-----------+---------------|
+| OpenShift |               |
+| PKS       | [[https://github.com/goharbor/harbor][VMware Harbor]] |
+| Rancher   |               |
+| GKE       |               |
+** Developer Efficiency
+*** Bootstrap developer
+| Solution  | Summary              |
+|-----------+----------------------|
+| OpenShift | [[https://docs.okd.io/latest/minishift/getting-started/quickstart.html][Minishift]]            |
+| PKS       | N/A in current phase |
+| Rancher   | vagrant              |
+| GKE       |                      |
+
+*** Pipeline
+| Solution  | Summary                                |
+|-----------+----------------------------------------|
+| OpenShift | [[https://jenkins.io/][Jenkins]], Projects, Build, Applications |
+| PKS       | N/A in current phase                   |
+| Rancher   |                                        |
+| GKE       |                                        |
+** Misc
+*** Control Plane HA
+| Solution  | Summary |
+|-----------+---------|
+| OpenShift |         |
+| PKS       |         |
+| Rancher   |         |
+| GKE       |         |
+** Networking                                                      :noexport:
+| Solution  | Summary |
+|-----------+---------|
+| OpenShift |         |
+| PKS       |         |
+| Rancher   |         |
+| GKE       |         |
+** Networking
+| Solution  | Summary |
+|-----------+---------|
+| OpenShift |         |
+| PKS       |         |
+| Rancher   |         |
+| GKE       |         |
+
+---------------------------------------------------------------------
+What is PKS? [[https://pivotal.io/platform/pivotal-container-service][PKS]] is an enterprise Kubernetes solution from VMware and Pivotal.
+
+[[color:#c7254e][Interested in PKS job opportunities?]] Search PKS in [[https://vmware.rolepoint.com/?shorturl=qeEMe][this link]]. (Or contact me directly)
+
+[[https://vmware.rolepoint.com/?shorturl=qeEMe][https://cdn.dennyzhang.com/images/blog/work/vmware_pks.png]]
+
+More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kubectl cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-pks-A4][pks cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-openshift-A4][openshift cheatsheet]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/kubernetes/kubernetes-components"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/kubernetes-components
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION:
+#+KEYWORDS:
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:
+#+LINK_HOME:
+* useful link                                                      :noexport:
+https://banzaicloud.com/blog/k8s-logging-advanced/
+
+google doc:
+https://docs.google.com/document/d/1HvMHCMi0uydnCWTLxKlSyI1304jGwp8R9Jrm1WC2htw/edit
+* TODO Diagram: the high level pictures                            :noexport:
+* TODO Diagram: divide the functionalities                         :noexport:
+* TODO doc: Finish existing blanks                                 :noexport:
+* TODO doc: Check whether we have more to add                      :noexport:
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
+* Blog: Concepts Unique Per Vendors                                :noexport:
+| Solution  | Summary                                                   |
+|-----------+-----------------------------------------------------------|
+| OpenShift | Build                                                     |
+| PKS       | [[https://docs.pivotal.io/runtimes/pks/1-2/create-sinks.html][Log sink]]                                                  |
+| Rancher   | Nodedriver, node template; Launch kubectl from webconsole |
+| GKE       | Node pool                                                 |
