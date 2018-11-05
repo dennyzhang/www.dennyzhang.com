@@ -9,7 +9,7 @@ In this post, we try to compare the popular ones.
 
 I might want to *deep dive* into a certain area for the solution you have chosen. Then you can also use this post *as a reference*.
 
-[[Things To Check, When Using Public Kubernetes Services][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-public/kubernetes-public.png]]
+[[Things To Check, When Using Public Kubernetes Services][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-public/public-kubernetes.png]]
 ---------------------------------------------------------------------
 ** Automatic upgrades
 Generally speaking, we can't manage master nodes. And you don't manage the servers
