@@ -9,7 +9,7 @@ In this post, we try to compare the popular ones.
 
 I might want to *deep dive* into a certain area for the solution you have chosen. Then you can also use this post *as a reference*.
 
-[[Things To Check, When Using Public Kubernetes Services][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-public/public-kubernetes-service.png]]
+[[Things To Check, When Using Public Kubernetes Services][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-public/kubernetes-public.png]]
 ---------------------------------------------------------------------
 ** Automatic upgrades
 Generally speaking, we can't manage master nodes. And you don't manage the servers
@@ -17,7 +17,6 @@ Generally speaking, we can't manage master nodes. And you don't manage the serve
 ** Network security
 ** #  --8<-------------------------- separator ------------------------>8-- :noexport:
 ** What if my worker vm goes down?
-** Why I'm interested: simplicity and cost-effective
 ** What I should manage? And What I can manage?
 ** How fast it takes for my usual operations
 Create pod
@@ -29,7 +28,7 @@ Create external service
 - loadbalancing, computing
 ** #  --8<-------------------------- separator ------------------------>8-- :noexport:
 ** Add-on Features
-** Basic Usage
+** Basic Usage                                                     :noexport:
 #+BEGIN_EXAMPLE
    /Users/zdenny/Dropbox/private_data/work/vmware/code/pks-ci/ci  kubectl get cs --kubeconfig ~/Downloads/k8s-1-12-1-do-2-nyc1-1541178435479-kubeconfig.yaml                               vrops-ci ✔  ✔ 0
 NAME                 STATUS    MESSAGE             ERROR
@@ -152,7 +151,6 @@ Blog URL: https://www.dennyzhang.com/kubernetes-components
 #+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
 #+LINK_UP:
 #+LINK_HOME:
-* useful link
+* useful link                                                      :noexport:
 https://thenewstack.io/tutorial-run-multi-node-kubernetes-cluster-digitalocean/
 https://news.ycombinator.com/item?id=16976505
-
