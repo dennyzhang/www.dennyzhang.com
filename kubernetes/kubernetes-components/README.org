@@ -3,9 +3,11 @@
 :type:     Kubernetes, PKS
 :END:
 ---------------------------------------------------------------------
-There are mulitple popular kubernetes solutions for On-prem envs in the market.
+Nowadays kubernetes is super hot for sure. If you need to setup on-prem kubernetes environments, there are a few options on the market.
 
-To deep dive into the design and implementation of kubernetes
+In this post, we try to compare the popular ones.
+
+I might want to *deep dive* into a certain area for the solution you have chosen. Then you can also use this post *as a reference*.
 
 [[Components Of Popular On-Prem Kubernetes][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-components/kubernetes-onprem.png]]
 ---------------------------------------------------------------------
@@ -25,28 +27,28 @@ To deep dive into the design and implementation of kubernetes
 | Rancher   |         |
 | GKE       |         |
 *** Networking
-| Solution  | Summary                                   |
-|-----------+-------------------------------------------|
-| OpenShift |                                           |
-| PKS       | [[https://docs.vmware.com/en/VMware-NSX-T/2.2/com.vmware.nsxt.ncp_kubernetes.doc/GUID-52A92986-0FDF-43A5-A7BB-C037889F7559.html][VMware NSX-T]] (L4/L7 networking) + Flannel |
-| Rancher   |                                           |
-| GKE       | GCP networking (In-house solution)        |
+| Solution  | Summary                                           |
+|-----------+---------------------------------------------------|
+| OpenShift |                                                   |
+| PKS       | [[https://docs.vmware.com/en/VMware-NSX-T/2.2/com.vmware.nsxt.ncp_kubernetes.doc/GUID-52A92986-0FDF-43A5-A7BB-C037889F7559.html][VMware NSX-T]] (L4/L7 networking) + [[https://github.com/coreos/flannel][GitHub: Flannel]] |
+| Rancher   |                                                   |
+| GKE       | GCP networking (In-house solution)                |
 *** Storage
  - Storage class for the persist volume of your container workloads.
-| Solution  | Summary                        |
-|-----------+--------------------------------|
-| OpenShift | [[https://docs.gluster.org/en/latest/][Gluster]]/[[https://ceph.com/][Ceph]]                   |
-| PKS       | [[https://docs.vmware.com/en/VMware-vSAN/index.html][VMware vSAN]] (Object storage)   |
-| Rancher   | [[https://github.com/rancher/longhorn][longhorn]] (Block storage)       |
-| GKE       | GKE volume (In-house solution) |
+| Solution  | Summary                                        |
+|-----------+------------------------------------------------|
+| OpenShift | [[https://docs.gluster.org/en/latest/][Gluster]]/[[https://ceph.com/][Ceph]] (Object/Block/Filesystem Storage) |
+| PKS       | [[https://en.wikipedia.org/wiki/VMDK][VMDK]]/[[https://docs.vmware.com/en/VMware-vSAN/index.html][VMware vSAN]] (Object storage)              |
+| Rancher   | [[https://github.com/rancher/longhorn][GitHub: longhorn]] (Block storage)               |
+| GKE       | GKE volume (In-house solution)                 |
 ** VM
 *** VM Distro
 | Solution  | Summary                                              |
 |-----------+------------------------------------------------------|
 | OpenShift |                                                      |
 | PKS       | [[https://bosh.cloudfoundry.org/stemcells/][CloudFoundry Stemcell]]: Ubuntu + Others in the future |
-| Rancher   | [[https://github.com/rancher/os][Rancher OS]]                                           |
-| GKE       | [[https://cloud.google.com/container-optimized-os/docs/][Container-Optimized OS from Google]]                   |
+| Rancher   | [[https://github.com/rancher/os][GitHub: Rancher OS]]                                   |
+| GKE       | [[https://cloud.google.com/container-optimized-os/docs/][Google Container-Optimized OS]]                        |
 *** VM Lifecycle Management
 | Solution  | Summary           |
 |-----------+-------------------|
@@ -54,7 +56,7 @@ To deep dive into the design and implementation of kubernetes
 | PKS       | [[https://bosh.io/docs/][CloudFoundry Bosh]] |
 | Rancher   |                   |
 | GKE       |                   |
-*** Kubernetes Packaging
+*** Kubernetes Distribution
 | Solution  | Summary           |
 |-----------+-------------------|
 | OpenShift |                   |
@@ -70,12 +72,12 @@ To deep dive into the design and implementation of kubernetes
 | Rancher   |         |
 | GKE       |         |
 *** Security
-| Solution  | Summary          |
-|-----------+------------------|
-| OpenShift |                  |
-| PKS       | [[https://github.com/cloudfoundry/uaa][CloudFoundry UAA]] |
-| Rancher   |                  |
-| GKE       |                  |
+| Solution  | Summary                  |
+|-----------+--------------------------|
+| OpenShift |                          |
+| PKS       | [[https://github.com/cloudfoundry/uaa][GitHub: CloudFoundry UAA]] |
+| Rancher   |                          |
+| GKE       |                          |
 *** Monitoring
 | Solution  | Summary                   |
 |-----------+---------------------------|
@@ -92,24 +94,24 @@ To deep dive into the design and implementation of kubernetes
 | GKE       | Fluentd/stackdriver        |
 ** Workload
 *** Catalog/Marketplace
-| Solution  | Summary              |
-|-----------+----------------------|
-| OpenShift |                      |
-| PKS       | N/A in current phase |
-| Rancher   | [[https://helm.sh/][helm]]                 |
-| GKE       | [[https://github.com/GoogleCloudPlatform/click-to-deploy][click-to-deploy]]      |
+| Solution  | Summary                 |
+|-----------+-------------------------|
+| OpenShift |                         |
+| PKS       | N/A in current phase    |
+| Rancher   | [[https://helm.sh/][GitHub: helm]]            |
+| GKE       | [[https://github.com/GoogleCloudPlatform/click-to-deploy][GitHub: click-to-deploy]] |
 *** Image Registration
-| Solution  | Summary       |
-|-----------+---------------|
-| OpenShift |               |
-| PKS       | [[https://github.com/goharbor/harbor][VMware Harbor]] |
-| Rancher   |               |
-| GKE       |               |
+| Solution  | Summary                          |
+|-----------+----------------------------------|
+| OpenShift | [[https://github.com/openshift/image-registry][GitHub: openshift/image-registry]] |
+| PKS       | [[https://github.com/goharbor/harbor][GitHub: VMware Harbor]]            |
+| Rancher   |                                  |
+| GKE       |                                  |
 ** Developer Efficiency
 *** Bootstrap developer
 | Solution  | Summary              |
 |-----------+----------------------|
-| OpenShift | [[https://docs.okd.io/latest/minishift/getting-started/quickstart.html][Minishift]]            |
+| OpenShift | [[https://cheatsheet.dennyzhang.com/cheatsheet-minishift-A4][Minishift]]            |
 | PKS       | N/A in current phase |
 | Rancher   | vagrant              |
 | GKE       |                      |
@@ -181,17 +183,11 @@ Blog URL: https://www.dennyzhang.com/kubernetes-components
 #+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
 #+LINK_UP:
 #+LINK_HOME:
-* useful link                                                      :noexport:
-https://banzaicloud.com/blog/k8s-logging-advanced/
-
-google doc:
-https://docs.google.com/document/d/1HvMHCMi0uydnCWTLxKlSyI1304jGwp8R9Jrm1WC2htw/edit
-* TODO Diagram: the high level pictures                            :noexport:
 * TODO Diagram: divide the functionalities                         :noexport:
 * TODO doc: Finish existing blanks                                 :noexport:
 * TODO doc: Check whether we have more to add                      :noexport:
 * #  --8<-------------------------- separator ------------------------>8-- :noexport:
-* Blog: Concepts Unique Per Vendors                                :noexport:
+* TODO Blog: Concepts Unique Per Vendors                           :noexport:
 | Solution  | Summary                                                   |
 |-----------+-----------------------------------------------------------|
 | OpenShift | Build                                                     |

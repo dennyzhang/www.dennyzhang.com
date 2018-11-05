@@ -1,8 +1,7 @@
 * Case Study For Chef: chef-study in GitHub                    :BLOG:General:
 :PROPERTIES:
-:type:   DevOps,Chef,Study
+:type:   DevOps,Chef
 :END:
-
 ---------------------------------------------------------------------
 Attentions, *Chef Users*. I've exported my Chef experience to GitHub.
 

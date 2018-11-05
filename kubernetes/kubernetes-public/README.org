@@ -1,0 +1,158 @@
+* Things To Check, When Using Public Kubernetes Services    :BLOG:Kubernetes:
+:PROPERTIES:
+:type:     Kubernetes, PKS
+:END:
+---------------------------------------------------------------------
+Nowadays kubernetes is super hot for sure. If you need to setup on-prem kubernetes environments, there are a few options on the market.
+
+In this post, we try to compare the popular ones.
+
+I might want to *deep dive* into a certain area for the solution you have chosen. Then you can also use this post *as a reference*.
+
+[[Things To Check, When Using Public Kubernetes Services][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-public/public-kubernetes-service.png]]
+---------------------------------------------------------------------
+** Automatic upgrades
+Generally speaking, we can't manage master nodes. And you don't manage the servers
+** Rack-awareness deployment
+** Network security
+** #  --8<-------------------------- separator ------------------------>8-- :noexport:
+** What if my worker vm goes down?
+** Why I'm interested: simplicity and cost-effective
+** What I should manage? And What I can manage?
+** How fast it takes for my usual operations
+Create pod
+Create external service
+** Key features
+- Volumes
+** Risks & Changes
+** How much it cost?
+- loadbalancing, computing
+** #  --8<-------------------------- separator ------------------------>8-- :noexport:
+** Add-on Features
+** Basic Usage
+#+BEGIN_EXAMPLE
+   /Users/zdenny/Dropbox/private_data/work/vmware/code/pks-ci/ci  kubectl get cs --kubeconfig ~/Downloads/k8s-1-12-1-do-2-nyc1-1541178435479-kubeconfig.yaml                               vrops-ci ✔  ✔ 0
+NAME                 STATUS    MESSAGE             ERROR
+controller-manager   Healthy   ok
+scheduler            Healthy   ok
+etcd-0               Healthy   {"health":"true"}
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+   /Users/zdenny/Dropbox/private_data/work/vmware/code/pks-ci/ci  kubectl --kubeconfig ~/Downloads/k8s-1-12-1-do-2-nyc1-1541178435479-kubeconfig.yaml get all --all-namespaces -o wide     vrops-ci ✔  ✔ 0
+NAMESPACE     NAME                                    READY     STATUS    RESTARTS   AGE       IP               NODE                     NOMINATED NODE
+kube-system   pod/csi-do-controller-0                 3/3       Running   0          5m37s     10.244.62.2      objective-haslett-414    <none>
+kube-system   pod/csi-do-node-l4sz6                   2/2       Running   0          5m25s     10.136.144.174   objective-haslett-414    <none>
+kube-system   pod/csi-do-node-xd55s                   2/2       Running   0          5m23s     10.136.143.180   objective-haslett-41h    <none>
+kube-system   pod/csi-do-node-xnq8v                   2/2       Running   0          5m5s      10.136.144.19    optimistic-hawking-41i   <none>
+kube-system   pod/kube-dns-55cf9576c4-nxzfx           3/3       Running   0          5m37s     10.244.62.3      objective-haslett-414    <none>
+kube-system   pod/kube-proxy-objective-haslett-414    1/1       Running   1          5m29s     10.136.144.174   objective-haslett-414    <none>
+kube-system   pod/kube-proxy-objective-haslett-41h    1/1       Running   1          5m28s     10.136.143.180   objective-haslett-41h    <none>
+kube-system   pod/kube-proxy-optimistic-hawking-41i   1/1       Running   0          5m7s      10.136.144.19    optimistic-hawking-41i   <none>
+
+NAMESPACE     NAME                 TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)         AGE       SELECTOR
+default       service/kubernetes   ClusterIP   10.245.0.1    <none>        443/TCP         5m51s     <none>
+kube-system   service/kube-dns     ClusterIP   10.245.0.10   <none>        53/UDP,53/TCP   5m47s     k8s-app=kube-dns
+
+NAMESPACE     NAME                         DESIRED   CURRENT   READY     UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE       CONTAINERS                       IMAGES                                                                     SELECTOR
+kube-system   daemonset.apps/csi-do-node   3         3         3         3            3           <none>          5m48s     driver-registrar,csi-do-plugin   quay.io/k8scsi/driver-registrar:v0.4.1,digitalocean/do-csi-plugin:v0.3.1   app=csi-do-node
+
+NAMESPACE     NAME                       DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE       CONTAINERS                IMAGES                                                                                                                                                                     SELECTOR
+kube-system   deployment.apps/kube-dns   1         1         1            1           5m47s     kubedns,dnsmasq,sidecar   gcr.io/google_containers/k8s-dns-kube-dns-amd64:1.14.7,gcr.io/google_containers/k8s-dns-dnsmasq-nanny-amd64:1.14.7,gcr.io/google_containers/k8s-dns-sidecar-amd64:1.14.7   k8s-app=kube-dns
+
+NAMESPACE     NAME                                  DESIRED   CURRENT   READY     AGE       CONTAINERS                IMAGES                                                                                                                                                                     SELECTOR
+kube-system   replicaset.apps/kube-dns-55cf9576c4   1         1         1         5m37s     kubedns,dnsmasq,sidecar   gcr.io/google_containers/k8s-dns-kube-dns-amd64:1.14.7,gcr.io/google_containers/k8s-dns-dnsmasq-nanny-amd64:1.14.7,gcr.io/google_containers/k8s-dns-sidecar-amd64:1.14.7   k8s-app=kube-dns,pod-template-hash=55cf9576c4
+
+NAMESPACE     NAME                                 DESIRED   CURRENT   AGE       CONTAINERS                                   IMAGES
+kube-system   statefulset.apps/csi-do-controller   1         1         5m50s     csi-provisioner,csi-attacher,csi-do-plugin   quay.io/k8scsi/csi-provisioner:v0.4.1,quay.io/k8scsi/csi-attacher:v0.4.1,digitalocean/do-csi-plugin:v0.3.1
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+   /Users/zdenny/Dropbox/git_code/cheatsheet.dennyzhang.com/kubernetes-yaml-templates  kubectl --kubeconfig ~/Downloads/k8s-1-12-1-do-2-nyc1-1541178435479-kubeconfig.yaml apply -f pod/pod-dummy.yaml
+pod/dummy created
+
+   /Users/zdenny/Dropbox/git_code/cheatsheet.dennyzhang.com/kubernetes-yaml-templates  kubectl --kubeconfig ~/Downloads/k8s-1-12-1-do-2-nyc1-1541178435479-kubeconfig.yaml get pods          master ✔  ✔ 0
+NAME      READY     STATUS    RESTARTS   AGE
+dummy     1/1       Running   0          6s
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+   /Users/zdenny/Dropbox/git_code/cheatsheet.dennyzhang.com/kubernetes-yaml-templates   kubectl --kubeconfig ~/Downloads/k8s-1-12-1-do-2-nyc1-1541178435479-kubeconfig.yaml get svc          master ✔  ✘ 1
+NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+kubernetes              ClusterIP   10.245.0.1      <none>        443/TCP        11m
+my-nodeport-wordpress   NodePort    10.245.94.252   <none>        80:30036/TCP   20s
+
+   /Users/zdenny/Dropbox/git_code/cheatsheet.dennyzhang.com/kubernetes-yaml-templates   kubectl --kubeconfig ~/Downloads/k8s-1-12-1-do-2-nyc1-1541178435479-kubeconfig.yaml patch svc my-nodeport-wordpress -p '{"spec": {"type": "LoadBalancer"}}'
+service/my-nodeport-wordpress patched
+ /Users/zdenny/Dropbox/git_code/cheatsheet.dennyzhang.com/kubernetes-yaml-templates  kubectl --kubeconfig ~/Downloads/k8s-1-12-1-do-2-nyc1-1541178435479-kubeconfig.yaml get svc           master ✔  ✔ 0
+NAME                    TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+kubernetes              ClusterIP      10.245.0.1      <none>        443/TCP        12m
+my-nodeport-wordpress   LoadBalancer   10.245.94.252   <pending>     80:30036/TCP   56s
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+   /Users/zdenny/Dropbox/git_code/cheatsheet.dennyzhang.com/kubernetes-yaml-templates  kubectl --kubeconfig ~/Downloads/k8s-1-12-1-do-2-nyc1-1541178435479-kubeconfig.yaml get storageclass
+NAME                         PROVISIONER                 AGE
+do-block-storage (default)   dobs.csi.digitalocean.com   14m
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+   /Users/zdenny/Dropbox/git_code/cheatsheet.dennyzhang.com/kubernetes-yaml-templates  kubectl --kubeconfig ~/Downloads/k8s-1-12-1-do-2-nyc1-1541178435479-kubeconfig.yaml get crd           master ✔  ✔ 0
+NAME                              CREATED AT
+csidrivers.csi.storage.k8s.io     2018-11-02T17:12:12Z
+csinodeinfos.csi.storage.k8s.io   2018-11-02T17:12:12Z
+#+END_EXAMPLE
+
+#+BEGIN_EXAMPLE
+   /Users/zdenny/Dropbox/git_code/cheatsheet.dennyzhang.com/kubernetes-yaml-templates  kubectl --kubeconfig ~/Downloads/k8s-1-12-1-do-2-nyc1-1541178435479-kubeconfig.yaml get pv          master ✘ ✭  ✘ 1
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS    CLAIM             STORAGECLASS       REASON    AGE
+pvc-0d3d3793-dec6-11e8-8d65-4a21fc2b88a8   5Gi        RWO            Delete           Bound     default/csi-pvc   do-block-storage             41s
+#+END_EXAMPLE
+** Weakness
+- anti-affinity: rack/az
+- maintainance of worker nodes
+** Review
+- Can't see the master nodes
+- Newer version
+- Node pool: allocation of node pool
+- No spot instance
+- Node pool maintanance
+- How big the footprint is? Add-on feature: logging, heapster, metrics; csi-do-controller and csi-do-node
+- networking
+- storage
+
+
+More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kubectl cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-pks-A4][pks cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-openshift-A4][openshift cheatsheet]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/kubernetes/kubernetes-components"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/kubernetes-components
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION:
+#+KEYWORDS:
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:
+#+LINK_HOME:
+* useful link
+https://thenewstack.io/tutorial-run-multi-node-kubernetes-cluster-digitalocean/
+https://news.ycombinator.com/item?id=16976505
+
