@@ -1,34 +1,96 @@
-* Things To Check, When Using Public Kubernetes Services    :BLOG:Kubernetes:
+* Thinkings About Public Cloud Kubernetes                   :BLOG:Kubernetes:
 :PROPERTIES:
-:type:     Kubernetes, PKS
+:type:     Kubernetes, Cloud
 :END:
 ---------------------------------------------------------------------
-Nowadays kubernetes is super hot for sure. If you need to setup on-prem kubernetes environments, there are a few options on the market.
+*Kubernetes as a service*? Working in public cloud, you probably hear more and more news about it. Right?
 
-In this post, we try to compare the popular ones.
+So many choices? What are things we need to be aware of, before I need to suggest one to my project? Here are things I usually examine. Discuss with me, if you're also interested.
 
-I might want to *deep dive* into a certain area for the solution you have chosen. Then you can also use this post *as a reference*.
-
-[[Things To Check, When Using Public Kubernetes Services][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-public/public-kubernetes.png]]
+[[Thinkings About Public Cloud Kubernetes][https://raw.githubusercontent.com/dennyzhang/www.dennyzhang.com/master/kubernetes/kubernetes-public/public-kubernetes.png]]
 ---------------------------------------------------------------------
-** Automatic upgrades
-Generally speaking, we can't manage master nodes. And you don't manage the servers
-** Rack-awareness deployment
-** Network security
-** #  --8<-------------------------- separator ------------------------>8-- :noexport:
-** What if my worker vm goes down?
-** What I should manage? And What I can manage?
-** How fast it takes for my usual operations
-Create pod
-Create external service
-** Key features
-- Volumes
-** Risks & Changes
+Apparently Google GKE in the leading role of public kubernetes market. And several key competitors like [[https://aws.amazon.com/eks/][Amazon EKS]], [[https://azure.microsoft.com/en-us/blog/introducing-azure-container-service-aks-managed-kubernetes-and-azure-container-registry-geo-replication/][Azure AKS]], [[https://m.do.co/t/dab249326995][Digitalocean DKS]], or others(you name it).
+
+Which one to choose for my project, if I want to host my workload as containers in public cloud?
+
+The good news is most competitors are providing or will provide similar features like GKE. So they will look more and more similar. That's why people call it [[color:#c7254e][cloud native]].
+
+But they may not be the same. Two reasons. It takes time to match up. Besides different player may have [[color:#c7254e][different strategies]]. This would make the game even more interesting!
+
+Comparing to on-prem envs, running in public cloud is [[color:#c7254e][different by nature]]. There are things we need to be aware up-front.
+
+Here are considerations I will seriously look into.
+** Basic
+- Invisible kubernetes master nodes
+- Node pools
+** Automatic upgrades?
+In GKE, here are the default behaviors:
+1. The platform maintain the availablity of k8s master nodes. As customers, we don't pay for master nodes.
+- We trigger master nodes upgrade. Or we can even downgrade for minor versions.
+- We trigger worker nodes upgrade with the batch of node pools.
+
+Some kubernetes services may don't expose this flexiblity to you. The platform does the upgrade with their schedule.
+
+Why it matters?
+
+1. From version to version, kubernetes upstream may have [[color:#c7254e][breaking changes]]. Automatic bumping either k8s master version or worker version may not be a good idea, if you want to maintain SLA for your applications.
+- Maintainance or changes of platform happens in your bussiness hours could be harmful, generally speaking.
+** Performance for key operations?
+How fast it takes to create a pod? A loadbalancer service? A Volume?
+
+And how fast it takes to delete a service? A namespace?
+** Rack-awareness deployment?
+Anti-affinity can be applied to both VM and rack level.
+
+Kubernetes services for different regions or different zones? Why it matters?
+
+Thus we can avoid SPOF for not only VMs and racks. Different AZs would be good enough to acheive different racks deployment.
+** VM auto healing
+What if my worker VMs go down or being hijacked somehow?
+
+GKE owns "VM lifecycle management". And you manage "Container lifecycle management"
+** What scale my deployment would grow?
+Platform API may hang
 ** How much it cost?
-- loadbalancing, computing
-** #  --8<-------------------------- separator ------------------------>8-- :noexport:
+Usually computing resource, loadbalancing and network traffic are main factors for our cloud bills.
+
+Use spot instance to save cost?
+
+How big the footprint is? 300MB from GKE worker vms.
+** Built-in security benefits?
+Docker image security: image sign & image scan.
+
+Network security, instead of carefully manipulating iptables.
 ** Add-on Features
-** Basic Usage                                                     :noexport:
+Catalog/marketplace
+
+Namespace multi-tenancy
+
+Logging & Monitoring: Google stackdriver
+
+Metrics: heapster
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION:
+#+KEYWORDS:
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:
+#+LINK_HOME:
+* useful link                                                      :noexport:
+https://thenewstack.io/tutorial-run-multi-node-kubernetes-cluster-digitalocean/
+https://news.ycombinator.com/item?id=16976505
+* TODO Draw a diagram for the high level architecture              :noexport:
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
+* TODO [#A] try EKS for bare metal                                 :noexport:
+* TODO GKE different AZ (region/zones) deployment                  :noexport:
+* GKE Basic Usage                                                  :noexport:
 #+BEGIN_EXAMPLE
    /Users/zdenny/Dropbox/private_data/work/vmware/code/pks-ci/ci  kubectl get cs --kubeconfig ~/Downloads/k8s-1-12-1-do-2-nyc1-1541178435479-kubeconfig.yaml                               vrops-ci ✔  ✔ 0
 NAME                 STATUS    MESSAGE             ERROR
@@ -107,18 +169,10 @@ csinodeinfos.csi.storage.k8s.io   2018-11-02T17:12:12Z
 NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS    CLAIM             STORAGECLASS       REASON    AGE
 pvc-0d3d3793-dec6-11e8-8d65-4a21fc2b88a8   5Gi        RWO            Delete           Bound     default/csi-pvc   do-block-storage             41s
 #+END_EXAMPLE
-** Weakness
-- anti-affinity: rack/az
-- maintainance of worker nodes
-** Review
-- Can't see the master nodes
-- Newer version
-- Node pool: allocation of node pool
-- No spot instance
-- Node pool maintanance
-- How big the footprint is? Add-on feature: logging, heapster, metrics; csi-do-controller and csi-do-node
-- networking
-- storage
+
+
+
+
 
 
 More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kubectl cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-pks-A4][pks cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-openshift-A4][openshift cheatsheet]]
@@ -136,21 +190,5 @@ More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kube
 <a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
 #+END_HTML
 
-Blog URL: https://www.dennyzhang.com/kubernetes-components
-* org-mode configuration                                           :noexport:
-#+STARTUP: overview customtime noalign logdone showall
-#+DESCRIPTION:
-#+KEYWORDS:
-#+AUTHOR: Denny Zhang
-#+EMAIL:  denny@dennyzhang.com
-#+TAGS: noexport(n)
-#+PRIORITIES: A D C
-#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
-#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
-#+EXPORT_EXCLUDE_TAGS: exclude noexport
-#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
-#+LINK_UP:
-#+LINK_HOME:
-* useful link                                                      :noexport:
-https://thenewstack.io/tutorial-run-multi-node-kubernetes-cluster-digitalocean/
-https://news.ycombinator.com/item?id=16976505
+Blog URL: https://www.dennyzhang.com/kubernetes-public
+
