@@ -68,6 +68,7 @@ https://www.dennyzhang.com/wp-content/uploads/2014/04//blog_motto.gif
 - Experience is what you get when you didn't get what you wanted
 - Some people want to get rich and famous, but I want to get real and get deep.
 ** Work
+- Doing more with the same. Not good enough!
 - There are only two ways to influence human behavior: you can manipulate or inspire it - Simon Sinek
 - Engading: If anyone can XXX, I'm all ears.
 - Assignment: Package tasks into theme
@@ -473,7 +474,7 @@ https://www.dennyzhang.com/wp-content/uploads/2014/04//blog_motto.gif
 <div id="the whole thing" style="overflow: hidden;">
 <div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
 <div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
-<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/slack.png" alt="slack"/></a></div>
 </div>
 
 <br/><br/>
