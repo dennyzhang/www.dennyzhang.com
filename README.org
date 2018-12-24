@@ -26,6 +26,50 @@ File me [[https://github.com/DennyZhang/www.dennyzhang.com/issues][Issues]] or s
  <a href="https://github.com/DennyZhang"><img align="bottom"src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a>
  <a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img align="bottom" src="https://www.dennyzhang.com/wp-content/uploads/sns/slack.png" alt="slack"/></a>
  #+END_HTML
+* DevOps Contact                                                  :BLOG:Page:
+:PROPERTIES:
+:type:     Ads
+:END:
+---------------------------------------------------------------------
+*Denny*: A DevOps Guy & Blogger
+
+[[slack:slack][slack]] [[image-linkedin:LinkedIn][https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png]] [[github:DennyZhang][GitHub]]
+---------------------------------------------------------------------
+[[image-blog:Contact][https://www.dennyzhang.com/wp-content/themes/portfolio-press/images/denny_201706.png]]
+
+I'm Denny Zhang. A tech guy. Welcome to my DevOps blog!
+
+My biggest hobby is continuous improvement. Both at work and at home. What are yours?
+
+Turning to my mid 30s, I enjoy being useful. Sometimes I'm also worried. Aligning with cutting edge technologies is hard. Everyone want to be smart, everyone want to be A players. So how you can keep it for your 40s, 50s, or 60s?
+
+An interesting question, isn't it? Starting your own business helps. Not a coder anymore, maybe. But these might not apply to everyone. Right? To me, this question actually is more about self-dignity. What makes me proud? What makes me motivated for years. And more importantly, what makes me feel peace inside.
+
+My Answer?
+
+- *Be useful to my tech friends. Always offer free help.*
+  /It helps us to earn opportunities and business in the long run./
+- *Understand your domain very well. And explain it in a simple language.*
+  /If I can't explain it simply, I don't understand it well enough./
+
+[[color:#c7254e][What Do You Think?]] Chat with me. Remember I'm just one click away.
+
+/Places I have visited since I was born/
+[[image-blog:Where Denny Lived or Traveled][https://www.dennyzhang.com/wp-content/uploads/denny/denny_cities.jpg]]
+
+My latest CV: [[url-external:https://cdn.dennyzhang.com/archive/denny_devops_2018.pdf][here]]
+
+[[slack:slack][slack]] [[github:DennyZhang][GitHub]] [[image-linkedin:LinkedIn][https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png]]
+
+---------------------------------------------------------------------
+See all blogs I'm actively maintaining:
+| Blog                          | Link                              |
+|-------------------------------+-----------------------------------|
+| DevOps blog                   | https://www.dennyzhang.com        |
+| Code tests for interviews     | https://code.dennyzhang.com       |
+| Learn system design           | https://architect.dennyzhang.com  |
+| Cheatsheet for best practices | https://cheatsheet.dennyzhang.com |
+| Examine skills in a hard way  | https://quiz.dennyzhang.com       |
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone hidestars
 #+DESCRIPTION: 
@@ -40,6 +84,7 @@ File me [[https://github.com/DennyZhang/www.dennyzhang.com/issues][Issues]] or s
 #+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
 #+LINK_UP:   
 #+LINK_HOME: 
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
 * TODO misc                                                        :noexport:
 ** TODO github: One command to test your code
 ** TODO move book-reading-cloud to www.dennyzhang.com github repo; add a category of Reading

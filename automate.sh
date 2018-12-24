@@ -13,7 +13,7 @@ function my_test() {
 function refresh_wordpress() {
     local max_days=${MAX_DAYS:-"7"}
     echo "Use emacs to update wordpress posts"
-    for d in "posts" "docker" "aws" "devops" "kubernetes" "life" "jenkins" "pks"; do
+    for d in "posts" "docker" "aws" "devops" "kubernetes" "life" "jenkins" "pks" "build-k8s"; do
         cd "$d"
         for f in $(find . -name 'README.org' -mtime -${max_days} | grep -v '^README.org$'); do
             echo "Update $f"
@@ -54,7 +54,7 @@ function git_pull() {
 
 function refresh_link() {
     echo "refresh link"
-    for d in "posts" "docker" "aws" "devops" "kubernetes" "life" "jenkins" "pks"; do
+    for d in "posts" "docker" "aws" "devops" "kubernetes" "life" "jenkins" "pks" "build-k8s"; do
         cd "$d"
         for f in $(ls -1t */README.org); do
             dirname=$(basename $(dirname $f))

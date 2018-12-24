@@ -1,0 +1,92 @@
+* My Review Of KubeCon Shanghai 2018                        :BLOG:Kubernetes:
+:PROPERTIES:
+:type:     Kubernetes, PKS, Life
+:END:
+---------------------------------------------------------------------
+Happy to attend KubeCon Shanghai 2018 this Nov. Thanks to [[https://cloud.vmware.com/pivotal-container-service][VMware PKS]] project.
+
+What *Chinese Kubernetes Market* looks like? And *Chinese Kubernetes Technical Community*.
+
+Here are some of my key takeways from the Conference. What do you think?
+
+[[My Review Of KubeCon Shanghai 2018][https://cdn.dennyzhang.com/images/blog/www/kubecon-sh-2018.jpg]]
+---------------------------------------------------------------------
+[[color:#c7254e][Life in Shanghai, China]]
+I'm not new to Shanghai. Back to 2008, four years working experience there. So I already know the city pretty well. 
+
+Born and raise in China enables me to catch up with the latest changes.
+
+However I'm still amazed to see how deep the city or the country lives in the digital world. Everybody is doing almost everything via smart phones by default.
+- In restaurants, no need to ask waiters for the bills. Pay by cellphone, and leave directly.
+- Purchasing any ticket via mobile apps. Subway, taxi, train, bus, you name it.
+- Barcode everywhere. [[http://www.taobao.com/][taobao.com]]/[[http://www.jd.com/][jd.com]] any time.
+
+Advice for your future Chinese trips? 
+1. Get [[https://www.wechat.com/en/][WeChat]] app installed
+- No Google Suite
+- A Chinese sim card
+
+There are tons of free Wi-Fi. But without a Chinese phone number? You can't use any. Without Internet here, you're literally handicapped. No kidding.
+
+[[color:#c7254e][Kubernetes In Public Cloud]]
+
+Here are the big players: *alicloud*, *huawei cloud*, and *tecent cloud*.
+
+- 1. alicloud: public cloud from alibaba. A decent one. 
+With alicloud kubernetes service, you can specify the machine for worker vm per node. Instead of per node pool.
+
+- 2. Tencent cloud
+- 3. HuaWei cloud
+- 4. Jd cloud: jdos for across cluster scaling; invisible for k8s; bare metal
+
+[[color:#c7254e][Kubernetes In Private cloud]]
+1. IBM ImbCloud
+
+Across region traffic is free. All vms provides both data nic and management nics.
+- Rancher
+- Redhat/IBM openshift
+
+[[color:#c7254e][Information Via Booths & Talks]]
+1. nginx+
+- Federations: caicloud, huawei cloud
+- Ant finance Node operator: use operator to do admin task. Kube-on-kube
+- lighting talk:gaming system use k8s
+
+VMware PKS workshop in KubeCon.
+
+[[My Review Of KubeCon Shanghai 2018][https://cdn.dennyzhang.com/images/blog/www/kubecon-denny.jpg]]
+
+[[color:#c7254e][Interested in VMware PKS job opportunities?]] Ping me in LinkedIn. (Please find the link in below).
+
+[[My Review Of KubeCon Shanghai 2018][https://cdn.dennyzhang.com/images/blog/www/kubecon-pks.jpg]]
+
+More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kubectl cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-pks-A4][pks cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-openshift-A4][openshift cheatsheet]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/kubernetes/kubecon-sh-2018"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/slack.png" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/kubecon-sh-2018
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION:
+#+KEYWORDS:
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:
+#+LINK_HOME:

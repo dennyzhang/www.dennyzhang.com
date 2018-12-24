@@ -178,7 +178,7 @@ pvc-0d3d3793-dec6-11e8-8d65-4a21fc2b88a8   5Gi        RWO            Delete     
 More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kubectl cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-pks-A4][pks cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-openshift-A4][openshift cheatsheet]]
 
 #+BEGIN_HTML
-<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/kubernetes/kubernetes-components"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/kubernetes/kubernetes-public"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 
 <div id="the whole thing" style="overflow: hidden;">
 <div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>

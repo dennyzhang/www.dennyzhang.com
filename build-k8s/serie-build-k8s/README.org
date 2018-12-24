@@ -1,0 +1,74 @@
+* Series: Build K8S Solution From Scratch                   :BLOG:Kubernetes:
+:PROPERTIES:
+:type:     Kubernetes, PKS
+:END:
+---------------------------------------------------------------------
+I'd like to label myself as a [[color:#c7254e][kubernetes expert]] and software architect in two years.
+
+Like everyone in container world, I have a lot of pleasures consuming kubectl. And behind the scene, I'm even more amazed for how typical K8S solutions are designed and implemented.
+
+If you're also interested, here is a blog series for you. Check it out, and discuss with me!
+
+[[image-blog:Series: Build Your K8S Solution From The Scratch][https://cdn.dennyzhang.com/images/blog/www/k8s-certified.png]]
+---------------------------------------------------------------------
+[[color:#c7254e][What For?]]
+From bottom to up. From bare metal to the beginning to the final solution. There are lots of *interesting questions* and *amazing ideas* to learn and discuss.
+
+It could be very helpful for you, if your oragnization is heavily using containers in either development or deployment phases. And the experience should also be useful, as long as you're working at infra domain. No matter private clouds or public clouds.
+
+In this blog series, we focus on below things:
+- What are the domain languages and concepts?
+- What factors we should consider? 
+- What are the known issues? 
+- What are the best practices?
+
+Anti-goal: It shouldn't share any confidential information from my current employer.
+
+[[color:#c7254e][Layers & Components]]
+At very high level, different layers of typical K8S solutions can be illustrated as below figure.
+
+[[image-blog:Series: Build Your K8S Solution From The Scratch][https://cdn.dennyzhang.com/images/blog/www/k8s-series.png]]
+
+[[color:#c7254e][Episode List]]:
+- Episode: Public K8S Solution VS On-Prem solution
+- Episode: K8S Solution - Control Plane (TBD)
+- Episode: K8S Solution - Virtualization & Bare Metal (TBD)
+- Episode: K8S Solution - Management Console (TBD)
+- Episode: K8S Solution - Life Cycle Management (TBD)
+- Episode: K8S Solution - Networking (TBD)
+- Episode: K8S Solution - Authentication & Authorization (TBD)
+- Episode: K8S Solution - Integration test (TBD)
+
+Please leave me comments, if you have something to share or discuss.
+---------------------------------------------------------------------
+
+More Reading: [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-a4][kubectl cheatsheet]], [[https://cheatsheet.dennyzhang.com/cheatsheet-kubernetes-yaml][kubernetes yaml templates]]
+
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/build-k8s/serie-build-k8s"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/slack.png" alt="slack"/></a></div>
+</div>
+
+<br/><br/>
+<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
+#+END_HTML
+
+Blog URL: https://www.dennyzhang.com/serie-build-k8s
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
