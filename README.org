@@ -38,6 +38,7 @@ File me [[https://github.com/DennyZhang/www.dennyzhang.com/issues][Issues]] or s
 [[image-blog:Contact][https://www.dennyzhang.com/wp-content/themes/portfolio-press/images/denny_201706.png]]
 
 I'm Denny Zhang. A tech guy. Welcome to my DevOps blog!
+(Join our slack: [[https://www.dennyzhang.com/slack][here]])
 
 My biggest hobby is continuous improvement. Both at work and at home. What are yours?
 
@@ -66,10 +67,9 @@ See all blogs I'm actively maintaining:
 | Blog                          | Link                              |
 |-------------------------------+-----------------------------------|
 | DevOps blog                   | https://www.dennyzhang.com        |
+| Cheatsheet for best practices | https://cheatsheet.dennyzhang.com |
 | Code tests for interviews     | https://code.dennyzhang.com       |
 | Learn system design           | https://architect.dennyzhang.com  |
-| Cheatsheet for best practices | https://cheatsheet.dennyzhang.com |
-| Examine skills in a hard way  | https://quiz.dennyzhang.com       |
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone hidestars
 #+DESCRIPTION: 
@@ -90,3 +90,165 @@ See all blogs I'm actively maintaining:
 ** TODO move book-reading-cloud to www.dennyzhang.com github repo; add a category of Reading
 ** TODO export github Write local memo: today-learning
 * TODO post-review plugin: https://www.dennyzhang.com/             :noexport:
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
+* Quiz Role Models                                                 :noexport:
+https://github.com/trimstray/test-your-sysadmin-skills
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
+* TODO trim wordpress instance ram usage:noexport:
+* TODO Use org-mode to edit the quiz; Github can show the quiz; And also export to wordpress in a good format :noexport:
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
+* TODO [#A] Beautify: https://quiz.dennyzhang.com/quiz-k8s-concept :noexport:
+** List one quiz
+** Wrap up it as a wizzard
+** List related posts
+* TODO quiz.dennyzhang.com                                         :noexport:
+** DONE
+*** DONE build docker image
+    CLOSED: [2018-08-19 Sun 08:03]
+*** DONE initialize wordpress
+    CLOSED: [2018-08-19 Sun 08:03]
+*** DONE create ECS task
+    CLOSED: [2018-08-19 Sun 08:03]
+*** DONE create adsense
+    CLOSED: [2018-08-18 Sat 16:08]
+ - sidebar
+ #+BEGIN_EXAMPLE
+ <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+ <!-- quiz_sidebar -->
+ <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-5389711597208884"
+      data-ad-slot="6327434894"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>
+ <script>
+ (adsbygoogle = window.adsbygoogle || []).push({});
+ </script>
+ #+END_EXAMPLE
+ - footer
+ #+BEGIN_EXAMPLE
+ <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+ <!-- quiz_footer -->
+ <ins class="adsbygoogle"
+      style="display:block"
+      data-ad-client="ca-pub-5389711597208884"
+      data-ad-slot="8901627346"
+      data-ad-format="auto"
+      data-full-width-responsive="true"></ins>
+ <script>
+ (adsbygoogle = window.adsbygoogle || []).push({});
+ </script>
+ #+END_EXAMPLE
+*** DONE uptimerobot monitoring
+    CLOSED: [2018-08-19 Sun 08:16]
+ https://quiz.dennyzhang.com/contact
+*** DONE add blog icon
+    CLOSED: [2018-08-19 Sun 08:16]
+*** DONE add contact page
+    CLOSED: [2018-08-19 Sun 08:27]
+*** DONE change theme
+    CLOSED: [2018-08-19 Sun 11:15]
+ https://wordpress.org/themes/search/bootstrap/
+
+ https://downloads.wordpress.org/theme/bootstrap-blog.1.0.1.zip
+** TODO add more quiz examples
+* TODO make file publish wordpress doesn't work                    :noexport:
+* TODO update github fork me link to a specific one                :noexport:
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
+* TODO blog: add the theme support for the quiz                    :noexport:
+http://preview.codecanyon.net/item/wordpress-viral-quiz-buzzfeed-quiz-builder/full_screen_preview/11178623?_ga=2.58272233.2121030111.1494206897-769058022.1494011665
+https://kinsta.com/blog/wordpress-quiz-plugins/
+https://meta.discourse.org/t/plugin-for-viral-quiz-creation-from-markdown/62271
+
+https://wordpress.org/plugins/social-polls-by-opinionstage/#description
+
+** https://wordpress.org/plugins/ari-stream-quiz/
+** https://wordpress.org/plugins/quiz-master-next/
+** https://wordpress.org/plugins/quiz-cat/
+** Opinion Stage
+https://wordpress.org/plugins/social-polls-by-opinionstage/#description
+
+dennyzhang
+denny.zhang001@gmail.com
+https://dennyzhang.com
+DennySophia446
+* TODO Update https://quiz.dennyzhang.com/contact                  :noexport:
+* TODO quiz ideas                                                  :noexport:
+** TODO kubernetes-security
+** graph algorithms
+** aws quiz
+** k8s limitations
+** tree algorithms
+* TODO Two button doesn't algin correctly: https://quiz.dennyzhang.com/quiz-k8s-concept :noexport:
+* [#A] Quiz: Can't overwrite, each time it's a new one             :noexport:
+* TODO Quiz: When customers click url, open a new tab for the link :noexport:
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
+* TODO Quiz: simplify the xml and automate the generating          :noexport:
+* TODO Export quiz content in github only, not in wordpress        :noexport:
+* #  --8<-------------------------- separator ------------------------>8-- :noexport:
+* TODO Finish one algorithm quiz                                   :noexport:
+* HALF [#A] quiz: Use emacs to generate quiz, instead of manually update xml files :noexport:
+* TODO Run windows load in k8s                                     :noexport:
+https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.11.md#sig-windows
+* TODO What DownwardAPI is?                                        :noexport:
+https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.11.md#sig-storage
+
+* TODO Quiz: List key requirements in XXX                          :noexport:
+** Volume
+performance
+resize
+delete protection
+security context
+** Pod segreation
+** Pod clean shutdown: preStop handler
+https://kubernetes.io/docs/tasks/configure-pod-container/attach-handler-lifecycle-event/
+* TODO Add quiz                                                    :noexport:
+** kubernetes-schedule
+Pod Priority and Preemption
+
+Taint
+** The container state is one of Waiting, Running, or Terminated
+https://kubernetes.io/docs/tasks/debug-application-cluster/debug-application-introspection/
+** readniess probe vs liveness probe
+** kubectl drain
+https://kubernetes.io/docs/tasks/administer-cluster/cluster-management/#maintenance-on-a-node
+** Pod Priority and Preemption
+https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption
+** Why we need subresources: /status, /scale
+** pod crash/docker crash: https://github.com/dennyzhang/dennytest/tree/master/kubernetes/k8s_crash
+** Pods & Controllers
+https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/#pods-and-controllers
+
+Pods and Controllers
+A Controller can create and manage multiple Pods for you, handling replication and rollout and providing self-healing capabilities at cluster scope. For example, if a Node fails, the Controller might automatically replace the Pod by scheduling an identical replacement on a different Node.
+
+Some examples of Controllers that contain one or more pods include:
+
+Deployment
+StatefulSet
+DaemonSet
+In general, Controllers use a Pod Template that you provide to create the Pods for which it is responsible.
+
+** Object Spec and Status
+https://kubernetes.io/docs/concepts/overview/working-with-objects/kubernetes-objects/
+
+Every Kubernetes object includes two nested object fields that govern the object's configuration: the object spec and the object status. The spec, which you must provide, describes your desired state for the object–the characteristics that you want the object to have. The status describes the actual state of the object, and is supplied and updated by the Kubernetes system. At any given time, the Kubernetes Control Plane actively manages an object's actual state to match the desired state you supplied.
+
+** service discovery: kube-dns, CoreDNS, kubelet, dnsmasqd
+CoreDNS is a replacement for kube-dns for service discovery.
+
+https://kubernetes.io/blog/2018/07/10/coredns-ga-for-kubernetes-cluster-dns/
+
+** What's Kubernetes addon?
+
+** how pod can talk with kubectl in security workflow?
+/Users/zdenny/git_code/kubernets_community/client-go/rest/config.go
+
+/var/run/secrets/kubernetes.io/serviceaccount/
+
+** quiz: web hosting env, who we implement it in k8s world
+Pod: containers to run git pull
+** services: kubelet: https://github.com/dennyzhang/cheatsheet-kubernetes-A4#12-components--services
+* quiz advanced concept                                            :noexport:
+** why we need network policy?
+** what's pod policy?

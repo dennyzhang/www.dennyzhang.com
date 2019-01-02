@@ -1,0 +1,66 @@
+				<question answerType="single">
+					<title>
+						<![CDATA[Q: Pod VS Container]]>
+					</title>
+					<points>1</points>
+					<questionText>
+						<![CDATA[Inside one Pod, how to pass information from one container to another?]]>
+					</questionText>
+					<correctMsg>
+						<![CDATA[Comments:
+- Pods: Tightly coupled group of containers
+
+Follow-up:
+- What data is stored in etcd?]]>
+					</correctMsg>
+					<incorrectMsg>
+						<![CDATA[Comments:
+- Pods: Tightly coupled group of containers
+
+Follow-up:
+- What data is stored in etcd?]]>
+					</incorrectMsg>
+					<tipMsg enabled="false">
+						<![CDATA[]]>
+					</tipMsg>
+					<category>kubernetes</category>
+					<correctSameText>false</correctSameText>
+					<showPointsInBox>false</showPointsInBox>
+					<answerPointsActivated>false</answerPointsActivated>
+					<answerPointsDiffModusActivated>false</answerPointsDiffModusActivated>
+					<disableCorrect>false</disableCorrect>
+					<answers>
+						<answer points="1" correct="true">
+							<answerText html="true">
+								<![CDATA[Secrets]]>
+							</answerText>
+							<stortText html="true">
+								<![CDATA[]]>
+							</stortText>
+						</answer>
+						<answer points="1" correct="false">
+							<answerText html="true">
+								<![CDATA[Configmap]]>
+							</answerText>
+							<stortText html="true">
+								<![CDATA[]]>
+							</stortText>
+						</answer>
+						<answer points="1" correct="false">
+							<answerText html="true">
+								<![CDATA[Etcd]]>
+							</answerText>
+							<stortText html="true">
+								<![CDATA[]]>
+							</stortText>
+						</answer>
+						<answer points="1" correct="false">
+							<answerText html="true">
+								<![CDATA[Volume]]>
+							</answerText>
+							<stortText html="true">
+								<![CDATA[]]>
+							</stortText>
+						</answer>
+					</answers>
+				</question>

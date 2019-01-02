@@ -1,0 +1,50 @@
+				<question answerType="single">
+					<title>
+						<![CDATA[Q: Container VS InitContainer]]>
+					</title>
+					<points>1</points>
+					<questionText>
+						<![CDATA[Let's say I have started a Pod with one InitContainer and one container. If the InitContainer exit, will the Pod fail to start or not?]]>
+					</questionText>
+					<correctMsg>
+						<![CDATA[Comments:
+- Init Containers: https://kubernetes.io/docs/concepts/workloads/pods/init-containers
+
+Follow-up:
+- How to check log of InitContainers?]]>
+					</correctMsg>
+					<incorrectMsg>
+						<![CDATA[Comments:
+- Init Containers: https://kubernetes.io/docs/concepts/workloads/pods/init-containers
+
+Follow-up:
+- How to check log of InitContainers?]]>
+					</incorrectMsg>
+					<tipMsg enabled="false">
+						<![CDATA[]]>
+					</tipMsg>
+					<category>kubernetes</category>
+					<correctSameText>false</correctSameText>
+					<showPointsInBox>false</showPointsInBox>
+					<answerPointsActivated>false</answerPointsActivated>
+					<answerPointsDiffModusActivated>false</answerPointsDiffModusActivated>
+					<disableCorrect>false</disableCorrect>
+					<answers>
+						<answer points="1" correct="false">
+							<answerText html="true">
+								<![CDATA[Yes]]>
+							</answerText>
+							<stortText html="true">
+								<![CDATA[]]>
+							</stortText>
+						</answer>
+						<answer points="1" correct="true">
+							<answerText html="true">
+								<![CDATA[No]]>
+							</answerText>
+							<stortText html="true">
+								<![CDATA[]]>
+							</stortText>
+						</answer>
+					</answers>
+				</question>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wpProQuiz>
+	<header version="0.37" exportVersion="1"/>
+	<data>
+		<quiz>
+			<title titleHidden="false">
+				<![CDATA[Quiz: Understanding Of Kubernetes Concepts]]>
+			</title>
+			<text>
+				<![CDATA[Basic understanding of common Kubernetes concepts]]>
+			</text>
+			<category>kubernetes</category>
+			<resultText gradeEnabled="false">
+				<![CDATA[Result for the quiz]]>
+			</resultText>
+			<btnRestartQuizHidden>false</btnRestartQuizHidden>
+			<btnViewQuestionHidden>false</btnViewQuestionHidden>
+			<questionRandom>true</questionRandom>
+			<answerRandom>true</answerRandom>
+			<timeLimit>0</timeLimit>
+			<showPoints>true</showPoints>
+			<statistic activated="true" ipLock="1440"/>
+			<quizRunOnce type="1" cookie="false" time="0">false</quizRunOnce>
+			<numberedAnswer>false</numberedAnswer>
+			<hideAnswerMessageBox>false</hideAnswerMessageBox>
+			<disabledAnswerMark>false</disabledAnswerMark>
+			<showMaxQuestion showMaxQuestionValue="1" showMaxQuestionPercent="false">false</showMaxQuestion>
+			<toplist activated="false">
+				<toplistDataAddPermissions>1</toplistDataAddPermissions>
+				<toplistDataSort>1</toplistDataSort>
+				<toplistDataAddMultiple>false</toplistDataAddMultiple>
+				<toplistDataAddBlock>1</toplistDataAddBlock>
+				<toplistDataShowLimit>1</toplistDataShowLimit>
+				<toplistDataShowIn>0</toplistDataShowIn>
+				<toplistDataCaptcha>false</toplistDataCaptcha>
+				<toplistDataAddAutomatic>false</toplistDataAddAutomatic>
+			</toplist>
+			<showAverageResult>true</showAverageResult>
+			<prerequisite>false</prerequisite>
+			<showReviewQuestion>true</showReviewQuestion>
+			<quizSummaryHide>false</quizSummaryHide>
+			<skipQuestionDisabled>false</skipQuestionDisabled>
+			<emailNotification>0</emailNotification>
+			<userEmailNotification>true</userEmailNotification>
+			<showCategoryScore>true</showCategoryScore>
+			<hideResultCorrectQuestion>false</hideResultCorrectQuestion>
+			<hideResultQuizTime>false</hideResultQuizTime>
+			<hideResultPoints>false</hideResultPoints>
+			<autostart>false</autostart>
+			<forcingQuestionSolve>false</forcingQuestionSolve>
+			<hideQuestionPositionOverview>false</hideQuestionPositionOverview>
+			<hideQuestionNumbering>false</hideQuestionNumbering>
+			<sortCategories>true</sortCategories>
+			<showCategory>true</showCategory>
+			<quizModus questionsPerPage="0">2</quizModus>
+			<startOnlyRegisteredUser>false</startOnlyRegisteredUser>
+			<adminEmail>
+				<to/>
+				<form/>
+				<subject>Wp-Pro-Quiz: One user completed a quiz</subject>
+				<html>false</html>
+				<message>
+					<![CDATA[Wp-Pro-Quiz
+
+The user "$username" has completed "$quizname" the quiz.
+
+Points: $points
+Result: $result]]>
+				</message>
+			</adminEmail>
+			<userEmail>
+				<to>-1</to>
+				<toUser>true</toUser>
+				<toForm>false</toForm>
+				<form>denny.zhang001@gmail.com</form>
+				<subject>DennyZhang.com: AWS Certification Quiz</subject>
+				<html>true</html>
+				<message>
+					<![CDATA[AWS Quiz
+
+You have completed the quiz "$quizname".
+
+Points: $points
+
+Result: $result
+<ul class="org-ul"><li><a href="https://quiz.dennyzhang.com/kubernetes-concept">Quiz: Understanding Of Kubernetes Concepts</a></li></ul>]]>
+				</message>
+			</userEmail>
+			<forms activated="false" position="0"/>
+			<questions>

@@ -1,0 +1,50 @@
+				<question answerType="single">
+					<title>
+						<![CDATA[Q: Pod VS Container]]>
+					</title>
+					<points>1</points>
+					<questionText>
+						<![CDATA[Can I start one Pod with multiple containers?]]>
+					</questionText>
+					<correctMsg>
+						<![CDATA[Comments:
+- Pods: Tightly coupled group of containers
+
+Follow-up:
+- List two scenarios why I need to do that?]]>
+					</correctMsg>
+					<incorrectMsg>
+						<![CDATA[Comments:
+- Pods: Tightly coupled group of containers
+
+Follow-up:
+- List two scenarios why I need to do that?]]>
+					</incorrectMsg>
+					<tipMsg enabled="false">
+						<![CDATA[]]>
+					</tipMsg>
+					<category>kubernetes</category>
+					<correctSameText>false</correctSameText>
+					<showPointsInBox>false</showPointsInBox>
+					<answerPointsActivated>false</answerPointsActivated>
+					<answerPointsDiffModusActivated>false</answerPointsDiffModusActivated>
+					<disableCorrect>false</disableCorrect>
+					<answers>
+						<answer points="1" correct="true">
+							<answerText html="true">
+								<![CDATA[Yes]]>
+							</answerText>
+							<stortText html="true">
+								<![CDATA[]]>
+							</stortText>
+						</answer>
+						<answer points="1" correct="false">
+							<answerText html="true">
+								<![CDATA[No]]>
+							</answerText>
+							<stortText html="true">
+								<![CDATA[]]>
+							</stortText>
+						</answer>
+					</answers>
+				</question>

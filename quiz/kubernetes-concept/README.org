@@ -1,0 +1,178 @@
+* Quiz: Understanding Of Kubernetes Concepts                     :Kubernetes:
+#+STARTUP: showeverything
+#+OPTIONS: toc:nil \n:t ^:nil creator:nil d:nil
+#+EXPORT_EXCLUDE_TAGS: exclude noexport BLOG
+:PROPERTIES:
+:type:     kubernetes, cloud, quiz
+:END:
+---------------------------------------------------------------------
+Understanding Of Kubernetes Concepts
+---------------------------------------------------------------------
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/quiz.dennyzhang.com/tree/master/posts/kubernetes-concept"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
+<div style="float: left; padding: 5px"><a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a></div>
+</div>
+#+END_HTML
+Blog URL: https://quiz.dennyzhang.com/kubernetes-concept
+Tag: [[https://quiz.dennyzhang.com/tag/kubernetes][#kubernetes]], [[https://quiz.dennyzhang.com/tag/cloud][#cloud]]
+[WpProQuiz 6]
+* Content                                                          :noexport:
+** Q: Pod VS Container
+Question: 
+#+BEGIN_EXAMPLE
+Can I start one Pod with multiple containers?
+A Yes
+B No
+
+Answer: A
+#+END_EXAMPLE
+Tips:
+#+BEGIN_EXAMPLE
+Comments:
+- Pods: A pod (as in a pod of whales or pea pod) is a group of one or more containers (such as Docker containers), with shared storage/network, and a specification for how to run the containers.
+- Link: https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/
+
+Follow-up:
+- List two scenarios why I need to do that?
+#+END_EXAMPLE
+
+** Q: Context VS Namespace
+Question:
+
+If I have two projects to be deployed in one k8s cluster. I should define multiple resource of which one in below?
+#+BEGIN_EXAMPLE
+A Context
+B Namespace
+
+Answer: B
+#+END_EXAMPLE
+
+Tips:
+#+BEGIN_EXAMPLE
+Comments:
+- Context: https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters
+
+Follow-up:
+- Why people need multiple namespaces? Why people need multiple context?
+- List some security vulnerabilities with namespace and context in current k8s version.
+#+END_EXAMPLE
+** Q: Container VS InitContainer
+Question:
+
+Let's say I have started a Pod with one InitContainer and one container. If the InitContainer exit, will the Pod fail to start or not?
+#+BEGIN_EXAMPLE
+A Yes
+B No
+
+Answer: B
+#+END_EXAMPLE
+Tips:
+#+BEGIN_EXAMPLE
+Comments:
+- Init Containers: https://kubernetes.io/docs/concepts/workloads/pods/init-containers
+- Link: https://kubernetes.io/docs/concepts/workloads/pods/pod-overview/
+
+Follow-up:
+- How to check log of InitContainers?
+#+END_EXAMPLE
+** Q: Pod VS Container
+Question: 
+#+BEGIN_EXAMPLE
+Inside one Pod, how to pass information from one container to another?
+A Secrets
+B Configmap
+C Volume
+D Etcd
+
+Answer: C
+#+END_EXAMPLE
+Tips:
+#+BEGIN_EXAMPLE
+Comments:
+- Pods: Tightly coupled group of containers
+
+Follow-up:
+- What data is stored in etcd?
+#+END_EXAMPLE
+** Q: Kubernetes Master Node VS Kubernetes Worker Node
+Question:
+
+Which process of the following will unlikely to run in Kubernetes master node?
+#+BEGIN_EXAMPLE
+A kube-apiserver
+B kube-controller-manager
+C kube-scheduler
+D kubelet
+
+Answer: D
+#+END_EXAMPLE
+
+Tips:
+
+#+BEGIN_EXAMPLE
+Comments:
+The Kubernetes Master is a collection of three processes that run a single node in your cluster, which is designated as the master node. The processes are kube-apiserver, kube-controller-manager and kube-scheduler.
+
+Each individual non-master node in your cluster runs two processes: kubelet, kube-proxy
+
+Follow-up:
+- If my cluster run into low hardware resource, we might need to add more master nodes or worker nodes.
+- K8S cluster performance issues
+#+END_EXAMPLE
+** #  --8<-------------------------- separator ------------------------>8-- :noexport:
+** Q: Labels VS Anonations
+** Q: Cronjob vs Linux Crontab
+** Q: UserAcount VS ServiceAccount
+** Q: PV VS PVC
+** Q: Deployment VS StatefulSet
+** Q: kubectl create VS kubectl apply
+Comments:
+#+BEGIN_EXAMPLE
+Imperative vs Declarative
+https://stackoverflow.com/questions/47369351/kubectl-apply-vs-kubectl-create
+https://kubernetes.io/docs/tutorials/object-management-kubectl/object-management/
+#+END_EXAMPLE
+
+Follow-up:
+- What "kubectl patch" is? And "kubectl edit"?
+
+** misc                                                            :noexport:
+https://www.linkedin.com/feed/update/urn:li:activity:6356168330918846464
+* TODO [#A] Blog: Kubernetes Concepts In A4 CheatSheet   :IMPORTANT:noexport:
+** TODO Key Concept by Arun Gupta
+** TODO Learn the Kubernets Key Concepts in 10 Minutes by Omer Dawelbit
+** #  --8<-------------------------- separator ------------------------>8-- :noexport:
+** Application
+** Deployment
+** PersistVolume
+** #  --8<-------------------------- separator ------------------------>8-- :noexport:
+** Replication controller: ensures that a specified number of pod "replicas" are running at any one time.
+** ReplicaSet
+** Secrets
+** Namespace
+** #  --8<-------------------------- separator ------------------------>8-- :noexport:
+** Uses etcd as distributed key-value store
+** TODO StatefulSet: manage stateful applications
+https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/
+Like a Deployment, a StatefulSet manages Pods that are based on an identical container spec.
+
+Unlike a Deployment, a StatefulSet maintains a sticky identity for each of their Pods. 
+** Service Discovery: Using env variable injection or SkyDNS with the Service
+** Ingress
+** #  --8<-------------------------- separator ------------------------>8-- :noexport:
+** DONE 3 parts: k8s cluster; service coorstration, understand service
+   CLOSED: [2017-12-05 Tue 11:01]
+** DONE Concept: Use a Service to Access an Application in a Cluster
+   CLOSED: [2017-12-05 Tue 10:54]
+https://kubernetes.io/docs/tasks/access-application-cluster/service-access-application-cluster/
+** DONE How to Create a volume: 3 steps
+   CLOSED: [2017-12-05 Tue 10:55]
+** DONE ReplicationController vs ReplicationSet vs Deployment
+   CLOSED: [2017-12-05 Tue 10:55]
+** #  --8<-------------------------- separator ------------------------>8-- :noexport:
+** Kubernetes (k8s) = Open Source Container Cluster Manager
+** Networking: Each pod gets its own IP address

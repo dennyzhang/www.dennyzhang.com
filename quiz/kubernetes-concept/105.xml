@@ -1,0 +1,72 @@
+				<question answerType="single">
+					<title>
+						<![CDATA[Q: Kubernetes Master Node VS Kubernetes Worker Node]]>
+					</title>
+					<points>1</points>
+					<questionText>
+						<![CDATA[Which process of the following will unlikely to run in Kubernetes master node?]]>
+					</questionText>
+					<correctMsg>
+						<![CDATA[Comments:
+The Kubernetes Master is a collection of three processes that run a single node in your cluster, which is designated as the master node. The processes are kube-apiserver, kube-controller-manager and kube-scheduler.
+
+Each individual non-master node in your cluster runs two processes: kubelet, kube-proxy
+
+Follow-up:
+- If my cluster run into low hardware resource, we might need to add more master nodes or worker nodes.
+- K8S cluster performance issues]]>
+					</correctMsg>
+					<incorrectMsg>
+						<![CDATA[Comments:
+The Kubernetes Master is a collection of three processes that run a single node in your cluster, which is designated as the master node. The processes are kube-apiserver, kube-controller-manager and kube-scheduler.
+
+Each individual non-master node in your cluster runs two processes: kubelet, kube-proxy
+
+Follow-up:
+- If my cluster run into low hardware resource, we might need to add more master nodes or worker nodes.
+- K8S cluster performance issues]]>
+					</incorrectMsg>
+					<tipMsg enabled="false">
+						<![CDATA[]]>
+					</tipMsg>
+					<category>kubernetes</category>
+					<correctSameText>false</correctSameText>
+					<showPointsInBox>false</showPointsInBox>
+					<answerPointsActivated>false</answerPointsActivated>
+					<answerPointsDiffModusActivated>false</answerPointsDiffModusActivated>
+					<disableCorrect>false</disableCorrect>
+					<answers>
+						<answer points="1" correct="true">
+							<answerText html="true">
+								<![CDATA[kubelet]]>
+							</answerText>
+							<stortText html="true">
+								<![CDATA[]]>
+							</stortText>
+						</answer>
+						<answer points="1" correct="false">
+							<answerText html="true">
+								<![CDATA[kube-apiserver]]>
+							</answerText>
+							<stortText html="true">
+								<![CDATA[]]>
+							</stortText>
+						</answer>
+						<answer points="1" correct="false">
+							<answerText html="true">
+								<![CDATA[kube-controller-manager]]>
+							</answerText>
+							<stortText html="true">
+								<![CDATA[]]>
+							</stortText>
+						</answer>
+						<answer points="1" correct="false">
+							<answerText html="true">
+								<![CDATA[kube-scheduler]]>
+							</answerText>
+							<stortText html="true">
+								<![CDATA[]]>
+							</stortText>
+						</answer>
+					</answers>
+				</question>

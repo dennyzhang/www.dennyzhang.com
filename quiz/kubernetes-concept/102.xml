@@ -1,0 +1,52 @@
+				<question answerType="single">
+					<title>
+						<![CDATA[Q: Context VS Namespace]]>
+					</title>
+					<points>1</points>
+					<questionText>
+						<![CDATA[If I have two projects to be deployed in one k8s cluster. I should define multiple resource of which one in below?]]>
+					</questionText>
+					<correctMsg>
+						<![CDATA[Comments:
+Context: https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters
+
+Follow-up:
+- Why people need multiple namespaces? Why people need multiple context?
+- List some security vulnerabilities with namespace and context in current k8s version.]]>
+					</correctMsg>
+					<incorrectMsg>
+						<![CDATA[Comments:
+Context: https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters
+
+Follow-up:
+- Why people need multiple namespaces? Why people need multiple context?
+- List some security vulnerabilities with namespace and context in current k8s version.]]>
+					</incorrectMsg>
+					<tipMsg enabled="false">
+						<![CDATA[]]>
+					</tipMsg>
+					<category>kubernetes</category>
+					<correctSameText>false</correctSameText>
+					<showPointsInBox>false</showPointsInBox>
+					<answerPointsActivated>false</answerPointsActivated>
+					<answerPointsDiffModusActivated>false</answerPointsDiffModusActivated>
+					<disableCorrect>false</disableCorrect>
+					<answers>
+						<answer points="1" correct="false">
+							<answerText html="false">
+								<![CDATA[Context]]>
+							</answerText>
+							<stortText html="true">
+								<![CDATA[]]>
+							</stortText>
+						</answer>
+						<answer points="1" correct="true">
+							<answerText html="true">
+								<![CDATA[Namespace]]>
+							</answerText>
+							<stortText html="true">
+								<![CDATA[]]>
+							</stortText>
+						</answer>
+					</answers>
+				</question>
