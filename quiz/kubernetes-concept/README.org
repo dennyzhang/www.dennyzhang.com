@@ -9,7 +9,7 @@
 Understanding Of Kubernetes Concepts
 ---------------------------------------------------------------------
 #+BEGIN_HTML
-<a href="https://github.com/dennyzhang/quiz.dennyzhang.com/tree/master/posts/kubernetes-concept"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/quiz/kubernetes-concept"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
 <div id="the whole thing" style="overflow: hidden;">
 <div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
 <div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
@@ -17,7 +17,7 @@ Understanding Of Kubernetes Concepts
 <div style="float: left; padding: 5px"><a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a></div>
 </div>
 #+END_HTML
-Blog URL: https://quiz.dennyzhang.com/kubernetes-concept
+Blog URL: https://dennyzhang.com/kubernetes-concept
 Tag: [[https://quiz.dennyzhang.com/tag/kubernetes][#kubernetes]], [[https://quiz.dennyzhang.com/tag/cloud][#cloud]]
 [WpProQuiz 6]
 * Content                                                          :noexport:
