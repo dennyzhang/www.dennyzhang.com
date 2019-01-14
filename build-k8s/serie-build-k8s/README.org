@@ -34,10 +34,14 @@ At very high level, different layers of typical K8S solutions can be illustrated
 - Episode: K8S Solution - Networking (TBD)
 - Episode: K8S Solution - Management Console (TBD)
 - Episode: K8S Solution - Authentication & Authorization (TBD)
+- Episode: K8S Solution - Upgrade (TBD)
 - Episode: [[https://www.dennyzhang.com/k8s-security-enhancement][K8S Solution - Security Enhancement]]
 - Episode: [[https://www.dennyzhang.com/k8s-diaster-recovery][K8S Solution - Disaster Recovery]]
 - Episode: [[https://www.dennyzhang.com/k8s-patch-upgrade][K8S Solution - Patches & Upgrades]]
 - Episode: [[https://www.dennyzhang.com/k8s-multi-tenancy][K8S Solution - Multi-tenancy]]
+- Episode: K8S Solution - Integrate with other technologies (TBD)
+- Episode: K8S Solution - Reconfigure After Initial Setup (TBD)
+- Episode: K8S Solution - Hooks points of K8S Clusters Lifecycle (TBD)
 - Episode: [[https://www.dennyzhang.com/k8s-integration-test][K8S Solution - Integration Test]]
 
 Please leave me comments, if you have something to share or discuss.
@@ -73,3 +77,32 @@ Blog URL: https://www.dennyzhang.com/serie-build-k8s
 #+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
 #+LINK_UP:   
 #+LINK_HOME: 
+* K8S Solution - Upgrade (TBD)                                     :noexport:
+- minimal patching
+- upgrade automation
+- Major & minor upgrades
+- In-place upgrades; Blue-green deployments; add and remove a new node?
+** TODO PKS upgrade: in-place upgrade, will it wait for pods to be evacuated? :noexport:
+** TODO openshift upgrade: worker node upgrade is sequential?      :noexport:
+** TODO openshift upgrade: for blue-green deployment, how it handles pv detach and attach? :noexport:
+** TODO Does openshift support downgrade with minor versions?      :noexport:
+* K8S Solution - Integrate with other technologies (TBD)           :noexport:
+** Integration Lifecycle Management
+- Resource provision and deprovision in integration products
+** Multi-tenancy mapping
+- security: wavefront token across k8s clusters
+- billing
+** Networking
+** Conf management
+Single source of truth
+** On-prem or SaaS
+* TODO K8S Solution - Reconfigure After Initial Setup (TBD)        :noexport:
+- OpenShift: Moving from a single master cluster to multiple masters after installation is not supported.
+- Resize VMs
+- Customize openshift master api
+* TODO K8S Solution - Hooks points of K8S Clusters Lifecycle       :noexport:
+** timing
+- Install
+- Upgrade
+- Delete: cleanup
+** Need errand to run it?

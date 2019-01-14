@@ -1,9 +1,6 @@
 * Quiz: Understanding Of Kubernetes Concepts                     :Kubernetes:
-#+STARTUP: showeverything
-#+OPTIONS: toc:nil \n:t ^:nil creator:nil d:nil
-#+EXPORT_EXCLUDE_TAGS: exclude noexport BLOG
 :PROPERTIES:
-:type:     kubernetes, cloud, quiz
+:type:     quiz, kubernetes
 :END:
 ---------------------------------------------------------------------
 Understanding Of Kubernetes Concepts
@@ -13,12 +10,11 @@ Understanding Of Kubernetes Concepts
 <div id="the whole thing" style="overflow: hidden;">
 <div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
 <div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
-<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://slack.dennyzhang.com/badge.svg" alt="slack"/></a></div>
-<div style="float: left; padding: 5px"><a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/slack.png" alt="slack"/></a></div>
 </div>
 #+END_HTML
 Blog URL: https://dennyzhang.com/kubernetes-concept
-Tag: [[https://quiz.dennyzhang.com/tag/kubernetes][#kubernetes]], [[https://quiz.dennyzhang.com/tag/cloud][#cloud]]
+Tag: [[https://www.dennyzhang.com/tag/quiz][#quiz]], [[https://www.dennyzhang.com/tag/kubernetes][#kubernetes]]
 [WpProQuiz 6]
 * Content                                                          :noexport:
 ** Q: Pod VS Container
@@ -142,6 +138,20 @@ Follow-up:
 
 ** misc                                                            :noexport:
 https://www.linkedin.com/feed/update/urn:li:activity:6356168330918846464
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
 * TODO [#A] Blog: Kubernetes Concepts In A4 CheatSheet   :IMPORTANT:noexport:
 ** TODO Key Concept by Arun Gupta
 ** TODO Learn the Kubernets Key Concepts in 10 Minutes by Omer Dawelbit

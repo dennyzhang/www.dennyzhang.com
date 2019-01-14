@@ -70,6 +70,16 @@ See all blogs I'm actively maintaining:
 | Cheatsheet for best practices | https://cheatsheet.dennyzhang.com |
 | Code tests for interviews     | https://code.dennyzhang.com       |
 | Learn system design           | https://architect.dennyzhang.com  |
+* Quiz                                                    :BLOG:Page:
+:PROPERTIES:
+:type:     serie
+:END:
+---------------------------------------------------------------------
+Trying to compile a list of quiz:
+
+[display-posts tag="quiz" posts_per_page="100" orderby="title"]
+
+I can help you on Kubernetes/DevOps/Technical selling. [[https://www.dennyzhang.com/contact][Contact me]].
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone hidestars
 #+DESCRIPTION: 

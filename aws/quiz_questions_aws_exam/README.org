@@ -1,8 +1,7 @@
 * Practice Quiz For AWS Certification Exam                        :BLOG:AWS:
 :PROPERTIES:
-:type:   AWS,DevOps,Popular,Quiz
+:type:   AWS,DevOps,Popular
 :END:
-
 ---------------------------------------------------------------------
 Here are free questions and quiz links, to better examine your knowledge about AWS. Before you take AWS exams, why not checkout them? Feel free to add more questions or quiz by comment.
 

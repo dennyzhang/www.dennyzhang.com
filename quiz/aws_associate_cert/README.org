@@ -1,35 +1,26 @@
 * AWS Certification Qiuz By Denny                                 :BLOG:AWS:
 :PROPERTIES:
-:type:     DevOps
+:type:     quiz, aws
 :END:
-
 ---------------------------------------------------------------------
-Glad to announce I'm now a certified **AWS Certified Solution Architect - Associate**. It took me around 2 weeks for preparation, all at my spare time. I believe the certification will benefit professionals working primarily in Cloud industry.
-
-[[image-blog:aws certification][https://www.dennyzhang.com/wp-content/uploads/denny/denny_aws_certfication.png]]
+I put up a problem set based on my prep notes on AWS certification. Hopefully it helps for your exam preparation.
 ---------------------------------------------------------------------
-
-I put up a problem set based on my prep notes. Hopefully it helps for your exam preparation.
+#+BEGIN_HTML
+<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/quiz/aws_associate_cert"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
+<div id="the whole thing" style="overflow: hidden;">
+<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
+<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/slack.png" alt="slack"/></a></div>
+</div>
+#+END_HTML
+Blog URL: https://dennyzhang.com/aws_associate_cert
+Tag: [[https://www.dennyzhang.com/tag/quiz][#quiz]], [[https://www.dennyzhang.com/tag/aws][#aws]]
 
 [WpProQuiz 5]
 
 More Reading:
 - [[https://www.dennyzhang.com/prepare_aws_certification][Entrance Page to prepare AWS certification exams]]
 - [[https://www.dennyzhang.com/quiz_questions_aws_exam][More Quiz for AWS certification exams]]
-#+BEGIN_HTML
-<a href="https://github.com/dennyzhang/www.dennyzhang.com/tree/master/aws/aws_associate_cert"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
-
-<div id="the whole thing" style="overflow: hidden;">
-<div style="float: left; padding: 5px"> <a href="https://www.linkedin.com/in/dennyzhang001"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png" alt="linkedin" /></a></div>
-<div style="float: left; padding: 5px"><a href="https://github.com/dennyzhang"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/github.png" alt="github" /></a></div>
-<div style="float: left; padding: 5px"><a href="https://www.dennyzhang.com/slack" target="_blank" rel="nofollow"><img src="https://www.dennyzhang.com/wp-content/uploads/sns/slack.png" alt="slack"/></a></div>
-</div>
-
-<br/><br/>
-<a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
-#+END_HTML
-
-Blog URL: https://www.dennyzhang.com/aws_associate_cert
 * misc                                                             :noexport:
 ** web page: Boundry Unlimited: AWS Solution Architect Certification :noexport:
 http://surajbatuwana.blogspot.com.au/p/aws-certification-sample-questions.html
@@ -1736,8 +1727,6 @@ http://www.google.com]]></incorrectMsg>
   <answer points="1" correct="false"><answerText html="false"><![CDATA[Amazon EC2 CLI.]]></answerText><stortText html="false"><![CDATA[]]></stortText></answer>
   <answer points="1" correct="false"><answerText html="false"><![CDATA[AWS Tools for Windows PowerShell.]]></answerText><stortText html="false"><![CDATA[]]></stortText></answer>
 </answers></question>
-
-
 * org-mode configuration                                           :noexport:
 #+STARTUP: overview customtime noalign logdone showall
 #+DESCRIPTION: 
