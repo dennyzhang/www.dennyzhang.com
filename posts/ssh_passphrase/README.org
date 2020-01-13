@@ -4,8 +4,7 @@
 :END:
 ---------------------------------------------------------------------
 Any serious DevOps will only ssh by key file. Not with password, right? And mostly our powerful key file can unlock many critical envs. Have you ever uploaded your private key to other envs, like jumpbox? What if your key is magically stolen by hackers somehow?
-*Time to protect your sensitive ssh key by passphrase*. And live with it, headache-free.
-
+*Time to protect your sensitive ssh key by passphrase*. And live with it, headache-free. There is a new RFC4716 key format that  add brute-force protection! You can also modern elliptic curve cryptography: **upgrade-your-ssh-keys!** [[https://blog.g3rt.nl/upgrade-your-ssh-keys.html][blog.g3rt.nl]]
 [[image-blog:Manage SSH Key File With Passphrase][https://www.dennyzhang.com/wp-content/uploads/denny/ssh-keys-passphrase.jpg]]
 ---------------------------------------------------------------------
 Update Per Audience Feedback:
@@ -17,25 +16,26 @@ Update Per Audience Feedback:
 
 | Name                    | Summary                                    |
 |-------------------------+--------------------------------------------|
-| Load key file           | =ssh-add ~/.ssh/id_rsa=                    |
+| Create strong key-pair  | =ssh-keygen -a 100 -t id_ed25519 -C $USER= |                                 |
+| Load key files          | =ssh-add=                                  |
 | Remove all loaded keys  | =ssh-add -D=                               |
-| Whether it's encrypted  | =grep "ENCRYPTED" id_rsa=                  |
-| Add/Change passphrase   | =ssh-keygen -p -f id_dsa=                  |
-| Remove passphrase       | =ssh-keygen -p -P $passwd -N "" -f id_rsa= |
+| Add/Change passphrase   | =ssh-keygen -p -f <private_key_file>=      |
 | Load key without prompt | Check link: here                           |
+
+
 ** Add passphrase to existing ssh key
 We can easily use *ssh-keygen* to add passphrase. This certainly gives us extra security benefit. Next, what's the impact of this change?
 - You never use your private key other than your computer. Right? If yes, nothing you need to worry. One tiny difference: you might be asked to input the passphrase once. Check all loaded keys by _ssh-add -l_.
-- In some cases, we might use key files to do passwordless login in remote servers. For example, ssh tunnel for port forwarding, ssh from jumpbox to other machines, etc. Then we have to make sure the key file is correctly loaded and recognized. Run _ssh-add ./id_rsa_, then input passphrase manually. This also can be done automatically. We will explain it shortly.
+- In some cases, we might use key files to do passwordless login in remote servers. For example, ssh tunnel for port forwarding, ssh from jumpbox to other machines, etc. Then we have to make sure the key file is correctly loaded and recognized. Run _ssh-add ./id_ed25519_, then input passphrase manually. This also can be done automatically. We will explain it shortly.
 #+BEGIN_SRC sh
 # Change file mode to allow overwrite
-chmod 700 id_rsa
+chmod 700 id_ed25519
 
 # Add passphrase to key file
-ssh-keygen -p -f id_rsa
+ssh-keygen -a 100 -o -p -f id_ed25519
 
-# Denny-mac:.ssh mac$ ssh-keygen -p -f id_rsa
-# Key has comment 'id_rsa'
+# Denny-mac:.ssh mac$ ssh-keygen -a 100 -o -p -f id_ed25519 -C Denny
+# Key has comment 'Denny'
 # Enter new passphrase (empty for no passp...
 # Enter same passphrase again:
 # Your identification has been saved with ...
@@ -46,15 +46,15 @@ Pity that ssh-add itself doesn't have native support for this[1]. Here is a work
 # Specify your passphrase here
 export YOUR_PASSPHRASE="XXX"
 
-# Load protected key without prompt
-echo "echo $YOUR_PASSPHRASE" > /tmp/mypass
-chmod 700 /tmp/mypass
+# Load protected key without prompt from an environment variable
+echo 'echo \$SSH_PASSPHRASE' > ~/.ssh/mypass
+chmod 700 ~/.ssh/mypass
 cat id_rsa| SSH_ASKPASS=/tmp/mypass ssh-add -
 
 # Verify loaded certificate
 ssh-add -l
 #+END_SRC
-** Change passphrase for existing private key
+** Change passphrase for existing private key (rather switch from DSA to better encryption)
 Run below command. You will be asked to input old passphrase and new one. If the key is not encrypted, just press enter in the terminal.
 #+BEGIN_SRC sh
 ssh-keygen -p -f ~/.ssh/id_dsa
