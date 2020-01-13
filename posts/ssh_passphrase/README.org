@@ -4,24 +4,20 @@
 :END:
 ---------------------------------------------------------------------
 Any serious DevOps will only ssh by key file. Not with password, right? And mostly our powerful key file can unlock many critical envs. Have you ever uploaded your private key to other envs, like jumpbox? What if your key is magically stolen by hackers somehow?
-*Time to protect your sensitive ssh key by passphrase*. And live with it, headache-free. There is a new RFC4716 key format that can add brute-force protection! You can also use modern elliptic curve cryptography: **upgrade-your-ssh-keys!** [[https://blog.g3rt.nl/upgrade-your-ssh-keys.html][blog.g3rt.nl]]
-[[image-blog:Manage SSH Key File With Passphrase][https://www.dennyzhang.com/wp-content/uploads/denny/ssh-keys-passphrase.jpg]]
----------------------------------------------------------------------
-Update Per Audience Feedback:
-- Thanks to [[http://www.linkedin.com/hp/update/6191826021843595264][Joshua Cornutt]]: When storing a private key on a server, I'd opt for a hardware option (HSM) since it's likely the key will need to be actively used and thus a passphrase can't be securely used (think automated use of a server-side private key) .
 
+*Time to protect your sensitive ssh key by passphrase*. And live with it, headache-free. There is a new RFC4716 key format that can add brute-force protection!
+[[image-blog:Manage SSH Key File With Passphrase][https://www.dennyzhang.com/wp-content/uploads/denny/ssh-keys-passphrase.jpg]]
 ---------------------------------------------------------------------
 
 [[color:#c7254e][Cheat Sheet]] for impatient users. Recommend to read this post through, even for experienced users.
 
 | Name                    | Summary                                    |
 |-------------------------+--------------------------------------------|
-| Create strong key-pair  | =ssh-keygen -a 100 -t id_ed25519 -C $USER= |                                 |
+| Create strong key-pair  | =ssh-keygen -a 100 -t id_ed25519 -C $USER= |
 | Load key files          | =ssh-add=                                  |
 | Remove all loaded keys  | =ssh-add -D=                               |
 | Add/Change passphrase   | =ssh-keygen -p -f <private_key_file>=      |
 | Load key without prompt | Check link: here                           |
-
 
 ** Add passphrase to existing ssh key
 We can easily use *ssh-keygen* to add passphrase. This certainly gives us extra security benefit. Next, what's the impact of this change?
@@ -69,6 +65,8 @@ Same can be done by ssh-keygen.[3] The amazing part is no required human interve
 #+BEGIN_SRC sh
 ssh-keygen -p -P "$OLDPASS" -N "" -f id_rsa
 #+END_SRC
+
+You can also use modern elliptic curve cryptography: **upgrade-your-ssh-keys!** [[https://blog.g3rt.nl/upgrade-your-ssh-keys.html][blog.g3rt.nl]]
 
 More Reading: [[https://www.dennyzhang.com/export_mac_laptop][Reverse SSH Tunnel: Export Your Mac Laptop To The Internet]].
 

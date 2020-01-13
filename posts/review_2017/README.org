@@ -34,7 +34,7 @@ Statistics
 | [[url-external:https://github.com/dennyzhang][GitHub]]           | 83 Followers    |        226 |
 | [[https://www.dennyzhang.com/][Blog Posts]]       | 82              |         94 |
 | [[url-external:http://us8.campaign-archive1.com/home/?u=91be09f7497c00c729049e650&id=bd99597fd9][Newsletter]]       | 310 Subscribers |        392 |
-| [[url-external:https://feedly.com/i/subscription/feed/http://www.dennyzhang.com/feed/][Feedly]]           | 17 Subscribers  |         29 |
+| [[url-external:https://feedly.com/i/subscription/feed/https://www.dennyzhang.com/feed/][Feedly]]           | 17 Subscribers  |         29 |
 | [[url-external:https://www.alexa.com/siteinfo/dennyzhang.com][Search Traffic]]   | 13.0%           |     39.30% |
 | [[url-external:https://www.alexa.com/siteinfo/dennyzhang.com][Session Duration]] | 00:01:45        |   00:02:22 |
 | [[url-external:https://www.alexa.com/siteinfo/dennyzhang.com][Bounce Rate]]      | 64.69%          |     57.10% |
