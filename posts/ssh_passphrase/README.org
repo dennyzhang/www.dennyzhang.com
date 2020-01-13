@@ -4,7 +4,7 @@
 :END:
 ---------------------------------------------------------------------
 Any serious DevOps will only ssh by key file. Not with password, right? And mostly our powerful key file can unlock many critical envs. Have you ever uploaded your private key to other envs, like jumpbox? What if your key is magically stolen by hackers somehow?
-*Time to protect your sensitive ssh key by passphrase*. And live with it, headache-free. There is a new RFC4716 key format that  add brute-force protection! You can also modern elliptic curve cryptography: **upgrade-your-ssh-keys!** [[https://blog.g3rt.nl/upgrade-your-ssh-keys.html][blog.g3rt.nl]]
+*Time to protect your sensitive ssh key by passphrase*. And live with it, headache-free. There is a new RFC4716 key format that can add brute-force protection! You can also use modern elliptic curve cryptography: **upgrade-your-ssh-keys!** [[https://blog.g3rt.nl/upgrade-your-ssh-keys.html][blog.g3rt.nl]]
 [[image-blog:Manage SSH Key File With Passphrase][https://www.dennyzhang.com/wp-content/uploads/denny/ssh-keys-passphrase.jpg]]
 ---------------------------------------------------------------------
 Update Per Audience Feedback:
