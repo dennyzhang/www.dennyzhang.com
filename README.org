@@ -33,7 +33,7 @@ File me [[https://github.com/DennyZhang/www.dennyzhang.com/issues][Issues]] or s
 ---------------------------------------------------------------------
 *Denny*: A DevOps Guy & Blogger
 
-[[slack:slack][slack]] [[image-linkedin:LinkedIn][https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png]] [[github:DennyZhang][GitHub]]
+[[https://join.slack.com/t/mywechat/shared_invite/enQtMjQ0Mjg4ODk2Mjc2LTUzOGI1YTk3YWJlYzA1ZWYwYzhhNzY4OThkNzgyNzNiOTU3MmEyOWY0M2NkMDk1MWNlOTU3YWJiYjQ2ZDc4NGI][slack]] [[image-linkedin:LinkedIn][https://www.dennyzhang.com/wp-content/uploads/sns/linkedin.png]] [[github:DennyZhang][GitHub]]
 ---------------------------------------------------------------------
 [[image-blog:Contact][https://www.dennyzhang.com/wp-content/themes/portfolio-press/images/denny_201706.png]]
 

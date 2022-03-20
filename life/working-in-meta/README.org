@@ -1,0 +1,37 @@
+* Switched job to FB/Meta                                      :BLOG:General:
+:PROPERTIES:
+:type:   Life
+:END:
+---------------------------------------------------------------------
+Joined FB Ads 2020 summer from VMware. It has been a pretty good experience so far
+---------------------------------------------------------------------
+
+I'd like to try infra chalenges with internet scale, after working in VMware EMC for a couple of years. Thus joined Facebook(a.k.a Meta) on May 2020. 
+
+So far, I have been working in FB ML infra to improve ads serving for about 1.5 years. Particularly I'm on ML feature engineering domain. Overall it has been a good experience with 4 major learnings.
+
+1. Be effective. Learn how to move fast with constraints, be more goals focused, etc.
+2. Be convincing. Win arguments with code and metrics. Bottom-up culture is part of the company DNA.
+3. Be confident. Lots of smart people and deep thinkings. Imposter syndrome helps you to be a good listener, but also may close doors silently.
+4. Be visionary. Your dream defins the upper bound of your achivements.
+
+Surely there are challenges or things get me confused here. Not major issues to me at current stage.
+
+If you're interested in Meta job opportunities, feel free to DM in [[https://www.linkedin.com/in/dennyzhang001/][LinkedIn]].
+
+Blog URL: https://www.dennyzhang.com/meta
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+#+TITLE: Switched job to FB/Meta

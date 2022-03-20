@@ -25,7 +25,7 @@ https://www.dennyzhang.com/wp-content/uploads/2014/04//blog_motto.gif
 - Change, don't need you to say, people will see.
 ** Communication
 - People always need empathy before advice.
-- It’s good to ask, not assume.
+- It's good to ask, not assume.
 - Don't just talk; think
 - Even negative feedback can be a gift. Take it seriously but don't let it define you. Define yourself.
 - Don't judge someone's past, when you haven't walked their journey!
@@ -502,4 +502,4 @@ Blog URL: https://www.dennyzhang.com/motto
 #+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
 #+LINK_UP:
 #+LINK_HOME:
-* All human beings are born creative. We all have good ideas. But on the path from idea to creation we can be ambushed by fear, doubt and uncertainty – and that often means that great ideas land up dead in the dust, instead of coming to fruition :noexport:
+* All human beings are born creative. We all have good ideas. But on the path from idea to creation we can be ambushed by fear, doubt and uncertainty - and that often means that great ideas land up dead in the dust, instead of coming to fruition :noexport:

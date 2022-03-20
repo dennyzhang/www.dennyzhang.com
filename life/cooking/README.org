@@ -1,0 +1,63 @@
+* Cooking Menu - 菜单                                          :BLOG:General:
+:PROPERTIES:
+:type:   Life
+:END:
+---------------------------------------------------------------------
+Menu for home cooking
+---------------------------------------------------------------------
+** 素菜 - Vegetable [排名不分先后]
+*** 蚝油生菜
+*** 番茄炒蛋
+*** 韭黄炒蛋
+*** 红烧冬瓜
+*** 干煸豆角
+*** 干煸花菜
+*** 酸辣土豆丝
+*** Cindy清口萝卜条
+*** 豆豉鲮鱼油麦菜
+*** 黑木耳青椒炒鸡蛋
+*** 蚝油香菇烧青菜
+*** 清炒芥兰
+*** 白菜炖豆腐
+*** 手撕包菜
+*** 包菜炒粉丝
+*** 番茄炒花菜
+*** 蒜炒油麦菜
+*** 炒蘑菇
+*** 青椒杏鲍菇
+** 荤菜 - Meat [排名不分先后]
+*** 莴笋炒肉丝
+*** 农家小炒肉
+*** 辣椒炒肉
+*** 土豆烧排骨
+*** 红烧排骨
+*** 葱爆羊肉
+*** 孜然羊肉
+*** 红烧鸡翅
+*** 黄瓜炒鸡丁
+*** 香菇滑鸡
+*** 冬瓜烧排骨
+*** 鱼香肉丝
+*** 大盘鸡
+** 汤 - Soup [排名不分先后]
+*** 番茄菌菇汤
+*** 紫菜蛋花汤
+*** 酸汤肥牛
+*** 罗宋汤
+
+Blog URL: https://www.dennyzhang.com/cooking
+* org-mode configuration                                           :noexport:
+#+STARTUP: overview customtime noalign logdone showall
+#+DESCRIPTION: 
+#+KEYWORDS: 
+#+AUTHOR: Denny Zhang
+#+EMAIL:  denny@dennyzhang.com
+#+TAGS: noexport(n)
+#+PRIORITIES: A D C
+#+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: exclude noexport
+#+SEQ_TODO: TODO HALF ASSIGN | DONE BYPASS DELEGATE CANCELED DEFERRED
+#+LINK_UP:   
+#+LINK_HOME: 
+#+TITLE: Cooking Menu - 菜单
